@@ -1,0 +1,14 @@
+**/settings
+**/Debug/*
+**/FlashOnly/*
+**/FlashROM/*
+**/CC2650/configPkg/*
+**/CC2640/configPkg/*
+**/*.dep
+**/*.log
+**/*.ewt
+**/*.tmp
+**/*.bak
+**/cc2650/config/src/*
+**/IAR/Config/src/*
+**/*.obj
