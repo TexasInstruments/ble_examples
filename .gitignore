@@ -10,5 +10,14 @@
 **/*.tmp
 **/*.bak
 **/cc2650/config/src/*
+**/CCS/Config/src/*
 **/IAR/Config/src/*
 **/*.obj
+**/*.a
+**/*.pos
+**/*.pp
+**/*.exclude
+**/.xdchelp
+**/.settings/*
+**/.launches/*
+**/targetConfigs/*
