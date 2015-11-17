@@ -10,10 +10,13 @@ For other hardware and software resources, [please visit our wiki](http://www.ti
 **Note:** Not all additional sample projects are migrated to GitHub - please refer to the wiki for a complete list.
 
 ## Network Processor Interface: UART Software Handshaking
+This example shows how you can avoid RTS/CTS flow control lines and still use the power saving features of the device, by using the RX/TX lines to wake up the chip and do a software handshake with an external MCU or computer. For this demo TI's SimpleNP and SimpleAP projects are used.
+## Network Processor Interface: UART Software Handshaking
 This example shows how you can avoid flow control lines and still use the power saving features of the device, by using the RX/TX lines to wake up the chip and do a software handshake with an external MCU or computer.
 * [SimpleNP projects and docs](Projects/ble/simple_np_sw_handshaking)
+* [SimpleAP projects and docs](Projects/ble/simple_ap_sw_handshaking)
+* [SAPLib projects and docs](Projects/ble/sap_lib_sw_handshaking)
 * [Modified NPI component files](Components/npi/unified)
-* [Python test project](Util/simple_np_sw_handshaking)
 
 ## MultiRole (Link Layer Topology)
 This example shows how you can connect as a peripheral and central at the same time to multiple devices.

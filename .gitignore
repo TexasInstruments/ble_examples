@@ -1,7 +1,12 @@
 **/settings
 **/Debug/*
-**/FlashOnly*/*
-**/FlashROM*/*
+**/FlashOnly/*
+**/FlashROM/*
+**/cc2640em_sw_handshaking/
+**/cc2640em_sw_handshaking_debug/
+**/cc2650stk_sw_handshaking/
+**/cc2650stk_sw_handshaking_debug/
+**/sap_lib_swhs/
 **/CC2650/configPkg/*
 **/CC2640/configPkg/*
 **/*.dep
@@ -21,4 +26,3 @@
 **/.settings/*
 **/.launches/*
 **/targetConfigs/*
-**/CCS/*/.config

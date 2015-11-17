@@ -1,10 +1,10 @@
 /*
- * npi_task.c
+ * npi_task_swhs.c
  *
  * NPI is a TI RTOS Application Thread that provides a
  * common Network Processor Interface framework.
  *
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/ 
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
  * 
  * 
  *  Redistribution and use in source and binary forms, with or without 

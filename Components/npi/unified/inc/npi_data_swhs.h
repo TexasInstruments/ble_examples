@@ -1,9 +1,9 @@
 /*
- * npi_data.h
+ * npi_data_swhs.h
  *
  * NPI Data structures
  *
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/ 
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
  * 
  * 
  *  Redistribution and use in source and binary forms, with or without 
@@ -133,10 +133,6 @@ extern "C"
   
 #define NPI_SERIAL_TYPE_UART                    0  
 #define NPI_SERIAL_TYPE_SPI                     1  // Not supported
-
-//! \brief Defines for software handshaking bytes
-#define CHIRP_SIZE 1
-#define CHIRP_BYTE 0x55
   
 //! \brief Returns the message type of an NPI message
 #define NPI_GET_MSG_TYPE(pMsg)          ((pMsg->cmd0 & NPI_CMD0_TYPE_MASK)>> 5)
@@ -151,6 +147,7 @@ extern "C"
 //! \brief Sets the subsystem ID of an NPI message
 #define NPI_SET_SS_ID(pMsg,SSID)        pMsg->cmd0 &= NPI_CMD0_SS_MASK_CLR; \
                                         pMsg->cmd0 |= ( (SSID & 0x1F) );
+
 // ****************************************************************************
 // typedefs
 // ****************************************************************************
@@ -172,21 +169,15 @@ typedef union
   SPI_Params spiParams;                 // Not supported
 } npiInterfaceParams;
 
+typedef enum
+{
+  HS_INITIATOR,
+  HS_RESPONDER,
+}hsTransactionRole;
+
 //*****************************************************************************
 // globals
 //*****************************************************************************
-// State defines for handshaking state variable
-typedef enum
-{
-	HS_UART_STATE		= 0x01,
-	HS_GPIO_STATE		= 0x02,
-	HS_WAITFORCHIRP		= 0x04,
-	HS_INITIATOR		= 0x08,
-	HS_CHIRP_SENT		= 0x10,
-	HS_RSVD1			= 0x20,
-	HS_RSVD2			= 0x40,
-	HS_RSVD3			= 0x80
-}hsState;
 //*****************************************************************************
 // function prototypes
 //*****************************************************************************

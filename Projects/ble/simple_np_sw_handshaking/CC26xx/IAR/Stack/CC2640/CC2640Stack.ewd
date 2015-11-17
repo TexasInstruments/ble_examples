@@ -85,7 +85,7 @@
         </option>
         <option>
           <name>OCDynDriverList</name>
-          <state>XDS100_ID</state>
+          <state>IJET_ID</state>
         </option>
         <option>
           <name>OCLastSavedByProductVersion</name>
@@ -538,7 +538,7 @@
         <option>
           <name>IjetResetList</name>
           <version>1</version>
-          <state>10</state>
+          <state>7</state>
         </option>
         <option>
           <name>IjetHWResetDuration</name>
@@ -603,7 +603,7 @@
         </option>
         <option>
           <name>IjetCpuClockEdit</name>
-          <state>72.0</state>
+          <state>48.0</state>
         </option>
         <option>
           <name>IjetSwoPrescalerList</name>
@@ -692,7 +692,7 @@
         </option>
         <option>
           <name>OCProbeConfig</name>
-          <state></state>
+          <state>$TOOLKIT_DIR$\config\debugger\TexasInstruments\CC26xx.ProbeConfig</state>
         </option>
         <option>
           <name>IjetProbeConfigRadio</name>

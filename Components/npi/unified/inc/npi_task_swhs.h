@@ -1,7 +1,7 @@
 /*
- * npi_tl.h
+ * npi_task_swhs.h
  *
- * NPI Transport Layer API
+ * NPI Data structures
  *
  * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
  * 
@@ -35,9 +35,8 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 */
-
-#ifndef NPI_TL_H
-#define NPI_TL_H
+#ifndef NPI_TASK_H
+#define NPI_TASK_H
 
 #ifdef __cplusplus
 extern "C"
@@ -47,59 +46,34 @@ extern "C"
 // ****************************************************************************
 // includes
 // ****************************************************************************
-  
-#include "inc/npi_data_swhs.h"
-#include "hal_types.h"
+#include "npi_data_swhs.h"
 
 // ****************************************************************************
 // defines
 // ****************************************************************************
-
-#if defined(NPI_USE_UART)
-#define transportOpen NPITLUART_openTransport
-#define transportClose NPITLUART_closeTransport
-#define transportRead NPITLUART_readTransport
-#define transportWrite NPITLUART_writeTransport
-#define transportStopTransfer NPITLUART_stopTransfer
-#define transportRemRdyEvent NPITLUART_handleRemRdyEvent
-#elif defined(NPI_USE_SPI)
-#define transportOpen NPITLSPI_openTransport
-#define transportClose NPITLSPI_closeTransport
-#define transportRead NPITLSPI_readTransport
-#define transportWrite NPITLSPI_writeTransport
-#define transportStopTransfer NPITLSPI_stopTransfer
-#define transportRemRdyEvent NPITLSPI_handleRemRdyEvent
-#endif //NPI_USE_UART
-
+  
 // ****************************************************************************
 // typedefs
 // ****************************************************************************
 
-//! \brief      Typedef for call back function mechanism to notify NPI Task that
-//!             an NPI transaction has occurred
-typedef void (*npiRtosCB_t)(uint16_t sizeRx, uint16_t sizeTx);
+//! \brief Call back function that a subsystem must register with NPI Task to 
+//         receive messages from the Host Processor
+typedef void (*npiFromHostCBack_t)(_npiFrame_t *pNPIMsg);
 
-//! \brief      Typedef for call back function mechanism to notify NPI Task that
-//!             an Remote Ready edge has occurred
-typedef void (*npiMrdyRtosCB_t)(uint8_t state);
-
-//! \brief      Struct for transport layer call backs
-typedef struct
-{
-  npiMrdyRtosCB_t remRdyCB;
-  npiRtosCB_t     transCompleteCB;      
-} npiTLCallBacks;
+//! \brief Call back function that a subsystem must register with NPI Task to 
+//         receive forwarded messages from ICall
+typedef void (*npiFromICallCBack_t)(uint8_t *pGenMsg);
 
 typedef struct 
 {
-  uint16_t              npiTLBufSize;   //!< Buffer size of Tx/Rx Transport layer buffers
+  uint16_t              stackSize;      //!< Configurable size of stack for NPI Task
+  uint16_t              bufSize;        //!< Buffer size of Tx/Rx Transport layer buffers
   uint32_t              mrdyPinID;      //!< Pin ID Mrdy (only with Power Saving enabled)
   uint32_t              srdyPinID;      //!< Pin ID Srdy (only with Power Saving enabled)
   uint8_t               portType;       //!< NPI_SERIAL_TYPE_[UART,SPI]
   uint8_t               portBoardID;    //!< Board ID for HW, i.e. CC2650_UART0
   npiInterfaceParams    portParams;     //!< Params to initialize NPI port
-  npiTLCallBacks        npiCallBacks;   //!< Call backs to NPI Task
-} NPITL_Params;
+} NPI_Params;
 
 //*****************************************************************************
 // globals
@@ -110,93 +84,89 @@ typedef struct
 //*****************************************************************************
 
 // -----------------------------------------------------------------------------
-//! \brief      This routine initializes the transport layer and opens the port
-//!             of the device. Note that based on project defines, either the
-//!             UART, or SPI driver can be used.
+//! \brief      Initialize a NPI_Params struct with default values
 //!
-//! \param[in]  params - Transport Layer parameters
+//! \param[in]  portType  NPI_SERIAL_TYPE_[UART,SPI]
+//! \param[in]  params    Pointer to NPI params to be initialized
+//!                     
+//! \return     uint8_t   Status NPI_SUCCESS, NPI_TASK_INVALID_PARAMS
+// -----------------------------------------------------------------------------
+extern uint8_t NPITask_Params_init(uint8_t portType, NPI_Params *params);
+
+// -----------------------------------------------------------------------------
+//! \brief      Task creation function for NPI
+//!
+//! \param[in]  params    Pointer to NPI params which will be used to 
+//!                       initialize the NPI Task
+//!
+//! \return     uint8_t   Status NPI_SUCCESS, or NPI_TASK_FAILURE
+// -----------------------------------------------------------------------------
+extern uint8_t NPITask_open(NPI_Params *params);
+
+// -----------------------------------------------------------------------------
+//! \brief      NPI Task close and tear down. Cannot be used with ICall because
+//!             ICall service cannot be un-enrolled
+//!
+//! \return     uint8_t   Status NPI_SUCCESS, or NPI_TASK_FAILURE
+// -----------------------------------------------------------------------------
+extern uint8_t NPITask_close(void);
+
+// -----------------------------------------------------------------------------
+//! \brief      API for application task to send a message to the Host.
+//!             NOTE: It's assumed all message traffic to the stack will use
+//!             other (ICALL) APIs/Interfaces.
+//!
+//! \param[in]  pMsg    Pointer to "unframed" message buffer.
+//!
+//! \return     uint8_t Status NPI_SUCCESS, or NPI_SS_NOT_FOUND
+// -----------------------------------------------------------------------------
+extern uint8_t NPITask_sendToHost(_npiFrame_t *pMsg);
+
+// -----------------------------------------------------------------------------
+//! \brief      API for subsystems to register for NPI messages received with 
+//!             the specific ssID. All NPI messages will be passed to callback
+//!             provided
+//!
+//! \param[in]  ssID    The subsystem ID of NPI messages that should be routed
+//!                     to pCB
+//! \param[in]  pCB     The call back function that will receive NPI messages
+//!
+//! \return     uint8_t Status NPI_SUCCESS, or NPI_ROUTING_FULL
+// -----------------------------------------------------------------------------
+extern uint8_t NPITask_regSSFromHostCB(uint8_t ssID, npiFromHostCBack_t pCB);
+
+// -----------------------------------------------------------------------------
+//! \brief      API for subsystems to register for ICall messages received from 
+//!             the specific source entity ID. All ICall messages will be passed
+//!             to the callback provided
+//!
+//! \param[in]  icallID Source entity ID whose messages should be sent to pCB
+//!             pCB     The call back function that will receive ICall messages
+//!
+//! \return     uint8_t Status NPI_SUCCESS, or NPI_ROUTING_FULL
+// -----------------------------------------------------------------------------
+extern uint8_t NPITask_regSSFromICallCB(uint8_t icallID, npiFromICallCBack_t pCB);
+
+// -----------------------------------------------------------------------------
+//! \brief      API to allocate an NPI frame of a given data length
+//!
+//! \param[in]  len             Length of data field of frame
+//!
+//! \return     _npiFrame_t *   Pointer to newly allocated frame
+// -----------------------------------------------------------------------------
+extern _npiFrame_t * NPITask_mallocFrame(uint16_t len);
+
+// -----------------------------------------------------------------------------
+//! \brief      API to de-allocate an NPI frame
+//!
+//! \param[in]  frame   Pointer to NPI frame to be de-allocated
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITL_openTL(NPITL_Params *params);
-
-// -----------------------------------------------------------------------------
-//! \brief      This routine closes the transport layer
-//!
-//! \return     void
-// -----------------------------------------------------------------------------
-void NPITL_closeTL(void);
-
-// -----------------------------------------------------------------------------
-//! \brief      This routine reads data from the transport layer based on len,
-//!             and places it into the buffer.
-//!
-//! \param[out] buf - Pointer to buffer to place read data.
-//! \param[in]  len - Number of bytes to read.
-//!
-//! \return     uint16_t - the number of bytes read from transport
-// -----------------------------------------------------------------------------
-uint16_t NPITL_readTL(uint8_t *buf, uint16_t len);
-
-// -----------------------------------------------------------------------------
-//! \brief      This routine writes data from the buffer to the transport layer.
-//!
-//! \param[in]  buf - Pointer to buffer to write data from.
-//! \param[in]  len - Number of bytes to write.
-//!
-//! \return     uint16_t - NPI Error Code value
-// -----------------------------------------------------------------------------
-uint8_t NPITL_writeTL(uint8_t *buf, uint16_t len);
-
-// -----------------------------------------------------------------------------
-//! \brief      This routine is used to handle an Rem RDY edge from the app
-//!             context. Certain operations such as UART_read() cannot be
-//!             performed from the actual hwi handler
-//!
-//! \return     void
-// -----------------------------------------------------------------------------
-void NPITL_handleRemRdyEvent(void);
-
-// -----------------------------------------------------------------------------
-//! \brief      This function is used to trigger the RemRdy Event in the task
-//!             from a chirp callBack
-//!
-//! \return     void
-// -----------------------------------------------------------------------------
-void NPITL_triggerRemRdyFromChirp(void);
-// -----------------------------------------------------------------------------
-//! \brief      This routine returns the max size receive buffer.
-//!
-//! \return     uint16_t - max size of the receive buffer
-// -----------------------------------------------------------------------------
-uint16_t NPITL_getMaxRxBufSize(void);
-
-// -----------------------------------------------------------------------------
-//! \brief      This routine returns the max size transmit buffer.
-//!
-//! \return     uint16_t - max size of the transmit buffer
-// -----------------------------------------------------------------------------
-uint16_t NPITL_getMaxTxBufSize(void);
-
-// -----------------------------------------------------------------------------
-//! \brief      Returns number of bytes that are unread in RxBuf
-//!
-//! \return     uint16_t - number of unread bytes
-// -----------------------------------------------------------------------------
-uint16_t NPITL_getRxBufLen(void);
-
-// -----------------------------------------------------------------------------
-//! \brief      This routine returns the state of transmission on NPI
-//!
-//! \return     bool - state of NPI transmission - 1 - active, 0 - not active
-// -----------------------------------------------------------------------------
-bool NPITL_checkNpiBusy(void);
-
-/*******************************************************************************
- */
+extern void NPITask_freeFrame(_npiFrame_t *frame);
 
 #ifdef __cplusplus
 }
-#endif
+#endif // extern "C"
 
-#endif /* NPI_TL_H */
+#endif // end of NPI_TASK_H definition
