@@ -89,7 +89,7 @@ int main()
     GAPCentralRole_createTask();
     
     /* Kick off application - Priority 1 */
-    SimpleBLECentral_createTask();
+    security_examples_central_createTask();
     
     /* enable interrupts and start SYS/BIOS */
     BIOS_start();

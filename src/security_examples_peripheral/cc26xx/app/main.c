@@ -96,26 +96,8 @@ int main()
     /* Kick off profile - Priority 3 */
     GAPRole_createTask();
     
-    SimpleBLEPeripheral_createTask();
+    security_examples_peripheral_createTask();
 
-#ifdef FEATURE_OAD
-    {
-      uint8_t counter;
-      uint32_t *vectorTable =  (uint32_t*) 0x20000000;
-#if defined(__IAR_SYSTEMS_ICC__)
-      uint32_t *flashVectors = &__vector_table;
-#elif defined(__TI_COMPILER_VERSION__)
-      uint32_t *flashVectors = &ti_sysbios_family_arm_m3_Hwi_resetVectors;
-#endif //Compiler.
-      
-      // Write image specific interrupt vectors into RAM vector table.
-      for(counter = 0; counter < 15; ++counter)
-      {
-        *vectorTable++ = *flashVectors++;
-      }
-    }
-#endif //FEATURE_OAD
-    
     /* enable interrupts and start SYS/BIOS */
     BIOS_start();
     

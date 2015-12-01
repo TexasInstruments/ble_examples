@@ -1,9 +1,9 @@
 /**************************************************************************************************
-  Filename:       simple_peripheral.h
+  Filename:       security_examples_peripheral.h
   Revised:        $Date$
   Revision:       $Revision$
 
-  Description:    This file contains the Simple BLE Peripheral sample application
+  Description:    This file contains the security examples peripheral sample application
                   definitions and prototypes.
 
   Copyright 2013 - 2014 Texas Instruments Incorporated. All rights reserved.
@@ -37,8 +37,8 @@
   contact Texas Instruments Incorporated at www.TI.com.
 **************************************************************************************************/
 
-#ifndef SIMPLEBLEPERIPHERAL_H
-#define SIMPLEBLEPERIPHERAL_H
+#ifndef SECURITY_EXAMPLES_PERIPHERAL_H
+#define SECURITY_EXAMPLES_PERIPHERAL_H
 
 #ifdef __cplusplus
 extern "C"
@@ -66,9 +66,9 @@ extern "C"
  */
 
 /*
- * Task creation function for the Simple BLE Peripheral.
+ * Task creation function for the security examples peripheral.
  */
-extern void SimpleBLEPeripheral_createTask(void);
+extern void security_examples_peripheral_createTask(void);
 
 
 /*********************************************************************
@@ -78,4 +78,4 @@ extern void SimpleBLEPeripheral_createTask(void);
 }
 #endif
 
-#endif /* SIMPLEBLEPERIPHERAL_H */
+#endif /* SECURITY_EXAMPLES_PERIPHERAL_H */

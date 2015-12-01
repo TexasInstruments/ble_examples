@@ -1,9 +1,9 @@
 /**************************************************************************************************
-  Filename:       simple_central.h
+  Filename:       security_examples_central.h
   Revised:        $Date$
   Revision:       $Revision$
 
-  Description:    This file contains the Simple BLE Central sample application
+  Description:    This file contains the security examples central sample application
                   definitions and prototypes.
 
   Copyright 2013 - 2014 Texas Instruments Incorporated. All rights reserved.
@@ -37,8 +37,8 @@
   contact Texas Instruments Incorporated at www.TI.com.
 **************************************************************************************************/
 
-#ifndef SIMPLEBLECENTRAL_H
-#define SIMPLEBLECENTRAL_H
+#ifndef SECURITY_EXAMPLES_CENTRAL_H
+#define SECURITY_EXAMPLES_CENTRAL_H
 
 #ifdef __cplusplus
 extern "C"
@@ -65,9 +65,9 @@ extern "C"
  * FUNCTIONS
  */
 /*
- * Task creation function for the Simple BLE Central.
+ * Task creation function for the security examples central.
  */
-extern void SimpleBLECentral_createTask(void);
+extern void security_examples_central_createTask(void);
 
 /*********************************************************************
 *********************************************************************/
@@ -76,4 +76,4 @@ extern void SimpleBLECentral_createTask(void);
 }
 #endif
 
-#endif /* SIMPLEBLECENTRAL_H */
+#endif /* SECURITY_EXAMPLES_CENTRAL_H */
