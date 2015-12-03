@@ -183,7 +183,7 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>HEAPMGR_SIZE=3740</state>
+          <state>HEAPMGR_SIZE=7000</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
           <state>TI_DRIVERS_LCD_INCLUDED</state>
           <state>GAPCENTRALROLE_NUM_RSSI_LINKS=1</state>
@@ -1176,7 +1176,7 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>STATIC_PASSCODE</state>
+          <state>xSTATIC_PASSCODE</state>
           <state>HEAPMGR_SIZE=3740</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
           <state>TI_DRIVERS_LCD_INCLUDED</state>

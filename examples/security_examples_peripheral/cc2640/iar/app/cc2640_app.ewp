@@ -183,7 +183,7 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>HEAPMGR_SIZE=2672</state>
+          <state>HEAPMGR_SIZE=7000</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
           <state>TI_DRIVERS_LCD_INCLUDED</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
@@ -1178,7 +1178,7 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>STATIC_PASSCODE</state>
+          <state>xSTATIC_PASSCODE</state>
           <state>HEAPMGR_SIZE=2672</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
           <state>TI_DRIVERS_LCD_INCLUDED</state>
@@ -2992,9 +2992,17 @@
     <name>Application</name>
     <file>
       <name>$SRC_EX$\common\cc26xx\board_key.c</name>
+      <excluded>
+        <configuration>FlashROM-just_works</configuration>
+        <configuration>FlashROM-legacy_MITM</configuration>
+      </excluded>
     </file>
     <file>
       <name>$SRC_EX$\common\cc26xx\board_key.h</name>
+      <excluded>
+        <configuration>FlashROM-just_works</configuration>
+        <configuration>FlashROM-legacy_MITM</configuration>
+      </excluded>
     </file>
     <file>
       <name>$SRC_EX$\common\cc26xx\board_lcd.c</name>
@@ -3012,11 +3020,16 @@
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_peripheral\cc26xx\app\legacy_mitm.c</name>
       <excluded>
+        <configuration>FlashROM-just_works</configuration>
         <configuration>FlashROM-numeric_comparison</configuration>
       </excluded>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_peripheral\cc26xx\app\numeric_comparison.c</name>
+      <excluded>
+        <configuration>FlashROM-just_works</configuration>
+        <configuration>FlashROM-legacy_MITM</configuration>
+      </excluded>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_peripheral\cc26xx\app\security_examples_peripheral.h</name>

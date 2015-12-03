@@ -199,6 +199,12 @@ static uint16_t connHandle = GAP_CONNHANDLE_INIT;
 // Application state
 static uint8_t state = BLE_STATE_IDLE;
 
+// Passcode variables
+static uint8_t waiting_for_passcode = FALSE;
+static uint32_t passcode = 0;
+static uint32_t passcode_multiplier = 100000;
+static uint16_t passcode_connHandle = 0xFFFF;
+
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -317,11 +323,13 @@ static void security_examples_central_init(void)
     uint8_t mitm = TRUE;
     uint8_t ioCap = GAPBOND_IO_CAP_KEYBOARD_DISPLAY;
     uint8_t bonding = TRUE;
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_NONE;
     
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
     GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
+    GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
   }  
 
   // Initialize GATT Client
@@ -629,9 +637,11 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-  if (keys & KEY_RIGHT)
+  if ((keys & KEY_RIGHT) && (waiting_for_passcode))
   {
-    //do nothing
+    //increment passcode digit
+    passcode += passcode_multiplier;
+    LCD_WRITE_STRING_VALUE("",passcode, 10, LCD_PAGE5);
     return;
   }
 
@@ -676,9 +686,20 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-  if (keys & KEY_DOWN)
+  if ((keys & KEY_DOWN) && (waiting_for_passcode))
   {
-    // do nothing
+    // incrememnt passcode multiplier
+    passcode_multiplier = passcode_multiplier / 10;
+    if (passcode_multiplier == 0)
+    {
+      //send pascode response
+      GAPBondMgr_PasscodeRsp(passcode_connHandle, SUCCESS, passcode);      
+      //reset variables
+      passcode_multiplier = 100000;
+      passcode = 0;
+      waiting_for_passcode = FALSE;
+      passcode_connHandle = 0xFFFF;
+    }
     return;
   }
 }
@@ -737,16 +758,17 @@ static void security_examples_central_processPairState(uint8_t state, uint8_t st
 static void security_examples_central_processPasscode(uint16_t connectionHandle,
                                              uint8_t uiOutputs)
 {
-  uint32_t  passcode;
-
 #ifdef STATIC_PASSCODE
   passcode = 111111;
-#else
-  //todo: code to get passcode from two buttons.
-#endif
-  
   // Send passcode response
   GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, passcode);
+#else
+  // user will enter passcode
+  waiting_for_passcode = TRUE;
+  passcode_connHandle = connectionHandle;
+  LCD_WRITE_STRING("Enter Passcode:", LCD_PAGE4);
+  LCD_WRITE_STRING_VALUE("", passcode, 10, LCD_PAGE5);
+#endif
 }
 
 /**********************************************************************

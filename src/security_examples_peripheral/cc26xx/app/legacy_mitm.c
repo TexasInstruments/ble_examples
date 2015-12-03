@@ -320,11 +320,13 @@ static void security_examples_peripheral_init(void)
     uint8_t mitm = TRUE;
     uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8_t bonding = TRUE;
-
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_NONE;
+    
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
     GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
+    GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
   }
 
    // Initialize GATT attributes
@@ -586,7 +588,7 @@ static void security_examples_peripheral_processPasscode(uint16_t connectionHand
   uint32_t  passcode;
 
 #ifdef STATIC_PASSCODE
-  passcode = 111111;
+  passcode = 000000;
 #else
   // Create random passcode
   passcode = Util_GetTRNG();
