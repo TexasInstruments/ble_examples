@@ -4,4 +4,4 @@
 /* Auto-generated linker option(s) */
 
 --config_def ICALL_STACK0_ADDR=0x0000B000
---config_def ICALL_RAM0_ADDR=0x20004380
+--config_def ICALL_RAM0_ADDR=0x20004284

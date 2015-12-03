@@ -149,6 +149,9 @@
 /* -DHCI_TL_PTM */
 /* -DHCI_TL_FULL */
 
+-DHOST_V42_CONFIG=SECURE_CONNS_CFG
+-DCTRL_V42_CONFIG=SECURE_CONNS_CFG
+
 /* BLE Core Spec V4.1 Controller Feature Partition Build Configuration. Comment out to use default Controller Configuration  */
 /* -DCTRL_V41_CONFIG=PING_CFG+SLV_FEAT_EXCHG_CFG+CONN_PARAM_REQ_CFG+MST_SLV_CFG */
 

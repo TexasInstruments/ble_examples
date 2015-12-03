@@ -3,5 +3,5 @@
 /* IAR Linker Command Line Options */
 /* Auto-generated linker option(s) */
 
---config_def ICALL_STACK0_ADDR=0x0000E000
---config_def ICALL_RAM0_ADDR=0x200043C8
+--config_def ICALL_STACK0_ADDR=0x0000D000
+--config_def ICALL_RAM0_ADDR=0x200042B8
