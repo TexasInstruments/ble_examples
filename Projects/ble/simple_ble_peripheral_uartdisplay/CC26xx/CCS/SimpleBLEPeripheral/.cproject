@@ -46,23 +46,25 @@
 									<listOptionValue builtIn="false" value="SBP_TASK_STACK_SIZE=700"/>
 									<listOptionValue builtIn="false" value="GAPROLE_TASK_STACK_SIZE=520"/>
 									<listOptionValue builtIn="false" value="HEAPMGR_SIZE=2672"/>
-									<listOptionValue builtIn="false" value="TI_DRIVERS_SPI_DMA_INCLUDED"/>
+									<listOptionValue builtIn="false" value="xTI_DRIVERS_SPI_DMA_INCLUDED"/>
 									<listOptionValue builtIn="false" value="TI_DRIVERS_LCD_INCLUDED"/>
 									<listOptionValue builtIn="false" value="ICALL_MAX_NUM_TASKS=3"/>
 									<listOptionValue builtIn="false" value="ICALL_MAX_NUM_ENTITIES=6"/>
 									<listOptionValue builtIn="false" value="xdc_runtime_Assert_DISABLE_ALL"/>
-									<listOptionValue builtIn="false" value="xdc_runtime_Log_DISABLE_ALL"/>
+									<listOptionValue builtIn="false" value="Xxdc_runtime_Log_DISABLE_ALL"/>
 									<listOptionValue builtIn="false" value="MAX_NUM_BLE_CONNS=1"/>
 									<listOptionValue builtIn="false" value="CC26XXWARE"/>
 									<listOptionValue builtIn="false" value="CC26XX"/>
 									<listOptionValue builtIn="false" value="ccs"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
+									<listOptionValue builtIn="false" value="xdc_FILE=&quot;\&quot;${InputFileName}\&quot;&quot;"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.LITTLE_ENDIAN.2096611340" name="Little endian code [See 'General' page to edit] (--little_endian, -me)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.LITTLE_ENDIAN" value="true" valueType="boolean"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.OPT_LEVEL.1292338368" name="Optimization level (--opt_level, -O)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.OPT_LEVEL" value="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.OPT_LEVEL.4" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.OPT_FOR_SPEED.1014991699" name="Speed vs. size trade-offs (--opt_for_speed, -mf)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.OPT_FOR_SPEED" value="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.OPT_FOR_SPEED.0" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.INCLUDE_PATH.475721446" name="Add dir to #include search path (--include_path, -I)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_5.2.compilerID.INCLUDE_PATH" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${CG_TOOL_ROOT}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${PROJECT_LOC}/../../../../../../Components/uart_log&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${TI_BLE_SDK_BASE}/Projects/ble/SimpleBLEPeripheral/CC26xx/Source/Application&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${TI_BLE_SDK_BASE}/Projects/ble/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${TI_BLE_SDK_BASE}/Projects/ble/ICall/Include&quot;"/>

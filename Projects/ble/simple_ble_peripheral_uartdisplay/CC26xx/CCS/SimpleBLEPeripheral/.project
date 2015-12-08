@@ -72,14 +72,14 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>Application/board_lcd.c</name>
-			<type>1</type>
-			<locationURI>TI_BLE_SDK_BASE/Projects/ble/common/cc26xx/board_lcd.c</locationURI>
-		</link>
-		<link>
 			<name>Application/board_lcd.h</name>
 			<type>1</type>
 			<locationURI>TI_BLE_SDK_BASE/Projects/ble/common/cc26xx/board_lcd.h</locationURI>
+		</link>
+		<link>
+			<name>Application/board_lcd_uartlog.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/common/cc26xx/board_lcd_uartlog.c</locationURI>
 		</link>
 		<link>
 			<name>Application/simpleBLEPeripheral.c</name>
@@ -90,6 +90,16 @@
 			<name>Application/simpleBLEPeripheral.h</name>
 			<type>1</type>
 			<locationURI>TI_BLE_SDK_BASE/Projects/ble/SimpleBLEPeripheral/CC26xx/Source/Application/simpleBLEPeripheral.h</locationURI>
+		</link>
+		<link>
+			<name>Application/uart_logs.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/Components/uart_log/uart_logs.c</locationURI>
+		</link>
+		<link>
+			<name>Application/uart_logs.h</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/Components/uart_log/uart_logs.h</locationURI>
 		</link>
 		<link>
 			<name>Application/util.c</name>

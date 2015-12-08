@@ -171,12 +171,12 @@
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
           <state>HEAPMGR_SIZE=2672</state>
-          <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
+          <state>xTI_DRIVERS_SPI_DMA_INCLUDED</state>
           <state>TI_DRIVERS_LCD_INCLUDED</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
-          <state>xdc_runtime_Log_DISABLE_ALL</state>
+          <state>Xxdc_runtime_Log_DISABLE_ALL</state>
           <state>CC26XXWARE</state>
           <state>CC26XX</state>
         </option>
@@ -262,6 +262,7 @@
           <state>-f $TI_BLE_SDK_BASE$\Projects\ble\config\buildComponents.opt</state>
           <state>-f $PROJ_DIR$\configPkg\compiler.opt.defs</state>
           <state>-f $PROJ_DIR$\..\..\Config\IAR-Boundary.bdef</state>
+          <state>--no_path_in_file_macros</state>
         </option>
         <option>
           <name>CCLangConformance</name>
@@ -309,7 +310,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$</state>
+          <state>$PROJ_DIR$/../../../../../../../Components/uart_log</state>
           <state>$TI_BLE_SDK_BASE$/Projects/ble/SimpleBLEPeripheral/CC26xx/Source/Application</state>
           <state>$TI_BLE_SDK_BASE$/Projects/ble/Include</state>
           <state>$TI_BLE_SDK_BASE$/Projects/ble/ICall/Include</state>
@@ -987,16 +988,22 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\Projects\ble\common\cc26xx\board_lcd.c</name>
+      <name>$TI_BLE_SDK_BASE$\Projects\ble\common\cc26xx\board_lcd.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\Projects\ble\common\cc26xx\board_lcd.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\common\cc26xx\board_lcd_uartlog.c</name>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\Projects\ble\SimpleBLEPeripheral\CC26xx\Source\Application\simpleBLEPeripheral.c</name>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\Projects\ble\SimpleBLEPeripheral\CC26xx\Source\Application\simpleBLEPeripheral.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\..\..\Components\uart_log\uart_logs.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\..\..\Components\uart_log\uart_logs.h</name>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\Projects\ble\common\cc26xx\util.c</name>
