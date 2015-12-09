@@ -416,11 +416,6 @@
 			<locationURI>TI_BLE_SDK_BASE/Components/hal/target/CC2650TIRTOS/hal_flash_wrapper.c</locationURI>
 		</link>
 		<link>
-			<name>HAL/Target/CC2650/Drivers/hal_rtc_wrapper.c</name>
-			<type>1</type>
-			<locationURI>TI_BLE_SDK_BASE/Components/hal/target/CC2650TIRTOS/hal_rtc_wrapper.c</locationURI>
-		</link>
-		<link>
 			<name>HAL/Target/CC2650/Drivers/hal_trng_wrapper.c</name>
 			<type>1</type>
 			<locationURI>TI_BLE_SDK_BASE/Components/hal/target/CC2650TIRTOS/hal_trng_wrapper.c</locationURI>
@@ -439,6 +434,11 @@
 			<name>HAL/Target/CC2650/_common/mb_PATCH.c</name>
 			<type>1</type>
 			<locationURI>TI_BLE_SDK_BASE/Components/hal/target/_common/cc26xx/mb_PATCH.c</locationURI>
+		</link>
+		<link>
+			<name>HAL/Target/CC2650/_common/mb_PATCH_tirtos_2p15_port.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/Components/hal/target/_common/cc26xx/mb_PATCH_tirtos_2p15_port.c</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

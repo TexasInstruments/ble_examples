@@ -83,6 +83,7 @@
 									<listOptionValue builtIn="false" value="&quot;${TI_BLE_SDK_BASE}/Components/services/sdata&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${TI_BLE_SDK_BASE}/Components/services/saddr&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${TI_BLE_SDK_BASE}/Components/icall/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${TI_BLE_SDK_BASE}/Components/icall/ports/tirtos&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${TI_BLE_SDK_BASE}/Components/ble/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${CC26XXWARE}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${TI_RTOS_DRIVERS_BASE}/ti/boards/SRF06EB/CC2650EM_7ID&quot;"/>
@@ -148,7 +149,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Drivers/UDMA|Drivers/UART|Drivers/PIN|Drivers/SPI|Drivers/LCD|PROFILES/oad.c|PROFILES/oad_target_externalFlash.c|TOOLS/cc26xx_ble_app_oad.cmd|Startup/ST|cc26x0f128.cmd|PROFILES/simplekeys.h|PROFILES/simplekeys.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Application/board_lcd.c|ICall/ICallCC2650.c|Drivers/UDMA|Drivers/UART|Drivers/PIN|Drivers/SPI|Drivers/LCD|PROFILES/oad.c|PROFILES/oad_target_externalFlash.c|TOOLS/cc26xx_ble_app_oad.cmd|Startup/ST|cc26x0f128.cmd|PROFILES/simplekeys.h|PROFILES/simplekeys.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

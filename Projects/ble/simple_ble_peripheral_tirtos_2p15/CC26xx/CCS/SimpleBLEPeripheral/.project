@@ -82,9 +82,14 @@
 			<locationURI>TI_BLE_SDK_BASE/Projects/ble/common/cc26xx/board_lcd.h</locationURI>
 		</link>
 		<link>
+			<name>Application/board_lcd_tirtos_2p15_port.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/common/cc26xx/board_lcd_tirtos_2p15_port.c</locationURI>
+		</link>
+		<link>
 			<name>Application/simpleBLEPeripheral.c</name>
 			<type>1</type>
-			<locationURI>TI_BLE_SDK_BASE/Projects/ble/SimpleBLEPeripheral/CC26xx/Source/Application/simpleBLEPeripheral.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/Source/Application/simpleBLEPeripheral.c</locationURI>
 		</link>
 		<link>
 			<name>Application/simpleBLEPeripheral.h</name>
@@ -150,6 +155,11 @@
 			<name>ICall/ICallCC2650.c</name>
 			<type>1</type>
 			<locationURI>TI_BLE_SDK_BASE/Components/icall/ports/tirtos/ICallCC2650.c</locationURI>
+		</link>
+		<link>
+			<name>ICall/ICallCC2650_tirtos_2p15_port.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/Components/icall/ports/tirtos/ICallCC2650_tirtos_2p15_port.c</locationURI>
 		</link>
 		<link>
 			<name>ICall/ICallPlatform.h</name>
@@ -299,12 +309,12 @@
 		<link>
 			<name>Startup/ccfg_appBLE.c</name>
 			<type>1</type>
-			<locationURI>TI_BLE_SDK_BASE/Projects/ble/SimpleBLEPeripheral/CC26xx/IAR/Config/ccfg_appBLE.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/IAR/Config/ccfg_appBLE.c</locationURI>
 		</link>
 		<link>
 			<name>Startup/main.c</name>
 			<type>1</type>
-			<locationURI>TI_BLE_SDK_BASE/Projects/ble/SimpleBLEPeripheral/CC26xx/Source/Application/main.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/Source/Application/main.c</locationURI>
 		</link>
 		<link>
 			<name>TOOLS/appBLE.cfg</name>

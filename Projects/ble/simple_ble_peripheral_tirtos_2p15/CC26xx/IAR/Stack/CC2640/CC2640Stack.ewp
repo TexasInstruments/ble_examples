@@ -1043,6 +1043,12 @@
           </file>
           <file>
             <name>$TI_BLE_SDK_BASE$\Components\hal\target\_common\cc26xx\mb_PATCH.c</name>
+            <excluded>
+              <configuration>FlashROM</configuration>
+            </excluded>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\..\..\Components\hal\target\_common\cc26xx\mb_PATCH_tirtos_2p15_port.c</name>
           </file>
         </group>
         <group>

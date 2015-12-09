@@ -331,6 +331,7 @@
           <state>$TI_BLE_SDK_BASE$/Components/services/sdata</state>
           <state>$TI_BLE_SDK_BASE$/Components/services/saddr</state>
           <state>$TI_BLE_SDK_BASE$/Components/icall/include</state>
+          <state>$TI_BLE_SDK_BASE$/Components/icall/ports/tirtos</state>
           <state>$TI_BLE_SDK_BASE$/Components/ble/include</state>
           <state>$CC26XXWARE$</state>
           <state>$TI_RTOS_DRIVERS_BASE$</state>
@@ -988,12 +989,18 @@
     <name>Application</name>
     <file>
       <name>$TI_BLE_SDK_BASE$\Projects\ble\common\cc26xx\board_lcd.c</name>
+      <excluded>
+        <configuration>FlashROM</configuration>
+      </excluded>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\Projects\ble\common\cc26xx\board_lcd.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\Projects\ble\SimpleBLEPeripheral\CC26xx\Source\Application\simpleBLEPeripheral.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\common\cc26xx\board_lcd_tirtos_2p15_port.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\Source\Application\simpleBLEPeripheral.c</name>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\Projects\ble\SimpleBLEPeripheral\CC26xx\Source\Application\simpleBLEPeripheral.h</name>
@@ -1120,6 +1127,12 @@
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\Components\icall\ports\tirtos\ICallCC2650.c</name>
+      <excluded>
+        <configuration>FlashROM</configuration>
+      </excluded>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\..\..\Components\icall\ports\tirtos\ICallCC2650_tirtos_2p15_port.c</name>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\Components\icall\ports\tirtos\ICallPlatform.h</name>
@@ -1245,10 +1258,10 @@
   <group>
     <name>Startup</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\Projects\ble\SimpleBLEPeripheral\CC26xx\IAR\Config\ccfg_appBLE.c</name>
+      <name>$PROJ_DIR$\..\..\Config\ccfg_appBLE.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\Projects\ble\SimpleBLEPeripheral\CC26xx\Source\Application\main.c</name>
+      <name>$PROJ_DIR$\..\..\..\Source\Application\main.c</name>
     </file>
   </group>
   <group>
