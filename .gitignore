@@ -1,7 +1,7 @@
 **/settings
 **/Debug/*
-**/FlashOnly/*
-**/FlashROM/*
+**/FlashOnly*/*
+**/FlashROM*/*
 **/CC2650/configPkg/*
 **/CC2640/configPkg/*
 **/*.dep
@@ -21,3 +21,4 @@
 **/.settings/*
 **/.launches/*
 **/targetConfigs/*
+**/CCS/*/.config

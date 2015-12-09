@@ -112,9 +112,14 @@
 			<locationURI>TI_BLE_SDK_BASE/Projects/ble/common/cc26xx/util.h</locationURI>
 		</link>
 		<link>
-			<name>Board/Board.c</name>
-			<type>1</type>
-			<locationURI>TI_RTOS_DRIVERS_BASE/ti/boards/SRF06EB/Board.c</locationURI>
+			<name>Board/SRF06EB</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>Board/SensorTag</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>Drivers/LCD</name>
@@ -340,6 +345,16 @@
 			<name>TOOLS/ccsLinkerDefines.cmd</name>
 			<type>1</type>
 			<locationURI>TI_BLE_SDK_BASE/Projects/ble/SimpleBLEPeripheral/CC26xx/CCS/Config/ccsLinkerDefines.cmd</locationURI>
+		</link>
+		<link>
+			<name>Board/SRF06EB/Board.c</name>
+			<type>1</type>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/boards/SRF06EB/Board.c</locationURI>
+		</link>
+		<link>
+			<name>Board/SensorTag/Board.c</name>
+			<type>1</type>
+			<locationURI>TI_BLE_SDK_BASE/Projects/ble/SensorTag/CC26xx/Source/Application/Board_patch/Board.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/LCD/LCDDogm1286.c</name>
