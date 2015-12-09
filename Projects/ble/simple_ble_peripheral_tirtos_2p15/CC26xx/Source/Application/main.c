@@ -34,8 +34,10 @@
  */
 
 #include <xdc/runtime/Error.h>
-
-#include <ti/sysbios/family/arm/cc26xx/Power.h>
+#include <xdc/runtime/System.h>
+#include "Board.h"
+#include <ti/drivers/Power.h>
+#include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/sysbios/BIOS.h>
 
 #include "ICall.h"
@@ -78,7 +80,7 @@ extern uint32_t ti_sysbios_family_arm_m3_Hwi_resetVectors;
  */
 int main()
 {
-  PIN_init(BoardGpioInitTable);
+  Board_initGeneral();
 
 #ifndef POWER_SAVING
     /* Set constraints for Standby, powerdown and idle mode */

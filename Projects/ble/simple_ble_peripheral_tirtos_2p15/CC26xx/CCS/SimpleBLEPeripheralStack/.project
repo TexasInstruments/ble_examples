@@ -438,17 +438,21 @@
 		<link>
 			<name>HAL/Target/CC2650/_common/mb_PATCH_tirtos_2p15_port.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/Components/hal/target/_common/cc26xx/mb_PATCH_tirtos_2p15_port.c</locationURI>
+			<locationURI>PARENT-6-ORG_PROJ_DIR/Components/hal/target/_common/cc26xx/mb_PATCH_tirtos_2p15_port.c</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
 			<name>CC26XXWARE</name>
-			<value>file:/C:/ti/tirtos_simplelink_2_13_00_06/products/cc26xxware_2_21_01_15600</value>
+			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_15_00_17/products/cc26xxware_2_23_00_16374</value>
 		</variable>
 		<variable>
 			<name>TI_BLE_SDK_BASE</name>
 			<value>file:/C:/ti/simplelink/ble_cc26xx_2_01_00_44423</value>
+		</variable>
+		<variable>
+			<name>ORG_PROJ_DIR</name>
+			<value>$%7BPROJECT_LOC%7D</value>
 		</variable>
 	</variableList>
 </projectDescription>

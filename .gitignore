@@ -9,6 +9,7 @@
 **/sap_lib_swhs/
 **/CC2650/configPkg/*
 **/CC2640/configPkg/*
+**/configPkg/*
 **/*.dep
 **/*.log
 **/*.ewt

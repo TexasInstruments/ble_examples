@@ -33,7 +33,7 @@
 /*********************************************************************
  * INCLUDES
  */
-#include <ti/drivers/lcd/LCDDogm1286.h>
+#include <ti/mw/lcd/LCDDogm1286.h>
 
 #include "board_lcd.h"
 #include "Board.h"

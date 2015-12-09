@@ -28,6 +28,10 @@ This example shows how to use the TI-RTOS Log system, how to print Log statement
 * [Modified SimpleBLEPeripheral project and docs](Projects/ble/simple_ble_peripheral_uartdisplay)
 * [Log-to-UART component for TI-RTOS LoggerCallback](Components/uart_log)
 
+## Porting a project to TI-RTOS 2.15
+This example shows how you can port a BLE project to TI-RTOS 2.15. As an example, SimpleBLEPeripheral is ported. The commit log could be instructive for checking what was done exactly.
+* [SimpleBLEPeripheral ported to TI-RTOS 2.15 and instructions](Projects/ble/simple_ble_peripheral_tirtos_2p15)
+
 ## Cloning and running
 That the example projects are made to reference a BLE SDK installation at `c:\ti\simplelink\ble_cc26xx_2_01_00_44423`. The repository can be cloned to any location.
 

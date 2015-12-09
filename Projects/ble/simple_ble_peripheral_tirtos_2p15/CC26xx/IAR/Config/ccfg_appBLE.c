@@ -54,10 +54,8 @@
 // Keeping the "#include <startup_files/ccfg.c>" guarantee that your project using 
 // driverlib and the ccfg area will be align.
 
-// you can modify it if you want, the recommend way will be to remove the 
-// bellow include, copy the content of the <startup_files/ccfg.c> file in this
-// file and rebuild.
-
+// you can modify it if you want, the recommend way is to define your overrides
+// in this file and then include the official ccfg.c example file
 // ==> KEEP IN MIND that if you do so, be sure that any further update of the 
 // driverlib must be align with your modified version of ccfg area.
 #include <startup_files/ccfg.c>

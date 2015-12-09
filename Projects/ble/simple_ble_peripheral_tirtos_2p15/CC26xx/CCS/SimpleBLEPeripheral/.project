@@ -84,12 +84,12 @@
 		<link>
 			<name>Application/board_lcd_tirtos_2p15_port.c</name>
 			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/common/cc26xx/board_lcd_tirtos_2p15_port.c</locationURI>
+			<locationURI>PARENT-4-ORG_PROJ_DIR/common/cc26xx/board_lcd_tirtos_2p15_port.c</locationURI>
 		</link>
 		<link>
 			<name>Application/simpleBLEPeripheral.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Source/Application/simpleBLEPeripheral.c</locationURI>
+			<locationURI>PARENT-2-ORG_PROJ_DIR/Source/Application/simpleBLEPeripheral.c</locationURI>
 		</link>
 		<link>
 			<name>Application/simpleBLEPeripheral.h</name>
@@ -107,9 +107,9 @@
 			<locationURI>TI_BLE_SDK_BASE/Projects/ble/common/cc26xx/util.h</locationURI>
 		</link>
 		<link>
-			<name>Board/Board.c</name>
+			<name>Board/CC2650DK_7ID.c</name>
 			<type>1</type>
-			<locationURI>TI_RTOS_DRIVERS_BASE/ti/boards/SRF06EB/Board.c</locationURI>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/boards/CC2650DK_7ID/CC2650DK_7ID.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/LCD</name>
@@ -118,6 +118,11 @@
 		</link>
 		<link>
 			<name>Drivers/PIN</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>Drivers/POWER</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -159,7 +164,7 @@
 		<link>
 			<name>ICall/ICallCC2650_tirtos_2p15_port.c</name>
 			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/Components/icall/ports/tirtos/ICallCC2650_tirtos_2p15_port.c</locationURI>
+			<locationURI>PARENT-6-ORG_PROJ_DIR/Components/icall/ports/tirtos/ICallCC2650_tirtos_2p15_port.c</locationURI>
 		</link>
 		<link>
 			<name>ICall/ICallPlatform.h</name>
@@ -309,17 +314,17 @@
 		<link>
 			<name>Startup/ccfg_appBLE.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/IAR/Config/ccfg_appBLE.c</locationURI>
+			<locationURI>PARENT-2-ORG_PROJ_DIR/IAR/Config/ccfg_appBLE.c</locationURI>
 		</link>
 		<link>
 			<name>Startup/main.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Source/Application/main.c</locationURI>
+			<locationURI>PARENT-2-ORG_PROJ_DIR/Source/Application/main.c</locationURI>
 		</link>
 		<link>
 			<name>TOOLS/appBLE.cfg</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Config/appBLE.cfg</locationURI>
+			<locationURI>PARENT-1-ORG_PROJ_DIR/Config/appBLE.cfg</locationURI>
 		</link>
 		<link>
 			<name>TOOLS/cc26xx_ble_app.cmd</name>
@@ -344,22 +349,22 @@
 		<link>
 			<name>Drivers/LCD/LCDDogm1286.c</name>
 			<type>1</type>
-			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/lcd/LCDDogm1286.c</locationURI>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/mw/lcd/LCDDogm1286.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/LCD/LCDDogm1286.h</name>
 			<type>1</type>
-			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/lcd/LCDDogm1286.h</locationURI>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/mw/lcd/LCDDogm1286.h</locationURI>
 		</link>
 		<link>
 			<name>Drivers/LCD/LCDDogm1286_util.c</name>
 			<type>1</type>
-			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/lcd/LCDDogm1286_util.c</locationURI>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/mw/lcd/LCDDogm1286_util.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/LCD/LCDDogm1286_util.h</name>
 			<type>1</type>
-			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/lcd/LCDDogm1286_util.h</locationURI>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/mw/lcd/LCDDogm1286_util.h</locationURI>
 		</link>
 		<link>
 			<name>Drivers/PIN/PIN.h</name>
@@ -375,6 +380,26 @@
 			<name>Drivers/PIN/PINCC26XX.h</name>
 			<type>1</type>
 			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/pin/PINCC26XX.h</locationURI>
+		</link>
+		<link>
+			<name>Drivers/POWER/PowerCC26XX.c</name>
+			<type>1</type>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/power/PowerCC26XX.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/POWER/PowerCC26XX.h</name>
+			<type>1</type>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/power/PowerCC26XX.h</locationURI>
+		</link>
+		<link>
+			<name>Drivers/POWER/PowerCC26XX_calibrateRCOSC.c</name>
+			<type>1</type>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/power/PowerCC26XX_calibrateRCOSC.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/POWER/PowerCC26XX_tirtos.c</name>
+			<type>1</type>
+			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/power/PowerCC26XX_tirtos.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/SPI/SPI.c</name>
@@ -430,15 +455,19 @@
 	<variableList>
 		<variable>
 			<name>CC26XXWARE</name>
-			<value>file:/C:/ti/tirtos_simplelink_2_13_00_06/products/cc26xxware_2_21_01_15600</value>
+			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_15_00_17/products/cc26xxware_2_23_00_16374</value>
 		</variable>
 		<variable>
 			<name>TI_BLE_SDK_BASE</name>
 			<value>file:/C:/ti/simplelink/ble_cc26xx_2_01_00_44423</value>
 		</variable>
 		<variable>
+			<name>ORG_PROJ_DIR</name>
+			<value>$%7BPROJECT_LOC%7D</value>
+		</variable>
+		<variable>
 			<name>TI_RTOS_DRIVERS_BASE</name>
-			<value>file:/C:/ti/tirtos_simplelink_2_13_00_06/packages</value>
+			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_15_00_17/products/tidrivers_cc13xx_cc26xx_2_15_00_26/packages</value>
 		</variable>
 	</variableList>
 </projectDescription>

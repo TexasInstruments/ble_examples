@@ -260,7 +260,7 @@
         <option>
           <name>IExtraOptions</name>
           <state>-f $TI_BLE_SDK_BASE$\Projects\ble\config\buildComponents.opt</state>
-          <state>-f $PROJ_DIR$\configPkg\compiler.opt.defs</state>
+          <state>-f $PROJ_DIR$\..\..\Config\configPkg\compiler.opt.defs</state>
           <state>-f $PROJ_DIR$\..\..\Config\IAR-Boundary.bdef</state>
         </option>
         <option>
@@ -335,7 +335,7 @@
           <state>$TI_BLE_SDK_BASE$/Components/ble/include</state>
           <state>$CC26XXWARE$</state>
           <state>$TI_RTOS_DRIVERS_BASE$</state>
-          <state>$TI_RTOS_DRIVERS_BASE$\ti\boards\SRF06EB\CC2650EM_7ID</state>
+          <state>$TI_RTOS_DRIVERS_BASE$\ti\boards\CC2650DK_7ID</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -787,7 +787,7 @@
         <option>
           <name>IlinkExtraOptions</name>
           <state>--keep __vector_table</state>
-          <state>-f $PROJ_DIR$\configPkg\linker.cmd</state>
+          <state>-f $PROJ_DIR$\\..\..\Config\configPkg\linker.cmd</state>
           <state>-f $PROJ_DIR$\..\..\Config\IAR-Boundary.xcl</state>
         </option>
         <option>
@@ -1015,7 +1015,7 @@
   <group>
     <name>Board</name>
     <file>
-      <name>$TI_RTOS_DRIVERS_BASE$\ti\boards\SRF06EB\Board.c</name>
+      <name>$TI_RTOS_DRIVERS_BASE$\ti\boards\CC2650DK_7ID\CC2650DK_7ID.c</name>
     </file>
   </group>
   <group>
@@ -1023,25 +1023,25 @@
     <group>
       <name>LCD</name>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lcd\LCDDogm1286.c</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\lcd\LCDDogm1286.c</name>
         <excluded>
           <configuration>FlashROM</configuration>
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lcd\LCDDogm1286.h</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\lcd\LCDDogm1286.h</name>
         <excluded>
           <configuration>FlashROM</configuration>
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lcd\LCDDogm1286_util.c</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\lcd\LCDDogm1286_util.c</name>
         <excluded>
           <configuration>FlashROM</configuration>
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lcd\LCDDogm1286_util.h</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\lcd\LCDDogm1286_util.h</name>
         <excluded>
           <configuration>FlashROM</configuration>
         </excluded>
@@ -1063,6 +1063,33 @@
       </file>
       <file>
         <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.h</name>
+        <excluded>
+          <configuration>FlashROM</configuration>
+        </excluded>
+      </file>
+    </group>
+    <group>
+      <name>POWER</name>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\power\PowerCC26XX.c</name>
+        <excluded>
+          <configuration>FlashROM</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\power\PowerCC26XX.h</name>
+        <excluded>
+          <configuration>FlashROM</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\power\PowerCC26XX_calibrateRCOSC.c</name>
+        <excluded>
+          <configuration>FlashROM</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\power\PowerCC26XX_tirtos.c</name>
         <excluded>
           <configuration>FlashROM</configuration>
         </excluded>
@@ -1278,7 +1305,7 @@
             <hasPrio>0</hasPrio>
             <outputs>
               <file>
-                <name>$PROJ_DIR$/configPkg/package.mak</name>
+                <name>$PROJ_DIR$/../../Config/configPkg/package.mak</name>
               </file>
             </outputs>
           </data>

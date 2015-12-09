@@ -202,15 +202,15 @@ void MB_Init( void )
 
   // register default Mailbox ISRs
 #ifdef USE_ICALL
-  ICall_registerISR_Ext(INT_RF_CPE1,    MAP_mbCpe1Isr, 0x80);
-  ICall_registerISR_Ext(INT_RF_CPE0,    MAP_mbCpe0Isr, 0x80);
-  ICall_registerISR_Ext(INT_RF_HW,      MAP_mbHwIsr, 0x80);
-  ICall_registerISR_Ext(INT_RF_CMD_ACK, MAP_mbCmdAckIsr, 0x80);
+  ICall_registerISR_Ext(INT_RFC_CPE_1,    MAP_mbCpe1Isr, 0x80);
+  ICall_registerISR_Ext(INT_RFC_CPE_0,    MAP_mbCpe0Isr, 0x80);
+  ICall_registerISR_Ext(INT_RFC_HW_COMB,      MAP_mbHwIsr, 0x80);
+  ICall_registerISR_Ext(INT_RFC_CMD_ACK, MAP_mbCmdAckIsr, 0x80);
 #else /* USE_ICALL */
-  Hwi_create(INT_RF_CPE1, (Hwi_FuncPtr) MAP_mbCpe1Isr, NULL, NULL);
-  Hwi_create(INT_RF_CPE0, (Hwi_FuncPtr) MAP_mbCpe0Isr, NULL, NULL);
-  Hwi_create(INT_RF_HW, (Hwi_FuncPtr) MAP_mbHwIsr, NULL, NULL);
-  Hwi_create(INT_RF_CMD_ACK, (Hwi_FuncPtr) MAP_mbCmdAckIsr, NULL, NULL);
+  Hwi_create(INT_RFC_CPE_1, (Hwi_FuncPtr) MAP_mbCpe1Isr, NULL, NULL);
+  Hwi_create(INT_RFC_CPE_0, (Hwi_FuncPtr) MAP_mbCpe0Isr, NULL, NULL);
+  Hwi_create(INT_RFC_HW_COMB, (Hwi_FuncPtr) MAP_mbHwIsr, NULL, NULL);
+  Hwi_create(INT_RFC_CMD_ACK, (Hwi_FuncPtr) MAP_mbCmdAckIsr, NULL, NULL);
 #endif /* USE_ICALL */
 
   return;
@@ -264,15 +264,15 @@ void MB_EnableInts( uint32 cpe0Ints, uint32 cpe1Ints, uint32 hwInts )
 
   // enable Doorbell CPE interrupts
 #ifdef USE_ICALL
-  ICall_enableInt( INT_RF_CMD_ACK );
-  ICall_enableInt( INT_RF_CPE0 );
-  ICall_enableInt( INT_RF_CPE1 );
-  ICall_enableInt( INT_RF_HW );
+  ICall_enableInt( INT_RFC_CMD_ACK );
+  ICall_enableInt( INT_RFC_CPE_0 );
+  ICall_enableInt( INT_RFC_CPE_1 );
+  ICall_enableInt( INT_RFC_HW_COMB );
 #else /* USE_ICALL */
-  Hwi_enableInterrupt( INT_RF_CMD_ACK );
-  Hwi_enableInterrupt( INT_RF_CPE0 );
-  Hwi_enableInterrupt( INT_RF_CPE1 );
-  Hwi_enableInterrupt( INT_RF_HW );
+  Hwi_enableInterrupt( INT_RFC_CMD_ACK );
+  Hwi_enableInterrupt( INT_RFC_CPE_0 );
+  Hwi_enableInterrupt( INT_RFC_CPE_1 );
+  Hwi_enableInterrupt( INT_RFC_HW_COMB );
 #endif /* USE_ICALL */
 
 #if USE_RAW_CS
@@ -315,15 +315,15 @@ void MB_DisableInts( void )
 
   // disable Doorbell CPE and HW interrupts
 #ifdef USE_ICALL
-  ICall_disableInt( INT_RF_CPE0 );
-  ICall_disableInt( INT_RF_CPE1 );
-  ICall_disableInt( INT_RF_HW );
-  ICall_disableInt( INT_RF_CMD_ACK );
+  ICall_disableInt( INT_RFC_CPE_0 );
+  ICall_disableInt( INT_RFC_CPE_1 );
+  ICall_disableInt( INT_RFC_HW_COMB );
+  ICall_disableInt( INT_RFC_CMD_ACK );
 #else /* USE_ICALL */
-  Hwi_disableInterrupt( INT_RF_CPE0 );
-  Hwi_disableInterrupt( INT_RF_CPE1 );
-  Hwi_disableInterrupt( INT_RF_HW );
-  Hwi_disableInterrupt( INT_RF_CMD_ACK );
+  Hwi_disableInterrupt( INT_RFC_CPE_0 );
+  Hwi_disableInterrupt( INT_RFC_CPE_1 );
+  Hwi_disableInterrupt( INT_RFC_HW_COMB );
+  Hwi_disableInterrupt( INT_RFC_CMD_ACK );
 #endif /* USE_ICALL */
 
   // mask RF CPE interrupts
@@ -427,9 +427,9 @@ void MB_EnableHWInts( uint32 hwInts )
 
   // disable Doorbell HW interrupts
 #ifdef USE_ICALL
-  ICall_disableInt( INT_RF_HW );
+  ICall_disableInt( INT_RFC_HW_COMB );
 #else /* USE_ICALL */
-  Hwi_disableInterrupt( INT_RF_HW );
+  Hwi_disableInterrupt( INT_RFC_HW_COMB );
 #endif /* USE_ICALL */
 
   // mask RF HW interrupts
@@ -445,9 +445,9 @@ void MB_EnableHWInts( uint32 hwInts )
 
   // enable Doorbell HW interrupts
 #ifdef USE_ICALL
-  ICall_enableInt( INT_RF_HW );
+  ICall_enableInt( INT_RFC_HW_COMB );
 #else /* USE_ICALL */
-  Hwi_enableInterrupt( INT_RF_HW );
+  Hwi_enableInterrupt( INT_RFC_HW_COMB );
 #endif /* USE_ICALL */
 
 #if USE_RAW_CS

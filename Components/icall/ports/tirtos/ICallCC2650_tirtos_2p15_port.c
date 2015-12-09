@@ -38,12 +38,14 @@
 
 #include <stdint.h>
 
-#include <ti/sysbios/family/arm/cc26xx/Power.h>
-#include <ti/sysbios/family/arm/cc26xx/PowerCC2650.h>
+#include <ti/drivers/Power.h>
+#include <ti/drivers/power/PowerCC26XX.h>
 
 #ifdef __IAR_SYSTEMS_ICC__
 #include <intrinsics.h>
 #endif
+
+extern bool PowerCC26XX_isStableXOSC_HF(void);
 
 /**
  * @internal Flag offset where dependencies starts.
@@ -73,23 +75,23 @@ static ICallPlatform_pwrBitmap_t ICallPlatform_pwrCfgACAction =
     ICALL_PWR_C_SB_DISALLOW );
 
 /** @internal power notify handler */
-static Power_NotifyResponse
-ICallPlatform_pwrNotify(Power_Event eventType, UArg clientArg)
+int
+ICallPlatform_pwrNotify(unsigned int eventType, uintptr_t eventArg, UArg clientArg)
 {
   ICall_PwrNotifyData *data = (ICall_PwrNotifyData *) clientArg;
   ICall_PwrTransition transition;
   switch (eventType)
   {
-  case Power_AWAKE_STANDBY:
+  case PowerCC26XX_AWAKE_STANDBY:
     transition = ICALL_PWR_AWAKE_FROM_STANDBY;
     break;
-  case Power_ENTERING_STANDBY:
+  case PowerCC26XX_ENTERING_STANDBY:
     transition = ICALL_PWR_ENTER_STANDBY;
     break;
-  case Power_ENTERING_SHUTDOWN:
+  case PowerCC26XX_ENTERING_SHUTDOWN:
     transition = ICALL_PWR_ENTER_SHUTDOWN;
     break;
-  case Power_AWAKE_STANDBY_LATE:
+  case PowerCC26XX_AWAKE_STANDBY_LATE:
     transition = ICALL_PWR_AWAKE_FROM_STANDBY_LATE;
     break;
   default:
@@ -121,7 +123,7 @@ static void ICallPlatform_pwrRequireImpl(uint_fast32_t bitmap)
     bitmap ^= 1ul << pos;
     if (pos < ICALLCC2650_PWR_CFG_D_OFFSET)
     {
-      Power_setConstraint((Power_Constraint) (1<<pos));
+      Power_setConstraint((unsigned int) (1<<pos));
     }
     else
     {
@@ -151,7 +153,7 @@ static void ICallPlatform_pwrDispenseImpl(uint_fast32_t bitmap)
     bitmap ^= 1ul << pos;
     if (pos < ICALLCC2650_PWR_CFG_D_OFFSET)
     {
-      Power_releaseConstraint((Power_Constraint) (1<<pos));
+      Power_releaseConstraint((unsigned int) (1<<pos));
     }
     else
     {
@@ -270,12 +272,12 @@ ICallPlatform_pwrRegisterNotify(ICall_PwrRegisterNotifyArgs *args)
   Power_NotifyObj *obj[1];
   size_t i;
 
-  static const Power_Event events[1] =
+  static const unsigned int events[1] =
   {
-    (Power_Event)((uint_least32_t) Power_ENTERING_STANDBY |
-     (uint_least32_t) Power_ENTERING_SHUTDOWN |
-     (uint_least32_t) Power_AWAKE_STANDBY |
-     (uint_least32_t) Power_AWAKE_STANDBY_LATE)
+    (unsigned int)((uint_least32_t) PowerCC26XX_ENTERING_STANDBY |
+     (uint_least32_t) PowerCC26XX_ENTERING_SHUTDOWN |
+     (uint_least32_t) PowerCC26XX_AWAKE_STANDBY |
+     (uint_least32_t) PowerCC26XX_AWAKE_STANDBY_LATE)
   };
 
   args->obj->_private = args->fn;
@@ -295,8 +297,8 @@ ICallPlatform_pwrRegisterNotify(ICall_PwrRegisterNotifyArgs *args)
   for (i = 0; i < sizeof(obj)/sizeof(obj[0]); i++)
   {
     Power_registerNotify(obj[i], events[i],
-                         (xdc_Fxn)ICallPlatform_pwrNotify,
-                         (UArg) args->obj, 0);
+                         ICallPlatform_pwrNotify,
+                         (UArg) args->obj);
   }
   return ICALL_ERRNO_SUCCESS;
 }
@@ -305,7 +307,7 @@ ICallPlatform_pwrRegisterNotify(ICall_PwrRegisterNotifyArgs *args)
 ICall_Errno
 ICallPlatform_pwrIsStableXOSCHF(ICall_GetBoolArgs* args)
 {
-  args->value = Power_isStableXOSC_HF();
+  args->value = PowerCC26XX_isStableXOSC_HF();
   return ICALL_ERRNO_SUCCESS;
 }
 
@@ -313,7 +315,7 @@ ICallPlatform_pwrIsStableXOSCHF(ICall_GetBoolArgs* args)
 ICall_Errno
 ICallPlatform_pwrSwitchXOSCHF(ICall_FuncArgsHdr* args)
 {
-  Power_switchXOSC_HF();
+  PowerCC26XX_switchXOSC_HF();
   return ICALL_ERRNO_SUCCESS;
 }
 
@@ -329,7 +331,7 @@ ICallPlatform_pwrGetTransitionState(ICall_PwrGetTransitionStateArgs *args)
 ICall_Errno
 ICallPlatform_pwrGetXOSCStartupTime(ICall_PwrGetXOSCStartupTimeArgs * args)
 {
-  args->value = Power_getXoscStartupTime(args->timeUntilWakeupInMs);
+  args->value = PowerCC26XX_getXoscStartupTime(args->timeUntilWakeupInMs);
   return ICALL_ERRNO_SUCCESS;
 }
 
