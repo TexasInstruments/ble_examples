@@ -496,6 +496,10 @@ static void simpleTopology_init(void)
   
     // Register for GATT local events and ATT Responses pending for transmission
     GATT_RegisterForMsgs(selfEntity);
+   
+    // Register to receive incoming ATT Indications/Notifications
+    GATT_RegisterForInd(selfEntity);    
+    
   }
 
   // Start the Device
