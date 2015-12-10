@@ -55,6 +55,7 @@
 #include "gattservapp.h"
 #include "central.h"
 #include "gapbondmgr.h"
+#include "hci.h"
 
 #include "osal_snv.h"
 #include "icall_apimsg.h"
@@ -83,6 +84,7 @@
 #define SEC_KEY_CHANGE_EVT                    0x0002
 #define SEC_STATE_CHANGE_EVT                  0x0004
 #define SEC_PASSCODE_NEEDED_EVT               0x0008
+#define SEC_SM_ECC_KEYS_EVT                   0x0010
 
 // Maximum number of scan responses
 #define DEFAULT_MAX_SCAN_RES                  8
@@ -110,7 +112,7 @@
 #define DEFAULT_ENABLE_UPDATE_REQUEST         FALSE
 
 // Minimum connection interval (units of 1.25ms) if automatic parameter update
-// request is enabled
+  // request is enabled
 #define DEFAULT_UPDATE_MIN_CONN_INTERVAL      400
 
 // Maximum connection interval (units of 1.25ms) if automatic parameter update
@@ -154,6 +156,13 @@ typedef struct
   uint8_t *pData;  // event data 
 } sbcEvt_t;
 
+// Passcode/Numeric Comparison display data structure
+typedef struct
+{
+  uint8_t uiOutputs;
+  uint32_t numComparison;
+} pairDisplay_t;
+
 /*********************************************************************
  * GLOBAL VARIABLES
  */
@@ -171,6 +180,9 @@ static ICall_EntityID selfEntity;
 
 // Semaphore globally used to post events to the application thread
 static ICall_Semaphore sem;
+
+// Task pending events
+static uint16_t events = 0;
 
 // Queue object used for app messages
 static Queue_Struct appMsg;
@@ -199,11 +211,40 @@ static uint16_t connHandle = GAP_CONNHANDLE_INIT;
 // Application state
 static uint8_t state = BLE_STATE_IDLE;
 
-// Passcode variables
-static uint8_t waiting_for_passcode = FALSE;
-static uint32_t passcode = 0;
-static uint32_t passcode_multiplier = 100000;
-static uint16_t passcode_connHandle = 0xFFFF;
+// Used for triggering keypresses to pass or fail a numeric comparison during
+// pairing.
+static uint8 judgeNumericComparison = FALSE;
+
+// LOCAL OOB DATA
+uint8 oobLocal[16] = { 0xA3, 0xDE, 0xBB, 0x31, 0xE6, 0x42, 0x4E, 0x2F,
+                  0x39, 0x7F, 0xF2, 0xD2, 0xC4, 0x89, 0xC6, 0xA7 };
+
+// REMOTE DEVICE'S OOB DATA
+gapBondOobSC_t oobData =
+{
+  .addr = {0x0C, 0xA3, 0x08, 0x0B, 0xC9, 0x68},
+  .confirm = {0x0e, 0x3f, 0x3a, 0x75, 0x63, 0x9a, 0xac, 0x9a, 0x56, 0x4f, 0x1d, 
+              0x65, 0x95, 0x39, 0xe1, 0x56},
+  .oob = {0xAD, 0xAE, 0x2A, 0x71, 0xEC, 0xB2, 0x4F, 0xFF, 0x33, 0x73, 0x72, 
+          0xD1, 0x84, 0x81, 0xCB, 0xD7}
+};
+
+//LOCAL KEYS OOB
+gapBondEccKeys_t eccKeys =
+{
+  .privateKey = {0x15, 0x99, 0x87, 0x83, 0xc7, 0x84, 0x05, 0x92, 0x35, 0x9e, 
+                 0x54, 0x2c, 0x77, 0x61, 0xb5, 0xd6, 0x0a, 0x80, 0x67, 0x5d, 
+                 0xe8, 0x62, 0xd5, 0xe0, 0xeb, 0xce, 0x76, 0xc7, 0x7b, 0xc2, 
+                 0xfb, 0x43},
+  .publicKeyX = {0xca, 0x42, 0x2f, 0xc3, 0x4c, 0xe5, 0x03, 0x9a, 0x94, 0x06, 
+                 0x26, 0x6d, 0xd8, 0x22, 0x51, 0x30, 0xe6, 0x04, 0xd7, 0x4b, 
+                 0x9b, 0xc3, 0x1e, 0x45, 0xde, 0x5e, 0x3d, 0x5d, 0xb0, 0x1a, 
+                 0xe4, 0xaa},
+  .publicKeyY = {0x03, 0xc8, 0xbf, 0xd1, 0x00, 0xc6, 0x10, 0xb5, 0xec, 0x33, 
+                 0x0c, 0x39, 0x8d, 0xa9, 0xcf, 0x87, 0x36, 0x27, 0xe9, 0x02, 
+                 0x27, 0x28, 0xad, 0xc1, 0xb0, 0x40, 0xae, 0x97, 0x47, 0x66, 
+                 0x8f, 0xb4}
+};
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -216,14 +257,16 @@ static void security_examples_central_processStackMsg(ICall_Hdr *pMsg);
 static void security_examples_central_processAppMsg(sbcEvt_t *pMsg);
 static void security_examples_central_processRoleEvent(gapCentralRoleEvent_t *pEvent);
 static void security_examples_central_processPasscode(uint16_t connectionHandle,
-                                             uint8_t uiOutputs);
+                                             uint8_t uiOutputs, 
+                                             uint32_t numComparison);
 
 static void security_examples_central_addDeviceInfo(uint8_t *pAddr, uint8_t addrType);
 static void security_examples_central_processPairState(uint8_t state, uint8_t status);
 
 static uint8_t security_examples_central_eventCB(gapCentralRoleEvent_t *pEvent);
 static void security_examples_central_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
-                                        uint8_t uiInputs, uint8_t uiOutputs);
+                                        uint8_t uiInputs, uint8_t uiOutputs,
+                                        uint32_t numComparison);
 static void security_examples_central_pairStateCB(uint16_t connHandle, uint8_t state, 
                                          uint8_t status);
 
@@ -297,6 +340,9 @@ static void security_examples_central_init(void)
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &sem);
 
+  uint8 bdAddr[] = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA};
+  HCI_EXT_SetBDADDRCmd(bdAddr);
+  
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
      
@@ -322,14 +368,18 @@ static void security_examples_central_init(void)
     uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
     uint8_t mitm = TRUE;
     uint8_t ioCap = GAPBOND_IO_CAP_KEYBOARD_DISPLAY;
-    uint8_t bonding = TRUE;
-    uint8_t scMode = GAPBOND_SECURE_CONNECTION_NONE;
+    uint8_t bonding = FALSE;
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
+    uint8_t oobEnabled = TRUE;
     
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
     GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
     GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
+    GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );
+    GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_DATA, sizeof(uint8_t) * 16, oobLocal);    
+    GAPBondMgr_SetParameter(GAPBOND_ECC_KEYS, sizeof(gapBondEccKeys_t), &eccKeys);    
   }  
 
   // Initialize GATT Client
@@ -344,6 +394,9 @@ static void security_examples_central_init(void)
 
   // Register with bond manager after starting device
   GAPBondMgr_Register(&security_examples_central_bondCB);
+  
+  //TODO SC OOB SM
+  SM_RegisterTask(selfEntity);  
 
   LCD_WRITE_STRING("Security Ex Centr", LCD_PAGE0);
 }
@@ -406,6 +459,10 @@ static void security_examples_central_taskFxn(UArg a0, UArg a1)
         ICall_free(pMsg);
       }
     }
+    if (events & SEC_SM_ECC_KEYS_EVT)
+    {
+      events &= ~SEC_SM_ECC_KEYS_EVT;
+    }
   }
 }
 
@@ -467,10 +524,14 @@ static void security_examples_central_processAppMsg(sbcEvt_t *pMsg)
     // Passcode event    
     case SEC_PASSCODE_NEEDED_EVT:
       {     
-        security_examples_central_processPasscode(connHandle, *pMsg->pData);
+        pairDisplay_t *pPair = (pairDisplay_t *)pMsg->pData;
+        
+        judgeNumericComparison = TRUE;
+        
+        security_examples_central_processPasscode(connHandle, pPair->uiOutputs, 
+                                         pPair->numComparison);
         
         ICall_free(pMsg->pData);
-        break;
       }
       
     default:
@@ -637,12 +698,21 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-  if ((keys & KEY_RIGHT) && (waiting_for_passcode))
+  if (keys & KEY_RIGHT)
   {
-    //increment passcode digit
-    passcode += passcode_multiplier;
-    LCD_WRITE_STRING_VALUE("",passcode, 10, LCD_PAGE5);
-    return;
+    // Numeric Comparisons Success
+    if (judgeNumericComparison)
+    {
+      judgeNumericComparison = FALSE;
+      
+      // overload 3rd parameter as TRUE when instead of the passcode when
+      // numeric comparisons is used.
+      GAPBondMgr_PasscodeRsp(connHandle, SUCCESS, TRUE);
+      
+      LCD_WRITE_STRING("Codes Match!", LCD_PAGE5);
+
+      return;
+    }
   }
 
   if (keys & KEY_SELECT)
@@ -686,21 +756,21 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-  if ((keys & KEY_DOWN) && (waiting_for_passcode))
+  if (keys & KEY_DOWN)
   {
-    // incrememnt passcode multiplier
-    passcode_multiplier = passcode_multiplier / 10;
-    if (passcode_multiplier == 0)
+    // Numeric Comparisons Failed
+    if (judgeNumericComparison)
     {
-      //send pascode response
-      GAPBondMgr_PasscodeRsp(passcode_connHandle, SUCCESS, passcode);      
-      //reset variables
-      passcode_multiplier = 100000;
-      passcode = 0;
-      waiting_for_passcode = FALSE;
-      passcode_connHandle = 0xFFFF;
+      judgeNumericComparison = FALSE;
+      
+      // overload 3rd parameter as FALSE when instead of the passcode when
+      // numeric comparisons is used.
+      GAPBondMgr_PasscodeRsp(connHandle, SUCCESS, FALSE);
+      
+      LCD_WRITE_STRING("Codes Don't Match :(", LCD_PAGE5);
+      
+      return;
     }
-    return;
   }
 }
 
@@ -756,19 +826,13 @@ static void security_examples_central_processPairState(uint8_t state, uint8_t st
  * @return  none
  */
 static void security_examples_central_processPasscode(uint16_t connectionHandle,
-                                             uint8_t uiOutputs)
-{
-#ifdef STATIC_PASSCODE
-  passcode = 111111;
-  // Send passcode response
-  GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, passcode);
-#else
-  // user will enter passcode
-  waiting_for_passcode = TRUE;
-  passcode_connHandle = connectionHandle;
-  LCD_WRITE_STRING("Enter Passcode:", LCD_PAGE4);
-  LCD_WRITE_STRING_VALUE("", passcode, 10, LCD_PAGE5);
-#endif
+                                             uint8_t uiOutputs, 
+                                             uint32_t numComparison)
+{ 
+  if (numComparison) //this sample only accepts numeric comparison
+  {
+    LCD_WRITE_STRING_VALUE("Num Cmp:", numComparison, 10, LCD_PAGE4);
+  }
 }
 
 /**********************************************************************
@@ -856,17 +920,19 @@ static void security_examples_central_pairStateCB(uint16_t connHandle, uint8_t s
  * @return  none
  */
 static void security_examples_central_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
-                                        uint8_t uiInputs, uint8_t uiOutputs)
+                                        uint8_t uiInputs, uint8_t uiOutputs,
+                                        uint32_t numComparison)
 {
-  uint8_t *pData;
+  pairDisplay_t *pData;
   
   // Allocate space for the passcode event.
-  if ((pData = ICall_malloc(sizeof(uint8_t))))
+  if ((pData = ICall_malloc(sizeof(pairDisplay_t))))
   {
-    *pData = uiOutputs;
+    pData->uiOutputs = uiOutputs;
+    pData->numComparison = (uint32_t)numComparison;
     
     // Enqueue the event.
-    security_examples_central_enqueueMsg(SEC_PASSCODE_NEEDED_EVT, 0, pData);
+    security_examples_central_enqueueMsg(SEC_PASSCODE_NEEDED_EVT, 0, (uint8 *)pData);
   }
 }
 

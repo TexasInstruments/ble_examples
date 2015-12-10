@@ -100,6 +100,7 @@
 #define SEP_PAIRING_STATE_EVT                 0x0002
 #define SEP_PASSCODE_NEEDED_EVT               0x0004
 #define SEP_KEY_CHANGE_EVT                    0x0008
+#define SEP_SM_ECC_KEYS_EVT                   0x0010
 
 /*********************************************************************
  * TYPEDEFS
@@ -137,6 +138,9 @@ static ICall_Semaphore sem;
 // Queue object used for app messages
 static Queue_Struct appMsg;
 static Queue_Handle appMsgQueue;
+
+// events flag for internal application events.
+static uint16_t events;
 
 // Task configuration
 Task_Struct sbpTask;
@@ -202,6 +206,39 @@ static uint16_t connHandle = 0x0000;
 // Used for triggering keypresses to pass or fail a numeric comparison during
 // pairing.
 static uint8_t judgeNumericComparison = FALSE;
+
+//OOB DATA
+// TODO MOVE TO PERIPHERAL
+gapBondOobSC_t oobData =
+{
+  .addr = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA},
+  .confirm = {0x38, 0xc0, 0x4d, 0x01, 0xe8, 0xb1, 0x7b, 0x90, 0x28, 0xad, 0x99, 
+              0x48, 0xad, 0x89, 0x79, 0x4c },
+  .oob = {0xA3, 0xDE, 0xBB, 0x31, 0xE6, 0x42, 0x4E, 0x2F, 0x39, 0x7F, 0xF2, 
+          0xD2, 0xC4, 0x89, 0xC6, 0xA7}
+};
+
+//LOCAL KEYS
+gapBondEccKeys_t eccKeys =
+{
+  .privateKey = {0xe0, 0xbe, 0x5f, 0x31, 0x91, 0xcb, 0xcf, 0x00, 0x4b, 0x8d, 
+                 0xc1, 0x4b, 0x90, 0x56, 0x70, 0x8d, 0x3e, 0x13, 0xaa, 0xfe, 
+                 0xea, 0xe5, 0x88, 0xfb, 0x20, 0xcc, 0x51, 0xce, 0x80, 0x65, 
+                 0x78, 0x05},
+  .publicKeyX = {0x9b, 0xa1, 0xdb, 0x47, 0xfd, 0xd2, 0x10, 0xb5, 0x1d, 0x89, 
+                 0x98, 0x00, 0x9a, 0xbd, 0xa2, 0x0c, 0xf1, 0x61, 0x31, 0x72, 
+                 0x24, 0xfb, 0x6d, 0x59, 0x25, 0x99, 0x45, 0xc9, 0x3b, 0x11, 
+                 0x55, 0x81},
+  .publicKeyY = {0x85, 0x18, 0x3b, 0x6b, 0x70, 0x04, 0x9d, 0xb6, 0x7e, 0x8d, 
+                 0xef, 0x8a, 0x98, 0xf2, 0x2e, 0xbf, 0x78, 0xce, 0x6f, 0x76, 
+                 0xdf, 0x75, 0x62, 0x33, 0x65, 0x65, 0x41, 0x7b, 0xb3, 0x10, 
+                 0x8d, 0xbf}
+};
+
+uint8_t dhKey[32] = {0x00};
+uint8_t oobConfirm[16] = {0x00};
+uint8_t oob[16] = {0xA3, 0xDE, 0xBB, 0x31, 0xE6, 0x42, 0x4E, 0x2F, 0x39, 0x7F, 0xF2, 
+                 0xD2, 0xC4, 0x89, 0xC6, 0xA7};
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -296,7 +333,7 @@ static void security_examples_peripheral_init(void)
   uint8 bdAddr[] = {0xBB, 0xBB, 0xBB, 0xBB, 0xBB, 0xBB};
   HCI_EXT_SetBDADDRCmd(bdAddr);
 
-   // Create an RTOS queue for message from profile to be sent to app.
+  // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
   Board_initKeys(security_examples_peripheral_keyChangeHandler);  
@@ -341,17 +378,21 @@ static void security_examples_peripheral_init(void)
   {
     uint8_t pairMode = GAPBOND_PAIRING_MODE_WAIT_FOR_REQ;
     uint8_t mitm = TRUE;
-    uint8_t ioCap = GAPBOND_IO_CAP_KEYBOARD_DISPLAY;
+    uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8_t bonding = FALSE;
     uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
+    uint8_t oobEnabled = TRUE;
 
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
     GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
     GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
+    GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );
+    GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_DATA, sizeof(gapBondOobSC_t), &oobData);    
+    GAPBondMgr_SetParameter(GAPBOND_ECC_KEYS, sizeof(gapBondEccKeys_t), &eccKeys);    
   }
-
+  
    // Initialize GATT attributes
   GGS_AddService(GATT_ALL_SERVICES);           // GAP
   DevInfo_AddService();                        // Device Information Service  
@@ -361,6 +402,12 @@ static void security_examples_peripheral_init(void)
 
   // Start Bond Manager
   VOID GAPBondMgr_Register(&security_examples_peripheral_BondMgrCBs);
+  
+  // Register to receive SM messages
+  SM_RegisterTask(selfEntity);
+  
+  // Get ECC Keys - response comes in through callback.
+  SM_GetEccKeys();  
    
   LCD_WRITE_STRING("Security Ex Periph", LCD_PAGE0);
 }
@@ -404,6 +451,13 @@ static void security_examples_peripheral_taskFxn(UArg a0, UArg a1)
         }
       }
     }
+    if (events & SEP_SM_ECC_KEYS_EVT)
+    {
+      events &= ~SEP_SM_ECC_KEYS_EVT;
+      
+      // Get the confirm value
+      SM_GetScConfirmOob(eccKeys.publicKeyX, oob, oobConfirm);      
+    }    
   }
 }
 

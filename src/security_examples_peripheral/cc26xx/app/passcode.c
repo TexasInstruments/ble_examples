@@ -99,7 +99,6 @@
 #define SEP_STATE_CHANGE_EVT                  0x0001
 #define SEP_PAIRING_STATE_EVT                 0x0002
 #define SEP_PASSCODE_NEEDED_EVT               0x0004
-#define SEP_KEY_CHANGE_EVT                    0x0008
 
 /*********************************************************************
  * TYPEDEFS
@@ -112,13 +111,6 @@ typedef struct
   uint8_t *pData;  // event data 
 } sepEvt_t;
 
-// Passcode/Numeric Comparison display data structure
-typedef struct
-{
-  uint16_t connHandle;
-  uint8_t uiOutputs;
-  uint32_t numComparison;
-} pairDisplay_t;
 
 /*********************************************************************
  * LOCAL VARIABLES
@@ -197,20 +189,12 @@ static uint8_t advertData[] =
 // GAP GATT Attributes
 static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Security Ex Periph";
 
-static uint16_t connHandle = 0x0000;
-
-// Used for triggering keypresses to pass or fail a numeric comparison during
-// pairing.
-static uint8_t judgeNumericComparison = FALSE;
-
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
 
 static void security_examples_peripheral_init( void );
 static void security_examples_peripheral_taskFxn(UArg a0, UArg a1);
-static void security_examples_peripheral_handleKeys(uint8_t shift, uint8_t keys);
-void security_examples_peripheral_keyChangeHandler(uint8 keys);
 
 static void security_examples_peripheral_processAppMsg(sepEvt_t *pMsg);
 
@@ -222,12 +206,11 @@ static void security_examples_peripheral_enqueueMsg(uint8_t event, uint8_t statu
 static void security_examples_peripheral_pairStateCB(uint16_t connHandle, uint8_t state, 
                                          uint8_t status);
 static void security_examples_peripheral_processPasscode(uint16_t connectionHandle,
-                                                uint8_t uiOutputs, uint32_t numComparison);
+                                             uint8_t uiOutputs);
 
 static void security_examples_peripheral_processPairState(uint8_t state, uint8_t status);
 static void security_examples_peripheral_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
-                                           uint8_t uiInputs, uint8_t uiOutputs,
-                                           uint32_t numComparison);
+                                        uint8_t uiInputs, uint8_t uiOutputs);
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -296,11 +279,9 @@ static void security_examples_peripheral_init(void)
   uint8 bdAddr[] = {0xBB, 0xBB, 0xBB, 0xBB, 0xBB, 0xBB};
   HCI_EXT_SetBDADDRCmd(bdAddr);
 
-   // Create an RTOS queue for message from profile to be sent to app.
+  // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
-  Board_initKeys(security_examples_peripheral_keyChangeHandler);  
-  
   Board_openLCD();
  
   // Setup the GAP Peripheral Role Profile
@@ -341,10 +322,10 @@ static void security_examples_peripheral_init(void)
   {
     uint8_t pairMode = GAPBOND_PAIRING_MODE_WAIT_FOR_REQ;
     uint8_t mitm = TRUE;
-    uint8_t ioCap = GAPBOND_IO_CAP_KEYBOARD_DISPLAY;
+    uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8_t bonding = FALSE;
-    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
-
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_NONE;
+    
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
     GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
@@ -425,10 +406,6 @@ static void security_examples_peripheral_processAppMsg(sepEvt_t *pMsg)
                                                 hdr.state);
       break;
 
-  case SEP_KEY_CHANGE_EVT:
-    security_examples_peripheral_handleKeys(0, pMsg->hdr.state); 
-    break;
-      
     // Pairing event  
     case SEP_PAIRING_STATE_EVT:
       {
@@ -441,12 +418,8 @@ static void security_examples_peripheral_processAppMsg(sepEvt_t *pMsg)
     // Passcode event    
     case SEP_PASSCODE_NEEDED_EVT:
       {     
-        pairDisplay_t *pPair = (pairDisplay_t *)pMsg->pData;
-        
-        judgeNumericComparison = TRUE;
-        
-        security_examples_peripheral_processPasscode(pPair->connHandle, pPair->uiOutputs, 
-                                            pPair->numComparison);
+        //only 1 connection in this example so connHandle will always be 0
+        security_examples_peripheral_processPasscode(0, *pMsg->pData);
         
         ICall_free(pMsg->pData);
         break;
@@ -607,78 +580,6 @@ static void security_examples_peripheral_processPairState(uint8_t state, uint8_t
 }
 
 /*********************************************************************
- * @fn      security_examples_peripheral_handleKeys
- *
- * @brief   Handles all key events for this device.
- *
- * @param   shift - true if in shift/alt.
- * @param   keys - bit field for key events. Valid entries:
- *                 HAL_KEY_SW_2
- *                 HAL_KEY_SW_1
- *
- * @return  none
- */
-static void security_examples_peripheral_handleKeys(uint8_t shift, uint8_t keys)
-{
-  if (keys & KEY_UP)
-  {
-    // Numeric Comparisons Success
-    if (judgeNumericComparison)
-    {
-      judgeNumericComparison = FALSE;
-      
-      // overload 3rd parameter as TRUE instead of the passcode when
-      // numeric comparisons is used.
-      GAPBondMgr_PasscodeRsp(connHandle, SUCCESS, TRUE);
-      
-      LCD_WRITE_STRING("Codes Match!", LCD_PAGE5);
-      
-      return;
-    }
-  }
-  
-  if (keys & KEY_DOWN)
-  {
-    // Numeric Comparisons Failed
-    if (judgeNumericComparison)
-    {
-      judgeNumericComparison = FALSE;
-      
-      // overload 3rd parameter as FALSE instead of the passcode when
-      // numeric comparisons is used.
-      GAPBondMgr_PasscodeRsp(connHandle, SUCCESS, FALSE);
-      
-      LCD_WRITE_STRING("Codes Don't Match :(", LCD_PAGE5);
-      
-      return;
-    }
-  }
-  
-  if (keys & KEY_RIGHT)
-  {
-    uint8 authReq = 0x0D;
-    
-    // Send Slave Security Request
-    GAP_SendSlaveSecurityRequest(connHandle, authReq);
-  }
-}
-
-/*********************************************************************
- * @fn      security_examples_peripheral_keyChangeHandler
- *
- * @brief   Key event handler function
- *
- * @param   a0 - ignored
- *
- * @return  none
- */
-void security_examples_peripheral_keyChangeHandler(uint8 keys)
-{
-  security_examples_peripheral_enqueueMsg(SEP_KEY_CHANGE_EVT, keys, NULL);
-}
-
-
-/*********************************************************************
  * @fn      security_examples_peripheral_processPasscode
  *
  * @brief   Process the Passcode request.
@@ -686,14 +587,26 @@ void security_examples_peripheral_keyChangeHandler(uint8 keys)
  * @return  none
  */
 static void security_examples_peripheral_processPasscode(uint16_t connectionHandle,
-                                                uint8_t uiOutputs, uint32_t numComparison)
+                                             uint8_t uiOutputs)
 {
-  if (numComparison) //this sample only accepts numeric comparison
+  uint32_t  passcode;
+
+#ifdef STATIC_PASSCODE
+  passcode = 111111;
+#else
+  // Create random passcode
+  passcode = Util_GetTRNG();
+  passcode %= 1000000;
+#endif
+
+  // Display passcode to user
+  if (uiOutputs != 0)
   {
-    connHandle = connectionHandle;
-    
-    LCD_WRITE_STRING_VALUE("Num Cmp:", numComparison, 10, LCD_PAGE4);
+    LCD_WRITE_STRING_VALUE("Passcode:", passcode, 10, LCD_PAGE4);
   }
+  
+  // Send passcode response
+  GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, passcode);
 }
 
 /*********************************************************************
@@ -726,20 +639,17 @@ static void security_examples_peripheral_pairStateCB(uint16_t connHandle, uint8_
  * @return  none
  */
 static void security_examples_peripheral_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
-                                           uint8_t uiInputs, uint8_t uiOutputs,
-                                           uint32_t numComparison)
+                                        uint8_t uiInputs, uint8_t uiOutputs)
 {
-  pairDisplay_t *pData;
+  uint8_t *pData;
   
   // Allocate space for the passcode event.
-  if ((pData = ICall_malloc(sizeof(pairDisplay_t))))
+  if ((pData = ICall_malloc(sizeof(uint8_t))))
   {
-    pData->connHandle = connHandle;
-    pData->uiOutputs = uiOutputs;
-    pData->numComparison = (uint32_t)numComparison;
+    *pData = uiOutputs;
     
     // Enqueue the event.
-    security_examples_peripheral_enqueueMsg(SEP_PASSCODE_NEEDED_EVT, 0, (uint8 *)pData);
+    security_examples_peripheral_enqueueMsg(SEP_PASSCODE_NEEDED_EVT, 0, pData);
   }
 }
 
