@@ -4293,51 +4293,6 @@
       <name>$SRC_BLE_CORE$\host\gattservapp_util.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\oad\cc26xx\oad.c</name>
-      <excluded>
-        <configuration>FlashROM-just_works</configuration>
-        <configuration>FlashROM-numeric_comparison</configuration>
-        <configuration>FlashROM-passcode</configuration>
-        <configuration>FlashROM-OOB</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$SRC_EX$\profiles\oad\cc26xx\oad.h</name>
-      <excluded>
-        <configuration>FlashROM-just_works</configuration>
-        <configuration>FlashROM-numeric_comparison</configuration>
-        <configuration>FlashROM-passcode</configuration>
-        <configuration>FlashROM-OOB</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$SRC_EX$\profiles\oad\cc26xx\oad_reset_service.c</name>
-      <excluded>
-        <configuration>FlashROM-just_works</configuration>
-        <configuration>FlashROM-numeric_comparison</configuration>
-        <configuration>FlashROM-passcode</configuration>
-        <configuration>FlashROM-OOB</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$SRC_EX$\profiles\oad\cc26xx\oad_target_external_flash.c</name>
-      <excluded>
-        <configuration>FlashROM-just_works</configuration>
-        <configuration>FlashROM-numeric_comparison</configuration>
-        <configuration>FlashROM-passcode</configuration>
-        <configuration>FlashROM-OOB</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$SRC_EX$\profiles\oad\cc26xx\oad_target_internal_flash.c</name>
-      <excluded>
-        <configuration>FlashROM-just_works</configuration>
-        <configuration>FlashROM-numeric_comparison</configuration>
-        <configuration>FlashROM-passcode</configuration>
-        <configuration>FlashROM-OOB</configuration>
-      </excluded>
-    </file>
-    <file>
       <name>$SRC_EX$\profiles\roles\cc26xx\peripheral.c</name>
     </file>
     <file>
@@ -4348,24 +4303,6 @@
     </file>
     <file>
       <name>$SRC_EX$\profiles\simple_profile\simple_gatt_profile.h</name>
-    </file>
-    <file>
-      <name>$SRC_EX$\profiles\keys\cc26xx\simplekeys.c</name>
-      <excluded>
-        <configuration>FlashROM-just_works</configuration>
-        <configuration>FlashROM-numeric_comparison</configuration>
-        <configuration>FlashROM-passcode</configuration>
-        <configuration>FlashROM-OOB</configuration>
-      </excluded>
-    </file>
-    <file>
-      <name>$SRC_EX$\profiles\keys\simplekeys.h</name>
-      <excluded>
-        <configuration>FlashROM-just_works</configuration>
-        <configuration>FlashROM-numeric_comparison</configuration>
-        <configuration>FlashROM-passcode</configuration>
-        <configuration>FlashROM-OOB</configuration>
-      </excluded>
     </file>
   </group>
   <group>

@@ -52,6 +52,7 @@
 #include "gapgattserver.h"
 #include "gattservapp.h"
 #include "devinfoservice.h"
+#include "simple_gatt_profile.h"
 #include "hci.h"
 
 #include "peripheral.h"
@@ -351,10 +352,11 @@ static void security_examples_peripheral_init(void)
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
     GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
   }
-
+ 
    // Initialize GATT attributes
   GGS_AddService(GATT_ALL_SERVICES);           // GAP
   DevInfo_AddService();                        // Device Information Service  
+  SimpleProfile_AddService(GATT_ALL_SERVICES); // Simple GATT Profile
   
   // Start the Device
   VOID GAPRole_StartDevice(&security_examples_peripheral_gapRoleCBs);
@@ -676,7 +678,6 @@ void security_examples_peripheral_keyChangeHandler(uint8 keys)
 {
   security_examples_peripheral_enqueueMsg(SEP_KEY_CHANGE_EVT, keys, NULL);
 }
-
 
 /*********************************************************************
  * @fn      security_examples_peripheral_processPasscode

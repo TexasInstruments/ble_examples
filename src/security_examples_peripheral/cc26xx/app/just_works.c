@@ -52,6 +52,7 @@
 #include "gapgattserver.h"
 #include "gattservapp.h"
 #include "devinfoservice.h"
+#include "simple_gatt_profile.h"
 #include "hci.h"
 
 #include "peripheral.h"
@@ -317,7 +318,7 @@ static void security_examples_peripheral_init(void)
     uint8_t pairMode = GAPBOND_PAIRING_MODE_WAIT_FOR_REQ;
     uint8_t mitm = FALSE;
     uint8_t ioCap = GAPBOND_IO_CAP_NO_INPUT_NO_OUTPUT;
-    uint8_t bonding = FALSE;
+    uint8_t bonding = TRUE;
     uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
 
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
@@ -330,6 +331,7 @@ static void security_examples_peripheral_init(void)
    // Initialize GATT attributes
   GGS_AddService(GATT_ALL_SERVICES);           // GAP
   DevInfo_AddService();                        // Device Information Service  
+  SimpleProfile_AddService(GATT_ALL_SERVICES); // Simple GATT Profile  
   
   // Start the Device
   VOID GAPRole_StartDevice(&security_examples_peripheral_gapRoleCBs);
