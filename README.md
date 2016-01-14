@@ -11,8 +11,6 @@ For other hardware and software resources, [please visit our wiki](http://www.ti
 
 ## Network Processor Interface: UART Software Handshaking
 This example shows how you can avoid RTS/CTS flow control lines and still use the power saving features of the device, by using the RX/TX lines to wake up the chip and do a software handshake with an external MCU or computer. For this demo TI's SimpleNP and SimpleAP projects are used.
-## Network Processor Interface: UART Software Handshaking
-This example shows how you can avoid flow control lines and still use the power saving features of the device, by using the RX/TX lines to wake up the chip and do a software handshake with an external MCU or computer.
 * [SimpleNP projects and docs](Projects/ble/simple_np_sw_handshaking)
 * [SimpleAP projects and docs](Projects/ble/simple_ap_sw_handshaking)
 * [SAPLib projects and docs](Projects/ble/sap_lib_sw_handshaking)
@@ -31,6 +29,10 @@ This example shows how to use the TI-RTOS Log system, how to print Log statement
 ## Porting a project to TI-RTOS 2.15
 This example shows how you can port a BLE project to TI-RTOS 2.15. As an example, SimpleBLEPeripheral is ported. The commit log could be instructive for checking what was done exactly.
 * [SimpleBLEPeripheral ported to TI-RTOS 2.15 and instructions](Projects/ble/simple_ble_peripheral_tirtos_2p15)
+
+## Board files for CC2650LAUNCHXL
+BLE SDK 2.1 compatible version of the TI-RTOS board files for the CC2650 Launchpad can be found here. Example usage shown in the `Redirect LCD to UART` project above.
+* [Board files folder](Util/tirtos_2_13_patches/ti/boards)
 
 ## Cloning and running
 That the example projects are made to reference a BLE SDK installation at `c:\ti\simplelink\ble_cc26xx_2_01_00_44423`. The repository can be cloned to any location.

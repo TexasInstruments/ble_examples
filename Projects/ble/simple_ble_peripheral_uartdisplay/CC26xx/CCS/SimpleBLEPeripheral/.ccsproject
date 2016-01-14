@@ -9,6 +9,6 @@
 	<linkerCommandFile value="cc26x0f128.cmd"/>
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
-	<connection value="common/targetdb/connections/TIXDS110_Connection.xml"/>
+	<connection value="common/targetdb/connections/TIXDS100v3_Dot7_Connection.xml"/>
 	<isTargetManual value="false"/>
 </projectOptions>
