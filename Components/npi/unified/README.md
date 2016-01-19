@@ -99,13 +99,13 @@ Software handshaking is inherently slower than hardware handshaking, because eac
 The above software handshaking is also slower than the hardware handshaking equivalent. We have provided two logic captures below to give an idea of typical latency numbers for software vs hardware handshaking.
 It is important to remember that these are just typical measurements, as the latency depends on processor load, and other factors.
 
-![Profiling the critical section](doc_resources/profiler_snippet.jpg)
+![Profiling the critical section](doc_resources/profiler_snippet.PNG)
 
 ### Handshaking data
 
 Various bytes will need to be sent over the UART lines in order to keep both processors in sync. They are summarized in the table
 
- | Name    | Value |
+| Name    | Value |
 |:--------------------------------------------------------------------------------------------------------------------------------:|:---------------:|
 |                                                            Chirp byte                                                            |      0x55       |
 |                                                            Reset Byte                                                            |      0xFA       |
@@ -123,12 +123,12 @@ The junk byte is what the handshaking data is initialized to before sending. Thi
 **UART uNPI with Hardware Handshaking (MRDY/SRDY)**
 
 Latency observed to be between ~67us to ~400us, with more samples showing a latency near ~390us as shown in the capture below.
-![Four wire latency](doc_resources/four_wire_latency.jpg)
+![Four wire latency](doc_resources/four_wire_latency.PNG)
 
 **Two Wire UART uNPI with Software Handshaking**
 
 Latency is observed to be ~800us. It is important remember that when using the supplied python script, the latency will be much higher. This has to do with a number of factors. In order to properly assess the latency of this solution connect another MCU to the SNP. See the capture below.
-![two wire latency](doc_resources/two_wire_latency.jpg)
+![two wire latency](doc_resources/two_wire_latency.PNG)
 
 ### Demo Instructions
 The two wire UART uNPI features are demoed using the SimpleAP and SimpleNP projects from the TI BLE SDK. The SAPLib project is also needed, because the SimpleAP projects depends on it for it's uNPI functionality.
@@ -145,12 +145,11 @@ More information can be found at this wiki which explains the SimpleAP and Simpl
 
 The below table shows the pins needed for the demo on the SmartRF06 board.
 
- | Signal name  | Pin location |
+| Signal name  | Pin location |
 |:---------------:|:-------------------------------------------------------------------------------------------:|
 |     UART RX     |                                           P408-12                                           |
 |     UART TX     |                                           P408-14                                           |
 |  Profiling pin  |                                           P405-4                                            |
-|     P405-4      |                                                                                             |
 
 
 Connect the UART TX of one processor to the UART RX pin of the other. Optionally a logic analyzer may be connected to the RX, TX and profiling pin to observe the communication protocol
