@@ -8,7 +8,7 @@ All the files in the project are referenced from their location within the BLE S
 The functionality can be added to an existing project by swapping out the applicable files in your IDE with their `_swhs.*` counterpart, and adding the include search paths.
 
 More information on Unified NPI with UART Software handshaking:
-[Unified NPI with UART Software Handshaking](Components/npi/unified)
+[Unified NPI with UART Software Handshaking](../../../Components/npi/unified)
 
 More information about the SimpleAP and SimpleNP projects:
 [http://processors.wiki.ti.com/index.php/SimpleAP%2BSNP](http://processors.wiki.ti.com/index.php/SimpleAP%2BSNP)
