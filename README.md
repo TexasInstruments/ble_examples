@@ -1,7 +1,7 @@
-Extra examples for TI BLE SDK v2.1
+Extra examples for TI BLE SDK v2.1.x
 =========================================
 
-This repository contains additional sample applications and components for the Texas Instruments *Bluetooth&reg;* Low Energy software development kit.
+This repository contains additional sample applications and components for the Texas Instruments *Bluetooth&reg;* Low Energy software development kit. All Github sample apps are compatible with BLE SDK v2.1.1, to use this version simply update the IDE environment variables as described in the Cloning and running section.
 
 To use the examples and tools in this repository, please [download and install the SDK](http://www.ti.com/ble-stack) first, and if necessary [buy an evaluation kit](https://store.ti.com/Search.aspx?k=CC2650).
 
@@ -35,7 +35,7 @@ BLE SDK 2.1 compatible version of the TI-RTOS board files for the CC2650 Launchp
 * [Board files folder](Util/tirtos_2_13_patches/ti/boards)
 
 ## Cloning and running
-That the example projects are made to reference a BLE SDK installation at `c:\ti\simplelink\ble_cc26xx_2_01_00_44423`. The repository can be cloned to any location.
+That the example projects are made to reference a BLE SDK installation at `c:\ti\simplelink\ble_cc26xx_2_01_00_44423`. The repository can be cloned to any location. If using BLE SDKv2.1.1, be sure to change this value to `c:\ti\simplelink\ble_cc26xx_2_01_01_44627`.
 
 If you have installed the BLE SDK at another location, you will need to modify the IDE's project files.
 
