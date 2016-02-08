@@ -1,0 +1,13 @@
+**/Debug/
+**/Flash/
+**/settings
+*.dep
+*.log
+*.ewt
+*.tmp
+*.bak
+**/[Cc]onfig/
+*.obj
+*.a
+*.pos
+*.pp
