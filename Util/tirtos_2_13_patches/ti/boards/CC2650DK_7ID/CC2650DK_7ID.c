@@ -271,34 +271,29 @@ const SPI_Config SPI_config[] = {
 /*
  *  ========================== LCD begin =======================================
 */
-
 /* Place into subsections to allow the TI linker to remove items properly */
-//#if defined(__TI_COMPILER_VERSION__)
-//#pragma DATA_SECTION(LCD_config, ".const:LCD_config")
-//#pragma DATA_SECTION(lcdHWAttrs, ".const:lcdHWAttrs")
-//#endif
+#if defined(__TI_COMPILER_VERSION__)
+#pragma DATA_SECTION(LCD_config, ".const:LCD_config")
+#pragma DATA_SECTION(lcdHWAttrs, ".const:lcdHWAttrs")
+#endif
 
-/* Include lcd middleware */
-//#include <ti/mw/lcd/LCDDogm1286.h>
+/* Include drivers */
+#include <ti/drivers/lcd/LCDDogm1286.h>
 
 /* LCD object */
-//LCD_Object lcdObject;
+LCD_Object lcdObject;
 
 /* LCD hardware attribute structure */
-
-//const LCD_HWAttrs lcdHWAttrs = {
-//    .LCD_initCmd = &LCD_initCmd,
-//    .lcdResetPin = Board_LCD_RST,       /* LCD reset pin */
-//    .lcdModePin  = Board_LCD_MODE,      /* LCD mode pin  */
-//    .lcdCsnPin   = Board_LCD_CSN,       /* LCD CSn pin   */
-//    .spiIndex    = Board_SPI0
-//};
+const LCD_HWAttrs lcdHWAttrs = {
+    .LCD_initCmd = &LCD_initCmd,
+    .lcdResetPin = Board_LCD_RST,       /* LCD reset pin */
+    .lcdModePin = Board_LCD_MODE,       /* LCD mode pin */
+    .lcdCsnPin = Board_LCD_CSN,         /* LCD CSn pin */
+    .spiIndex = Board_SPI0
+};
 
 /* LCD configuration structure */
-//const LCD_Config LCD_config = {
-//    .object  = &lcdObject,
-//    .hwAttrs = &lcdHWAttrs
-//};
+const LCD_Config LCD_config = {&lcdObject, &lcdHWAttrs};
 /*
  *  ========================== LCD end =========================================
  */
