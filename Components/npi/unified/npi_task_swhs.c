@@ -49,19 +49,24 @@
 #include <xdc/std.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Queue.h>
+#include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/BIOS.h>
 
 #include "inc/npi_util.h"
+#include "inc/npi_task_swhs.h"
 #include "inc/npi_data_swhs.h"
-#include "inc/npi_task.h"
 #include "inc/npi_tl_swhs.h"
 
 #include "Board.h"
+#include "util.h"
+#include "inc/npi_tl_uart_swhs.h"
 
 // ****************************************************************************
 // defines
 // ****************************************************************************
+//! \brief Attempted to send chirp as initiator and it timed out event
+#define NPITASK_TL_TIMEOUT_EVENT            0x0004
 //! \brief ASYNC Message Received Event (no framing bytes)
 #define NPITASK_FRAME_RX_EVENT              0x0008
 
@@ -74,8 +79,10 @@
 //! \brief Last TX message has been successfully sent
 #define NPITASK_TX_DONE_EVENT               0x0040
 
-//! \brief Remote Rdy received Event
-#define NPITASK_REM_RDY_EVENT               0x0080
+//! \brief TL needs to be opened before use event
+#define NPITASK_TL_OPEN_EVENT               0x0080
+
+
 
 //! \brief Task priority for NPI RTOS task
 #define NPITASK_PRIORITY                    2
@@ -86,9 +93,7 @@
 #define NPI_MAX_SS_ENTRY                    NPI_MAX_SUBSYSTEMS
 #define NPI_MAX_ICALL_ENTRY                 NPI_MAX_SUBSYSTEMS
 
-#define REM_RDY_ASSERTED                    0x00
-#define REM_RDY_DEASSERTED                  0x01
-
+#define NPI_SWHS_CHIRP_TIMEOUT_PERIOD       500
 
 // ****************************************************************************
 // typedefs
@@ -130,6 +135,9 @@ static Queue_Handle npiSyncTxQueue;
 //! \brief Handle for the SYNC RX Queue
 static Queue_Handle npiSyncRxQueue;
 
+//! \brief Handle for the Chirp timeout Clock
+static Clock_Struct chirpTimeoutClock;
+
 //! \brief Flag/Counter indicating a Synchronous REQ/RSP is currently being
 //!        processed.
 static int8_t syncTransactionInProgress = 0;
@@ -157,7 +165,9 @@ static uint16_t NPITask_events = 0;
 
 //! \brief Event flags for capturing Task-related events from ISR context
 static uint16_t tlDoneISRFlag = 0;
-static uint16_t remRdyISRFlag = 0;
+static uint16_t hsCompleteISRFlag = 0;
+static uint16_t tlOpenISRFlag = 0;
+static uint16_t chirpTimeoutISRFlag = 0;
 
 //! \brief Routing table for translating incoming Host messages to the proper
 //!        subsystem callback based on SSID of the message
@@ -178,28 +188,26 @@ const NPI_Params NPI_defaultParams = {
     .bufSize            = 530,
     .mrdyPinID          = IOID_UNUSED,
     .srdyPinID          = IOID_UNUSED,
-#if defined(NPI_USE_UART)
     .portType           = NPI_SERIAL_TYPE_UART,
     .portBoardID        = CC2650_UART0,
-#elif defined(NPI_USE_SPI)
-    .portType           = NPI_SERIAL_TYPE_SPI,
-    .portBoardID        = CC2650_SPI1,
-#endif
 };
-//! \brief NPI Transport Layer State variable defined in npi_tl.c
-extern hsState handshakingState;
+  
 //*****************************************************************************
 // function prototypes
 //*****************************************************************************
 
 //! \brief Callback function registered with Transport Layer
 static void NPITask_transportDoneCallBack(uint16_t sizeRx, uint16_t sizeTx);
-
 //! \brief Callback function registered with Transport Layer
-static void NPITask_RemRdyEventCB(uint8_t state);
+static void NPITask_handshakeCompleteCB(hsTransactionRole role);
+//! \brief Callback function registered with Transport Layer
+static void NPITask_tlOpenCB(void);
+//! \brief Callback function for chirp timeout
+static void NPITask_clockHandler(UArg arg);
 
 const npiTLCallBacks transportCBs = {
-  &NPITask_RemRdyEventCB,
+  &NPITask_handshakeCompleteCB,
+  &NPITask_tlOpenCB,
   &NPITask_transportDoneCallBack,
 };
 
@@ -243,7 +251,10 @@ void NPITask_Fxn(UArg a0, UArg a1)
     
     ICall_enrollService(ICALL_SERVICE_CLASS_NPI, NULL, &npiAppEntityID, &npiSem);
 #endif //USE_ICALL
-    
+    Util_constructClock(&chirpTimeoutClock, 
+                        NPITask_clockHandler, 
+                        NPI_SWHS_CHIRP_TIMEOUT_PERIOD, 0, false, 
+                        NPITASK_TL_TIMEOUT_EVENT);
     /* Forever loop */
     for (;;)
     {
@@ -256,20 +267,19 @@ void NPITask_Fxn(UArg a0, UArg a1)
             key = NPIUtil_EnterCS();
             
             NPITask_events = NPITask_events | tlDoneISRFlag | 
-                             remRdyISRFlag;
+                             hsCompleteISRFlag| tlOpenISRFlag | 
+                             chirpTimeoutISRFlag;
             
             tlDoneISRFlag = 0;
-            remRdyISRFlag = 0;
+            hsCompleteISRFlag = 0;
+            tlOpenISRFlag = 0;
+            chirpTimeoutISRFlag = 0;
             
             NPIUtil_ExitCS(key);
-
-            // Remote RDY event
-            if (NPITask_events & NPITASK_REM_RDY_EVENT)
+            if(NPITask_events & NPITASK_TL_OPEN_EVENT)
             {
-                NPITask_events &= ~NPITASK_REM_RDY_EVENT;
-#ifdef POWER_SAVING
-                NPITL_handleRemRdyEvent();
-#endif //POWER_SAVING
+                NPITask_events &= ~NPITASK_TL_OPEN_EVENT;
+                NPITL_openTransportPort(HS_RESPONDER);
             }
             // TX Frame has been successfully sent
             if (NPITask_events & NPITASK_TX_DONE_EVENT)
@@ -279,23 +289,25 @@ void NPITask_Fxn(UArg a0, UArg a1)
                 lastQueuedTxMsg = NULL;
                 NPITask_events &= ~NPITASK_TX_DONE_EVENT;
             }
+            if (NPITask_events & NPITASK_TL_TIMEOUT_EVENT)
+            {
+                NPITask_events &= ~NPITASK_TL_TIMEOUT_EVENT;
+                //We restart the clock here because if the proc still doesn't 
+                //respond, we need to keep chriping until it does 
+                //if the remote processor is confused or in a bad state the 
+                //reset logic should kick in
+                Util_startClock(&chirpTimeoutClock);
+                //Since we SWHS is a UART only thing, we can safely bypass the 
+                //TL layer and go directly to UART to get that chirp sent
+                NPITLUART_resendChirp(HS_INITIATOR);
+            }
             // Frame is ready to send to the Host
             if (NPITask_events & NPITASK_TX_READY_EVENT)
             {
-            	//However, we may have just woke up and are in GPIO mode,
-            	//In this case, we have to open the port, by triggering a remRdyEVT
-            	if(HS_GPIO_STATE & handshakingState)
-            	{
-            	    _npiCSKey_t key;
-            	    key = NPIUtil_EnterCS();
-            		handshakingState |= HS_INITIATOR;
-            		NPIUtil_ExitCS(key);
-            		//Since we are waking up the UART, we are the initiator of the transaction
-            		NPITL_handleRemRdyEvent();
-
-            	}
+                //Capture the state of the transport layer
+                tlState transportState = NPITL_getTlStatus();
                 // Cannot send if NPI Tl is already busy. 
-            	if (!NPITL_checkNpiBusy())
+                if (TL_ready == transportState)
                 {
                     // Check for outstanding SYNC REQ/RSP transactions.  If so,
                     // this ASYNC message must remain Q'd while we wait for the
@@ -314,12 +326,15 @@ void NPITask_Fxn(UArg a0, UArg a1)
                         // ASYNC messages.
                         NPITask_ProcessTXQ(npiTxQueue);              
                     }
-                	//If we initiated the transaction, now we should send the data
-                	if(HS_INITIATOR & handshakingState)
-                	{
-                		NPITask_events |= NPITASK_REM_RDY_EVENT;
-                		Semaphore_post(npiSem);
-                	}
+                }
+                else if(TL_closed == transportState)
+                {                  
+                  // Create one-shot clock to catch chirp timeout
+                  //this is a 0.5 second timeout
+                  //you may tweak this value for your system to improve latency
+                  Util_startClock(&chirpTimeoutClock);
+                  NPITL_openTransportPort(HS_INITIATOR);
+
                 }
                 // The TX READY event flag can be cleared here regardless
                 // of the state of the TX queues. The TX done call back
@@ -353,7 +368,7 @@ void NPITask_Fxn(UArg a0, UArg a1)
                   syncTransactionInProgress <= 0)
             {
                 // Process Queue and clear event flag
-            	NPITask_processSyncRXQ();
+                NPITask_processSyncRXQ();
                 NPITask_events &= ~NPITASK_SYNC_FRAME_RX_EVENT;
 
                 if (!Queue_empty(npiSyncRxQueue))
@@ -400,20 +415,12 @@ uint8_t NPITask_Params_init(uint8_t portType, NPI_Params *params)
   if (params != NULL)
   {
     *params = NPI_defaultParams;
-    
-#if defined(NPI_USE_UART)
     UART_Params_init(&params->portParams.uartParams);
     params->portParams.uartParams.readDataMode = UART_DATA_BINARY;
     params->portParams.uartParams.writeDataMode = UART_DATA_BINARY;
     params->portParams.uartParams.readMode = UART_MODE_CALLBACK;
     params->portParams.uartParams.writeMode = UART_MODE_CALLBACK;
     params->portParams.uartParams.readEcho = UART_ECHO_OFF;
-#elif defined(NPI_USE_SPI)
-    SPI_Params_init(&params->portParams.spiParams);
-    params->portParams.spiParams.mode = SPI_SLAVE;
-    params->portParams.spiParams.bitRate = 8000000;
-    params->portParams.spiParams.frameFormat = SPI_POL1_PHA1;
-#endif //NPI_USE_UART
 
     return NPI_SUCCESS;
   }
@@ -445,12 +452,7 @@ uint8_t NPITask_open(NPI_Params *params)
 
     // If params are NULL use defaults.
     if (params == NULL) {
-#if defined(NPI_USE_UART)
         NPITask_Params_init(NPI_SERIAL_TYPE_UART,&npiParams);
-#elif defined(NPI_USE_SPI)
-        NPITask_Params_init(NPI_SERIAL_TYPE_SPI,&npiParams);
-#endif // NPI_USE_UART
-
         params = &npiParams;
     }
     
@@ -471,6 +473,7 @@ uint8_t NPITask_open(NPI_Params *params)
     
     // Initialize Transport Layer
     transportParams.npiTLBufSize = params->bufSize;
+    //TODO: Remove this?
     transportParams.mrdyPinID = params->mrdyPinID;
     transportParams.srdyPinID = params->srdyPinID;
     transportParams.portType = params->portType;
@@ -560,6 +563,8 @@ uint8_t NPITask_close(void)
 // -----------------------------------------------------------------------------
 uint8_t NPITask_sendToHost(_npiFrame_t *pMsg)
 {
+    _npiCSKey_t key;
+    key = NPIUtil_EnterCS();
     uint8_t status = NPI_SUCCESS;
 
     switch (NPI_GET_MSG_TYPE(pMsg))
@@ -582,7 +587,7 @@ uint8_t NPITask_sendToHost(_npiFrame_t *pMsg)
             status = NPI_INVALID_PKT;
         break;
     }
-
+    NPIUtil_ExitCS(key);
     return status;
 }
 
@@ -973,10 +978,12 @@ static void NPITask_transportDoneCallBack(uint16_t sizeRx, uint16_t sizeTx)
       tlDoneISRFlag |= NPITASK_TX_DONE_EVENT;
       Semaphore_post(npiSem);
     }
-
     // Check to see if there pending messages waiting to be sent
     // If there are then notify NPI Task by setting TX READY event flag
-    if (!Queue_empty(npiSyncTxQueue) || !Queue_empty(npiTxQueue))
+    //We also have to be sure that we aren't kicking off an Async transaction
+    //when the bus is busy from Sync Transaction
+    if ((syncTransactionInProgress == 0) 
+        && (!Queue_empty(npiSyncTxQueue) || !Queue_empty(npiTxQueue)))
     {
         // There are pending SYNC RSP or ASYNC messages waiting to 
         // be sent to the host. Set the appropriate flag and post to
@@ -987,24 +994,51 @@ static void NPITask_transportDoneCallBack(uint16_t sizeRx, uint16_t sizeTx)
 }
 
 // -----------------------------------------------------------------------------
-//! \brief      RX Callback provided to Transport Layer for REM RDY Event
+//! \brief      Callback from TL layer for HS_COMPLETE event
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static void NPITask_RemRdyEventCB(uint8_t state)
+static void NPITask_handshakeCompleteCB(hsTransactionRole role)
 {
-      //If we are the intiator, then we should also set the TX_ready flag since we are ready to send data
-    if((handshakingState & HS_INITIATOR) && (handshakingState & HS_WAITFORCHIRP))
+  _npiCSKey_t key;
+  key = NPIUtil_EnterCS();
+    //If our chirp timeout clock is running we can stop it
+  //we have completed a HS
+  if(Util_isActive(&chirpTimeoutClock))
+    Util_stopClock(&chirpTimeoutClock);
+  if ((npiSem != NULL) && (HS_INITIATOR == role))
+  {
+    //If we initiated the transaction and have data to send, then send it
+    if (!Queue_empty(npiSyncTxQueue) || !Queue_empty(npiTxQueue))
     {
-    	//Clear chirp flag flag
-    	handshakingState &= ~HS_WAITFORCHIRP;
-    	//Set TX Rdy event
-    	remRdyISRFlag |= NPITASK_TX_READY_EVENT;
+        hsCompleteISRFlag |= NPITASK_TX_READY_EVENT;
+        Semaphore_post(npiSem);
     }
-    else
-    {
-    	remRdyISRFlag = NPITASK_REM_RDY_EVENT;
-    }
-    if(npiSem != NULL)
-      Semaphore_post(npiSem);
+  }
+  NPIUtil_ExitCS(key);
+}
+// -----------------------------------------------------------------------------
+//! \brief      Callback from TL layer to open UART and close RX Pin
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+static void NPITask_tlOpenCB(void)
+{
+  //If the the TL woke up the app by Rx'ing a chirp, we need to open the 
+  //TL from an app context, wake up the thread to do so.
+  if (npiSem != NULL)
+  {
+        tlOpenISRFlag |= NPITASK_TL_OPEN_EVENT;
+        Semaphore_post(npiSem);
+  }
+}
+static void NPITask_clockHandler(UArg arg)
+{
+  //If we timed out waiting for a response to our chirp,
+  //assume remote proc missed it and send another
+  if (npiSem != NULL)
+  {
+    chirpTimeoutISRFlag |= arg;
+    Semaphore_post(npiSem);
+  }
 }

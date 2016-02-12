@@ -61,30 +61,7 @@
 // defines
 // ****************************************************************************
 
-#if defined(NPI_USE_SPI)
-#include "inc/npi_tl_spi.h"
-#elif defined(NPI_USE_UART)
 #include "inc/npi_tl_uart_swhs.h"
-#else
-#error "Must define an underlying serial bus for NPI"
-#endif //NPI_USE_SPI
-
-#ifdef POWER_SAVING
-// Indexes for pin configurations in PIN_Config array
-#define REM_RDY_PIN_IDX      0
-#define LOC_RDY_PIN_IDX      1
-
-
-
-
-#define LocRDY_ENABLE()      PIN_setOutputValue(hNpiHandshakePins, locRdyPIN, 0)
-#define LocRDY_DISABLE()     PIN_setOutputValue(hNpiHandshakePins, locRdyPIN, 1)
-#else
-#define LocRDY_ENABLE()
-#define LocRDY_DISABLE()
-#endif //POWER_SAVING
-
-
 
 // ****************************************************************************
 // typedefs
@@ -99,9 +76,6 @@ static volatile bool npiPMSetConstraint = FALSE;
 
 //! \brief Flag for ongoing NPI TX
 static volatile bool npiTxActive = FALSE;
-
-//! \brief The packet that was being sent when MRDY HWI negedge was received
-static volatile uint32_t mrdyPktStamp = 0;
 
 //! \brief Packets transmitted counter
 static uint32_t txPktCount = 0;
@@ -120,46 +94,43 @@ uint8_t *npiTxBuf;
 
 //! \brief Number of bytes in NPI Transport Layer transmit buffer
 static uint16_t npiTxBufLen = 0;
-
-//! \brief Size of allocated Tx and Rx buffers
-uint16_t npiBufSize = 0;
-//! \brief State variable describing soft handshaking state
-hsState handshakingState = HS_GPIO_STATE;
 //! \brief Store a local copy of the current NPI params
 static NPITL_Params npiTLParams;
-npiTLCallBacks taskCBs;
-
-#ifdef POWER_SAVING
-//! \brief PIN Config for Mrdy and Srdy signals without PIN IDs 
-static PIN_Config npiHandshakePinsCfg[] =
+//! \brief UART RX pin configuration
+static PIN_Config npiUartRxPinCfg[] =
 {
     Board_UART_RX | PIN_GPIO_OUTPUT_DIS | PIN_INPUT_EN | PIN_PULLUP,
     PIN_TERMINATE
 };
-//! \brief PIN State for remRdy and locRdy signals
-static PIN_State npiHandshakePins;
+//! \brief PIN State for UART Rx pin, used when in HS_GPIO_MODE
+static PIN_State npiUartRxPin;
 
-//! \brief PIN Handles for remRdy and locRdy signals
-static PIN_Handle hNpiHandshakePins;
-#ifdef NPI_SW_HANDSHAKING_DEBUG
-//! \brief PIN State for debugging signal
-static PIN_State npiProfilingDebugPin;
-//! \brief PIN Handles for debugging signal
-static PIN_Handle hNpiProfilingDebugPin;
-#endif //NPI_SW_HANDSHAKING_DEBUG
+//! \brief PIN Handles for uartRxPin that is used as the SWHS pin
+static PIN_Handle hNpiUartRxPin;
 
-//! \brief No way to detect whether positive or negative edge with PIN Driver
-//!        Use a flag to keep track of state
-static uint8_t remRdy_state;
-#ifdef NPI_SW_HANDSHAKING_DEBUG
-static PIN_Config npiProfilingDebugPinCfg[] =
+#ifdef SWHS_DEBUG
+static PIN_Config npiProfilingPinCfg[] =
 {
-    Board_LED1 | PIN_GPIO_OUTPUT_EN,
+    Board_LED2 | PIN_GPIO_OUTPUT_EN | PIN_INPUT_DIS | PIN_PULLUP,
     PIN_TERMINATE
 };
-static uint32_t profilingDebugPin = Board_LED1;
-#endif //NPI_SW_HANDSHAKING_DEBUG
-#endif //POWER_SAVING
+//! \brief PIN State for profiling pin that toggles during critical sections
+static PIN_State npiProfilingPin;
+
+//! \brief PIN Handles for profiling pin that toggles during critical sections
+static PIN_Handle hNpiProfilingPin;
+#endif //SWHS_DEBUG
+
+//! \brief State variable that tracks TL status for npi_task
+static tlState trasnportLayerState = TL_closed;
+
+//! \brief Size of allocated Tx and Rx buffers
+uint16_t npiBufSize = 0;
+//! \brief Store a local copy of the current NPI params
+static NPITL_Params npiTLParams;
+
+npiTLCallBacks taskCBs;
+
 
 //*****************************************************************************
 // function prototypes
@@ -168,18 +139,17 @@ static uint32_t profilingDebugPin = Board_LED1;
 //! \brief Call back function provided to underlying serial interface to be
 //         invoked upon the completion of a transmission
 static void NPITL_transmissionCallBack(uint16_t Rxlen, uint16_t Txlen);
+static void NPITL_handshakeCompleteCallBack(hsTransactionRole role);
 
-#ifdef POWER_SAVING
 //! \brief HWI interrupt function for remRdy
-static void NPITL_remRdyPINHwiFxn(PIN_Handle hPin, PIN_Id pinId);
-//! \brief callback for software handshaking
-void NPITL_chirpRecievedCB(void);
+static void NPITL_rxPinHwiFxn(PIN_Handle hPin, PIN_Id pinId);
+
 //! \brief This routine is used to set constraints on power manager
 static void NPITL_setPM(void);
 
 //! \brief This routine is used to release constraints on power manager
 static void NPITL_relPM(void);
-#endif //POWER_SAVING
+
 
 // -----------------------------------------------------------------------------
 //! \brief      This routine initializes the transport layer and opens the port
@@ -204,37 +174,32 @@ void NPITL_openTL(NPITL_Params *params)
     memset(npiRxBuf, 0, npiBufSize);
     npiTxBuf = NPIUTIL_MALLOC(params->npiTLBufSize);
     memset(npiTxBuf, 0, npiBufSize);
-
-    // This will be updated to be able to select SPI/UART TL at runtime
-    // Now only compile time with the NPI_USE_[UART,SPI] flag
-
-#if defined(NPI_USE_UART)
-#elif defined(NPI_USE_SPI)
-    transportOpen(params->portBoardID, 
-                  &params->portParams.spiParams, 
-                  NPITL_transmissionCallBack);
-#endif //NPI_USE_UART
     
-	hNpiHandshakePins = PIN_open(&npiHandshakePins, npiHandshakePinsCfg);
-	PIN_registerIntCb(hNpiHandshakePins, NPITL_remRdyPINHwiFxn);
-	PIN_setConfig(hNpiHandshakePins,
-				  PIN_BM_IRQ,
-				  Board_UART_RX | PIN_IRQ_BOTHEDGES);
+    
+    hNpiUartRxPin = PIN_open(&npiUartRxPin, npiUartRxPinCfg);
+    PIN_registerIntCb(hNpiUartRxPin, NPITL_rxPinHwiFxn);
+    PIN_setConfig(hNpiUartRxPin, 
+                  PIN_BM_IRQ, 
+                  Board_UART_RX | PIN_IRQ_BOTHEDGES);
 
-	// Enable wakeup
-	PIN_setConfig(hNpiHandshakePins,
-				  PINCC26XX_BM_WAKEUP,
-				  Board_UART_RX | PINCC26XX_WAKEUP_NEGEDGE);
-#ifdef NPI_SW_HANDSHAKING_DEBUG
-	hNpiProfilingDebugPin= PIN_open(&npiProfilingDebugPin, npiProfilingDebugPinCfg);
-#endif //NPI_SW_HANDSHAKING_DEBUG
-
-	npiTLParams = *params;	//Keep a copy of TLParams local to the TL so that the UART can be closed/reopened
-#ifndef POWER_SAVING
-    // This call will start repeated Uart Reads when Power Savings is disabled
-    transportRead();
-#endif 
-
+    // Enable wakeup
+    PIN_setConfig(hNpiUartRxPin, 
+                  PINCC26XX_BM_WAKEUP, 
+                  Board_UART_RX | PINCC26XX_WAKEUP_NEGEDGE);
+    //Note that open TL is only called when NPI task is being initialized
+    //transportLayerState variable defaults to closed.
+#ifdef SWHS_DEBUG  
+    //Open Profiling Pin if in debug mode 
+    hNpiProfilingPin = PIN_open(&npiProfilingPin, npiProfilingPinCfg);
+#endif //SWHS_DEBUG
+    //Keep a copy of TLParams local to the TL so that the UART can be closed/reopened
+    npiTLParams = *params;
+    //Here we will initialize the transport which will setup the callbacks
+    //This call does not open the UART
+    transportInit( &npiTLParams.portParams.uartParams, 
+                   NPITL_transmissionCallBack,
+                   NPITL_handshakeCompleteCallBack);
+    
     NPIUtil_ExitCS(key);
 }
 
@@ -256,33 +221,42 @@ void NPITL_closeTL(void)
     NPIUTIL_FREE(npiRxBuf);
     NPIUTIL_FREE(npiTxBuf);
   
-    // Close Transport Layer 
+    // Close the RxPin
+    PIN_close(hNpiUartRxPin);
+    // Close UART transport Layer 
     transportClose();
+    trasnportLayerState = TL_closed;
     
-#ifdef POWER_SAVING  
-    // Close PIN Handle
-    PIN_close(hNpiHandshakePins);
-#ifdef NPI_SW_HANDSHAKING_DEBUG
-    PIN_close(hNpiProfilingDebugPin);
-#endif //NPI_SW_HANDSHAKING
-    // Release Power Management
     NPITL_relPM();
-#endif //POWER_SAVING
 
     NPIUtil_ExitCS(key);
 }
-  
+// -----------------------------------------------------------------------------
+//! \brief      This routine calls the UART transport open
+//!
+//! \param[in]  initiatorState - Whether the UART is being opened by initiator
+//!             or responder. 1 - initiator 0 - responsder
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+void NPITL_openTransportPort(hsTransactionRole role)
+{
+  NPITL_setPM();
+  // Close the RxPin
+  PIN_close(hNpiUartRxPin);
+  transportOpen(npiTLParams.portBoardID,
+                &npiTLParams.portParams.uartParams, role);
+  trasnportLayerState = TL_busy;
+}
 // -----------------------------------------------------------------------------
 //! \brief      This routine returns the state of transmission on NPI
 //!
 //! \return     bool - state of NPI transmission - 1 - active, 0 - not active
 // -----------------------------------------------------------------------------
-bool NPITL_checkNpiBusy(void)
+tlState NPITL_getTlStatus(void)
 {
-	return (handshakingState & HS_WAITFORCHIRP);
+  return trasnportLayerState;
 }
-
-#ifdef POWER_SAVING
 // -----------------------------------------------------------------------------
 //! \brief      This routine is used to set constraints on power manager
 //!
@@ -300,9 +274,6 @@ void NPITL_setPM(void)
     Power_setConstraint(Power_IDLE_PD_DISALLOW);
     npiPMSetConstraint = TRUE;
 }
-#endif //POWER_SAVING
-
-#ifdef POWER_SAVING
 // -----------------------------------------------------------------------------
 //! \brief      This routine is used to release constraints on power manager
 //!
@@ -320,78 +291,25 @@ void NPITL_relPM(void)
     Power_releaseConstraint(Power_IDLE_PD_DISALLOW);
     npiPMSetConstraint = FALSE;
 }
-#endif //POWER_SAVING
-
-#ifdef POWER_SAVING
 // -----------------------------------------------------------------------------
-//! \brief      This routine is used to handle an MRDY transition from a task
-//!             context. Certain operations such as UART_read() cannot be
-//!             performed from a HWI context
-//!
-//! \return     void
-// -----------------------------------------------------------------------------
-void NPITL_handleRemRdyEvent(void)
-{
-	_npiCSKey_t key;
-	key = NPIUtil_EnterCS();
-	//If the UART port is closed, then open it
-    if(HS_GPIO_STATE & handshakingState)
-    {
-    	NPITL_setPM();
-    	//Close the GPIO, then
-    	//Open the UART
-    	 PIN_close(hNpiHandshakePins);
-    	 transportOpen(npiTLParams.portBoardID,
-					  &npiTLParams.portParams.uartParams,
-					  NPITL_transmissionCallBack, NPITL_chirpRecievedCB);
-    	 handshakingState |=  HS_WAITFORCHIRP|HS_UART_STATE;
-    	 //Clear GPIO flag, we are no longer in this state
-    	 handshakingState &= ~HS_GPIO_STATE;
-    }
-    else
-    {
-    	//Once UART is open
-        //Handle the RemRdy Event
-        transportRemRdyEvent();
-    }
-    NPIUtil_ExitCS(key);
-}
-
-// -----------------------------------------------------------------------------
-//! \brief      This is a HWI function handler for the MRDY pin. Some MRDY
-//!             functionality can execute from this HWI context. Others
-//!             must be executed from task context hence the taskCBs.remRdyCB()
+//! \brief      This is a HWI function handler for the UART Rx pin. It will wake
+//!             the TL and signal the app to open the TL by closing UART and 
+//!             opening the GPIO
 //!
 //! \param[in]  hPin - PIN Handle
 //! \param[in]  pinId - ID of pin that triggered HWI
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-static void NPITL_remRdyPINHwiFxn(PIN_Handle hPin, PIN_Id pinId)
-{ 
-    NPITL_setPM();
-    // Signal to registered task that Rem Ready signal has changed state
-    if (taskCBs.remRdyCB)
-    {
-        taskCBs.remRdyCB(remRdy_state);
-    }
-}
-// -----------------------------------------------------------------------------
-//! \brief      This function is used to trigger the RemRdy Event in the task
-//!             from a chirp callBack
-//!
-//! \return     void
-// -----------------------------------------------------------------------------
-void NPITL_chirpRecievedCB(void)
+static void NPITL_rxPinHwiFxn(PIN_Handle hPin, PIN_Id pinId)
 {
-	//Call the RemRdy call back in the task
-    if (taskCBs.remRdyCB)
+    NPITL_setPM();
+    // Signal to registered task that TL is awake, needs to open
+    if (taskCBs.tlOpenCB)
     {
-        taskCBs.remRdyCB(remRdy_state);
+        taskCBs.tlOpenCB();
     }
-
 }
-#endif //POWER_SAVING
 
 // -----------------------------------------------------------------------------
 //! \brief      This callback is invoked on the completion of one transmission
@@ -410,44 +328,80 @@ static void NPITL_transmissionCallBack(uint16_t Rxlen, uint16_t Txlen)
     npiRxBufHead = 0;
     npiRxBufTail = Rxlen;
     npiTxActive = FALSE;
-    
-    // If Task is registered, invoke transaction complete callback
-    if (taskCBs.transCompleteCB)
+    //Since the largest valid NPI packet size is 4096
+    //valid RxLen fields should only be up to 0x0FFF
+    //a larger RxLen value tells the TL that a Rx is in progress
+    //and the UART cannot be closed yet
+    //in the above case, a CB will be triggered for the Tx, but Rx will wait
+    //until ReadCB completes at NPITLUART layer
+    if(!(Rxlen & 0x1000))
     {
-        taskCBs.transCompleteCB(Rxlen, Txlen);
+      //Since we have rx/tx'd a complete packet, it is time to close out the TL
+      //and ready the processor for sleep
+#ifdef SWHS_DEBUG  
+      //Set Pin if in debug mode 
+      PIN_setOutputValue(hNpiProfilingPin, Board_LED2, 1);
+#endif //SWHS_DEBUG
+      transportClose();
+      // Open the Pins for ISR
+      hNpiUartRxPin = PIN_open(&npiUartRxPin, npiUartRxPinCfg);
+      PIN_registerIntCb(hNpiUartRxPin, NPITL_rxPinHwiFxn);
+      PIN_setConfig(hNpiUartRxPin, 
+                    PIN_BM_IRQ, 
+                    Board_UART_RX | PIN_IRQ_BOTHEDGES);
+
+      // Enable wakeup
+      PIN_setConfig(hNpiUartRxPin, 
+                    PINCC26XX_BM_WAKEUP, 
+                    Board_UART_RX | PINCC26XX_WAKEUP_NEGEDGE);
+  #ifdef SWHS_DEBUG  
+      //Set Pin if in debug mode 
+      PIN_setOutputValue(hNpiProfilingPin, Board_LED2, 0);
+  #endif //SWHS_DEBUG
+      //It is also valid to clear all flags at this point
+      trasnportLayerState = TL_closed;
+      
+        // If Task is registered, invoke transaction complete callback
+      if (taskCBs.transCompleteCB)
+      {
+          taskCBs.transCompleteCB(Rxlen, Txlen);
+      }
+      NPITL_relPM();
     }
-#ifdef NPI_SW_HANDSHAKING_DEBUG
-    //Set the profiling pin high
-    PIN_setOutputValue(hNpiProfilingDebugPin, profilingDebugPin, 1);
-#endif //NPI_SW_HANDSHAKING_DEBUG
-    // Close the UART
-    transportClose();
-    // Open the Pins for ISR
-    hNpiHandshakePins = PIN_open(&npiHandshakePins, npiHandshakePinsCfg);
-    	//replace remRdyPIN with Board_UART_RX
-    	PIN_registerIntCb(hNpiHandshakePins, NPITL_remRdyPINHwiFxn);
-    	PIN_setConfig(hNpiHandshakePins,
-    				  PIN_BM_IRQ,
-    				  Board_UART_RX | PIN_IRQ_BOTHEDGES);
-
-    	// Enable wakeup
-    	PIN_setConfig(hNpiHandshakePins,
-    				  PINCC26XX_BM_WAKEUP,
-    				  Board_UART_RX | PINCC26XX_WAKEUP_NEGEDGE);
-#ifdef NPI_SW_HANDSHAKING_DEBUG
-    	//Indicate that we are now asleep in the GPIO state
-    	PIN_setOutputValue(hNpiProfilingDebugPin, profilingDebugPin, 0);
-#endif //NPI_SW_HANDSHAKING_DEBUG
-    	//It is also valid to clear all flags at this point
-    	_npiCSKey_t key;
-    	key = NPIUtil_EnterCS();
-    	handshakingState = HS_GPIO_STATE;
-    	NPIUtil_ExitCS(key);
-#ifdef POWER_SAVING
-    NPITL_relPM();
-#endif //POWER_SAVING
+    else
+    {
+      //be sure to indicate TL is still busy
+      trasnportLayerState = TL_busy;
+      // If Task is registered, invoke transaction complete callback
+      //note that RxLen is zero because the read is incomplete
+      if (taskCBs.transCompleteCB)
+      {
+          taskCBs.transCompleteCB(0, Txlen);
+      }
+      
+    }
 }
-
+// -----------------------------------------------------------------------------
+//! \brief      This routine notifies the app layer that the HS is complete
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+static void NPITL_handshakeCompleteCallBack(hsTransactionRole role)
+{
+    //If we are the initiator, give the app the signal to send the message
+    //else if not the initiator, our TL is busy because we are listening(reading) 
+    //whatever the initiator wanted to tell us
+    if(HS_INITIATOR == role)
+      trasnportLayerState = TL_ready;
+    else 
+      trasnportLayerState = TL_busy;
+    
+    //Trigger the HS complete callback in the task
+    if (taskCBs.handshakeCompleteCB)
+    {
+        taskCBs.handshakeCompleteCB(role);
+    }
+}
 // -----------------------------------------------------------------------------
 //! \brief      This routine reads data from the transport layer based on len,
 //!             and places it into the buffer.
@@ -464,7 +418,6 @@ uint16_t NPITL_readTL(uint8_t *buf, uint16_t len)
 
     memcpy(buf, &npiRxBuf[npiRxBufHead], len);
     npiRxBufHead += len;
-
     return len;
 }
 
@@ -478,18 +431,12 @@ uint16_t NPITL_readTL(uint8_t *buf, uint16_t len)
 // -----------------------------------------------------------------------------
 uint8_t NPITL_writeTL(uint8_t *buf, uint16_t len)
 {
-#ifdef POWER_SAVING
     _npiCSKey_t key;
-    key = NPIUtil_EnterCS();
-#endif //POWER_SAVING
-    
+    key = NPIUtil_EnterCS(); 
     // Check to make sure NPI is not currently in a transaction
-    if (NPITL_checkNpiBusy())
+    if (TL_ready != NPITL_getTlStatus())
     {
-#ifdef POWER_SAVING
         NPIUtil_ExitCS(key);
-#endif // POWER_SAVING
-
         return NPI_BUSY;
     }
     
@@ -497,26 +444,19 @@ uint8_t NPITL_writeTL(uint8_t *buf, uint16_t len)
     // allowed
     if (len > npiBufSize)
     {
-#ifdef POWER_SAVING
         NPIUtil_ExitCS(key);
-#endif // POWER_SAVING
-
         return NPI_TX_MSG_OVERSIZE;
     }
-    
     // Copy into the second byte of npiTxBuf. This will save Serial Port
-    // Specific TL code from having to shift one byte later on for SOF. 
+    // Specific TL code from having to shift one byte later on for SOF.
+    //memset(npiTxBuf, 0, npiTLParams.npiTLBufSize);
     memcpy(&npiTxBuf[1], buf, len);
     npiTxBufLen = len;
     npiTxActive = TRUE;
     txPktCount++;
-
+    trasnportLayerState = TL_busy;
     transportWrite(npiTxBufLen);
-
-#ifdef POWER_SAVING
     NPIUtil_ExitCS(key);
-#endif //POWER_SAVING
-
     return NPI_SUCCESS;
 }
 

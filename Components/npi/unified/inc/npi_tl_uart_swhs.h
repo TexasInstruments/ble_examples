@@ -1,5 +1,5 @@
 /*
- * npi_tl_uart.h
+ * npi_tl_uart_swhs.h
  *
  * NPI Transport Layer Module for UART
  *
@@ -66,15 +66,14 @@ extern "C"
 //!
 //! \return     void
 // ----------------------------------------------------------------------------- 
-typedef void (*npiCB_t)(uint16_t rxLen, uint16_t txLen);
-
+typedef void (*npiTransmissionCompleteCB_t)(uint16_t rxLen, uint16_t txLen);
 // -----------------------------------------------------------------------------
 //! \brief      Typedef for call back function mechanism to notify NPI TL that
-//!             a chirp has been read
+//!             a software handshake is complete    
 //!
 //! \return     void
-// -----------------------------------------------------------------------------
-typedef void (*npiChirpCB_t)(void);
+// ----------------------------------------------------------------------------- 
+typedef void (*npiHandshakeCompleteCB_t)(hsTransactionRole role);
 
 //*****************************************************************************
 // globals
@@ -85,20 +84,39 @@ typedef void (*npiChirpCB_t)(void);
 //*****************************************************************************
 
 // -----------------------------------------------------------------------------
-//! \brief      This routine initializes the transport layer and opens the port
+//! \brief      This routine opens the port
 //!             of the device.
 //!
-//! \param[in]  portID		ID value for board specific UART port
-//! \param[in]  portParams	Parameters used to initialize UART port
-//! \param[in]  npiCBack    	Trasnport Layer call back function for packet complete
-//! \param[in]  npiChirpCBack   Trasnport Layer call back function  for chirp
+//! \param[in]  portID      ID value for board specific UART port
+//! \param[in]  portParams  Parameters used to initialize UART port
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-extern void NPITLUART_openTransport(uint8_t portID, UART_Params *portParams, 
-                             	    npiCB_t npiCBack, npiChirpCB_t npiChirpCBack);
-
-
+extern void NPITLUART_openTransport(uint8_t portID, UART_Params *portParams,
+                                    hsTransactionRole role);
+// -----------------------------------------------------------------------------
+//! \brief      This routine opens the port
+//!             of the device.
+//!
+//! \param[in]  role      The hsTransactionRole
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+extern void NPITLUART_resendChirp(hsTransactionRole role);
+// -----------------------------------------------------------------------------
+//! \brief      This routine initializes the transport layer and opens the port
+//!             of the device.
+//!
+//! \param[in]  portID      ID value for board specific UART port
+//! \param[in]  portParams  Parameters used to initialize UART port
+//! \param[in]  npiTransmissionCompleteCB       TL Transmission complete CB
+//! \param[in]  npiHandshakeCompleteCB          TL handshake complete CB
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+extern void NPITLUART_initTransport(UART_Params *portParams,
+                           npiTransmissionCompleteCB_t npiCBack,
+                           npiHandshakeCompleteCB_t npiHSCback);
 // -----------------------------------------------------------------------------
 //! \brief      This routine closes Transport Layer port
 //!
@@ -128,7 +146,15 @@ extern uint16_t NPITLUART_writeTransport(uint16_t len);
 //! \return     void
 // -----------------------------------------------------------------------------
 extern void NPITLUART_stopTransfer(void);
-
+// -----------------------------------------------------------------------------
+//! \brief      This routine kicks off the handshaking process in a given role
+//!
+//! \param[in]  hanlde - handle to UART port recently opened
+//! \param[in]  role - the handshaking role, initiator or responder
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+extern void NPITLUART_doHandshake(UART_Handle handle, hsTransactionRole role);
 // -----------------------------------------------------------------------------
 //! \brief      This routine is called from the application context when REM RDY
 //!             is de-asserted
@@ -136,6 +162,7 @@ extern void NPITLUART_stopTransfer(void);
 //! \return     void
 // -----------------------------------------------------------------------------
 extern void NPITLUART_handleRemRdyEvent(void);
+
 
 
 #ifdef __cplusplus

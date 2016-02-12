@@ -1,5 +1,5 @@
 /*
- * npi_tl.h
+ * npi_tl_swhs.h
  *
  * NPI Transport Layer API
  *
@@ -55,21 +55,14 @@ extern "C"
 // defines
 // ****************************************************************************
 
-#if defined(NPI_USE_UART)
 #define transportOpen NPITLUART_openTransport
+#define transportInit NPITLUART_initTransport
 #define transportClose NPITLUART_closeTransport
 #define transportRead NPITLUART_readTransport
 #define transportWrite NPITLUART_writeTransport
 #define transportStopTransfer NPITLUART_stopTransfer
 #define transportRemRdyEvent NPITLUART_handleRemRdyEvent
-#elif defined(NPI_USE_SPI)
-#define transportOpen NPITLSPI_openTransport
-#define transportClose NPITLSPI_closeTransport
-#define transportRead NPITLSPI_readTransport
-#define transportWrite NPITLSPI_writeTransport
-#define transportStopTransfer NPITLSPI_stopTransfer
-#define transportRemRdyEvent NPITLSPI_handleRemRdyEvent
-#endif //NPI_USE_UART
+
 
 // ****************************************************************************
 // typedefs
@@ -80,14 +73,18 @@ extern "C"
 typedef void (*npiRtosCB_t)(uint16_t sizeRx, uint16_t sizeTx);
 
 //! \brief      Typedef for call back function mechanism to notify NPI Task that
-//!             an Remote Ready edge has occurred
-typedef void (*npiMrdyRtosCB_t)(uint8_t state);
+//!             the software handshake is complete
+typedef void (*npiHSCompleteRtosCB_t)(hsTransactionRole role);
+//! \brief      Typedef for call back function mechanism to notify NPI Task that
+//!             the tl needs to be opened (close PIN, open UART)
+typedef void (*npiTlOpenRtosCB_t)(void);
 
 //! \brief      Struct for transport layer call backs
 typedef struct
 {
-  npiMrdyRtosCB_t remRdyCB;
-  npiRtosCB_t     transCompleteCB;      
+  npiHSCompleteRtosCB_t handshakeCompleteCB;
+  npiTlOpenRtosCB_t     tlOpenCB;
+  npiRtosCB_t           transCompleteCB;      
 } npiTLCallBacks;
 
 typedef struct 
@@ -100,6 +97,13 @@ typedef struct
   npiInterfaceParams    portParams;     //!< Params to initialize NPI port
   npiTLCallBacks        npiCallBacks;   //!< Call backs to NPI Task
 } NPITL_Params;
+
+typedef enum
+{
+  TL_busy,
+  TL_closed,
+  TL_ready
+}tlState;
 
 //*****************************************************************************
 // globals
@@ -126,7 +130,15 @@ void NPITL_openTL(NPITL_Params *params);
 //! \return     void
 // -----------------------------------------------------------------------------
 void NPITL_closeTL(void);
-
+// -----------------------------------------------------------------------------
+//! \brief      This routine calls the UART transport open
+//!
+//! \param[in]  role - Whether the UART is being opened by initiator
+//!             or responder.
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+void NPITL_openTransportPort(hsTransactionRole role);
 // -----------------------------------------------------------------------------
 //! \brief      This routine reads data from the transport layer based on len,
 //!             and places it into the buffer.
@@ -158,13 +170,6 @@ uint8_t NPITL_writeTL(uint8_t *buf, uint16_t len);
 void NPITL_handleRemRdyEvent(void);
 
 // -----------------------------------------------------------------------------
-//! \brief      This function is used to trigger the RemRdy Event in the task
-//!             from a chirp callBack
-//!
-//! \return     void
-// -----------------------------------------------------------------------------
-void NPITL_triggerRemRdyFromChirp(void);
-// -----------------------------------------------------------------------------
 //! \brief      This routine returns the max size receive buffer.
 //!
 //! \return     uint16_t - max size of the receive buffer
@@ -188,9 +193,9 @@ uint16_t NPITL_getRxBufLen(void);
 // -----------------------------------------------------------------------------
 //! \brief      This routine returns the state of transmission on NPI
 //!
-//! \return     bool - state of NPI transmission - 1 - active, 0 - not active
+//! \return     uint8_t - TL_state enum (TL_closed, TL_busy, TL_ready)
 // -----------------------------------------------------------------------------
-bool NPITL_checkNpiBusy(void);
+tlState NPITL_getTlStatus(void);
 
 /*******************************************************************************
  */

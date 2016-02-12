@@ -1269,11 +1269,11 @@
         </option>
         <option>
           <name>TIPackageOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>TIPackage</name>
-          <state>C:\ti\ccs_base</state>
+          <state>C:\ti\ccsv6\ccs_base</state>
         </option>
         <option>
           <name>CCXds100InterfaceList</name>

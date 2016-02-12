@@ -54,6 +54,7 @@
 #include "inc/npi_data_swhs.h"
 #include "inc/npi_tl_uart_swhs.h"
 #include <ti/drivers/UART.h>
+#include <ti/drivers/uart/UARTCC26XX.h>
 
 // ****************************************************************************
 // defines
@@ -67,18 +68,34 @@
 #define NPI_UART_MSG_SOF                             0xFE
 #define NPI_UART_MSG_SOF_IDX                         0x00
 
+//! \brief NPI UART SW Handshaking contents and sizes
+//! \brief Note that all HS transactions are 1 byte
+#define NPI_UART_HS_LEN                              0x01
+#define NPI_UART_HS_RST                              0xFA
+#define NPI_UART_HS_CHIRP                            0x55
+#define NPI_UART_HS_JUNK                             0xAA
 
-
+//! \brief NPI UART SW state flags in handshakingState var
+#define NPI_UART_HS_CHIRP_QUEUED                     0x80
+#define NPI_UART_HS_RST_QUEUED                       0x40
+#define NPI_UART_HS_RST_SENT                         0x20
+#define NPI_UART_HS_CHIRP_SENT                       0x10
+#define NPI_UART_HS_COMPLETE                         0x08
+#define NPI_UART_HS_INITIATOR                        0x04
+#define NPI_UART_HS_WAIT                             0x02
+#define NPI_UART_HS_RST_STATE                        0x01
 
 //! \brief NPI UART Read States
 typedef enum
 {
   NPITLUART_READ_SOF = 0x00,
+  NPITLUART_READ_RST,
   NPITLUART_READ_CHIRP,
   NPITLUART_READ_HDR,
   NPITLUART_READ_PLD,
   NPITLUART_IGNORE
 } npiTLUart_readState;
+
 
 // ****************************************************************************
 // typedefs
@@ -91,30 +108,30 @@ typedef enum
 static UART_Handle uartHandle;
 
 //! \brief NPI TL call back function for the end of a UART transaction
-static npiCB_t npiTransmitCB = NULL;
-static npiChirpCB_t npiChirpCB = NULL;
+static npiTransmissionCompleteCB_t npiTransmitCB = NULL;
 
-#ifdef POWER_SAVING
-//! \brief Flag signalling receive in progress
-static uint8_t RxActive = FALSE;
+//! \brief NPI TL call back function for complete handshake
+static npiHandshakeCompleteCB_t npiHandshakeCB = NULL;
 
-//! \brief Flag signalling transmit in progress
-static uint8_t TxActive = FALSE;
-#endif //POWER_SAVING
+//! \brief Flag sigaling software handshake status, default to RST
+static uint8_t handshakingState = NPI_UART_HS_RST_STATE;
+
 
 //! \brief Length of bytes received
 static uint16_t TransportRxLen = 0;
-//! \brief chirp byte
-static uint8_t chirp = CHIRP_BYTE;
+
 //! \brief Length of bytes to send from NPI TL Tx Buffer
 static uint16_t TransportTxLen = 0;
+
+//! \brief Handshaking TX/RX data bytes
+static uint8_t *hsTxByte;
+static uint8_t *hsRxByte;
+
 
 //! \brief NPI Transport Layer Buffer variables defined in npi_tl.c
 extern uint8_t *npiRxBuf;
 extern uint8_t *npiTxBuf;
 extern uint16_t npiBufSize;
-//! \brief NPI Transport Layer State variable defined in npi_tl.c
-extern hsState handshakingState;
 
 //*****************************************************************************
 // function prototypes
@@ -136,34 +153,73 @@ static uint8_t NPITLUART_calcFCS(uint8_t *buf, uint16_t len);
 //! \brief      This routine initializes the transport layer and opens the port
 //!             of the device.
 //!
-//! \param[in]  portID     		ID value for board specific UART port
-//! \param[in]  portParams  	Parameters used to initialize UART port
-//! \param[in]  npiCBack    	Trasnport Layer call back function for packet complete
-//! \param[in]  npiChirpCBack   Trasnport Layer call back function  for chirp
+//! \param[in]  portID      ID value for board specific UART port
+//! \param[in]  portParams  Parameters used to initialize UART port
+//! \param[in]  npiTransmissionCompleteCB       TL Transmission complete CB
+//! \param[in]  npiHandshakeCompleteCB          TL handshake complete CB
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+void NPITLUART_initTransport(UART_Params *portParams,
+                             npiTransmissionCompleteCB_t npiCBack,
+                             npiHandshakeCompleteCB_t npiHSCback)
+{
+  //Initialize TL Layer callabacks
+  npiTransmitCB = npiCBack;
+  npiHandshakeCB = npiHSCback;
+  // Add call backs UART parameters.
+  portParams->readCallback = NPITLUART_readCallBack;
+  portParams->writeCallback = NPITLUART_writeCallBack;
+  
+  hsTxByte = NPIUTIL_MALLOC(NPI_UART_HS_LEN);
+  memset(hsTxByte, NPI_UART_HS_JUNK, NPI_UART_HS_LEN);
+  hsRxByte = NPIUTIL_MALLOC(NPI_UART_HS_LEN);
+  memset(hsRxByte, NPI_UART_HS_JUNK, NPI_UART_HS_LEN);
+  //Don't open the UART yet, this will be handled at a per message basis
+  //in the open transport function
+}
+// -----------------------------------------------------------------------------
+//! \brief      This routine opens the port
+//!             of the device.
+//!
+//! \param[in]  portID      ID value for board specific UART port
+//! \param[in]  portParams  Parameters used to initialize UART port
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
 void NPITLUART_openTransport(uint8_t portID, UART_Params *portParams,
-                             npiCB_t npiCBack, npiChirpCB_t npiChirpCBack)
+                             hsTransactionRole role)
 {
-  npiTransmitCB = npiCBack;
-  npiChirpCB = npiChirpCBack;
-
-  // Add call backs UART parameters.
-  portParams->readCallback = NPITLUART_readCallBack;
-  portParams->writeCallback = NPITLUART_writeCallBack;
-
+  hsRxByte[0] = NPI_UART_HS_JUNK;
+  hsTxByte[0] = NPI_UART_HS_JUNK;
   // Open / power on the UART.
   uartHandle = UART_open(portID, portParams);
-  //Always read after opening
-  if(NULL != uartHandle)
+  //Remove any mystery bytes from the FIFO...i.e. 0xF8
+  volatile uint16_t count = 0;
+  while( count < 32000)
   {
-	  //Read to be sure we don't miss a chirp or SOF
-	  UART_read(uartHandle, npiRxBuf, CHIRP_SIZE);
-	  //Write to chirp back to the Remote proc to indicate we're awake
-	  handshakingState |= HS_CHIRP_SENT;
-	  UART_write(uartHandle, &chirp, CHIRP_SIZE);
+    UARTCharGetNonBlocking(((UARTCC26XX_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr);
+    count++;
   }
+  NPITLUART_doHandshake(uartHandle,role);
+}
+// -----------------------------------------------------------------------------
+//! \brief      This routine re-sends a chirp if the remote proc 
+//!             missed the previously sent one
+//!
+//! \param[in]  role the hsTransactionRole
+//!
+//! \return     None
+// -----------------------------------------------------------------------------
+void NPITLUART_resendChirp(hsTransactionRole role)
+{
+  _npiCSKey_t key;
+  key = NPIUtil_EnterCS();
+  hsTxByte[0] = NPI_UART_HS_CHIRP;
+  handshakingState |= (NPI_UART_HS_CHIRP_QUEUED | NPI_UART_HS_INITIATOR
+                    | NPI_UART_HS_WAIT);
+  UART_write(uartHandle, hsTxByte, NPI_UART_HS_LEN);
+  NPIUtil_ExitCS(key);
 }
 
 // -----------------------------------------------------------------------------
@@ -188,49 +244,67 @@ void NPITLUART_stopTransfer(void)
   // This is a dummy function for the UART Master implementation
   // The transfer will end once the master has finished sending and has 
   // received a valid packet from Slave or no data at all
+  //TODO: SML-remove this function?
 }
 #endif //POWER_SAVING
-
-#ifdef POWER_SAVING
 // -----------------------------------------------------------------------------
-//! \brief      This routine is called from the application context when REM RDY
-//!             is de-asserted
+//! \brief      This routine kicks off the handshaking process in a given role
+//!
+//! \param[in]  hanlde - handle to UART port recently opened
+//! \param[in]  role - the handshaking role, initiator or responder
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
-void NPITLUART_handleRemRdyEvent(void)
+void NPITLUART_doHandshake(UART_Handle handle, hsTransactionRole role)
 {
   _npiCSKey_t key;
   key = NPIUtil_EnterCS();
-
-  // If read has not yet been started, now is the time before Master
-  // potentially starts to send data
-  // There is the possibility that MRDY gets set high which
-  // clears RxActive prior to us getting to this event. This will cause us to
-  // read twice per transaction which will cause the transaction to never
-  // complete
-  if (!RxActive && !TxActive)
+  //If we are in the reset state, we need to perform reset handshake
+  //Else we should perform normal HS
+  if(handshakingState & NPI_UART_HS_RST_STATE)
   {
-    NPITLUART_readTransport();
+    //Regardless of role, we want to write a chirp and read remote
+    //Reset initiator is determined by who sends RST byte first
+    //Indicate we have queued a chirp, and are waiting for
+    // a chirp in response
+    handshakingState |= (NPI_UART_HS_CHIRP_QUEUED | NPI_UART_HS_WAIT);
+    
+    UART_read(handle, hsRxByte, NPI_UART_HS_LEN);
+    //Write to chirp back to the Remote proc to indicate we're awake
+    hsTxByte[0] = NPI_UART_HS_CHIRP;
+    UART_write(handle, hsTxByte, NPI_UART_HS_LEN);
   }
-
-  // If write has already been initialized then kick off the driver write
-  // now that Master has signalled it is ready
-  if (TxActive)
+  else
   {
-    // Check to see if transport is successful. If not, reset TxLen to allow
-    // another write to be processed
-    if (UART_write(uartHandle, npiTxBuf, TransportTxLen) == UART_ERROR)
+    //Set HS byte to send to be a chirp
+    hsTxByte[0] = NPI_UART_HS_CHIRP;
+    
+    if(HS_INITIATOR == role)
     {
-      TxActive = FALSE;
-      TransportTxLen = 0;
+      //Indicate we are the initiator, have queued a chirp, and are waiting for
+      // a chirp in response
+
+      //Kick off remote chirp read first to ensure we don't miss it
+      UART_read(handle, hsRxByte, NPI_UART_HS_LEN);
+      //Write to chirp back to the Remote proc to indicate we're awake
+      handshakingState = (NPI_UART_HS_CHIRP_QUEUED | NPI_UART_HS_INITIATOR
+                    | NPI_UART_HS_WAIT);
+      UART_write(handle, hsTxByte, NPI_UART_HS_LEN);
+
+    }
+    else
+    {
+      //Indicate we are the not the initiator, and are not waiting on any resp
+      //from remote, once write is confirmed, we are clear to read NPI msg
+      handshakingState = (NPI_UART_HS_CHIRP_QUEUED);
+      //We have already rx'd a chirp to wake us up, we just need to respond
+      UART_write(handle, hsTxByte, NPI_UART_HS_LEN);
+      //kickoff NPI frame read
+      NPITLUART_readTransport();
     }
   }
-
   NPIUtil_ExitCS(key);
 }
-#endif //POWER_SAVING
-
 // -----------------------------------------------------------------------------
 //! \brief      This callback is invoked on Write completion
 //!
@@ -244,47 +318,78 @@ void NPITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
 {
   _npiCSKey_t key;
   key = NPIUtil_EnterCS();
-#ifdef POWER_SAVING
-  // If we have received a valid packet or have not received any data yet
-  // we can end this transaction
-  //Note that we want to ignore the writeCallback for Chirps,
-  //so we check this flag and clear it and the end of this callback
-  if(!(handshakingState & HS_CHIRP_SENT))
+  uint16_t localRxLen = TransportRxLen;
+  //We should only process NPI packets when HS is complete
+  if(!(handshakingState & NPI_UART_HS_CHIRP_QUEUED) &&
+     !(handshakingState & NPI_UART_HS_RST_QUEUED))
+  { 
+    //If we haven't read anything yet, we aren't going to
+    //cancel the read so we can release PM and close the UART
+    if(TransportRxLen == 0)
+    {
+      UART_readCancel(uartHandle);
+    }
+    else
+    {
+      //else check to see if we have rx'd a valid packet
+      //if we have, we are safe to sleep, if not need to stay awake
+      if (NPITLUART_validPacketFound() == NPI_SUCCESS)
+      {
+        // Decrement as to not include trailing FCS byte
+        TransportRxLen--;
+      }
+      else
+      {
+        //Since the largest valid NPI packet size is 4096
+        //valid RxLen fields should only be up to 0x0FFF
+        //by setting a bogus RxLen, we let the TL know that 
+        //a Rx is in process w/o an extra parameter
+        localRxLen |= 0x1000;
+      }
+    }
+    if (npiTransmitCB) 
+    {   
+      npiTransmitCB(localRxLen,TransportTxLen);
+    }
+  }
+  //Else we have just sent a CHIRP or RST
+  else
   {
-	  if (!RxActive || TransportRxLen == 0)
-	  {
-		UART_readCancel(uartHandle);
-		RxActive = FALSE;
-
-		if (npiTransmitCB)
-		{
-		  if (NPITLUART_validPacketFound() == NPI_SUCCESS)
-		  {
-			// Decrement as to not include trailing FCS byte
-			TransportRxLen--;
-		  }
-		  else
-		  {
-			// Did not receive valid packet so denote RX length as zero in CB
-			TransportRxLen = 0;
-		  }
-
-			  npiTransmitCB(TransportRxLen,TransportTxLen);
-		}
-	  }
+    //If we are not in reset and just sent a chirp
+    if(!(handshakingState & NPI_UART_HS_RST_STATE) && 
+       (handshakingState & NPI_UART_HS_CHIRP_QUEUED))
+    {
+      //If we aren't the initiator it is safe to trigger the HS_complete
+      //NPI should be reading packet by now
+      if(!(handshakingState & NPI_UART_HS_INITIATOR))
+      {
+        handshakingState = NPI_UART_HS_COMPLETE;
+        handshakingState &= ~NPI_UART_HS_CHIRP_QUEUED;
+        handshakingState |= NPI_UART_HS_CHIRP_SENT;
+      }
+      else
+      {
+        //Chirp is now confirmed to have been sent
+        handshakingState &= ~NPI_UART_HS_CHIRP_QUEUED;
+        handshakingState |= NPI_UART_HS_CHIRP_SENT;
+      }
+    }
+    else //we are in reset mode
+    {
+      
+      if(handshakingState & NPI_UART_HS_CHIRP_QUEUED)
+      {
+        handshakingState &= ~NPI_UART_HS_CHIRP_QUEUED;
+        handshakingState |= NPI_UART_HS_CHIRP_SENT;
+      }
+      if(handshakingState & NPI_UART_HS_RST_QUEUED)
+      {
+        handshakingState &= ~NPI_UART_HS_RST_QUEUED;
+        handshakingState |= NPI_UART_HS_RST_SENT;
+      }
+    }
   }
 
-
-  TxActive = FALSE;
-#else
-  if (npiTransmitCB)
-  {
-    npiTransmitCB(0,TransportTxLen);
-  }
-#endif //POWER_SAVING
-  //If we just got here by sending a chirp, clear the chirp flag
-  if(handshakingState & HS_CHIRP_SENT)
-	  handshakingState &= ~HS_CHIRP_SENT;
   NPIUtil_ExitCS(key);
 }
 
@@ -304,20 +409,155 @@ void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
   static uint16_t payloadLen = 0;
   _npiCSKey_t key;
   key = NPIUtil_EnterCS();
-  //If we just recieved a chirp, go into chirp state
-  if(size == CHIRP_SIZE && npiRxBuf[0] == CHIRP_BYTE)
-	  readState = NPITLUART_READ_CHIRP;
-
+  
+  //Set local readState variable according to HS state
+  //If we have rx'd a reset, that takes precedence
+  if((handshakingState & NPI_UART_HS_RST_STATE) || (npiRxBuf[0] == NPI_UART_HS_RST))
+  {
+    readState = NPITLUART_READ_RST;
+    //The below case is for when we thought we completed the HS, but rx'd a RST
+    //we need to force RST conditions
+    if(npiRxBuf[0] == NPI_UART_HS_RST)
+    {
+      handshakingState = NPI_UART_HS_RST_STATE;
+      hsRxByte[0] = NPI_UART_HS_RST;
+      npiRxBuf[0] = NPI_UART_HS_JUNK;
+    }
+  }
+  else if(!(handshakingState & NPI_UART_HS_COMPLETE))
+  {
+    readState = NPITLUART_READ_CHIRP;
+  }
+  //Case statement to crawl over the various parts of the HS logic and NPI frame
   switch (readState)
   {
-  	case NPITLUART_READ_CHIRP:
-
-		if(npiChirpCB)
-		{
-			readState = NPITLUART_READ_SOF;
-			npiChirpCB();
-		}
-		break;
+    case NPITLUART_READ_RST:
+      //Check to see that the data we rx'd is a valid RST byte
+      if (size == NPI_UART_HS_LEN && ((hsRxByte[0] == NPI_UART_HS_RST) 
+                                      | (hsRxByte[0] == NPI_UART_HS_CHIRP)))
+      {
+          if(hsRxByte[0] == NPI_UART_HS_CHIRP)
+          {
+            //We have now written and rx'd a chirp, lets send a reset
+            hsTxByte[0] = NPI_UART_HS_RST;
+            handshakingState |= (NPI_UART_HS_RST_QUEUED | NPI_UART_HS_WAIT);
+            UART_read(handle, hsRxByte, NPI_UART_HS_LEN);
+            UART_write(handle, hsTxByte, NPI_UART_HS_LEN);
+          }
+          else //we've read a RST
+          {
+            hsTxByte[0] = NPI_UART_HS_RST;
+            //If we read a reset and have already sent one, we are initiator
+            if(handshakingState & NPI_UART_HS_RST_SENT)
+            {
+              hsTxByte[0] = NPI_UART_HS_CHIRP;
+              //We have completed RS_HS
+              handshakingState &= ~NPI_UART_HS_RST_STATE;
+              handshakingState &= ~NPI_UART_HS_CHIRP_SENT;
+              //It is safe to clear out any pending reads at this point
+              UART_readCancel(uartHandle);
+              //Start regular chirp HS
+              //Indicate we are the initiator, have queued a chirp, and are waiting for
+              // a chirp in response
+              handshakingState |= (NPI_UART_HS_CHIRP_QUEUED | NPI_UART_HS_INITIATOR
+                                  | NPI_UART_HS_WAIT);
+              //Kick off remote chirp read first to ensure we don't miss it
+              UART_read(handle, hsRxByte, NPI_UART_HS_LEN);
+              //Write to chirp back to the Remote proc to indicate we're awake
+              UART_write(handle, hsTxByte, NPI_UART_HS_LEN);
+            }
+            else
+            {
+              hsTxByte[0] = NPI_UART_HS_RST;
+              //Indicate we have queued a RST for sending
+              handshakingState |= (NPI_UART_HS_RST_QUEUED);
+              //We have completed RS_HS
+              handshakingState &= ~NPI_UART_HS_RST_STATE;
+              handshakingState &= ~NPI_UART_HS_CHIRP_SENT;
+              //It is safe to clear out any pending reads at this point
+              UART_readCancel(uartHandle);
+              //We're not initiator since other proc beat us to sending RST
+              handshakingState &= ~NPI_UART_HS_INITIATOR;
+              //Kick off remote chirp read first to ensure we don't miss it
+              UART_read(handle, hsRxByte, NPI_UART_HS_LEN);
+              //We have already rx'd a RST , we just need to respond
+              UART_write(handle, hsTxByte, NPI_UART_HS_LEN);
+            }
+              
+          }
+      }
+      else
+      {
+        //If we haven't read anything the remote proc may still be coming up
+        //we need to stay awake until we get something.
+        UART_read(handle, hsRxByte, NPI_UART_HS_LEN);
+      }
+      break;
+    case NPITLUART_READ_CHIRP:
+      //Check to see that we have rx'd a valid chirp
+      if ((size == NPI_UART_HS_LEN) && (hsRxByte[0] == NPI_UART_HS_CHIRP))
+      {
+        //If we are the initiator, and have sent a chirp, then HS is complete
+        //if we are responder, have already sent a chirp and rx'd a chirp
+        //we need to reset the HS logic because remote is out of sync
+        if((handshakingState & NPI_UART_HS_INITIATOR) && 
+           (handshakingState & NPI_UART_HS_CHIRP_SENT))
+        {
+          //Set appropriate flags and kick off callback
+          handshakingState = NPI_UART_HS_COMPLETE;
+          readState = NPITLUART_READ_SOF;
+          if (npiHandshakeCB) 
+          {
+            npiHandshakeCB(HS_INITIATOR);
+          }
+        }
+        else if(!(handshakingState & NPI_UART_HS_INITIATOR) && 
+           !(handshakingState & NPI_UART_HS_CHIRP_SENT))
+        {
+          //We have not sent a chirp, and did not initiate,but have rx'd one
+          //once we respond, then the HS will be complete
+          //Indicate we are the not the initiator, and are not waiting on any resp
+          //from remote, once write is confirmed, we are clear to read NPI msg
+          handshakingState = (NPI_UART_HS_CHIRP_QUEUED);
+          hsTxByte[0] = NPI_UART_HS_CHIRP;
+          //We have already rx'd a chirp to wake us up, we just need to respond
+          UART_write(handle, hsTxByte, NPI_UART_HS_LEN);
+          //kickoff NPI frame read
+          handshakingState |= NPI_UART_HS_COMPLETE;
+          readState = NPITLUART_READ_SOF;
+          NPITLUART_readTransport();
+        }
+        else if(!(handshakingState & NPI_UART_HS_INITIATOR) && 
+           (handshakingState & NPI_UART_HS_CHIRP_SENT))
+        {
+          //We have seemingly already completed the HS, but we received another
+          //chirp, something is wrong
+          handshakingState = NPI_UART_HS_RST_STATE;
+          //Regardless of role, we want to write a chirp and read remote
+          //Reset initiator is determined by who sends RST byte first
+          //Indicate we have queued a chirp, and are waiting for
+          // a chirp in response
+          hsTxByte[0] = NPI_UART_HS_RST;
+          handshakingState = (NPI_UART_HS_CHIRP_QUEUED | NPI_UART_HS_WAIT);
+          UART_read(handle, hsRxByte, NPI_UART_HS_LEN);
+          //Write to chirp back to the Remote proc to indicate we're awake
+          UART_write(handle, hsTxByte, NPI_UART_HS_LEN);
+        }
+        
+      }
+      //If we somehow missed a chirp and received a SOF, we must keep reading
+      //this is a bi-directional transfer beginning
+      else if(size == NPI_UART_MSG_SOF_LEN && hsRxByte[0] == NPI_UART_MSG_SOF)
+      {
+        //Note that we can mark the HS as complete in this state, but do not
+        //need CB
+        handshakingState |= NPI_UART_HS_COMPLETE;
+        TransportRxLen = 0;
+        // Recevied SOF, Read HDR next. Do not save SOF byte
+        UART_read(uartHandle, npiRxBuf, NPI_UART_MSG_HDR_LEN);
+        readState = NPITLUART_READ_HDR;
+      }
+      break;
     case NPITLUART_READ_SOF:
       // Should only have read one byte in this state. 
       if (size == NPI_UART_MSG_SOF_LEN && npiRxBuf[0] == NPI_UART_MSG_SOF)
@@ -325,7 +565,6 @@ void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
         // Recevied SOF, Read HDR next. Do not save SOF byte
         UART_read(uartHandle, npiRxBuf, NPI_UART_MSG_HDR_LEN);
         readState = NPITLUART_READ_HDR;
-        
       }
       break;
     
@@ -372,20 +611,10 @@ void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
           // checked and valid
           TransportRxLen--;
           
-#ifdef POWER_SAVING
-          RxActive = FALSE;
-          
-          // If TX has also completed then we are safe to issue call back
-          if (!TxActive && npiTransmitCB)
-          {
-            npiTransmitCB(TransportRxLen,TransportTxLen);
-          }
-#else
           if (npiTransmitCB) 
           {
             npiTransmitCB(TransportRxLen,0);
           }
-#endif //POWER_SAVING
         }
       }
 
@@ -420,15 +649,6 @@ void NPITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
       readState = NPITLUART_READ_SOF;
       break;
   }
-
-#ifndef POWER_SAVING
-  // Initiate next read of SOF byte
-  if (readState == NPITLUART_READ_SOF)
-  {
-    TransportRxLen = 0;
-    UART_read(uartHandle, npiRxBuf, NPI_UART_MSG_SOF_LEN);
-  }
-#endif //!POWER_SAVING
   
   NPIUtil_ExitCS(key);
 }
@@ -443,13 +663,11 @@ void NPITLUART_readTransport(void)
   _npiCSKey_t key;
   key = NPIUtil_EnterCS();
   
-#ifdef POWER_SAVING
-  RxActive = TRUE;
-#endif //POWER_SAVING
 
   TransportRxLen = 0;
+  
+  // UART driver will automatically reject this read if already in use
   UART_read(uartHandle, npiRxBuf, NPI_UART_MSG_SOF_LEN);
-
   
   NPIUtil_ExitCS(key);
 }
@@ -466,26 +684,17 @@ uint16_t NPITLUART_writeTransport(uint16_t len)
 {
   _npiCSKey_t key;
   key = NPIUtil_EnterCS();
-  
+  //Build message
   npiTxBuf[NPI_UART_MSG_SOF_IDX] = NPI_UART_MSG_SOF;
   npiTxBuf[len + 1] = NPITLUART_calcFCS((uint8_t *)&npiTxBuf[1],len);
   TransportTxLen = len + 2;
-
-#ifdef POWER_SAVING
-  TxActive = TRUE;
-
-  // Start reading prior to impending write transaction
-  // We can only call UART_write() once MRDY has been signaled from Master
-  // device
+  //read before writing to ensure we don't miss anything
   NPITLUART_readTransport();
-#else
-  // Check to see if transport is successful. If not, reset TxLen to allow
-  // another write to be processed
+  //write data
   if(UART_write(uartHandle, npiTxBuf, TransportTxLen) == UART_ERROR)
   {
     len = 0;
   }
-#endif //POWER_SAVING
 
   NPIUtil_ExitCS(key);
   
