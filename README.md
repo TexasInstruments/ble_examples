@@ -17,6 +17,7 @@ The following Demos can be found on this repository, which is formatted to mirro
 This example shows how you can avoid RTS/CTS flow control lines and still use the power saving features of the device, by using the RX/TX lines to wake up the chip and do a software handshake with an external MCU or computer. For this demo TI's SimpleNP and SimpleAP projects are used.
 * [SimpleNP projects and docs](Projects/ble/simple_np_sw_handshaking)
 * [SimpleAP projects and docs](Projects/ble/simple_ap_sw_handshaking)
+ * The SimpleAP for CCS links to a prebuilt version of the SAPLib, if you change the SAPLib code, be sure to update your linker settings
 * [SAPLib projects and docs](Projects/ble/sap_lib_sw_handshaking)
 * [Modified NPI component files](Components/npi/unified)
 
