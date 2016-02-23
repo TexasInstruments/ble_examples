@@ -36,7 +36,8 @@
 */
 #include <xdc/runtime/Error.h>
 
-#include <ti/sysbios/family/arm/cc26xx/Power.h>
+#include <ti/drivers/Power.h>
+#include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/sysbios/BIOS.h>
 
 #include "icall.h"

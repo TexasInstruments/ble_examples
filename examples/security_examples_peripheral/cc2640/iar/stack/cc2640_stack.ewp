@@ -680,7 +680,7 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>"$TOOLS$/lib_search/lib_search.exe" $PROJ_DIR$/build_config.opt "$TOOLS$/lib_search/parameters.xml" $SRC_BLE_CORE$/../blelib  $PROJ_DIR$\..\..\lib\$PROJ_FNAME$.a flash_rom</prebuild>
+        <prebuild>"$TOOLS_BLE$/lib_search/lib_search.exe" $PROJ_DIR$/build_config.opt "$TOOLS_BLE$/lib_search/params_split_cc2640.xml" $SRC_BLE_CORE$/../blelib  $PROJ_DIR$/../config/lib_linker.cmd</prebuild>
         <postbuild>"$BOUNDARY$/Boundary.exe" -chip "CC2640" -prj "iar" -lcf "$SRC_EX$/common/cc26xx/iar/cc26xx_stack.icf" -map "$PROJ_DIR$/$CONFIG_NAME$/List/security_examples_peripheral_peripheral_peripheral_stack.map" -xml "$SRC_EX$/common/cc26xx/boundary/boundary_config.xml" -cc "$PROJ_DIR$/../config/iar_boundary.bdef" -lnk "$PROJ_DIR$/../config/iar_boundary.xcl" -log "$PROJ_DIR$/../config/boundary.log"</postbuild>
       </data>
     </settings>
@@ -806,7 +806,7 @@
         </option>
         <option>
           <name>IlinkExtraOptions</name>
-          <state></state>
+          <state>-f $PROJ_DIR$/../config/lib_linker.cmd</state>
           <state>-f $PROJ_DIR$/../config/iar_boundary.xcl</state>
         </option>
         <option>
@@ -1125,10 +1125,7 @@
   <group>
     <name>LIB</name>
     <file>
-      <name>$PROJ_DIR$\..\..\lib\cc2640_stack.a</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\lib\cc2640_stack_hci_tl.a</name>
+      <name>$PROJ_DIR$\..\config\lib_linker.cmd</name>
     </file>
   </group>
   <group>

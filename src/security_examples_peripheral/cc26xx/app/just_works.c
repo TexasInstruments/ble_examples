@@ -62,14 +62,14 @@
 #include "icall_apimsg.h"
 
 #include "util.h"
-#include "board_lcd.h"
+#include "board_display.h"
 #include "board_key.h"
 
 #include "Board.h"
 
 #include "security_examples_peripheral.h"
 
-#include <ti/drivers/lcd/LCDDogm1286.h>
+#include <ti/mw/lcd/LCDDogm1286.h>
 
 /*********************************************************************
  * CONSTANTS
@@ -277,7 +277,7 @@ static void security_examples_peripheral_init(void)
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
-  Board_openLCD();
+  Board_openDisplay(BOARD_DISPLAY_TYPE_LCD);
  
   // Setup the GAP Peripheral Role Profile
   {
@@ -319,7 +319,7 @@ static void security_examples_peripheral_init(void)
     uint8_t mitm = FALSE;
     uint8_t ioCap = GAPBOND_IO_CAP_NO_INPUT_NO_OUTPUT;
     uint8_t bonding = TRUE;
-    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ALLOW;
 
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
@@ -339,7 +339,7 @@ static void security_examples_peripheral_init(void)
   // Start Bond Manager
   VOID GAPBondMgr_Register(&security_examples_peripheral_BondMgrCBs);
    
-  LCD_WRITE_STRING("Security Ex Periph", LCD_PAGE0);
+  DISPLAY_WRITE_STRING("Security Ex Periph", LCD_PAGE0);
 }
 
 /*********************************************************************
@@ -469,13 +469,13 @@ static void security_examples_peripheral_processStateChangeEvt(gaprole_States_t 
         DevInfo_SetParameter(DEVINFO_SYSTEM_ID, DEVINFO_SYSTEM_ID_LEN, systemId);
 
         // Display device address
-        LCD_WRITE_STRING(Util_convertBdAddr2Str(ownAddress), LCD_PAGE1);
-        LCD_WRITE_STRING("Initialized", LCD_PAGE2);
+        DISPLAY_WRITE_STRING(Util_convertBdAddr2Str(ownAddress), LCD_PAGE1);
+        DISPLAY_WRITE_STRING("Initialized", LCD_PAGE2);
       }
       break;
 
     case GAPROLE_ADVERTISING:
-      LCD_WRITE_STRING("Advertising", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Advertising", LCD_PAGE2);
       break;
 
     case GAPROLE_CONNECTED:
@@ -484,39 +484,39 @@ static void security_examples_peripheral_processStateChangeEvt(gaprole_States_t 
 
         GAPRole_GetParameter(GAPROLE_CONN_BD_ADDR, peerAddress);
 
-        LCD_WRITE_STRING("Connected", LCD_PAGE2);
-        LCD_WRITE_STRING(Util_convertBdAddr2Str(peerAddress), LCD_PAGE3);
+        DISPLAY_WRITE_STRING("Connected", LCD_PAGE2);
+        DISPLAY_WRITE_STRING(Util_convertBdAddr2Str(peerAddress), LCD_PAGE3);
       }
       break;
 
     case GAPROLE_CONNECTED_ADV:
-      LCD_WRITE_STRING("Connected Advertising", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Connected Advertising", LCD_PAGE2);
       break;
 
     case GAPROLE_WAITING:
-      LCD_WRITE_STRING("Disconnected", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Disconnected", LCD_PAGE2);
 
       // Clear remaining lines
-      LCD_WRITE_STRING("", LCD_PAGE3);
-      LCD_WRITE_STRING("", LCD_PAGE4);
-      LCD_WRITE_STRING("", LCD_PAGE5);
+      DISPLAY_WRITE_STRING("", LCD_PAGE3);
+      DISPLAY_WRITE_STRING("", LCD_PAGE4);
+      DISPLAY_WRITE_STRING("", LCD_PAGE5);
       break;
 
     case GAPROLE_WAITING_AFTER_TIMEOUT:
-      LCD_WRITE_STRING("Timed Out", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Timed Out", LCD_PAGE2);
       
       // Clear remaining lines
-      LCD_WRITE_STRING("", LCD_PAGE3);
-      LCD_WRITE_STRING("", LCD_PAGE4);
-      LCD_WRITE_STRING("", LCD_PAGE5);
+      DISPLAY_WRITE_STRING("", LCD_PAGE3);
+      DISPLAY_WRITE_STRING("", LCD_PAGE4);
+      DISPLAY_WRITE_STRING("", LCD_PAGE5);
       break;
 
     case GAPROLE_ERROR:
-      LCD_WRITE_STRING("Error", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Error", LCD_PAGE2);
       break;
 
     default:
-      LCD_WRITE_STRING("", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("", LCD_PAGE2);
       break;
   }
 }
@@ -532,35 +532,35 @@ static void security_examples_peripheral_processPairState(uint8_t state, uint8_t
 {
   if (state == GAPBOND_PAIRING_STATE_STARTED)
   {
-    LCD_WRITE_STRING("Pairing started", LCD_PAGE2);
+    DISPLAY_WRITE_STRING("Pairing started", LCD_PAGE2);
   }
   else if (state == GAPBOND_PAIRING_STATE_COMPLETE)
   {
     if (status == SUCCESS)
     {
-      LCD_WRITE_STRING("Pairing success", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Pairing success", LCD_PAGE2);
     }
     else
     {
-      LCD_WRITE_STRING_VALUE("Pairing fail:", status, 10, LCD_PAGE2);
+      DISPLAY_WRITE_STRING_VALUE("Pairing fail: %d", status, LCD_PAGE2);
     }
   }
   else if (state == GAPBOND_PAIRING_STATE_BONDED)
   {
     if (status == SUCCESS)
     {
-      LCD_WRITE_STRING("Bonding success", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Bonding success", LCD_PAGE2);
     }
   }
   else if (state == GAPBOND_PAIRING_STATE_BOND_SAVED)
   {
     if (status == SUCCESS)
     {
-      LCD_WRITE_STRING("Bond save success", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Bond save success", LCD_PAGE2);
     }
     else
     {
-      LCD_WRITE_STRING_VALUE("Bond save failed:", status, 10, LCD_PAGE2);
+      DISPLAY_WRITE_STRING_VALUE("Bond save failed: %d", status, LCD_PAGE2);
     }
   }
 }

@@ -3,4 +3,4 @@
 /* IAR Compiler Command Line Options */
 /* Auto-generated compiler option(s) */
 
--D ICALL_STACK0_ADDR=0x0000D000
+-D ICALL_STACK0_ADDR=0x0000C000

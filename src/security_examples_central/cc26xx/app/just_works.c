@@ -62,14 +62,14 @@
 
 #include "util.h"
 #include "board_key.h"
-#include "board_lcd.h"
+#include "board_display.h"
 #include "board.h"
 
 #include "security_examples_central.h"
 
 #include "ble_user_config.h"
 
-#include <ti/drivers/lcd/LCDDogm1286.h>
+#include <ti/mw/lcd/LCDDogm1286.h>
 
 /*********************************************************************
  * MACROS
@@ -295,7 +295,7 @@ static void security_examples_central_init(void)
      
   Board_initKeys(security_examples_central_keyChangeHandler);
   
-  Board_openLCD();
+  Board_openDisplay(BOARD_DISPLAY_TYPE_LCD);
   
   // Setup Central Profile
   {
@@ -316,7 +316,7 @@ static void security_examples_central_init(void)
     uint8_t mitm = FALSE;
     uint8_t ioCap = GAPBOND_IO_CAP_NO_INPUT_NO_OUTPUT;
     uint8_t bonding = FALSE;
-    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ALLOW;
     
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
@@ -338,7 +338,7 @@ static void security_examples_central_init(void)
   // Register with bond manager after starting device
   GAPBondMgr_Register(&security_examples_central_bondCB);
 
-  LCD_WRITE_STRING("Security Ex Centr", LCD_PAGE0);
+  DISPLAY_WRITE_STRING("Security Ex Centr", LCD_PAGE0);
 }
 
 /*********************************************************************
@@ -478,9 +478,9 @@ static void security_examples_central_processRoleEvent(gapCentralRoleEvent_t *pE
   {
     case GAP_DEVICE_INIT_DONE_EVENT:  
       {        
-        LCD_WRITE_STRING(Util_convertBdAddr2Str(pEvent->initDone.devAddr),
+        DISPLAY_WRITE_STRING(Util_convertBdAddr2Str(pEvent->initDone.devAddr),
                          LCD_PAGE1);
-        LCD_WRITE_STRING("Initialized", LCD_PAGE2);
+        DISPLAY_WRITE_STRING("Initialized", LCD_PAGE2);
       }
       break;
 
@@ -501,11 +501,11 @@ static void security_examples_central_processRoleEvent(gapCentralRoleEvent_t *pE
         memcpy(devList, pEvent->discCmpl.pDevList,
                (sizeof(gapDevRec_t) * scanRes));
         
-        LCD_WRITE_STRING_VALUE("Devices Found", scanRes, 10, LCD_PAGE2);
+        DISPLAY_WRITE_STRING_VALUE("Devices Found: %d", scanRes, LCD_PAGE2);
         
         if (scanRes > 0)
         {
-          LCD_WRITE_STRING("<- To Select", LCD_PAGE3);
+          DISPLAY_WRITE_STRING("<- To Select", LCD_PAGE3);
         }
 
         // initialize scan index to last device
@@ -520,8 +520,8 @@ static void security_examples_central_processRoleEvent(gapCentralRoleEvent_t *pE
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
 
-          LCD_WRITE_STRING("Connected", LCD_PAGE2);
-          LCD_WRITE_STRING(Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr),
+          DISPLAY_WRITE_STRING("Connected", LCD_PAGE2);
+          DISPLAY_WRITE_STRING(Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr),
                            LCD_PAGE3);   
         }
         else
@@ -529,8 +529,8 @@ static void security_examples_central_processRoleEvent(gapCentralRoleEvent_t *pE
           state = BLE_STATE_IDLE;
           connHandle = GAP_CONNHANDLE_INIT;
           
-          LCD_WRITE_STRING("Connect Failed", LCD_PAGE2);
-          LCD_WRITE_STRING_VALUE("Reason:", pEvent->gap.hdr.status, 10, 
+          DISPLAY_WRITE_STRING("Connect Failed", LCD_PAGE2);
+          DISPLAY_WRITE_STRING_VALUE("Reason: %d", pEvent->gap.hdr.status, 
                                  LCD_PAGE3);
         }
       }
@@ -541,17 +541,17 @@ static void security_examples_central_processRoleEvent(gapCentralRoleEvent_t *pE
         state = BLE_STATE_IDLE;
         connHandle = GAP_CONNHANDLE_INIT;
         
-        LCD_WRITE_STRING("Disconnected", LCD_PAGE2);
-        LCD_WRITE_STRING_VALUE("Reason:", pEvent->linkTerminate.reason,
-                                10, LCD_PAGE3);
-        LCD_WRITE_STRING("", LCD_PAGE4);
+        DISPLAY_WRITE_STRING("Disconnected", LCD_PAGE2);
+        DISPLAY_WRITE_STRING_VALUE("Reason:", pEvent->linkTerminate.reason,
+                                LCD_PAGE3);
+        DISPLAY_WRITE_STRING("", LCD_PAGE4);
       }
       break;
 
     case GAP_LINK_PARAM_UPDATE_EVENT:
       {
-        LCD_WRITE_STRING_VALUE("Param Update:", pEvent->linkUpdate.status,
-                                10, LCD_PAGE2);
+        DISPLAY_WRITE_STRING_VALUE("Param Update: %d", pEvent->linkUpdate.status,
+                                LCD_PAGE2);
       }
       break;
       
@@ -588,8 +588,8 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
         scanIdx = 0;
       }
 
-      LCD_WRITE_STRING_VALUE("Device", (scanIdx + 1), 10, LCD_PAGE2);
-      LCD_WRITE_STRING(Util_convertBdAddr2Str(devList[scanIdx].addr), LCD_PAGE3);
+      DISPLAY_WRITE_STRING_VALUE("Device %d", (scanIdx + 1), LCD_PAGE2);
+      DISPLAY_WRITE_STRING(Util_convertBdAddr2Str(devList[scanIdx].addr), LCD_PAGE3);
     }
 
     return;
@@ -605,9 +605,9 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
         scanningStarted = TRUE;
         scanRes = 0;
         
-        LCD_WRITE_STRING("Discovering...", LCD_PAGE2);
-        LCD_WRITE_STRING("", LCD_PAGE3);
-        LCD_WRITE_STRING("", LCD_PAGE4);
+        DISPLAY_WRITE_STRING("Discovering...", LCD_PAGE2);
+        DISPLAY_WRITE_STRING("", LCD_PAGE3);
+        DISPLAY_WRITE_STRING("", LCD_PAGE4);
         
         GAPCentralRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
                                       DEFAULT_DISCOVERY_ACTIVE_SCAN,
@@ -648,9 +648,9 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
                                      DEFAULT_LINK_WHITE_LIST,
                                      addrType, peerAddr);
   
-        LCD_WRITE_STRING("Connecting", LCD_PAGE2);
-        LCD_WRITE_STRING(Util_convertBdAddr2Str(peerAddr), LCD_PAGE3);
-        LCD_WRITE_STRING("", LCD_PAGE4);
+        DISPLAY_WRITE_STRING("Connecting", LCD_PAGE2);
+        DISPLAY_WRITE_STRING(Util_convertBdAddr2Str(peerAddr), LCD_PAGE3);
+        DISPLAY_WRITE_STRING("", LCD_PAGE4);
       }
     }
     else if (state == BLE_STATE_CONNECTING ||
@@ -661,8 +661,8 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
 
       GAPCentralRole_TerminateLink(connHandle);
       
-      LCD_WRITE_STRING("Disconnecting", LCD_PAGE2);
-      LCD_WRITE_STRING("", LCD_PAGE4);
+      DISPLAY_WRITE_STRING("Disconnecting", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("", LCD_PAGE4);
     }
 
     return;
@@ -686,35 +686,35 @@ static void security_examples_central_processPairState(uint8_t state, uint8_t st
 {
   if (state == GAPBOND_PAIRING_STATE_STARTED)
   {
-    LCD_WRITE_STRING("Pairing started", LCD_PAGE2);
+    DISPLAY_WRITE_STRING("Pairing started", LCD_PAGE2);
   }
   else if (state == GAPBOND_PAIRING_STATE_COMPLETE)
   {
     if (status == SUCCESS)
     {
-      LCD_WRITE_STRING("Pairing success", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Pairing success", LCD_PAGE2);
     }
     else
     {
-      LCD_WRITE_STRING_VALUE("Pairing fail:", status, 10, LCD_PAGE2);
+      DISPLAY_WRITE_STRING_VALUE("Pairing fail: %d", status, LCD_PAGE2);
     }
   }
   else if (state == GAPBOND_PAIRING_STATE_BONDED)
   {
     if (status == SUCCESS)
     {
-      LCD_WRITE_STRING("Bonding success", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Bonding success", LCD_PAGE2);
     }
   }
   else if (state == GAPBOND_PAIRING_STATE_BOND_SAVED)
   {
     if (status == SUCCESS)
     {
-      LCD_WRITE_STRING("Bond save success", LCD_PAGE2);
+      DISPLAY_WRITE_STRING("Bond save success", LCD_PAGE2);
     }
     else
     {
-      LCD_WRITE_STRING_VALUE("Bond save failed:", status, 10, LCD_PAGE2);
+      DISPLAY_WRITE_STRING_VALUE("Bond save failed: %d", status, LCD_PAGE2);
     }
   }
 }

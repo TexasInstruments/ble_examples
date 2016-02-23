@@ -183,13 +183,15 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>HEAPMGR_SIZE=7000</state>
+          <state>HEAPMGR_SIZE=5000</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
-          <state>TI_DRIVERS_LCD_INCLUDED</state>
+          <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
+          <state>BOARD_DISPLAY_EXCLUDE_UART</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>
+          <state>CC2650DK_7ID</state>
           <state>CC26XXWARE</state>
           <state>CC26XX</state>
         </option>
@@ -799,7 +801,7 @@
         <option>
           <name>IlinkExtraOptions</name>
           <state>--keep __vector_table</state>
-          <state>-f $PROJ_DIR$\configPkg\linker.cmd</state>
+          <state>-f $PROJ_DIR$\..\config\configPkg\linker.cmd</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.xcl</state>
         </option>
         <option>
@@ -1177,14 +1179,17 @@
         <option>
           <name>CCDefines</name>
           <state>USE_ICALL</state>
+          <state>MAX_PDU_SIZE=70</state>
           <state>POWER_SAVING</state>
-          <state>HEAPMGR_SIZE=7000</state>
+          <state>HEAPMGR_SIZE=5000</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
-          <state>TI_DRIVERS_LCD_INCLUDED</state>
+          <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
+          <state>BOARD_DISPLAY_EXCLUDE_UART</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>
+          <state>CC2650DK_7ID</state>
           <state>CC26XXWARE</state>
           <state>CC26XX</state>
         </option>
@@ -1268,7 +1273,7 @@
         <option>
           <name>IExtraOptions</name>
           <state>-f $SRC_EX$/config/build_components.opt</state>
-          <state>-f $PROJ_DIR$\configPkg\compiler.opt.defs</state>
+          <state>-f $PROJ_DIR$\..\config\configPkg\compiler.opt.defs</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.bdef</state>
         </option>
         <option>
@@ -1794,7 +1799,7 @@
         <option>
           <name>IlinkExtraOptions</name>
           <state>--keep __vector_table</state>
-          <state>-f $PROJ_DIR$\configPkg\linker.cmd</state>
+          <state>-f $PROJ_DIR$\..\config\configPkg\linker.cmd</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.xcl</state>
         </option>
         <option>
@@ -2172,15 +2177,18 @@
         <option>
           <name>CCDefines</name>
           <state>USE_ICALL</state>
+          <state>MAX_PDU_SIZE=70</state>
           <state>POWER_SAVING</state>
           <state>STATIC_PASSCODE</state>
-          <state>HEAPMGR_SIZE=2672</state>
+          <state>HEAPMGR_SIZE=5000</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
-          <state>TI_DRIVERS_LCD_INCLUDED</state>
+          <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
+          <state>BOARD_DISPLAY_EXCLUDE_UART</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>
+          <state>CC2650DK_7ID</state>
           <state>CC26XXWARE</state>
           <state>CC26XX</state>
         </option>
@@ -2264,7 +2272,7 @@
         <option>
           <name>IExtraOptions</name>
           <state>-f $SRC_EX$/config/build_components.opt</state>
-          <state>-f $PROJ_DIR$\configPkg\compiler.opt.defs</state>
+          <state>-f $PROJ_DIR$\..\config\configPkg\compiler.opt.defs</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.bdef</state>
         </option>
         <option>
@@ -2790,7 +2798,7 @@
         <option>
           <name>IlinkExtraOptions</name>
           <state>--keep __vector_table</state>
-          <state>-f $PROJ_DIR$\configPkg\linker.cmd</state>
+          <state>-f $PROJ_DIR$\..\config\configPkg\linker.cmd</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.xcl</state>
         </option>
         <option>
@@ -3169,13 +3177,16 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>HEAPMGR_SIZE=7000</state>
+          <state>MAX_PDU_SIZE=70</state>
+          <state>HEAPMGR_SIZE=5000</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
-          <state>TI_DRIVERS_LCD_INCLUDED</state>
+          <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
+          <state>BOARD_DISPLAY_EXCLUDE_UART</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>
+          <state>CC2650DK_7ID</state>
           <state>CC26XXWARE</state>
           <state>CC26XX</state>
         </option>
@@ -3259,7 +3270,7 @@
         <option>
           <name>IExtraOptions</name>
           <state>-f $SRC_EX$/config/build_components.opt</state>
-          <state>-f $PROJ_DIR$\configPkg\compiler.opt.defs</state>
+          <state>-f $PROJ_DIR$\..\config\configPkg\compiler.opt.defs</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.bdef</state>
         </option>
         <option>
@@ -3785,7 +3796,7 @@
         <option>
           <name>IlinkExtraOptions</name>
           <state>--keep __vector_table</state>
-          <state>-f $PROJ_DIR$\configPkg\linker.cmd</state>
+          <state>-f $PROJ_DIR$\..\config\configPkg\linker.cmd</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.xcl</state>
         </option>
         <option>
@@ -3986,6 +3997,12 @@
   <group>
     <name>Application</name>
     <file>
+      <name>$SRC_EX$\common\cc26xx\board_display.c</name>
+    </file>
+    <file>
+      <name>$SRC_EX$\common\cc26xx\board_display.h</name>
+    </file>
+    <file>
       <name>$SRC_EX$\common\cc26xx\board_key.c</name>
       <excluded>
         <configuration>FlashROM-just_works</configuration>
@@ -3998,12 +4015,6 @@
         <configuration>FlashROM-just_works</configuration>
         <configuration>FlashROM-passcode</configuration>
       </excluded>
-    </file>
-    <file>
-      <name>$SRC_EX$\common\cc26xx\board_lcd.c</name>
-    </file>
-    <file>
-      <name>$SRC_EX$\common\cc26xx\board_lcd.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_peripheral\cc26xx\app\just_works.c</name>
@@ -4048,38 +4059,11 @@
     </file>
   </group>
   <group>
-    <name>Board</name>
-    <excluded>
-      <configuration>FlashROM-just_works</configuration>
-      <configuration>FlashROM-numeric_comparison</configuration>
-      <configuration>FlashROM-passcode</configuration>
-      <configuration>FlashROM-OOB</configuration>
-    </excluded>
-    <group>
-      <name>Devices</name>
-      <file>
-        <name>$SRC_EX$\sensortag\cc26xx\source\app\board_patch\devices\ext_flash.c</name>
-      </file>
-      <file>
-        <name>$SRC_EX$\sensortag\cc26xx\source\app\board_patch\devices\ext_flash.h</name>
-      </file>
-    </group>
-    <group>
-      <name>Interfaces</name>
-      <file>
-        <name>$SRC_EX$\sensortag\cc26xx\source\app\board_patch\interfaces\bsp_spi.c</name>
-      </file>
-      <file>
-        <name>$SRC_EX$\sensortag\cc26xx\source\app\board_patch\interfaces\bsp_spi.h</name>
-      </file>
-    </group>
-  </group>
-  <group>
     <name>Drivers</name>
     <group>
       <name>LCD</name>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lcd\LCDDogm1286.c</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\lcd\LCDDogm1286.c</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4088,7 +4072,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lcd\LCDDogm1286.h</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\lcd\LCDDogm1286.h</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4097,7 +4081,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lcd\LCDDogm1286_util.c</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\lcd\LCDDogm1286_util.c</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4106,7 +4090,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lcd\LCDDogm1286_util.h</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\lcd\LCDDogm1286_util.h</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4118,7 +4102,7 @@
     <group>
       <name>PIN</name>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\PIN.h</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\PIN.h</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4127,7 +4111,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.c</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\pin\PINCC26XX.c</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4136,7 +4120,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.h</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\pin\PINCC26XX.h</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4148,7 +4132,7 @@
     <group>
       <name>SPI</name>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\SPI.c</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\SPI.c</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4157,7 +4141,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\SPI.h</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\SPI.h</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4166,7 +4150,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\spi\SPICC26XXDMA.c</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\spi\SPICC26XXDMA.c</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4175,7 +4159,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\spi\SPICC26XXDMA.h</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\spi\SPICC26XXDMA.h</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4187,7 +4171,7 @@
     <group>
       <name>UDMA</name>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\dma\UDMACC26XX.c</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\dma\UDMACC26XX.c</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4196,7 +4180,7 @@
         </excluded>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\dma\UDMACC26XX.h</name>
+        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\dma\UDMACC26XX.h</name>
         <excluded>
           <configuration>FlashROM-just_works</configuration>
           <configuration>FlashROM-numeric_comparison</configuration>
@@ -4308,16 +4292,7 @@
   <group>
     <name>Startup</name>
     <file>
-      <name>$TI_RTOS_DRIVERS_BASE$\ti\boards\SRF06EB\Board.c</name>
-    </file>
-    <file>
-      <name>$SRC_EX$\sensortag\cc26xx\source\app\board_patch\board.c</name>
-      <excluded>
-        <configuration>FlashROM-just_works</configuration>
-        <configuration>FlashROM-numeric_comparison</configuration>
-        <configuration>FlashROM-passcode</configuration>
-        <configuration>FlashROM-OOB</configuration>
-      </excluded>
+      <name>$SRC_COMMON$\hal\src\target\cc2650tirtos\board.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>
