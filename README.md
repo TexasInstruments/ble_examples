@@ -35,6 +35,10 @@ This example shows how to use the TI-RTOS Log system, how to print Log statement
 This example shows how you can port a BLE project to TI-RTOS 2.15. As an example, SimpleBLEPeripheral is ported. The commit log could be instructive for checking what was done exactly.
 * [SimpleBLEPeripheral ported to TI-RTOS 2.15 and instructions](Projects/ble/simple_ble_peripheral_tirtos_2p15)
 
+#### Apple Notification Center Service (ANCS)
+This example shows how the CC2640/CC2650 can be implemented as a Apple Notification Center Service peripheral. Users can interact with the notifications using buttons and LEDs.
+* [ANCS Project Documentation](Projects/ble/ancs)
+
 ## CC2650 LaunchPad Board files
 BLE-Stack SDK 2.1.x compatible version of the TI-RTOS board files for the CC2650 Launchpad can be found here. Addional porting information is available on the CC2650 LaunchPad User's Guide for Bluetooth Smart.
 * [CC2650 LaunchPad User's Guide for Bluetooth Smart](http://processors.wiki.ti.com/index.php/CC2650_LaunchPad_User%27s_Guide_for_Bluetooth_Smart)
