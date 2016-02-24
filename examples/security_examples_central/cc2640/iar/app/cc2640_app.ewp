@@ -183,6 +183,7 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
+          <state>STATIC_PASSCODE</state>
           <state>MAX_PDU_SIZE=70</state>
           <state>HEAPMGR_SIZE=5000</state>
           <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>

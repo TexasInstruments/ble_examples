@@ -794,7 +794,7 @@ static void security_examples_central_processPasscode(uint16_t connectionHandle,
       waiting_for_passcode = TRUE;
       passcode_connHandle = connectionHandle;
       DISPLAY_WRITE_STRING("Enter Passcode:", LCD_PAGE4);
-      DISPLAY_WRITE_STRING_VALUE("%d", passcode, 10, LCD_PAGE5);
+      DISPLAY_WRITE_STRING_VALUE("%d", passcode, LCD_PAGE5);
 #endif         
     }
     else if (pData->uiOutputs) // if we are to display passkey
