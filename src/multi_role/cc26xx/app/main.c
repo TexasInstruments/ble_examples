@@ -46,7 +46,7 @@
 #include <ti/sysbios/BIOS.h>
 
 #include "icall.h"
-#include "central.h"
+#include "multi.h"
 #include "multi_role.h"
 
 /* Header files required to enable instruction fetch cache */
@@ -127,10 +127,10 @@ int main()
     ICall_createRemoteTasks();
     
     /* Kick off profile - Priority 3 */
-    GAPCentralRole_createTask();
+    GAPRole_createTask();
     
     /* Kick off application - Priority 1 */
-    security_examples_central_createTask();
+    multi_role_createTask();
     
     /* enable interrupts and start SYS/BIOS */
     BIOS_start();
