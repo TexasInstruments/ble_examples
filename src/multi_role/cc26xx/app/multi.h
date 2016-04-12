@@ -337,8 +337,6 @@ extern bStatus_t GAPRole_EstablishLink(uint8_t highDutyCycle, uint8_t whiteList,
  */
 extern void GAPRole_createTask(void);
 
-extern uint8_t gapRoleInfo_Find( uint16 connectionHandle );
-
 // array to store index to connection handle mapping
 extern uint16_t connHandleMap[MAX_NUM_BLE_CONNS];
 

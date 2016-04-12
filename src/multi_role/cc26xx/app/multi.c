@@ -250,9 +250,6 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg);
 static void gapRole_SetupGAP(void);
 static void gapRole_setEvent(uint32_t event);
 
-uint8_t gapRoleInfo_Find( uint16 connectionHandle );
-uint8 gapRoleInfo_Add(gapEstLinkReqEvent_t* linkInfo );
-
 static bStatus_t gapRole_startConnUpdate(uint8_t handleFailure, 
                                        gapRole_updateConnParams_t *pConnParams);
 static void      gapRole_HandleParamUpdateNoSuccess(void);
@@ -328,13 +325,13 @@ bStatus_t GAPRole_SetParameter(uint16_t param, uint8_t len, void *pValue, uint8 
           else if ((oldAdvEnabled == FALSE) && (gapRole_AdvEnabled))
           {
             // Turn on advertising.
-            if (linkDB_NumActive()) //don't do conn adv if we don't have any avilable links
+            if (linkDB_NumActive() >= MAX_NUM_BLE_CONNS) //don't do conn adv if we don't have any avilable links
             {
-              gapRole_setEvent(START_ADVERTISING_EVT);
+              return bleNoResources; // no more available links
             }
             else
             {
-              return bleNoResources; // no more available links
+              gapRole_setEvent(START_ADVERTISING_EVT);
             }
           }
         }
@@ -660,39 +657,19 @@ bStatus_t GAPRole_GetParameter(uint16_t param, void *pValue, uint8_t connHandle)
       break;
 
     case GAPROLE_CONN_INTERVAL:
-      index = gapRoleInfo_Find(connHandle);      
-      if (index != 0xFF)
-      {
-        *((uint16_t*)pValue) = multiConnInfo[index].gapRole_ConnInterval;
-      }
-      else
-      {
-        return bleNotConnected;
-      }       
-      break;
+      linkDB_GetInfo(connHandle, &pInfo);
+      *((uint16_t*)pValue) = pInfo.connInterval;
 
     case GAPROLE_CONN_LATENCY:
-      index = gapRoleInfo_Find(connHandle);      
-      if (index != 0xFF)
-      {
-        *((uint16_t*)pValue) = multiConnInfo[index].gapRole_ConnSlaveLatency;
-      }
-      else
-      {
-        return bleNotConnected;
-      }      
+    //wait for linkdb update
+//      linkDB_GetInfo(connHandle, &pInfo);
+//      *((uint16_t*)pValue) = pInfo.connLatency;    
       break;
 
     case GAPROLE_CONN_TIMEOUT:
-      index = gapRoleInfo_Find(connHandle);      
-      if (index != 0xFF)
-      {
-        *((uint16_t*)pValue) = multiConnInfo[index].gapRole_ConnTimeout;
-      }
-      else
-      {
-        return bleNotConnected;
-      }     
+    //wait for linkdb update
+//      linkDB_GetInfo(connHandle, &pInfo);
+//      *((uint16_t*)pValue) = pInfo.connTimeout;    
       break;
       
     case GAPROLE_MAX_SCAN_RES:
@@ -782,16 +759,9 @@ void GAPRole_createTask(void)
  */
 static void gapRole_init(void)
 { 
-  uint8_t i;
-  
   // Register the current thread as an ICall dispatcher application
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &sem);
-  
-  for (i=0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    multiConnInfo[i].gapRole_ConnectionHandle = INVALID_CONNHANDLE;
-  }
   
   // Get link DB maximum number of connections
   linkDBNumConns = linkDB_NumConns();
@@ -1007,6 +977,7 @@ static uint8_t gapRole_processStackMsg(ICall_Hdr *pMsg)
  *
  * @return  none
  */
+#pragma optimize=none
 static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
 {
   uint8_t notify = FALSE;   // State changed notify the app? (default no)
@@ -1118,27 +1089,25 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
       {
         gapEstLinkReqEvent_t *pPkt = (gapEstLinkReqEvent_t *)pMsg;
 
-        if (pPkt->hdr.status == SUCCESS)
-        {
-          //add to database
-          gapRoleInfo_Add(pPkt);
-          
-          // advertising will stop when a connection forms in the peripheral role
-          if (pPkt->connRole == GAP_PROFILE_PERIPHERAL)
-          {
-            gapRole_AdvEnabled = FALSE;
-          }
-        }
-        else if (pPkt->hdr.status == bleGAPConnNotAcceptable)
+//        if (pPkt->hdr.status == SUCCESS)
+//        {
+//          // advertising will stop when a connection forms in the peripheral role
+//          if (pPkt->connRole == GAP_PROFILE_PERIPHERAL)
+//          {
+//            gapRole_AdvEnabled = FALSE;
+//          }
+//        }
+//        else if (pPkt->hdr.status == bleGAPConnNotAcceptable)
+        if (pPkt->hdr.status == bleGAPConnNotAcceptable)
         {
           // Set enabler to FALSE; device will become discoverable again when
           // this value gets set to TRUE
           gapRole_AdvEnabled = FALSE;
         }
-        else
-        {
-          gapRole_abort();
-        }
+//        else
+//        {
+//          gapRole_abort();
+//        }
         notify = TRUE;
       }
       break;
@@ -1147,12 +1116,11 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
       {
         gapTerminateLinkEvent_t *pPkt = (gapTerminateLinkEvent_t *)pMsg;
 
+        linkDBInfo_t pInfo;
+        linkDB_GetInfo(pPkt->connectionHandle, &pInfo);
+        
         // notify bond manager
         GAPBondMgr_LinkTerm(pPkt->connectionHandle);
-        
-        // Erase connection information (maybe make this a function)
-        uint8 connHandleIndex = gapRoleInfo_Find( pPkt->connectionHandle);
-        multiConnInfo[connHandleIndex].gapRole_ConnectionHandle = GAPROLE_CONN_JUST_TERMINATED; //app will set this to invalid
 
         notify = TRUE;
       }
@@ -1386,77 +1354,14 @@ void gapRole_clockHandler(UArg a0)
   gapRole_setEvent(a0);
 }
 
+
 /*********************************************************************
- * @fn          gapRoleInfo_Find
+ * @fn      gapRole_abort
  *
- * @brief       Find the connection handle's index.  Uses the connection handle to search
- *              the gapRoleInfo database for the indx.
+ * @brief   to catch errors during debugging
  *
- * @param       connectionHandle - controller link connection handle.
- *
- * @return      index of the found item, 0xFF if not found
+ * @return  none
  */
-uint8_t gapRoleInfo_Find( uint16 connectionHandle )
-{
-  uint8_t x;
-  // Find link record
-  for ( x = 0; x < MAX_NUM_BLE_CONNS; x++ )
-  {
-    if ( multiConnInfo[x].gapRole_ConnectionHandle == connectionHandle )
-    {
-      // Found
-      return ( x );
-    }
-  }
-
-  // Not Found!!
-  return ( 0xFF );
-}
-
-/*********************************************************************
-*********************************************************************/
-/*********************************************************************
- * @fn          gapRoleInfo_Add
- *
- * @brief       Adds a record to the link database.
- *
- * @param       taskID - Application task ID
- * @param       connectionHandle - new record connection handle
- * @param       newState - starting connection state
- * @param       addrType - new address type
- * @param       pAddr - new address
- * @param       connRole - connection formed as Master or Slave
- * @param       connInterval - connection's communications interval (n * 1.23 ms)
- * @param       MTU - connection's MTU size
- *
- * @return      SUCCESS if successful
- *              bleIncorrectMode - hasn't been initialized.
- *              bleNoResources - table full
- *              bleAlreadyInRequestedMode - already exist connectionHandle
- *
- */
-uint8 gapRoleInfo_Add(gapEstLinkReqEvent_t* linkInfo )
-{
-  // Don't need to check to ensure link doesn't exist. This is handled by the stack
-  uint8_t openIndex = gapRoleInfo_Find( INVALID_CONNHANDLE ); //try to find open link index (identified by INVALID_CONNHANDLE)
-  if ( openIndex < MAX_NUM_BLE_CONNS )
-  {
-    // Copy link info (that isn't stored in linkdb)
-    multiConnInfo[openIndex].gapRole_ConnectionHandle = linkInfo->connectionHandle;
-    multiConnInfo[openIndex].gapRole_ConnSlaveLatency = linkInfo->connLatency;
-    multiConnInfo[openIndex].gapRole_ConnTimeout = linkInfo->connTimeout;
-    multiConnInfo[openIndex].gapRole_ConnInterval = linkInfo->connInterval;
-    multiConnInfo[openIndex].gapRole_ConnRole = linkInfo->connRole;
-    VOID memcpy( multiConnInfo[openIndex].gapRole_devAddr, linkInfo->devAddr, B_ADDR_LEN );
-    return ( SUCCESS );
-  }
-  else
-  {
-    // Table is full
-    return ( bleNoResources );
-  }
-}
-
 static void gapRole_abort(void)
 {
 #ifdef GAP_ROLE_ABORT  
