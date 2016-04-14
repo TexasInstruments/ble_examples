@@ -77,7 +77,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.50.1.10270</state>
+          <state>7.50.3.10745</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -683,7 +683,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>16</version>
+        <version>17</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -970,6 +970,10 @@
           <name>IlinkThreadsSlave</name>
           <state>1</state>
         </option>
+        <option>
+          <name>IlinkLogCallGraph</name>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -1074,7 +1078,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.50.1.10270</state>
+          <state>7.50.3.10745</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -1182,10 +1186,10 @@
           <state>MAX_PDU_SIZE=69</state>
           <state>POWER_SAVING</state>
           <state>STATIC_PASSCODE</state>
-          <state>HEAPMGR_SIZE=5000</state>
-          <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
+          <state>HEAPMGR_SIZE=0</state>
           <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
+          <state>xBOARD_DISPLAY_EXCLUDE_LCD</state>
           <state>GAPCENTRALROLE_NUM_RSSI_LINKS=1</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
@@ -1275,6 +1279,7 @@
         <option>
           <name>IExtraOptions</name>
           <state>-f $SRC_EX$/config/build_components.opt</state>
+          <state>-f $PROJ_DIR$\..\stack\build_config.opt</state>
           <state>-f $PROJ_DIR$\..\config\configPkg\compiler.opt.defs</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.bdef</state>
         </option>
@@ -1325,28 +1330,26 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$</state>
-          <state>$PROJ_DIR$/../../../../src/security_examples_central/cc26xx/app</state>
-          <state>$SRC_EX$/inc</state>
-          <state>$SRC_EX$/icall/inc</state>
-          <state>$SRC_EX$/profiles/roles/cc26xx</state>
-          <state>$SRC_EX$/profiles/roles</state>
-          <state>$SRC_EX$/profiles/simple_profile</state>
-          <state>$SRC_EX$/common/cc26xx</state>
-          <state>$SRC_COMMON$/applib/src/heap</state>
-          <state>$SRC_BLE_CORE$/hci</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
-          <state>$SRC_BLE_CORE$/host</state>
-          <state>$SRC_COMMON$/hal/src/target/cc2650tirtos</state>
-          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON$/hal/src/inc</state>
-          <state>$SRC_COMMON$/osal/src/inc</state>
-          <state>$SRC_COMMON$/services/src/sdata</state>
-          <state>$SRC_COMMON$/services/src/saddr</state>
-          <state>$SRC_COMMON$/icall/src/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
+          <state>$SRC_EX$/common/cc26xx</state>
+          <state>$SRC_EX$/icall/inc</state>
+          <state>$SRC_EX$/inc</state>
+          <state>$SRC_EX$/profiles/roles</state>
+          <state>$SRC_EX$/profiles/roles/cc26xx</state>
+          <state>$SRC_EX$/profiles/simple_profile</state>
+          <state>$SRC_COMMON$/heapmgr</state>
+          <state>$SRC_COMMON$/hal/src/inc</state>
+          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
+          <state>$SRC_COMMON$/hal/src/target/cc2650/rom</state>
+          <state>$SRC_COMMON$/hal/src/target/_common</state>
+          <state>$SRC_COMMON$/hal/src/target</state>
+          <state>$SRC_COMMON$/icall/src/inc</state>
+          <state>$SRC_COMMON$/osal/src/inc</state>
+          <state>$SRC_COMMON$/services/src/saddr</state>
+          <state>$SRC_COMMON$/services/src/sdata</state>
           <state>$CC26XXWARE$</state>
           <state>$TI_RTOS_DRIVERS_BASE$</state>
-          <state>$TI_RTOS_DRIVERS_BASE$\ti\boards\SRF06EB\CC2650EM_7ID</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1680,7 +1683,7 @@
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>16</version>
+        <version>17</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -1967,6 +1970,10 @@
           <name>IlinkThreadsSlave</name>
           <state>1</state>
         </option>
+        <option>
+          <name>IlinkLogCallGraph</name>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -2138,7 +2145,7 @@
   <group>
     <name>ICall</name>
     <file>
-      <name>$SRC_COMMON$\applib\src\heap\heapmgr.h</name>
+      <name>$SRC_COMMON$\heapmgr\heapmgr.h</name>
     </file>
     <file>
       <name>$SRC_COMMON$\icall\src\icall.c</name>

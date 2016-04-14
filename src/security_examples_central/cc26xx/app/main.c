@@ -42,6 +42,7 @@
 #include <ti/sysbios/BIOS.h>
 
 #include "icall.h"
+#include "hal_assert.h"
 #include "central.h"
 #include "security_examples_central.h"
 
@@ -58,20 +59,24 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
 
 #endif // USE_DEFAULT_USER_CFG
 
-/**
- * Exception handler
+#if defined( TI_DRIVERS_DISPLAY_INCLUDED )
+#include "board_display.h"
+#endif // TI_DRIVERS_DISPLAY_INCLUDED
+
+/*******************************************************************************
+ * EXTERNS
  */
-void exceptionHandler()
-{
-    volatile char i = 1;
-    while(i);
-}
+
+extern void AssertHandler(uint8 assertCause, uint8 assertSubcause);
 
 /*
  *  ======== main ========
  */
 int main()
 {
+  /* Register Application callback to trap asserts raised in the Stack */
+  RegisterAssertCback(AssertHandler);
+
   PIN_init(BoardGpioInitTable);
 
 #ifndef POWER_SAVING
@@ -106,10 +111,73 @@ Void smallErrorHook(Error_Block *eb)
   for (;;);
 }
 
-/**
- * HAL assert handler required by OSAL memory module.
+/*******************************************************************************
+ * @fn          AssertHandler
+ *
+ * @brief       This is the Application's callback handler for asserts raised
+ *              in the stack.
+ *
+ * input parameters
+ *
+ * @param       assertCause    - Assert cause as defined in hal_assert.h.
+ * @param       assertSubcause - Optional assert subcause (see hal_assert.h).
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
  */
-void halAssertHandler(void)
+void AssertHandler(uint8 assertCause, uint8 assertSubcause)
 {
-  for (;;);
+#ifdef TI_DRIVERS_DISPLAY_INCLUDED
+  Board_openDisplay(BOARD_DISPLAY_TYPE_LCD);
+  Board_writeString(">>>STACK ASSERT", 0);
+#endif // TI_DRIVERS_DISPLAY_INCLUDED
+
+  // check the assert cause
+  switch (assertCause)
+  {
+    case HAL_ASSERT_CAUSE_OUT_OF_MEMORY:
+#ifdef TI_DRIVERS_DISPLAY_INCLUDED
+      Board_writeString("***ERROR***", 1);
+      Board_writeString(">> OUT OF MEMORY!", 2);
+#endif // TI_DRIVERS_DISPLAY_INCLUDED
+      break;
+
+    case HAL_ASSERT_CAUSE_INTERNAL_ERROR:
+      // check the subcause
+      if (assertSubcause == HAL_ASSERT_SUBCAUSE_FW_INERNAL_ERROR)
+      {
+#ifdef TI_DRIVERS_DISPLAY_INCLUDED
+        Board_writeString("***ERROR***", 1);
+        Board_writeString(">> INTERNAL FW ERROR!", 2);
+#endif // TI_DRIVERS_DISPLAY_INCLUDED
+      }
+      else
+      {
+#ifdef TI_DRIVERS_DISPLAY_INCLUDED
+        Board_writeString("***ERROR***", 1);
+        Board_writeString(">> INTERNAL ERROR!", 2);
+#endif // TI_DRIVERS_DISPLAY_INCLUDED
+      }
+      break;
+
+    case HAL_ASSERT_CAUSE_ICALL_ABORT:
+#ifdef TI_DRIVERS_DISPLAY_INCLUDED
+        Board_writeString("***ERROR***", 1);
+        Board_writeString(">> ICALL ABORT!", 2);
+#endif // TI_DRIVERS_DISPLAY_INCLUDED
+      HAL_ASSERT_SPINLOCK;
+      break;
+
+    default:
+#ifdef TI_DRIVERS_DISPLAY_INCLUDED
+        Board_writeString("***ERROR***", 1);
+        Board_writeString(">> DEFAULT SPINLOCK!", 2);
+#endif // TI_DRIVERS_DISPLAY_INCLUDED
+      HAL_ASSERT_SPINLOCK;
+  }
+
+  return;
 }

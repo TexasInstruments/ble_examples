@@ -77,7 +77,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.50.1.10270</state>
+          <state>7.50.3.10745</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -184,7 +184,7 @@
           <state>USE_ICALL</state>
           <state>FLASH_ROM_BUILD</state>
           <state>POWER_SAVING</state>
-          <state>GATT_NO_CLIENT</state>
+          <state>OSAL_SNV=1</state>
           <state>INCLUDE_AES_DECRYPT</state>
           <state>xPM_DISABLE_PWRDOWN</state>
           <state>xTESTMODES</state>
@@ -329,32 +329,27 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$</state>
-          <state>$PROJ_DIR$/../../../../src/security_examples_peripheral_peripheral_peripheral/cc26xx/stack</state>
-          <state>$SRC_EX$/inc</state>
-          <state>$SRC_EX$/common/cc26xx</state>
-          <state>$SRC_COMMON$/hal/src/target/cc2650tirtos</state>
-          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON$/hal/src/inc</state>
-          <state>$SRC_COMMON$/osal/src/inc</state>
-          <state>$SRC_COMMON$/services/src/nv/cc26xx</state>
-          <state>$SRC_COMMON$/services/src/nv</state>
-          <state>$SRC_COMMON$/services/src/saddr</state>
-          <state>$SRC_COMMON$/icall/src/inc</state>
-          <state>$SRC_BLE_CORE$/inc</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
-          <state>$SRC_BLE_CORE$/rom</state>
-          <state>$SRC_BLE_CORE$/hci</state>
-          <state>$SRC_BLE_CORE$/host</state>
-          <state>$SRC_COMMON$/services/src/aes/cc26xx</state>
-          <state>$SRC_COMMON$/npi/src</state>
-          <state>$SRC_EX$/common/npi/npi_np/cc26xx/stack</state>
-          <state>$SRC_EX$/inc</state>
+          <state>$SRC_BLE_CORE$/inc</state>
+          <state>$SRC_EX$/common/cc26xx</state>
+          <state>$SRC_EX$/common/cc26xx/npi/stack</state>
+          <state>$SRC_COMMON$/hal/src/target/_common</state>
+          <state>$SRC_EX$/examples/simple_central/cc26xx/stack</state>
           <state>$SRC_EX$/icall/inc</state>
+          <state>$SRC_EX$/inc</state>
           <state>$SRC_EX$/profiles/roles</state>
-          <state>$SRC_BLE_CORE$/controller/cc26xx/cm0_patch</state>
+          <state>$SRC_COMMON$/hal/src/inc</state>
+          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
+          <state>$SRC_COMMON$/hal/src/target/_common</state>
+          <state>$SRC_COMMON$/hal/src/target</state>
+          <state>$SRC_COMMON$/icall/src/inc</state>
+          <state>$SRC_COMMON$/npi/src</state>
+          <state>$SRC_COMMON$/osal/src/inc</state>
+          <state>$SRC_COMMON$/services/src/aes/cc26xx</state>
+          <state>$SRC_COMMON$/services/src/nv</state>
+          <state>$SRC_COMMON$/services/src/nv/cc26xx</state>
+          <state>$SRC_COMMON$/services/src/saddr</state>
           <state>$CC26XXWARE$</state>
-          <state>$SRC_BLE_CORE$/rom/enc_lib</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -681,14 +676,14 @@
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild>"$TOOLS_BLE$/lib_search/lib_search.exe" $PROJ_DIR$/build_config.opt "$TOOLS_BLE$/lib_search/params_split_cc2640.xml" $SRC_BLE_CORE$/../blelib  $PROJ_DIR$/../config/lib_linker.cmd</prebuild>
-        <postbuild>"$BOUNDARY$/Boundary.exe" -chip "CC2640" -prj "iar" -lcf "$SRC_EX$/common/cc26xx/iar/cc26xx_stack.icf" -map "$PROJ_DIR$/$CONFIG_NAME$/List/security_examples_peripheral_peripheral_peripheral_stack.map" -xml "$SRC_EX$/common/cc26xx/boundary/boundary_config.xml" -cc "$PROJ_DIR$/../config/iar_boundary.bdef" -lnk "$PROJ_DIR$/../config/iar_boundary.xcl" -log "$PROJ_DIR$/../config/boundary.log"</postbuild>
+        <postbuild>"$TOOLS_BLE$/frontier/frontier.exe" iar "$PROJ_DIR$/$CONFIG_NAME$/List/security_examples_peripheral_stack.map" "$PROJ_DIR$/../config/iar_boundary.bdef" "$PROJ_DIR$/../config/iar_boundary.xcl"</postbuild>
       </data>
     </settings>
     <settings>
       <name>ILINK</name>
       <archiveVersion>0</archiveVersion>
       <data>
-        <version>16</version>
+        <version>17</version>
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
@@ -705,7 +700,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>security_examples_peripheral_peripheral_peripheral_stack.out</state>
+          <state>security_examples_peripheral_stack.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -976,6 +971,10 @@
           <name>IlinkThreadsSlave</name>
           <state>1</state>
         </option>
+        <option>
+          <name>IlinkLogCallGraph</name>
+          <state>0</state>
+        </option>
       </data>
     </settings>
     <settings>
@@ -1131,10 +1130,10 @@
   <group>
     <name>NPI</name>
     <file>
-      <name>$SRC_EX$\common\npi\npi_np\cc26xx\stack\npi.c</name>
+      <name>$SRC_EX$\common\cc26xx\npi\stack\npi.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\npi\npi_np\cc26xx\inc\npi.h</name>
+      <name>$SRC_EX$\common\cc26xx\npi\stack\npi.h</name>
     </file>
   </group>
   <group>
@@ -1237,9 +1236,6 @@
     </file>
     <file>
       <name>$SRC_EX$\common\cc26xx\iar\cc26xx_stack.icf</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\config\iar_boundary.xcl</name>
     </file>
     <file>
       <name>$SRC_EX$\common\cc26xx\onboard.c</name>
