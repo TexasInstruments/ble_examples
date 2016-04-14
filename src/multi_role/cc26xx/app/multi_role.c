@@ -46,6 +46,9 @@
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Queue.h>
+#ifdef DEBUG
+#include <driverlib/ioc.h>
+#endif // DEBUG
 
 #include "hci_tl.h"
 #include "gatt.h"
@@ -94,7 +97,7 @@
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         6
 
 //connection parameters
-#define DEFAULT_CONN_INT                      42
+#define DEFAULT_CONN_INT                      2
 #define DEFAULT_CONN_TIMEOUT                  200
 #define DEFAULT_CONN_LATENCY                  0
 
@@ -102,7 +105,7 @@
 #define DEFAULT_SVC_DISCOVERY_DELAY           1000
 
 // Scan parameters
-#define DEFAULT_SCAN_DURATION                 4000
+#define DEFAULT_SCAN_DURATION                 30
 #define DEFAULT_SCAN_WIND                     80
 #define DEFAULT_SCAN_INT                      80
 
@@ -110,7 +113,7 @@
 #define DEFAULT_MAX_SCAN_RES                  8
 
 // TRUE to filter discovery results on desired service UUID
-#define DEFAULT_DEV_DISC_BY_SVC_UUID          TRUE
+#define DEFAULT_DEV_DISC_BY_SVC_UUID          FALSE
 
 // Discovey mode (limited, general, all)
 #define DEFAULT_DISCOVERY_MODE                DEVDISC_MODE_ALL
@@ -207,9 +210,9 @@ uint8_t selectKey = DISCOVERED_DEVICES;
 static uint8_t scanRspData[] =
 {
   // complete name
-  16,   // length of this data
+  13,   // length of this data
   GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-  'S', 'i', 'm', 'p', 'l', 'e', ' ', 'T', 'o', 'p', 'o', 'l', 'o', 'g', 'y',
+  'M', 'u', 'l', 't', 'i', ' ', 'R', 'o', 'l', 'e', ':', ')',
   
   // connection interval range
   0x05,   // length of this data
@@ -331,6 +334,13 @@ static gapRolesCBs_t multi_role_gapRoleCBs =
 static simpleProfileCBs_t multi_role_simpleProfileCBs =
 {
   multi_role_charValueChangeCB // Characteristic value change callback
+};
+
+// GAP Bond Manager Callbacks
+static gapBondCBs_t multi_role_BondMgrCBs =
+{
+  NULL, // Passcode callback (not used by application)
+  NULL  // Pairing / Bonding state Callback (not used by application)
 };
 
 /*********************************************************************
@@ -500,11 +510,26 @@ static void multi_role_init(void)
     
     // Register to receive incoming ATT Indications/Notifications
     GATT_RegisterForInd(selfEntity);    
-    
   }
+  
+  // Setup the GAP Bond Manager
+  {
+    uint8_t pairMode = GAPBOND_PAIRING_MODE_NO_PAIRING;
+    uint8_t mitm = FALSE;
+    uint8_t ioCap = GAPBOND_IO_CAP_NO_INPUT_NO_OUTPUT;
+    uint8_t bonding = FALSE;
+
+    GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
+    GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
+    GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
+    GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
+  }  
   
   // Start the Device
   VOID GAPRole_StartDevice(&multi_role_gapRoleCBs);
+  
+  // Start Bond Manager
+  VOID GAPBondMgr_Register(&multi_role_BondMgrCBs);  
   
   // init index to channel map
   uint8_t i;
@@ -512,6 +537,15 @@ static void multi_role_init(void)
   {
     connHandleMap[i] = INVALID_CONNHANDLE;
   }  
+  
+#ifdef DEBUG
+  // Map RFC_GPO0 to DIO6
+  IOCPortConfigureSet(IOID_6, IOC_PORT_RFC_GPO0,
+                      IOC_IOMODE_NORMAL);
+  // Map RFC_GPO1 to DIO7
+  IOCPortConfigureSet(IOID_7, IOC_PORT_RFC_GPO1,
+                      IOC_IOMODE_NORMAL);  
+#endif //DEBUG  
 }
 
 /*********************************************************************
@@ -951,6 +985,9 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
       
       // initialize scan index to last device
       scanIdx = scanRes;
+        GAPRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
+                               DEFAULT_DISCOVERY_ACTIVE_SCAN,
+                               DEFAULT_DISCOVERY_WHITE_LIST);
     }
     break;
     
@@ -1015,7 +1052,7 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
     
   case GAP_LINK_PARAM_UPDATE_EVENT:
     {
-      DISPLAY_WRITE_STRING_VALUE("Param Update: %d", pEvent->linkUpdate.status,
+      DISPLAY_WRITE_STRING_VALUE("Param Update %d", pEvent->linkUpdate.status,
                                  LCD_PAGE2);
     }
     break;
@@ -1145,7 +1182,6 @@ void multi_role_keyChangeHandler(uint8 keys)
 *
 * @return  none
 */
-#pragma optimize=none
 static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
@@ -1354,9 +1390,17 @@ static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
       return;
     }
     
-    if (keys & KEY_RIGHT) //connection update...eventually
+    if (keys & KEY_RIGHT) //connection update
     {
-      asm("NOP");
+      gapRole_updateConnParams_t updateParams =
+      {
+        .connHandle = connHandle,
+        .minConnInterval = 60,
+        .maxConnInterval = 60,
+        .slaveLatency = 0,
+        .timeoutMultiplier = 1000
+      };
+      gapRole_connUpdate( GAPROLE_NO_ACTION, &updateParams);
       return;
     }
     
@@ -1378,10 +1422,7 @@ static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
       DISPLAY_WRITE_STRING("", LCD_PAGE4);
       DISPLAY_WRITE_STRING("", LCD_PAGE5);
       DISPLAY_WRITE_STRING("", LCD_PAGE6);
-      DISPLAY_WRITE_STRING("", LCD_PAGE7);
-#ifndef BROKEN
-      DISPLAY_WRITE_STRING_VALUE("Connected to %d", linkDB_NumActive() , LCD_PAGE0);
-#endif      
+      DISPLAY_WRITE_STRING("", LCD_PAGE7);  
       
       connIdx = 0;
       return;

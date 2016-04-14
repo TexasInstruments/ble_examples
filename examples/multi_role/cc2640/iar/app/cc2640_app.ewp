@@ -3,7 +3,7 @@
 <project>
   <fileVersion>2</fileVersion>
   <configuration>
-    <name>FlashROM</name>
+    <name>FlashROM-Git</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -17,15 +17,15 @@
         <debug>1</debug>
         <option>
           <name>ExePath</name>
-          <state>FlashROM\Exe</state>
+          <state>FlashROM-Git\Exe</state>
         </option>
         <option>
           <name>ObjPath</name>
-          <state>FlashROM\Obj</state>
+          <state>FlashROM-Git\Obj</state>
         </option>
         <option>
           <name>ListPath</name>
-          <state>FlashROM\List</state>
+          <state>FlashROM-Git\List</state>
         </option>
         <option>
           <name>GEndianMode</name>
@@ -184,7 +184,7 @@
           <state>BROKEN</state>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>MAX_NUM_BLE_CONNS=3</state>
+          <state>MAX_NUM_BLE_CONNS=4</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
@@ -196,7 +196,8 @@
           <state>xdc_runtime_Log_DISABLE_ALL</state>
           <state>CC2650DK_7ID</state>
           <state>CC26XX</state>
-          <state>GAP_ROLE_ABORT</state>
+          <state>DEBUG</state>
+          <state>HEAPMGR_METRICS</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -257,7 +258,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>00000000</state>
+          <state>11111110</state>
         </option>
         <option>
           <name>CCDebugInfo</name>
@@ -369,7 +370,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -378,7 +379,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -1005,16 +1006,16 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\board_display.c</name>
+      <name>$SRC_EX$\common\cc26xx\board_display.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\board_display.h</name>
+      <name>$SRC_EX$\common\cc26xx\board_display.h</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.c</name>
+      <name>$SRC_EX$\common\cc26xx\board_key.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.h</name>
+      <name>$SRC_EX$\common\cc26xx\board_key.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\app\multi_role.c</name>
@@ -1023,10 +1024,10 @@
       <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\app\multi_role.h</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\util.c</name>
+      <name>$SRC_EX$\common\cc26xx\util.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\util.h</name>
+      <name>$SRC_EX$\common\cc26xx\util.h</name>
     </file>
   </group>
   <group>
@@ -1116,67 +1117,67 @@
   <group>
     <name>ICall</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\lprf-sd-common-components\applib\src\heap\heapmgr.h</name>
+      <name>$SRC_COMMON$\heapmgr\heapmgr.h</name>
     </file>
     <file>
       <name>$SRC_COMMON$\icall\src\icall.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\lprf-sd-common-components\icall\src\inc\icall.h</name>
+      <name>\\SRC_COMMON\icall\src\inc\icall.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\ble_examples\src\icall\inc\icall_addrs.h</name>
+      <name>\\SRC_EX\icall\inc\icall_addrs.h</name>
     </file>
     <file>
       <name>$SRC_COMMON$\icall\src\icall_cc2650.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\lprf-sd-common-components\icall\src\icall_platform.h</name>
+      <name>\\SRC_COMMON\icall\src\icall_platform.h</name>
     </file>
   </group>
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$SRC_BLE_CORE$\icall\app\ble_user_config.c</name>
+      <name>$SRC_EX$\icall\app\ble_user_config.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\config\ble_user_config.h</name>
+      <name>$SRC_EX$\icall\inc\ble_user_config.h</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\icall\app\icall_api.c</name>
+      <name>$SRC_EX$\icall\app\icall_api.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\ble_examples\src\icall\inc\icall_apimsg.h</name>
+      <name>\\SRC_EX\icall\inc\icall_apimsg.h</name>
     </file>
   </group>
   <group>
     <name>Include</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\ble_core\src\inc\gap.h</name>
+      <name>$SRC_BLE_CORE$\inc\gap.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\ble_examples\src\profiles\roles\gapbondmgr.h</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\ble_examples\src\inc\gapgattserver.h</name>
+      <name>$SRC_BLE_CORE$\inc\gatt.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\ble_core\src\inc\gatt.h</name>
+      <name>$SRC_BLE_CORE$\inc\gattservapp.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\ble_core\src\inc\hci.h</name>
+      <name>$SRC_BLE_CORE$\inc\hci.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\lprf-sd-common-components\osal\src\inc\osal_snv.h</name>
+      <name>\\SRC_COMMON\osal\src\inc\osal_snv.h</name>
     </file>
   </group>
   <group>
     <name>Profiles</name>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\dev_info\cc26xx\devinfoservice.c</name>
+      <name>$SRC_EX$\profiles\dev_info\cc26xx\devinfoservice.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\dev_info\devinfoservice.h</name>
+      <name>$SRC_EX$\profiles\dev_info\devinfoservice.h</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\inc\gatt_profile_uuid.h</name>
@@ -1197,7 +1198,7 @@
       <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\app\multi.h</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\simple_profile\cc26xx\simple_gatt_profile.c</name>
+      <name>$SRC_EX$\profiles\simple_profile\cc26xx\simple_gatt_profile.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\profiles\simple_profile\simple_gatt_profile.h</name>
@@ -1220,7 +1221,7 @@
     <file>
       <name>$PROJ_DIR$\..\config\app_ble.cfg</name>
       <configuration>
-        <name>FlashROM</name>
+        <name>FlashROM-Git</name>
         <settings>
           <name>CUSTOM</name>
           <data>
@@ -1237,7 +1238,7 @@
       </configuration>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\..\git\ble_examples\src\common\cc26xx\iar\cc26xx_app.icf</name>
+      <name>\\SRC_EX\common\cc26xx\iar\cc26xx_app.icf</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\iar_boundary.bdef</name>

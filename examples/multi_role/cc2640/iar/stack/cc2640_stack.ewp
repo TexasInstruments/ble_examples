@@ -185,7 +185,7 @@
           <state>FLASH_ROM_BUILD</state>
           <state>POWER_SAVING</state>
           <state>INCLUDE_AES_DECRYPT</state>
-          <state>OSAL_SNV=0</state>
+          <state>OSAL_SNV=1</state>
           <state>xPM_DISABLE_PWRDOWN</state>
           <state>xTESTMODES</state>
           <state>xTEST_BLEBOARD</state>
@@ -1114,10 +1114,10 @@
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$SRC_BLE_CORE$\icall\stack\ble_dispatch.c</name>
+      <name>$SRC_EX$\icall\stack\ble_dispatch.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\icall\inc\ble_dispatch.h</name>
+      <name>$SRC_EX$\icall\inc\ble_dispatch.h</name>
     </file>
   </group>
   <group>
@@ -1159,7 +1159,7 @@
   <group>
     <name>NPI</name>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\npi\stack\npi.c</name>
+      <name>$SRC_EX$\common\cc26xx\npi\stack\npi.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\common\cc26xx\npi\stack\npi.h</name>
@@ -1225,10 +1225,10 @@
   <group>
     <name>PROFILES</name>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\roles\gap.c</name>
+      <name>$SRC_EX$\profiles\roles\gap.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.c</name>
+      <name>$SRC_EX$\profiles\roles\gapbondmgr.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.h</name>
@@ -1240,13 +1240,13 @@
   <group>
     <name>Startup</name>
     <file>
-      <name>$SRC_BLE_CORE$\icall\stack\ble_user_config.c</name>
+      <name>$SRC_EX$\icall\stack\ble_user_config.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\rom\common_rom_init.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\icall_startup.c</name>
+      <name>$SRC_EX$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\stack\osal_icall_ble.c</name>
@@ -1270,10 +1270,10 @@
       <name>$PROJ_DIR$\..\config\iar_boundary.xcl</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\onboard.c</name>
+      <name>$SRC_EX$\common\cc26xx\onboard.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\common\cc26xx\onboard.h</name>
+      <name>$SRC_EX$\common\cc26xx\onboard.h</name>
     </file>
   </group>
 </project>

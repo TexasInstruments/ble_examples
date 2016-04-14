@@ -76,6 +76,7 @@
  */
 // Profile Events
 #define START_ADVERTISING_EVT         0x0001  // Start Advertising
+#define CONN_PARAM_TIMEOUT_EVT        0x0002
 
 #define DEFAULT_ADVERT_OFF_TIME       30000   // 30 seconds
 
@@ -126,17 +127,6 @@ typedef struct
   uint16_t  value; 
 } gapRoleInfoParam_t;
 
-typedef struct
-{
-  uint8_t paramUpdateEnable;
-  uint16_t minConnInterval;
-  uint16_t maxConnInterval;
-  uint16_t slaveLatency;
-  uint16_t timeoutMultiplier;
-  uint16_t connHandle;
-} gapRole_updateConnParams_t;
-
-
 /*********************************************************************
  * GLOBAL VARIABLES
  */
@@ -169,6 +159,7 @@ static Queue_Struct appMsg;
 
 // Clock object used to signal timeout
 static Clock_Struct startAdvClock;
+static Clock_Struct updateTimeoutClock;
 
 // Task pending events
 static uint16_t events = 0;
@@ -203,14 +194,13 @@ static uint8_t  gapRole_AdvertData[B_MAX_ADV_LEN] =
 // Connection parameter update parameters.
 static gapRole_updateConnParams_t gapRole_updateConnParams =
 {
-  .paramUpdateEnable = FALSE,
+  .connHandle = INVALID_CONNHANDLE,
   .minConnInterval = DEFAULT_MIN_CONN_INTERVAL,
   .maxConnInterval = DEFAULT_MAX_CONN_INTERVAL,
   .slaveLatency = MIN_SLAVE_LATENCY,
   .timeoutMultiplier = DEFAULT_TIMEOUT_MULTIPLIER
 };
 static uint8_t paramUpdateNoSuccessOption = GAPROLE_NO_ACTION;
-static uint16_t udpateConnHandle = 0xFFFE;
 
 static uint8_t  gapRole_ScanRspDataLen = 0;
 static uint8_t  gapRole_ScanRspData[B_MAX_ADV_LEN] = {0};
@@ -219,12 +209,6 @@ static uint8_t  gapRole_AdvDirectType;
 static uint8_t  gapRole_AdvDirectAddr[B_ADDR_LEN] = {0};
 static uint8_t  gapRole_AdvChanMap;
 static uint8_t  gapRole_AdvFilterPolicy;
-
-//these are the same for each connection
-static uint16_t gapRole_MinConnInterval = DEFAULT_MIN_CONN_INTERVAL;
-static uint16_t gapRole_MaxConnInterval = DEFAULT_MAX_CONN_INTERVAL;
-static uint16_t gapRole_SlaveLatency = MIN_SLAVE_LATENCY;
-static uint16_t gapRole_TimeoutMultiplier = DEFAULT_TIMEOUT_MULTIPLIER;
 
 static uint8_t  gapRoleMaxScanRes = 0;
 
@@ -250,8 +234,6 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg);
 static void gapRole_SetupGAP(void);
 static void gapRole_setEvent(uint32_t event);
 
-static bStatus_t gapRole_startConnUpdate(uint8_t handleFailure, 
-                                       gapRole_updateConnParams_t *pConnParams);
 static void      gapRole_HandleParamUpdateNoSuccess(void);
 
 // for debugging
@@ -474,67 +456,6 @@ bStatus_t GAPRole_SetParameter(uint16_t param, uint8_t len, void *pValue, uint8 
         ret = bleInvalidRange;
       }
       break;
-
-    case GAPROLE_MIN_CONN_INTERVAL:
-      {
-        uint16_t newInterval = *((uint16_t*)pValue);
-        if (  len == sizeof (uint16_t)           &&
-             (newInterval >= MIN_CONN_INTERVAL) &&
-             (newInterval <= MAX_CONN_INTERVAL))
-        {
-          gapRole_updateConnParams.minConnInterval = newInterval;
-        }
-        else
-        {
-          ret = bleInvalidRange;
-        }
-      }
-      break;
-
-    case GAPROLE_MAX_CONN_INTERVAL:
-      {
-        uint16_t newInterval = *((uint16_t*)pValue);
-        if (  len == sizeof (uint16_t)          &&
-             (newInterval >= MIN_CONN_INTERVAL) &&
-             (newInterval <= MAX_CONN_INTERVAL))
-        {
-          gapRole_updateConnParams.maxConnInterval = newInterval;
-        }
-        else
-        {
-          ret = bleInvalidRange;
-        }
-      }
-      break;
-
-    case GAPROLE_SLAVE_LATENCY:
-      {
-        uint16_t latency = *((uint16_t*)pValue);
-        if (len == sizeof (uint16_t) && (latency < MAX_SLAVE_LATENCY))
-        {
-          gapRole_updateConnParams.slaveLatency = latency;
-        }
-        else
-        {
-          ret = bleInvalidRange;
-        }
-      }
-      break;
-
-    case GAPROLE_TIMEOUT_MULTIPLIER:
-      {
-        uint16_t newTimeout = *((uint16_t*)pValue);
-        if (len == sizeof (uint16_t)
-            && (newTimeout >= MIN_TIMEOUT_MULTIPLIER) && (newTimeout <= MAX_TIMEOUT_MULTIPLIER))
-        {
-          gapRole_updateConnParams.timeoutMultiplier = newTimeout;
-        }
-        else
-        {
-          ret = bleInvalidRange;
-        }
-      }
-      break;
     
   case GAPROLE_MAX_SCAN_RES:
       if (len == sizeof (uint8_t))
@@ -633,22 +554,6 @@ bStatus_t GAPRole_GetParameter(uint16_t param, void *pValue, uint8_t connHandle)
 
     case GAPROLE_ADV_FILTER_POLICY:
       *((uint8_t*)pValue) = gapRole_AdvFilterPolicy;
-      break;
-      
-    case GAPROLE_MIN_CONN_INTERVAL:
-      *((uint16_t*)pValue) = gapRole_updateConnParams.minConnInterval;
-      break;
-
-    case GAPROLE_MAX_CONN_INTERVAL:
-      *((uint16_t*)pValue) = gapRole_updateConnParams.maxConnInterval;
-      break;
-
-    case GAPROLE_SLAVE_LATENCY:
-      *((uint16_t*)pValue) = gapRole_updateConnParams.slaveLatency;
-      break;
-
-    case GAPROLE_TIMEOUT_MULTIPLIER:
-      *((uint16_t*)pValue) = gapRole_updateConnParams.timeoutMultiplier;
       break;
 
     case GAPROLE_CONN_BD_ADDR:
@@ -769,6 +674,8 @@ static void gapRole_init(void)
   // Setup timers as one-shot timers
   Util_constructClock(&startAdvClock, gapRole_clockHandler, 
                       0, 0, false, START_ADVERTISING_EVT);
+  Util_constructClock(&updateTimeoutClock, gapRole_clockHandler,
+                      0, 0, false, CONN_PARAM_TIMEOUT_EVT);
   
   // Initialize the Profile Advertising and Connection Parameters
   gapRole_profileRole = GAP_PROFILE_PERIPHERAL | GAP_PROFILE_CENTRAL;
@@ -939,6 +846,13 @@ static void gapRole_taskFxn(UArg a0, UArg a1)
         }
       }
     }
+    if (events & CONN_PARAM_TIMEOUT_EVT)
+    {
+      events &= ~CONN_PARAM_TIMEOUT_EVT;
+
+      // Unsuccessful in updating connection parameters
+      gapRole_HandleParamUpdateNoSuccess();
+    }    
   } // for
 }
 
@@ -961,6 +875,36 @@ static uint8_t gapRole_processStackMsg(ICall_Hdr *pMsg)
       safeToDealloc = gapRole_processGAPMsg((gapEventHdr_t *)pMsg);
       break;
 
+    case L2CAP_SIGNAL_EVENT:
+      {
+        l2capSignalEvent_t *pPkt = (l2capSignalEvent_t *)pMsg;
+
+        // Process the Parameter Update Response
+        if (pPkt->opcode == L2CAP_PARAM_UPDATE_RSP)
+        {
+          l2capParamUpdateRsp_t *pRsp = (l2capParamUpdateRsp_t *)&(pPkt->cmd.updateRsp);
+
+          if ((pRsp->result == L2CAP_CONN_PARAMS_REJECTED) &&
+               (paramUpdateNoSuccessOption == GAPROLE_TERMINATE_LINK))
+          {
+            // Cancel connection param update timeout timer
+            Util_stopClock(&updateTimeoutClock);
+
+            // Terminate connection immediately
+            GAPRole_TerminateConnection(pPkt->connHandle);
+          }
+          else
+          {
+            uint16_t timeout = GAP_GetParamValue(TGAP_CONN_PARAM_TIMEOUT);
+
+            // Let's wait for Controller to update connection parameters if they're
+            // accepted. Otherwise, decide what to do based on no success option.
+            Util_restartClock(&updateTimeoutClock, timeout);
+          }
+        }
+      }
+      break;      
+      
     default:
       break;
   }
@@ -1089,25 +1033,23 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
       {
         gapEstLinkReqEvent_t *pPkt = (gapEstLinkReqEvent_t *)pMsg;
 
-//        if (pPkt->hdr.status == SUCCESS)
-//        {
-//          // advertising will stop when a connection forms in the peripheral role
-//          if (pPkt->connRole == GAP_PROFILE_PERIPHERAL)
-//          {
-//            gapRole_AdvEnabled = FALSE;
-//          }
-//        }
-//        else if (pPkt->hdr.status == bleGAPConnNotAcceptable)
-        if (pPkt->hdr.status == bleGAPConnNotAcceptable)
+        if (pPkt->hdr.status == SUCCESS)
+        {
+          // Notify the Bond Manager to the connection
+          VOID GAPBondMgr_LinkEst(pPkt->devAddrType, pPkt->devAddr,
+                                  pPkt->connectionHandle, pPkt->connRole);          
+        }
+        else if (pPkt->hdr.status == bleGAPConnNotAcceptable)
         {
           // Set enabler to FALSE; device will become discoverable again when
           // this value gets set to TRUE
           gapRole_AdvEnabled = FALSE;
         }
-//        else
-//        {
-//          gapRole_abort();
-//        }
+        else
+        {
+          gapRole_abort();
+        }
+        
         notify = TRUE;
       }
       break;
@@ -1134,6 +1076,20 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
         GAPBondMgr_SlaveReqSecurity(connHandle, authReq);
       }
       break;     
+      
+    case GAP_LINK_PARAM_UPDATE_EVENT:
+      {
+        gapLinkUpdateEvent_t *pPkt = (gapLinkUpdateEvent_t *)pMsg;
+        
+        // Cancel connection param update timeout timer (if active)
+        Util_stopClock(&updateTimeoutClock);
+        
+        if (pPkt->hdr.status == SUCCESS)
+        {
+          notify = TRUE;
+        }
+      }
+      break;
       
     default:
       notify = TRUE;
@@ -1162,18 +1118,16 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
  * @return  none
  */
 static void gapRole_HandleParamUpdateNoSuccess(void)
-{
+{  
   // See which option was chosen for unsuccessful updates
   switch (paramUpdateNoSuccessOption)
   {
-    case GAPROLE_RESEND_PARAM_UPDATE:
-      GAPRole_SendUpdateParam(gapRole_MinConnInterval, gapRole_MaxConnInterval,
-                              gapRole_SlaveLatency, gapRole_TimeoutMultiplier,
-                              GAPROLE_RESEND_PARAM_UPDATE, udpateConnHandle);
+    case GAPROLE_RESEND_PARAM_UPDATE:           
+      gapRole_connUpdate(GAPROLE_RESEND_PARAM_UPDATE, &gapRole_updateConnParams);
       break;
 
     case GAPROLE_TERMINATE_LINK:
-      GAPRole_TerminateConnection(udpateConnHandle);
+      GAPRole_TerminateConnection(gapRole_updateConnParams.connHandle);
       break;
 
     case GAPROLE_NO_ACTION:
@@ -1185,7 +1139,7 @@ static void gapRole_HandleParamUpdateNoSuccess(void)
 }
 
 /********************************************************************
- * @fn          gapRole_startConnUpdate
+ * @fn          gapRole_connUpdate
  *
  * @brief       Start the connection update procedure
  *
@@ -1204,107 +1158,60 @@ static void gapRole_HandleParamUpdateNoSuccess(void)
  *              bleMemAllocError: Memory allocation error occurred.
  *              bleNoResources: No available resource
  */
-static bStatus_t gapRole_startConnUpdate(uint8_t handleFailure, 
-                                        gapRole_updateConnParams_t *pConnParams)
+bStatus_t gapRole_connUpdate(uint8_t handleFailure, gapRole_updateConnParams_t *pConnParams)
 {
   bStatus_t status;
-#ifndef BROKEN
-  // First check the current connection parameters versus the configured parameters
-  if ((gapRole_ConnInterval < pConnParams->minConnInterval)   ||
-       (gapRole_ConnInterval > pConnParams->maxConnInterval)   ||
-       (gapRole_ConnSlaveLatency != pConnParams->slaveLatency) ||
-       (gapRole_ConnTimeout  != pConnParams->timeoutMultiplier))  
+  linkDBInfo_t pInfo;
+  
+  //ensure connection exists
+  linkDB_GetInfo(gapRole_updateConnParams.connHandle, &pInfo);
+  if (!(pInfo.stateFlags & LINK_CONNECTED))
   {
+    return (bleNotConnected);
+  }
+  // Make sure we don't send an L2CAP Connection Parameter Update Request
+  // command within TGAP(conn_param_timeout) of an L2CAP Connection Parameter
+  // Update Response being received.
+  if (Util_isActive(&updateTimeoutClock) == FALSE)
+  {     
     uint16_t timeout = GAP_GetParamValue(TGAP_CONN_PARAM_TIMEOUT);
 #if defined(L2CAP_CONN_UPDATE)
     l2capParamUpdateReq_t updateReq;
-
+    
     updateReq.intervalMin = pConnParams->minConnInterval;
     updateReq.intervalMax = pConnParams->maxConnInterval;
     updateReq.slaveLatency = pConnParams->slaveLatency;
     updateReq.timeoutMultiplier = pConnParams->timeoutMultiplier;
-
-    status =  L2CAP_ConnParamUpdateReq(gapRole_ConnectionHandle, &updateReq, selfEntity);
+    
+    status =  L2CAP_ConnParamUpdateReq(pConnParams->connHandle, &updateReq, selfEntity);
 #else
     gapUpdateLinkParamReq_t linkParams;
-
-    linkParams.connectionHandle = gapRole_ConnectionHandle;
+    
+    linkParams.connectionHandle = pConnParams->connHandle;
     linkParams.intervalMin = pConnParams->minConnInterval;
     linkParams.intervalMax = pConnParams->maxConnInterval;
     linkParams.connLatency = pConnParams->slaveLatency;
     linkParams.connTimeout = pConnParams->timeoutMultiplier;
-
+    
     status = GAP_UpdateLinkParamReq( &linkParams );
 #endif // L2CAP_CONN_UPDATE
-
+    
     if(status == SUCCESS)
     {
+      //store update params for possible resending
       paramUpdateNoSuccessOption = handleFailure;
-      // Let's wait either for L2CAP Connection Parameters Update Response or
-      // for Controller to update connection parameters
+      VOID memcpy(&gapRole_updateConnParams, pConnParams, sizeof(gapRole_updateConnParams_t));
+      
+      // start timeout clock
       Util_restartClock(&updateTimeoutClock, timeout);
     }
   }
   else
   {
-    status = bleInvalidRange;
+    return(blePending);
   }
-#endif // BROKEN
   
   return status;
-}
-
-/********************************************************************
- * @fn          GAPRole_SendUpdateParam
- *
- * @brief       Update the parameters of an existing connection
- *
- * @param       minConnInterval - the new min connection interval
- * @param       maxConnInterval - the new max connection interval
- * @param       latency - the new slave latency
- * @param       connTimeout - the new timeout value
- * @param       handleFailure - what to do if the update does not occur.
- *              Method may choose to terminate connection, try again,
- *              or take no action
- *
- * @return      SUCCESS: operation was successful.
- *              INVALIDPARAMETER: Data can not fit into one packet.
- *              MSG_BUFFER_NOT_AVAIL: No HCI buffer is available.
- *              bleInvalidRange: 
- *              bleIncorrectMode: invalid profile role.
- *              bleAlreadyInRequestedMode: already updating link parameters.
- *              bleNotConnected: Connection is down
- *              bleMemAllocError: Memory allocation error occurred.
- *              bleNoResources: No available resource
- */
-bStatus_t GAPRole_SendUpdateParam(uint16_t minConnInterval,
-                                  uint16_t maxConnInterval,
-                                  uint16_t latency, uint16_t connTimeout,
-                                  uint8_t handleFailure, uint16_t connHandle)
-{
-  // If there is no existing connection no update need be sent
-  if (linkDB_NumActive())
-  {
-    return (bleNotConnected);
-  }
-  else
-  {
-    gapRole_updateConnParams_t paramUpdate;
-    
-    paramUpdate.minConnInterval = minConnInterval;
-    paramUpdate.maxConnInterval = maxConnInterval;
-    paramUpdate.slaveLatency = latency;
-    paramUpdate.timeoutMultiplier = connTimeout;
-    paramUpdate.connHandle = connHandle;
-
-#ifndef BROKEN
-    // Connection update requested by app, cancel such pending procedure (if active)
-    Util_stopClock(&startUpdateClock);
-#endif // BROKEN    
-
-    // Start connection update procedure
-    return gapRole_startConnUpdate(handleFailure, &paramUpdate);
-  }
 }
 
 /*********************************************************************
@@ -1364,7 +1271,7 @@ void gapRole_clockHandler(UArg a0)
  */
 static void gapRole_abort(void)
 {
-#ifdef GAP_ROLE_ABORT  
+#ifdef DEBUG  
   while(1);
 #endif  
 }

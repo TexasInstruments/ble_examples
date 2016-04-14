@@ -121,6 +121,15 @@ typedef union
   gapTerminateLinkEvent_t   linkTerminate;      //!< Link terminated event structure.
 } gapMultiRoleEvent_t;
 
+typedef struct
+{
+  uint16_t connHandle;
+  uint16_t minConnInterval;
+  uint16_t maxConnInterval;
+  uint16_t slaveLatency;
+  uint16_t timeoutMultiplier;
+} gapRole_updateConnParams_t;
+
 /**
  *  Possible actions the peripheral device may take if an unsuccessful parameter
  *  update is received.
@@ -323,6 +332,9 @@ extern bStatus_t GAPRole_EstablishLink(uint8_t highDutyCycle, uint8_t whiteList,
  * @} End GAPROLES_PERIPHERAL_API
  */
 
+
+extern bStatus_t gapRole_connUpdate(uint8_t handleFailure, 
+                                       gapRole_updateConnParams_t *pConnParams);
 
 /*-------------------------------------------------------------------
  * TASK FUNCTIONS - Don't call these. These are system functions.
