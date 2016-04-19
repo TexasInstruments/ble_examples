@@ -105,7 +105,7 @@
 #define DEFAULT_SVC_DISCOVERY_DELAY           1000
 
 // Scan parameters
-#define DEFAULT_SCAN_DURATION                 30
+#define DEFAULT_SCAN_DURATION                 3000
 #define DEFAULT_SCAN_WIND                     80
 #define DEFAULT_SCAN_INT                      80
 
@@ -985,9 +985,6 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
       
       // initialize scan index to last device
       scanIdx = scanRes;
-        GAPRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
-                               DEFAULT_DISCOVERY_ACTIVE_SCAN,
-                               DEFAULT_DISCOVERY_WHITE_LIST);
     }
     break;
     
@@ -1395,12 +1392,20 @@ static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
       gapRole_updateConnParams_t updateParams =
       {
         .connHandle = connHandle,
-        .minConnInterval = 60,
-        .maxConnInterval = 60,
+        .minConnInterval = 80,
+        .maxConnInterval = 150,
         .slaveLatency = 0,
-        .timeoutMultiplier = 1000
+        .timeoutMultiplier = 200
       };
-      gapRole_connUpdate( GAPROLE_NO_ACTION, &updateParams);
+      bStatus_t status = gapRole_connUpdate( GAPROLE_NO_ACTION, &updateParams);
+      if (status == SUCCESS)
+      {
+        DISPLAY_WRITE_STRING("Updating", LCD_PAGE2);
+      }
+      else if (status == blePending)
+      {
+        DISPLAY_WRITE_STRING("Already Updating", LCD_PAGE2);
+      }
       return;
     }
     

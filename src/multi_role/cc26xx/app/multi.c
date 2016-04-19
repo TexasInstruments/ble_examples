@@ -1032,12 +1032,22 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
     case GAP_LINK_ESTABLISHED_EVENT:
       {
         gapEstLinkReqEvent_t *pPkt = (gapEstLinkReqEvent_t *)pMsg;
+        uint8_t advertEnable = TRUE;
 
         if (pPkt->hdr.status == SUCCESS)
         {
           // Notify the Bond Manager to the connection
           VOID GAPBondMgr_LinkEst(pPkt->devAddrType, pPkt->devAddr,
-                                  pPkt->connectionHandle, pPkt->connRole);          
+                                  pPkt->connectionHandle, pPkt->connRole);    
+
+          //advertising will stop after connection formed as slave
+          if (pPkt->connRole)
+          {
+            gapRole_AdvEnabled = FALSE;
+            //reenable advertising
+            GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t),
+                                 &advertEnable, NULL);            
+          }
         }
         else if (pPkt->hdr.status == bleGAPConnNotAcceptable)
         {
@@ -1164,7 +1174,7 @@ bStatus_t gapRole_connUpdate(uint8_t handleFailure, gapRole_updateConnParams_t *
   linkDBInfo_t pInfo;
   
   //ensure connection exists
-  linkDB_GetInfo(gapRole_updateConnParams.connHandle, &pInfo);
+  linkDB_GetInfo(pConnParams->connHandle, &pInfo);
   if (!(pInfo.stateFlags & LINK_CONNECTED))
   {
     return (bleNotConnected);
