@@ -97,8 +97,8 @@
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         6
 
 //connection parameters
-#define DEFAULT_CONN_INT                      2
-#define DEFAULT_CONN_TIMEOUT                  200
+#define DEFAULT_CONN_INT                      40
+#define DEFAULT_CONN_TIMEOUT                  1000
 #define DEFAULT_CONN_LATENCY                  0
 
 // Default service discovery timer delay in ms
@@ -514,7 +514,7 @@ static void multi_role_init(void)
   
   // Setup the GAP Bond Manager
   {
-    uint8_t pairMode = GAPBOND_PAIRING_MODE_NO_PAIRING;
+    uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
     uint8_t mitm = FALSE;
     uint8_t ioCap = GAPBOND_IO_CAP_NO_INPUT_NO_OUTPUT;
     uint8_t bonding = FALSE;
@@ -1050,7 +1050,7 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
   case GAP_LINK_PARAM_UPDATE_EVENT:
     {
       DISPLAY_WRITE_STRING_VALUE("Param Update %d", pEvent->linkUpdate.status,
-                                 LCD_PAGE2);
+                                 LCD_PAGE6);
     }
     break;
     
@@ -1179,6 +1179,7 @@ void multi_role_keyChangeHandler(uint8 keys)
 *
 * @return  none
 */
+#pragma optimize=none
 static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
@@ -1242,11 +1243,12 @@ static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
     {
       uint8_t adv;
       uint8_t adv_status;
+      uint8_t status;
       GAPRole_GetParameter(GAPROLE_ADVERT_ENABLED, &adv_status, NULL);
       if (adv_status) //turn off
       {
         adv = FALSE;
-        GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
+        status = GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
       }
       else //turn on
       {
@@ -1400,11 +1402,11 @@ static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
       bStatus_t status = gapRole_connUpdate( GAPROLE_NO_ACTION, &updateParams);
       if (status == SUCCESS)
       {
-        DISPLAY_WRITE_STRING("Updating", LCD_PAGE2);
+        DISPLAY_WRITE_STRING("Updating", LCD_PAGE6);
       }
       else if (status == blePending)
       {
-        DISPLAY_WRITE_STRING("Already Updating", LCD_PAGE2);
+        DISPLAY_WRITE_STRING("Already Updating", LCD_PAGE6);
       }
       return;
     }
