@@ -53,7 +53,7 @@
 #include "gattservapp.h"
 #include "simple_gatt_profile.h"
 #include "devinfoservice.h"
-#include "hci.h"
+#include "hci_tl.h"
 
 #include "peripheral.h"
 #include "gapbondmgr.h"
@@ -74,12 +74,6 @@
  * CONSTANTS
  */
 // Advertising interval when device is discoverable (units of 625us, 160=100ms)
-// Simple BLE Peripheral Task Events
-#define SEP_PAIRING_STATE_EVT                 0x0001
-#define SEP_KEY_CHANGE_EVT                    0x0002
-#define SEP_STATE_CHANGE_EVT                  0x0004
-#define SEP_PASSCODE_NEEDED_EVT               0x0008
-
 #define DEFAULT_ADVERTISING_INTERVAL          160
 
 // Limited discoverable mode advertises for 30.72s, and then stops
@@ -102,6 +96,10 @@
 #endif
 
 // Internal Events for RTOS application
+#define SEP_PAIRING_STATE_EVT                 0x0001
+#define SEP_KEY_CHANGE_EVT                    0x0002
+#define SEP_STATE_CHANGE_EVT                  0x0004
+#define SEP_PASSCODE_NEEDED_EVT               0x0008
 
 /*********************************************************************
  * TYPEDEFS
@@ -195,12 +193,44 @@ static uint16_t connHandle = GAP_CONNHANDLE_INIT;
 // GAP GATT Attributes
 static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Security Ex Periph";
 
+#ifdef OOB
+//OOB data from remote
+gapBondOobSC_t oobData =
+{
+  .addr = {0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA},
+  .confirm = {0x38, 0xc0, 0x4d, 0x01, 0xe8, 0xb1, 0x7b, 0x90, 0x28, 0xad, 0x99, 
+              0x48, 0xad, 0x89, 0x79, 0x4c },
+  .oob = {0xA3, 0xDE, 0xBB, 0x31, 0xE6, 0x42, 0x4E, 0x2F, 0x39, 0x7F, 0xF2, 
+          0xD2, 0xC4, 0x89, 0xC6, 0xA7}
+};
+
+//#ifdef STATIC_KEYS
+//LOCAL KEYS
+gapBondEccKeys_t eccKeys =
+{
+  .privateKey = {0x15, 0x99, 0x87, 0x83, 0xc7, 0x84, 0x05, 0x92, 0x35, 0x9e, 
+                 0x54, 0x2c, 0x77, 0x61, 0xb5, 0xd6, 0x0a, 0x80, 0x67, 0x5d, 
+                 0xe8, 0x62, 0xd5, 0xe0, 0xeb, 0xce, 0x76, 0xc7, 0x7b, 0xc2, 
+                 0xfb, 0x43},
+  .publicKeyX = {0xca, 0x42, 0x2f, 0xc3, 0x4c, 0xe5, 0x03, 0x9a, 0x94, 0x06, 
+                 0x26, 0x6d, 0xd8, 0x22, 0x51, 0x30, 0xe6, 0x04, 0xd7, 0x4b, 
+                 0x9b, 0xc3, 0x1e, 0x45, 0xde, 0x5e, 0x3d, 0x5d, 0xb0, 0x1a, 
+                 0xe4, 0xaa},
+  .publicKeyY = {0x03, 0xc8, 0xbf, 0xd1, 0x00, 0xc6, 0x10, 0xb5, 0xec, 0x33, 
+                 0x0c, 0x39, 0x8d, 0xa9, 0xcf, 0x87, 0x36, 0x27, 0xe9, 0x02, 
+                 0x27, 0x28, 0xad, 0xc1, 0xb0, 0x40, 0xae, 0x97, 0x47, 0x66, 
+                 0x8f, 0xb4}
+};
+//#endif //STATIC_KEYS
+
+#else
 // Passcode variables
 static uint8_t judgeNumericComparison = FALSE;
 static uint8_t waiting_for_passcode = FALSE;
 static uint32_t passcode = 0;
 static uint32_t passcode_multiplier = 100000;
 static uint16_t passcode_connHandle = 0xFFFF;
+#endif //OOB
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -228,6 +258,7 @@ void security_examples_peripheral_keyChangeHandler(uint8 keys);
 static void security_examples_peripheral_processPairState(uint8_t state, uint8_t status);
 static void security_examples_peripheral_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
                                         uint8_t uiInputs, uint8_t uiOutputs, uint32_t numComparison);
+static uint8_t security_example_peripheral_processStackMsg(ICall_Hdr *pMsg);
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -336,7 +367,26 @@ static void security_examples_peripheral_init(void)
     GAP_SetParamValue(TGAP_GEN_DISC_ADV_INT_MIN, advInt);
     GAP_SetParamValue(TGAP_GEN_DISC_ADV_INT_MAX, advInt);
   }
+  
+#ifdef OOB
+  // Setup the GAP Bond Manager
+  {
+    uint8_t pairMode = GAPBOND_PAIRING_MODE_WAIT_FOR_REQ;
+    uint8_t mitm = TRUE;
+    uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
+    uint8_t bonding = FALSE;
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
 
+    GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
+    GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
+    GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
+    GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
+    GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
+//#ifdef STATIC_KEYS
+    GAPBondMgr_SetParameter(GAPBOND_ECC_KEYS, sizeof(gapBondEccKeys_t), &eccKeys);     
+//#endif    
+  }
+#else
   // Setup the GAP Bond Manager
   {
     uint8_t pairMode = GAPBOND_PAIRING_MODE_WAIT_FOR_REQ;
@@ -349,8 +399,9 @@ static void security_examples_peripheral_init(void)
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
     GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
-    GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
+    GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);   
   }
+#endif //OOB
 
    // Initialize GATT attributes
   GGS_AddService(GATT_ALL_SERVICES);           // GAP
@@ -359,10 +410,31 @@ static void security_examples_peripheral_init(void)
   
   // Start the Device
   VOID GAPRole_StartDevice(&security_examples_peripheral_gapRoleCBs);
-
+  
   // Start Bond Manager
   VOID GAPBondMgr_Register(&security_examples_peripheral_BondMgrCBs);
-   
+  
+  // Register with GAP for HCI/Host messages
+  GAP_RegisterForMsgs(selfEntity);
+  
+#ifdef OOB
+#ifdef STATIC_KEYS
+  // Get the confirm value
+  SM_GetScConfirmOob(eccKeys.publicKeyX, oobData.oob, oobData.confirm);  
+  
+  uint8_t oobEnabled = TRUE;
+  
+  GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );    
+  GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_DATA, sizeof(gapBondOobSC_t), &oobData); 
+#else
+  // Register to receive SM messages
+  SM_RegisterTask(selfEntity); 
+  
+  // Get ECC Keys - response comes in through callback.
+  SM_GetEccKeys();  
+#endif //STATIC_KEYS
+#endif //OOB  
+  
   DISPLAY_WRITE_STRING("Security Ex Periph", LCD_PAGE0);
 }
 
@@ -375,6 +447,7 @@ static void security_examples_peripheral_init(void)
  *
  * @return  None.
  */
+#pragma optimize=none
 static void security_examples_peripheral_taskFxn(UArg a0, UArg a1)
 {
   // Initialize application
@@ -388,9 +461,40 @@ static void security_examples_peripheral_taskFxn(UArg a0, UArg a1)
     // message is queued to the message receive queue of the thread or when
     // ICall_signal() function is called onto the semaphore.
     ICall_Errno errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
-
+    
     if (errno == ICALL_ERRNO_SUCCESS)
     {
+      ICall_EntityID dest;
+      ICall_ServiceEnum src;
+      ICall_HciExtEvt *pMsg = NULL;
+      
+      if (ICall_fetchServiceMsg(&src, &dest,
+                                (void **)&pMsg) == ICALL_ERRNO_SUCCESS)
+      {
+        uint8 safeToDealloc = TRUE;
+        
+        if ((src == ICALL_SERVICE_CLASS_BLE) && (dest == selfEntity))
+        {
+          ICall_Stack_Event *pEvt = (ICall_Stack_Event *)pMsg;
+          
+          // Check for BLE stack events first
+          if (pEvt->signature == 0xffff)
+          {
+            asm("NOP");
+          }
+          else
+          {
+            // Process inter-task message
+            safeToDealloc = security_example_peripheral_processStackMsg((ICall_Hdr *)pMsg);
+          }
+        }
+        
+        if (pMsg && safeToDealloc)
+        {
+          ICall_freeMsg(pMsg);
+        }
+      }          
+      
       // If RTOS queue is not empty, process app message.
       while (!Queue_empty(appMsgQueue))
       {
@@ -404,7 +508,7 @@ static void security_examples_peripheral_taskFxn(UArg a0, UArg a1)
           ICall_free(pMsg);
         }
       }
-    }
+    } 
   }
 }
 
@@ -617,6 +721,7 @@ static void security_examples_peripheral_processPairState(uint8_t state, uint8_t
  */
 static void security_examples_peripheral_handleKeys(uint8_t shift, uint8_t keys)
 {
+#ifndef OOB
   (void)shift;  // Intentionally unreferenced parameter
 
   if (keys & KEY_RIGHT) 
@@ -656,6 +761,7 @@ static void security_examples_peripheral_handleKeys(uint8_t shift, uint8_t keys)
     }
     return;
   }
+#endif //OOB
 }
 
 /*********************************************************************
@@ -668,6 +774,7 @@ static void security_examples_peripheral_handleKeys(uint8_t shift, uint8_t keys)
 static void security_examples_peripheral_processPasscode(uint16_t connectionHandle,
                                               gapPasskeyNeededEvent_t *pData)
 {
+#ifndef OOB  
   if (pData->numComparison) //numeric comparison
   {
     judgeNumericComparison = TRUE;
@@ -710,6 +817,7 @@ static void security_examples_peripheral_processPasscode(uint16_t connectionHand
       //shouldn't get here
     }
   }
+#endif //OOB
 }
 
 /*********************************************************************
@@ -804,3 +912,55 @@ static uint8_t security_examples_peripheral_enqueueMsg(uint8_t event, uint8_t st
 
 /*********************************************************************
 *********************************************************************/
+
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_processStackMsg
+ *
+ * @brief   Process an incoming stack message.
+ *
+ * @param   pMsg - message to process
+ *
+ * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
+ */
+#pragma optimize=none
+static uint8_t security_example_peripheral_processStackMsg(ICall_Hdr *pMsg)
+{
+  uint8_t safeToDealloc = TRUE;
+
+  switch (pMsg->event)
+  {    
+#ifdef BROKEN
+  case GATT_MSG_EVENT:
+      // Process GATT message
+      safeToDealloc = SimpleBLEPeripheral_processGATTMsg((gattMsgEvent_t *)pMsg);
+      break;
+#endif // Broken      
+
+#ifdef OOB
+#ifndef STATIC_KEYS      
+    case SM_MSG_EVENT:
+      {
+        //check for correct event
+        if (pMsg->status == SM_ECC_KEYS_EVENT)
+        {
+          uint8_t oobEnabled = TRUE;
+          
+          // Get the confirm value
+//          SM_GetScConfirmOob(eccKeys.publicKeyX, oobData.oob, oobData.confirm);  
+          
+          GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );    
+          GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_DATA, sizeof(gapBondOobSC_t), &oobData);            
+        }
+      }
+      break;
+#endif //STATIC_KEYS      
+#endif //OOB
+
+    default:
+      // do nothing
+      break;
+  }
+
+  return (safeToDealloc);
+}

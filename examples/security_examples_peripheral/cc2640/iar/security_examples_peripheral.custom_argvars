@@ -4,11 +4,11 @@
   <group active="true" name="CC26xx TI-RTOS">
     <variable>
       <name>TI_RTOS_DRIVERS_BASE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_16_01_11_eng\products\tidrivers_cc13xx_cc26xx_2_16_01_11_eng\packages</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_16_01_14\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages</value>
     </variable>
     <variable>
       <name>CC26XXWARE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_16_01_11_eng\products\cc26xxware_2_23_02_16941</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_16_01_14\products\cc26xxware_2_23_02_16941</value>
     </variable>
     <variable>
       <name>XDCROOT</name>
@@ -16,7 +16,7 @@
     </variable>
     <variable>
       <name>XDCPATH</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_16_01_11_eng\products\tidrivers_cc13xx_cc26xx_2_16_01_11_eng\packages;C:\ti\tirtos_cc13xx_cc26xx_2_16_01_11_eng\products\bios_6_45_02_30_eng\packages</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_16_01_14\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages;C:\ti\tirtos_cc13xx_cc26xx_2_16_01_14\products\bios_6_45_02_31\packages</value>
     </variable>
     <variable>
       <name>BOUNDARY</name>
@@ -44,7 +44,7 @@
     </variable>
     <variable>
       <name>BIOS_BASE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_16_01_11_eng\products\bios_6_45_02_30_eng\packages</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_16_01_14\products\bios_6_45_02_31\packages</value>
     </variable>
   </group>
 </iarUserArgVars>

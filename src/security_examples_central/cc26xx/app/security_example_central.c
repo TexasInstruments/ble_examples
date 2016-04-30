@@ -82,6 +82,7 @@
 #define SEC_KEY_CHANGE_EVT                    0x0002
 #define SEC_STATE_CHANGE_EVT                  0x0004
 #define SEC_PASSCODE_NEEDED_EVT               0x0008
+#define SEC_SM_ECC_KEYS_EVT                   0x0010
 
 // Maximum number of scan responses
 #define DEFAULT_MAX_SCAN_RES                  8
@@ -175,6 +176,9 @@ static ICall_Semaphore sem;
 static Queue_Struct appMsg;
 static Queue_Handle appMsgQueue;
 
+// events flag for internal application events.
+static uint16_t events;
+
 // Task configuration
 Task_Struct secTask;
 Char secTaskStack[SEC_TASK_STACK_SIZE];
@@ -198,12 +202,37 @@ static uint16_t connHandle = GAP_CONNHANDLE_INIT;
 // Application state
 static uint8_t state = BLE_STATE_IDLE;
 
+#ifdef OOB
+// LOCAL OOB DATA
+uint8 oobLocal[16] = { 0xA3, 0xDE, 0xBB, 0x31, 0xE6, 0x42, 0x4E, 0x2F,
+                  0x39, 0x7F, 0xF2, 0xD2, 0xC4, 0x89, 0xC6, 0xA7 };
+#ifdef STATIC_KEYS
+//LOCAL KEYS
+gapBondEccKeys_t eccKeys =
+{
+  .privateKey = {0x15, 0x99, 0x87, 0x83, 0xc7, 0x84, 0x05, 0x92, 0x35, 0x9e, 
+                 0x54, 0x2c, 0x77, 0x61, 0xb5, 0xd6, 0x0a, 0x80, 0x67, 0x5d, 
+                 0xe8, 0x62, 0xd5, 0xe0, 0xeb, 0xce, 0x76, 0xc7, 0x7b, 0xc2, 
+                 0xfb, 0x43},
+  .publicKeyX = {0xca, 0x42, 0x2f, 0xc3, 0x4c, 0xe5, 0x03, 0x9a, 0x94, 0x06, 
+                 0x26, 0x6d, 0xd8, 0x22, 0x51, 0x30, 0xe6, 0x04, 0xd7, 0x4b, 
+                 0x9b, 0xc3, 0x1e, 0x45, 0xde, 0x5e, 0x3d, 0x5d, 0xb0, 0x1a, 
+                 0xe4, 0xaa},
+  .publicKeyY = {0x03, 0xc8, 0xbf, 0xd1, 0x00, 0xc6, 0x10, 0xb5, 0xec, 0x33, 
+                 0x0c, 0x39, 0x8d, 0xa9, 0xcf, 0x87, 0x36, 0x27, 0xe9, 0x02, 
+                 0x27, 0x28, 0xad, 0xc1, 0xb0, 0x40, 0xae, 0x97, 0x47, 0x66, 
+                 0x8f, 0xb4}
+};
+#endif //STATIC_KEYS
+
+#else
 // Passcode variables
 static uint8_t judgeNumericComparison = FALSE;
 static uint8_t waiting_for_passcode = FALSE;
 static uint32_t passcode = 0;
 static uint32_t passcode_multiplier = 100000;
 static uint16_t passcode_connHandle = 0xFFFF;
+#endif //OOB
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -319,8 +348,28 @@ static void security_examples_central_init(void)
   GAP_SetParamValue(TGAP_LIM_DISC_SCAN, DEFAULT_SCAN_DURATION);
   GGS_SetParameter(GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN, 
                    (void *)attDeviceName);
-
+  
+#ifdef OOB
   // Setup the GAP Bond Manager
+  {
+    uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
+    uint8_t mitm = TRUE;
+    uint8_t ioCap = GAPBOND_IO_CAP_KEYBOARD_DISPLAY;
+    uint8_t bonding = FALSE;
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
+    uint8_t oobEnabled = TRUE;
+    
+    GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
+    GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
+    GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
+    GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
+    GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
+    GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );
+    GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_DATA, sizeof(uint8_t) * 16, oobLocal);
+    GAPBondMgr_SetParameter(GAPBOND_ECC_KEYS, sizeof(gapBondEccKeys_t), &eccKeys);   
+  }
+#else
+    // Setup the GAP Bond Manager
   {
     uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
     uint8_t mitm = TRUE;
@@ -334,7 +383,8 @@ static void security_examples_central_init(void)
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
     GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
   }  
-
+#endif //OOB
+  
   // Initialize GATT Client
   VOID GATT_InitClient();
 
@@ -347,6 +397,11 @@ static void security_examples_central_init(void)
 
   // Register with bond manager after starting device
   GAPBondMgr_Register(&security_examples_central_bondCB);
+  
+#ifdef OOB
+  // Register to receive SM messages
+  SM_RegisterTask(selfEntity);  
+#endif //OOB
 
   DISPLAY_WRITE_STRING("Security Ex Centr", LCD_PAGE0);
 }
@@ -409,6 +464,12 @@ static void security_examples_central_taskFxn(UArg a0, UArg a1)
         ICall_free(pMsg);
       }
     }
+#ifdef OOB
+    if (events & SEC_SM_ECC_KEYS_EVT)
+    {
+      events &= ~SEC_SM_ECC_KEYS_EVT;
+    }
+#endif // OOB       
   }
 }
 
@@ -640,6 +701,7 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
+#ifndef OOB
   if (keys & KEY_RIGHT) 
   {
     if (waiting_for_passcode)
@@ -660,6 +722,7 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
       return;
     }
   }
+#endif //OOB  
 
   if (keys & KEY_SELECT)
   {
@@ -702,6 +765,7 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
+#ifndef OOB  
   if ((keys & KEY_DOWN) && (waiting_for_passcode))
   {
     // incrememnt passcode multiplier
@@ -718,6 +782,7 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     }
     return;
   }
+#endif //OOB  
 }
 
 /*********************************************************************
@@ -774,6 +839,7 @@ static void security_examples_central_processPairState(uint8_t state, uint8_t st
 static void security_examples_central_processPasscode(uint16_t connectionHandle,
                                               gapPasskeyNeededEvent_t *pData)
 {
+#ifndef OOB  
   if (pData->numComparison) //numeric comparison
   {
     judgeNumericComparison = TRUE;
@@ -816,6 +882,7 @@ static void security_examples_central_processPasscode(uint16_t connectionHandle,
       //shouldn't get here
     }
   }
+#endif //OOB  
 }
 
 /**********************************************************************

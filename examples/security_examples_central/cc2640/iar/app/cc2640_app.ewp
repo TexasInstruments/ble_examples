@@ -185,10 +185,10 @@
           <state>POWER_SAVING</state>
           <state>STATIC_PASSCODE</state>
           <state>MAX_PDU_SIZE=70</state>
-          <state>HEAPMGR_SIZE=5000</state>
-          <state>TI_DRIVERS_SPI_DMA_INCLUDED</state>
+          <state>HEAPMGR_SIZE=0</state>
           <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
+          <state>xBOARD_DISPLAY_EXCLUDE_LCD</state>
           <state>GAPCENTRALROLE_NUM_RSSI_LINKS=1</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
@@ -335,7 +335,7 @@
           <state>$SRC_EX$/profiles/roles</state>
           <state>$SRC_EX$/profiles/simple_profile</state>
           <state>$SRC_EX$/common/cc26xx</state>
-          <state>$SRC_COMMON$/applib/src/heap</state>
+          <state>$SRC_COMMON$/heapmgr</state>
           <state>$SRC_BLE_CORE$/hci</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/host</state>
@@ -814,8 +814,8 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
+          <state>$ROM$\common_rom_releases\03282014\common_rom.symbols</state>
           <state>$CC26XXWARE$\driverlib\bin\iar\driverlib.lib</state>
-          <state>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lib\drivers_cc26xxware.arm3</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1186,6 +1186,7 @@
           <state>MAX_PDU_SIZE=69</state>
           <state>POWER_SAVING</state>
           <state>STATIC_PASSCODE</state>
+          <state>STATIC_KEYS</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
@@ -1198,6 +1199,7 @@
           <state>CC2650DK_7ID</state>
           <state>CC26XXWARE</state>
           <state>CC26XX</state>
+          <state>OOB</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1814,8 +1816,8 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
+          <state>$ROM$\common_rom_releases\03282014\common_rom.symbols</state>
           <state>$CC26XXWARE$\driverlib\bin\iar\driverlib.lib</state>
-          <state>$TI_RTOS_DRIVERS_BASE$\ti\drivers\lib\drivers_cc26xxware.arm3</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -2018,13 +2020,16 @@
       <name>$SRC_EX$\common\cc26xx\board_key.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_central\cc26xx\app\OOB.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_central\cc26xx\app\OOB_central.c</name>
       <excluded>
         <configuration>FlashROM</configuration>
       </excluded>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_central\cc26xx\app\security_example_central.c</name>
+      <excluded>
+        <configuration>FlashROM-OOB</configuration>
+      </excluded>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_central\cc26xx\app\security_examples_central.h</name>
@@ -2038,6 +2043,15 @@
   </group>
   <group>
     <name>Drivers</name>
+    <group>
+      <name>ECC</name>
+      <file>
+        <name>$SRC_EX$\common\cc26xx\ecc\ECCROMCC26XX.c</name>
+      </file>
+      <file>
+        <name>$SRC_EX$\common\cc26xx\ecc\ECCROMCC26XX.h</name>
+      </file>
+    </group>
     <group>
       <name>LCD</name>
       <file>
