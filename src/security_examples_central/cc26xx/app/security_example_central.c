@@ -366,7 +366,9 @@ static void security_examples_central_init(void)
     GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
     GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );
     GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_DATA, sizeof(uint8_t) * 16, oobLocal);
+#ifdef STATIC_KEYS
     GAPBondMgr_SetParameter(GAPBOND_ECC_KEYS, sizeof(gapBondEccKeys_t), &eccKeys);   
+#endif //STATIC_KEYS    
   }
 #else
     // Setup the GAP Bond Manager

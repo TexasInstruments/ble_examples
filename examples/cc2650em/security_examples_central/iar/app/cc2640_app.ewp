@@ -1186,7 +1186,7 @@
           <state>MAX_PDU_SIZE=69</state>
           <state>POWER_SAVING</state>
           <state>STATIC_PASSCODE</state>
-          <state>STATIC_KEYS</state>
+          <state>xSTATIC_KEYS</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>

@@ -944,6 +944,8 @@ static uint8_t security_example_peripheral_processStackMsg(ICall_Hdr *pMsg)
         //check for correct event
         if (pMsg->status == SM_ECC_KEYS_EVENT)
         {
+          smEccKeysEvt_t* eccKeys =  (smEccKeysEvt_t*)pMsg;
+          
           uint8_t oobEnabled = TRUE;
           
           // Get the confirm value
