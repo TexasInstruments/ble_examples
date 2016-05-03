@@ -921,7 +921,6 @@ static uint8_t gapRole_processStackMsg(ICall_Hdr *pMsg)
  *
  * @return  none
  */
-#pragma optimize=none
 static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
 {
   uint8_t notify = FALSE;   // State changed notify the app? (default no)
@@ -1285,3 +1284,4 @@ static void gapRole_abort(void)
   while(1);
 #endif  
 }
+

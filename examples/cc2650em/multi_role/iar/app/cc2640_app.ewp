@@ -189,7 +189,6 @@
           <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
           <state>xBOARD_DISPLAY_EXCLUDE_LCD</state>
-          <state>GAPCENTRALROLE_NUM_RSSI_LINKS=1</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
@@ -1180,9 +1179,6 @@
       <name>$SRC_EX$\profiles\dev_info\devinfoservice.h</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\inc\gatt_profile_uuid.h</name>
-    </file>
-    <file>
       <name>$SRC_BLE_CORE$\host\gatt_uuid.c</name>
     </file>
     <file>
@@ -1201,7 +1197,7 @@
       <name>$SRC_EX$\profiles\simple_profile\cc26xx\simple_gatt_profile.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\simple_profile\simple_gatt_profile.h</name>
+      <name>$SRC_EX$\profiles\simple_profile\simple_gatt_profile.h</name>
     </file>
   </group>
   <group>

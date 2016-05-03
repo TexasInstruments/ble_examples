@@ -1179,7 +1179,6 @@ void multi_role_keyChangeHandler(uint8 keys)
 *
 * @return  none
 */
-#pragma optimize=none
 static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
@@ -1243,12 +1242,11 @@ static void multi_role_handleKeys(uint8_t shift, uint8_t keys)
     {
       uint8_t adv;
       uint8_t adv_status;
-      uint8_t status;
       GAPRole_GetParameter(GAPROLE_ADVERT_ENABLED, &adv_status, NULL);
       if (adv_status) //turn off
       {
         adv = FALSE;
-        status = GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
+        GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
       }
       else //turn on
       {
