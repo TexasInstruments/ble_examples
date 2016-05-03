@@ -57,6 +57,18 @@ extern "C"
  * CONSTANTS
  */
 
+#define OOB_LE                  0x00
+#define OOB_SC                  0x01
+#define JUSTWORKS               0x02
+#define PASSCODE                0x03
+#define NUMCOMP                 0x04
+
+#define PAIRING                 PASSCODE
+  
+#define STATIC_PASSCODE         0x01
+#define STATIC_KEYS             0x00
+
+  
 /*********************************************************************
  * MACROS
  */

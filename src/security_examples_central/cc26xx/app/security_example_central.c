@@ -82,7 +82,6 @@
 #define SEC_KEY_CHANGE_EVT                    0x0002
 #define SEC_STATE_CHANGE_EVT                  0x0004
 #define SEC_PASSCODE_NEEDED_EVT               0x0008
-#define SEC_SM_ECC_KEYS_EVT                   0x0010
 
 // Maximum number of scan responses
 #define DEFAULT_MAX_SCAN_RES                  8
@@ -176,9 +175,6 @@ static ICall_Semaphore sem;
 static Queue_Struct appMsg;
 static Queue_Handle appMsgQueue;
 
-// events flag for internal application events.
-static uint16_t events;
-
 // Task configuration
 Task_Struct secTask;
 Char secTaskStack[SEC_TASK_STACK_SIZE];
@@ -202,11 +198,15 @@ static uint16_t connHandle = GAP_CONNHANDLE_INIT;
 // Application state
 static uint8_t state = BLE_STATE_IDLE;
 
-#ifdef OOB
+//oob data needed for either type of OOB pairing
+#if ((PAIRING == OOB_SC) || (PAIRING == OOB_LE))
 // LOCAL OOB DATA
-uint8 oobLocal[16] = { 0xA3, 0xDE, 0xBB, 0x31, 0xE6, 0x42, 0x4E, 0x2F,
+uint8 oobLocal[KEYLEN] = { 0xA3, 0xDE, 0xBB, 0x31, 0xE6, 0x42, 0x4E, 0x2F,
                   0x39, 0x7F, 0xF2, 0xD2, 0xC4, 0x89, 0xC6, 0xA7 };
-#ifdef STATIC_KEYS
+#endif
+
+//ECC keys needed when using static keys with OOB secure connections pairing
+#if ((PAIRING == OOB_SC) && (STATIC_KEYS))
 //LOCAL KEYS
 gapBondEccKeys_t eccKeys =
 {
@@ -223,16 +223,17 @@ gapBondEccKeys_t eccKeys =
                  0x27, 0x28, 0xad, 0xc1, 0xb0, 0x40, 0xae, 0x97, 0x47, 0x66, 
                  0x8f, 0xb4}
 };
-#endif //STATIC_KEYS
+#endif
 
-#else
+//needed for all types of pairing besides OOB
+#if !(((PAIRING == OOB_SC) || (PAIRING == OOB_LE)))
 // Passcode variables
 static uint8_t judgeNumericComparison = FALSE;
 static uint8_t waiting_for_passcode = FALSE;
 static uint32_t passcode = 0;
 static uint32_t passcode_multiplier = 100000;
 static uint16_t passcode_connHandle = 0xFFFF;
-#endif //OOB
+#endif
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -349,43 +350,60 @@ static void security_examples_central_init(void)
   GGS_SetParameter(GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN, 
                    (void *)attDeviceName);
   
-#ifdef OOB
-  // Setup the GAP Bond Manager
+  //Setup the Gap Bond Manager
   {
+    //common GAPBondMgr params
     uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
-    uint8_t mitm = TRUE;
-    uint8_t ioCap = GAPBOND_IO_CAP_KEYBOARD_DISPLAY;
-    uint8_t bonding = FALSE;
+    uint8_t bonding = FALSE;    
+    GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
+    GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);      
+    
+    //initializtion for secure connections OOB
+#if (PAIRING == OOB_SC)
     uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
     uint8_t oobEnabled = TRUE;
-    
-    GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
-    GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
-    GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
-    GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
     GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
     GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );
-    GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_DATA, sizeof(uint8_t) * 16, oobLocal);
-#ifdef STATIC_KEYS
+    GAPBondMgr_SetParameter(GAPBOND_LOCAL_OOB_SC_DATA, sizeof(uint8_t) * KEYLEN, oobLocal);
+    // if using static ECC keys
+#if STATIC_KEYS
     GAPBondMgr_SetParameter(GAPBOND_ECC_KEYS, sizeof(gapBondEccKeys_t), &eccKeys);   
 #endif //STATIC_KEYS    
+  
+    //initialization for legacy OOB pairing  
+#elif (PAIRING == OOB_LE)
+    uint8_t scMode = GAPBOND_SECURE_CONNECTION_NONE;
+    uint8_t oobEnabled = TRUE;
+    GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);    
+    GAPBondMgr_SetParameter(GAPBOND_OOB_DATA, sizeof(uint8_t) * KEYLEN, oobLocal);
+    GAPBondMgr_SetParameter(GAPBOND_OOB_ENABLED, sizeof(uint8_t), &oobEnabled );    
+  
+  //initialization for numeric comparison pairing (only possible with secure connections) 
+#elif (PAIRING == NUMCOMP)
+  uint8_t mitm = TRUE;
+  uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_YES_NO;
+  uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
+  GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
+  GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
+  GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
+  
+  //initialization for passcode entry pairing
+#elif (PAIRING == PASSCODE)
+  uint8_t mitm = TRUE;
+  uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
+  uint8_t scMode = GAPBOND_SECURE_CONNECTION_ALLOW;
+  GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
+  GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
+  GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
+  
+  //initialization for just works pairing
+#elif (PAIRING == JUSTWORKS)
+  uint8_t mitm = FALSE;
+  uint8_t scMode = GAPBOND_SECURE_CONNECTION_ALLOW;
+  GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
+  GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
+#endif 
   }
-#else
-    // Setup the GAP Bond Manager
-  {
-    uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
-    uint8_t mitm = TRUE;
-    uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_YES_NO;
-    uint8_t bonding = FALSE;
-    uint8_t scMode = GAPBOND_SECURE_CONNECTION_ONLY;
-    
-    GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
-    GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
-    GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
-    GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
-    GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
-  }  
-#endif //OOB
   
   // Initialize GATT Client
   VOID GATT_InitClient();
@@ -399,11 +417,6 @@ static void security_examples_central_init(void)
 
   // Register with bond manager after starting device
   GAPBondMgr_Register(&security_examples_central_bondCB);
-  
-#ifdef OOB
-  // Register to receive SM messages
-  SM_RegisterTask(selfEntity);  
-#endif //OOB
 
   DISPLAY_WRITE_STRING("Security Ex Centr", LCD_PAGE0);
 }
@@ -465,13 +478,7 @@ static void security_examples_central_taskFxn(UArg a0, UArg a1)
         // Free the space from the message
         ICall_free(pMsg);
       }
-    }
-#ifdef OOB
-    if (events & SEC_SM_ECC_KEYS_EVT)
-    {
-      events &= ~SEC_SM_ECC_KEYS_EVT;
-    }
-#endif // OOB       
+    }    
   }
 }
 
@@ -703,7 +710,8 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-#ifndef OOB
+//needed for all types of pairing besides OOB
+#if !(((PAIRING == OOB_SC) || (PAIRING == OOB_LE)))
   if (keys & KEY_RIGHT) 
   {
     if (waiting_for_passcode)
@@ -724,7 +732,7 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
       return;
     }
   }
-#endif //OOB  
+#endif  
 
   if (keys & KEY_SELECT)
   {
@@ -767,7 +775,8 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-#ifndef OOB  
+//needed for all types of pairing besides OOB
+#if !(((PAIRING == OOB_SC) || (PAIRING == OOB_LE)))
   if ((keys & KEY_DOWN) && (waiting_for_passcode))
   {
     // incrememnt passcode multiplier
@@ -784,7 +793,7 @@ static void security_examples_central_handleKeys(uint8_t shift, uint8_t keys)
     }
     return;
   }
-#endif //OOB  
+#endif  
 }
 
 /*********************************************************************
@@ -841,11 +850,16 @@ static void security_examples_central_processPairState(uint8_t state, uint8_t st
 static void security_examples_central_processPasscode(uint16_t connectionHandle,
                                               gapPasskeyNeededEvent_t *pData)
 {
-#ifndef OOB  
+//needed for all types of pairing besides OOB
+#if !(((PAIRING == OOB_SC) || (PAIRING == OOB_LE)))
   if (pData->numComparison) //numeric comparison
   {
+#if STATIC_PASSCODE
+    // Send passcode response
+    GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, TRUE);    
+#else    
     judgeNumericComparison = TRUE;
-    
+#endif    
     //Display passcode
     DISPLAY_WRITE_STRING_VALUE("Num Cmp: %d", pData->numComparison, LCD_PAGE4);
   }
@@ -853,7 +867,7 @@ static void security_examples_central_processPasscode(uint16_t connectionHandle,
   {
     if (pData->uiInputs) // if we are to enter passkey
     {
-#ifdef STATIC_PASSCODE
+#if STATIC_PASSCODE
       passcode = 111111;
       // Send passcode response
       GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, passcode);
@@ -861,21 +875,20 @@ static void security_examples_central_processPasscode(uint16_t connectionHandle,
       // user will enter passcode
       waiting_for_passcode = TRUE;
       passcode_connHandle = connectionHandle;
+#endif      
       DISPLAY_WRITE_STRING("Enter Passcode:", LCD_PAGE4);
-      DISPLAY_WRITE_STRING_VALUE("%d", passcode, LCD_PAGE5);
-#endif         
+      DISPLAY_WRITE_STRING_VALUE("%d", passcode, LCD_PAGE5);      
     }
     else if (pData->uiOutputs) // if we are to display passkey
     {
-#ifdef STATIC_PASSCODE
+#if STATIC_PASSCODE
       passcode = 111111;
 #else
       // Create random passcode
       passcode = Util_GetTRNG();
       passcode %= 1000000;
-#endif
+#endif      
       DISPLAY_WRITE_STRING_VALUE("Passcode: %d", passcode, LCD_PAGE4);
-      
       // Send passcode response
       GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, passcode);   
     }
@@ -884,7 +897,7 @@ static void security_examples_central_processPasscode(uint16_t connectionHandle,
       //shouldn't get here
     }
   }
-#endif //OOB  
+#endif  
 }
 
 /**********************************************************************
