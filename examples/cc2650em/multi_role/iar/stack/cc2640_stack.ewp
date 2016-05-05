@@ -1231,7 +1231,7 @@
       <name>$SRC_EX$\profiles\roles\gapbondmgr.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.h</name>
+      <name>$SRC_EX$\profiles\roles\gapbondmgr.h</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\host\gattservapp_util.c</name>

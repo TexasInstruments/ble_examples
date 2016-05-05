@@ -1005,12 +1005,6 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_display.c</name>
-    </file>
-    <file>
-      <name>$SRC_EX$\common\cc26xx\board_display.h</name>
-    </file>
-    <file>
       <name>$SRC_EX$\common\cc26xx\board_key.c</name>
     </file>
     <file>

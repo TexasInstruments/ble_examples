@@ -62,10 +62,7 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
 
 #endif // USE_DEFAULT_USER_CFG
 
-#if defined( TI_DRIVERS_DISPLAY_INCLUDED )
-#include "board_display.h"
-#endif // TI_DRIVERS_DISPLAY_INCLUDED
-
+#include <ti/mw/display/Display.h>
 
 /*******************************************************************************
  * MACROS
@@ -92,6 +89,8 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
  */
 
 extern void AssertHandler(uint8 assertCause, uint8 assertSubcause);
+
+extern Display_Handle dispHandle;
 
 /*******************************************************************************
  * @fn          Main
@@ -157,30 +156,45 @@ int main()
  */
 void AssertHandler(uint8 assertCause, uint8 assertSubcause)
 {
+  // Open the display if the app has not already done so
+  if ( !dispHandle )
+  {
+    dispHandle = Display_open(Display_Type_LCD, NULL);
+  }
+
+  Display_print0(dispHandle, 0, 0, ">>>STACK ASSERT");
+
   // check the assert cause
   switch (assertCause)
   {
     case HAL_ASSERT_CAUSE_OUT_OF_MEMORY:
-#ifdef TI_DRIVERS_DISPLAY_INCLUDED
-      Board_openDisplay(BOARD_DISPLAY_TYPE_LCD);
-      Board_writeString("***ERROR***", 0);
-      Board_writeString(">> OUT OF MEMORY!", 1);
-#endif // TI_DRIVERS_DISPLAY_INCLUDED
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> OUT OF MEMORY!");
       break;
 
     case HAL_ASSERT_CAUSE_INTERNAL_ERROR:
       // check the subcause
       if (assertSubcause == HAL_ASSERT_SUBCAUSE_FW_INERNAL_ERROR)
       {
-#ifdef TI_DRIVERS_DISPLAY_INCLUDED
-        Board_openDisplay(BOARD_DISPLAY_TYPE_LCD);
-        Board_writeString("***ERROR***", 0);
-        Board_writeString(">> INTERNAL FW ERROR!", 1);
-#endif // TI_DRIVERS_DISPLAY_INCLUDED
+        Display_print0(dispHandle, 0, 0, "***ERROR***");
+        Display_print0(dispHandle, 2, 0, ">> INTERNAL FW ERROR!");
+      }
+      else
+      {
+        Display_print0(dispHandle, 0, 0, "***ERROR***");
+        Display_print0(dispHandle, 2, 0, ">> INTERNAL ERROR!");
       }
       break;
 
+    case HAL_ASSERT_CAUSE_ICALL_ABORT:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> ICALL ABORT!");
+      HAL_ASSERT_SPINLOCK;
+      break;
+
     default:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> DEFAULT SPINLOCK!");
       HAL_ASSERT_SPINLOCK;
   }
 

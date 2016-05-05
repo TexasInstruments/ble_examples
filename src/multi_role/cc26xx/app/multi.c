@@ -1040,7 +1040,7 @@ static uint8_t gapRole_processGAPMsg(gapEventHdr_t *pMsg)
                                   pPkt->connectionHandle, pPkt->connRole);    
 
           //advertising will stop after connection formed as slave
-          if (pPkt->connRole)
+          if ((pPkt->connRole) == GAP_PROFILE_PERIPHERAL)
           {
             gapRole_AdvEnabled = FALSE;
             //reenable advertising
