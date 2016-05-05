@@ -89,12 +89,12 @@
 		<link>
 			<name>Application/multi_role.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/src/multi_role/cc26xx/app/multi_role.c</locationURI>
+			<locationURI>copy_PARENT/src/multi_role/cc26xx/app/multi_role.c</locationURI>
 		</link>
 		<link>
 			<name>Application/multi_role.h</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/src/multi_role/cc26xx/app/multi_role.h</locationURI>
+			<locationURI>copy_PARENT/src/multi_role/cc26xx/app/multi_role.h</locationURI>
 		</link>
 		<link>
 			<name>Application/util.c</name>
@@ -469,6 +469,10 @@
 		<variable>
 			<name>TOOLS_BLE</name>
 			<value>file:/C:/git/ble_examples/tools</value>
+		</variable>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-5-PROJECT_LOC%7D</value>
 		</variable>
 	</variableList>
 </projectDescription>
