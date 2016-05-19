@@ -1243,7 +1243,7 @@
       <name>$SRC_EX$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_central\cc26xx\stack\osal_icall_ble.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\stack\osal_icall_ble.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\rom\rom_init.c</name>

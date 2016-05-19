@@ -1011,10 +1011,10 @@
       <name>$SRC_EX$\common\cc26xx\board_key.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\app\multi_role.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\multi_role.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\app\multi_role.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\multi_role.h</name>
     </file>
     <file>
       <name>$SRC_EX$\common\cc26xx\util.c</name>
@@ -1182,10 +1182,10 @@
       <name>$SRC_BLE_CORE$\host\gattservapp_util.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\app\multi.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\multi.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\app\multi.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\multi.h</name>
     </file>
     <file>
       <name>$SRC_EX$\profiles\simple_profile\cc26xx\simple_gatt_profile.c</name>
@@ -1203,7 +1203,7 @@
       <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\multi_role\cc26xx\app\main.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\main.c</name>
     </file>
   </group>
   <group>

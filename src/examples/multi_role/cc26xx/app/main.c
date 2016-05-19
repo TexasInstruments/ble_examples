@@ -110,7 +110,7 @@ extern Display_Handle dispHandle;
 int main()
 {
   RegisterAssertCback(AssertHandler);
-  
+
   PIN_init(BoardGpioInitTable);
 
 #ifndef POWER_SAVING
@@ -121,19 +121,19 @@ int main()
 
     /* Initialize ICall module */
     ICall_init();
-  
+
     /* Start tasks of external images - Priority 5 */
     ICall_createRemoteTasks();
-    
+
     /* Kick off profile - Priority 3 */
     GAPRole_createTask();
-    
+
     /* Kick off application - Priority 1 */
     multi_role_createTask();
-    
+
     /* enable interrupts and start SYS/BIOS */
     BIOS_start();
-    
+
     return 0;
 }
 

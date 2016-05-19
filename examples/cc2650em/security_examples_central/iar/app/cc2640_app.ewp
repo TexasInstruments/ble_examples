@@ -1016,10 +1016,10 @@
       <name>$SRC_EX$\common\cc26xx\board_key.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_central\cc26xx\app\security_example_central.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\app\security_example_central.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_central\cc26xx\app\security_examples_central.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\app\security_examples_central.h</name>
     </file>
     <file>
       <name>$SRC_EX$\common\cc26xx\util.c</name>
@@ -1205,7 +1205,7 @@
       <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\security_examples_central\cc26xx\app\main.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\app\main.c</name>
     </file>
   </group>
   <group>
