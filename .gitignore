@@ -2,13 +2,15 @@
 **/Exe/
 **/Debug/
 **/Flash/
+**/FlashROM/
+**/configPkg/
 **/settings
+**/config\/src
 *.dep
 *.log
 *.ewt
 *.tmp
 *.bak
-**/[Cc]onfig/
 *.obj
 *.a
 *.pos
