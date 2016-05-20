@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>hid_emu_kbd_cc2650em_app</name>
+	<name>hid_emu_kbd_cc2650lp_app</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -37,22 +37,6 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>Drivers/ECC</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		
-		<link>
-			<name>Drivers/ECC/ECCROMCC26XX.c</name>
-			<type>1</type>
-			<locationURI>SRC_EX/common/cc26xx/ecc/ECCROMCC26XX.c</locationURI>
-		</link>
-		<link>
-			<name>Drivers/ECC/ECCROMCC26XX.h</name>
-			<type>1</type>
-			<locationURI>SRC_EX/common/cc26xx/ecc/ECCROMCC26XX.h</locationURI>
-		</link>
-		<link>
 			<name>ICall</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -85,22 +69,22 @@
 		<link>
 			<name>Application/board_key.c</name>
 			<type>1</type>
-			<locationURI>SRC_EX/common/cc26xx/board_key.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/src/common/cc2650lp/board_key.c</locationURI>
 		</link>
 		<link>
 			<name>Application/board_key.h</name>
 			<type>1</type>
-			<locationURI>SRC_EX/common/cc26xx/board_key.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/src/common/cc2650lp/board_key.h</locationURI>
 		</link>
 		<link>
-			<name>Application/hidemukbd.c</name>
+			<name>Application/hidemukbdlp.c</name>
 			<type>1</type>
-			<locationURI>SRC_EX/examples/hid_emu_kbd/cc26xx/app/hidemukbd.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/src/examples/hid_emu_kbd/cc26xx/app/hidemukbdlp.c</locationURI>
 		</link>
 		<link>
-			<name>Application/hidemukbd.h</name>
+			<name>Application/hidemukbdlp.h</name>
 			<type>1</type>
-			<locationURI>SRC_EX/examples/hid_emu_kbd/cc26xx/app/hidemukbd.h</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/src/examples/hid_emu_kbd/cc26xx/app/hidemukbdlp.h</locationURI>
 		</link>
 		<link>
 			<name>Application/util.c</name>
@@ -114,6 +98,11 @@
 		</link>
 		<link>
 			<name>Drivers/Display</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>Drivers/ECC</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -363,6 +352,16 @@
 			<locationURI>TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayUART.h</locationURI>
 		</link>
 		<link>
+			<name>Drivers/ECC/ECCROMCC26XX.c</name>
+			<type>1</type>
+			<locationURI>SRC_EX/common/cc26xx/ecc/ECCROMCC26XX.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/ECC/ECCROMCC26XX.h</name>
+			<type>1</type>
+			<locationURI>SRC_EX/common/cc26xx/ecc/ECCROMCC26XX.h</locationURI>
+		</link>
+		<link>
 			<name>Drivers/PIN/PIN.h</name>
 			<type>1</type>
 			<locationURI>TI_RTOS_DRIVERS_BASE/ti/drivers/PIN.h</locationURI>
@@ -440,28 +439,32 @@
 	</linkedResources>
 	<variableList>
 		<variable>
+			<name>BLESDK_LOC</name>
+			<value>file:/C:/ti/simplelink/ble_sdk_2_02_00_14</value>
+		</variable>
+		<variable>
 			<name>CC26XXWARE</name>
 			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_16_01_14/products/cc26xxware_2_23_02_16941</value>
 		</variable>
 		<variable>
 			<name>ORG_PROJ_DIR</name>
-			<value>${PARENT-2-PROJECT_LOC}/iar/stack</value>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/iar/stack</value>
 		</variable>
 		<variable>
 			<name>ROM</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/src/rom</value>
+			<value>$%7BBLESDK_LOC%7D/src/rom</value>
 		</variable>
 		<variable>
 			<name>SRC_BLE_CORE</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/src</value>
+			<value>$%7BBLESDK_LOC%7D/src</value>
 		</variable>
 		<variable>
 			<name>SRC_COMMON</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/src/components</value>
+			<value>$%7BBLESDK_LOC%7D/src/components</value>
 		</variable>
 		<variable>
 			<name>SRC_EX</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/src</value>
+			<value>$%7BBLESDK_LOC%7D/src</value>
 		</variable>
 		<variable>
 			<name>TI_RTOS_DRIVERS_BASE</name>
@@ -469,7 +472,7 @@
 		</variable>
 		<variable>
 			<name>TOOLS_BLE</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/tools</value>
+			<value>$%7BBLESDK_LOC%7D/tools</value>
 		</variable>
 	</variableList>
 </projectDescription>

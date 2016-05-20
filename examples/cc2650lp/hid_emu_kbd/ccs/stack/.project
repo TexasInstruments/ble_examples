@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>hid_emu_kbd_cc2650em_stack</name>
+	<name>hid_emu_kbd_cc2650lp_stack</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -331,6 +331,11 @@
 			<locationURI>SRC_COMMON/hal/src/common/hal_assert.c</locationURI>
 		</link>
 		<link>
+			<name>HAL/Include/hal_UART.h</name>
+			<type>1</type>
+			<locationURI>SRC_COMMON/hal/src/inc/hal_UART.h</locationURI>
+		</link>
+		<link>
 			<name>HAL/Include/hal_adc.h</name>
 			<type>1</type>
 			<locationURI>SRC_COMMON/hal/src/inc/hal_adc.h</locationURI>
@@ -374,11 +379,6 @@
 			<name>HAL/Include/hal_timer.h</name>
 			<type>1</type>
 			<locationURI>SRC_COMMON/hal/src/inc/hal_timer.h</locationURI>
-		</link>
-		<link>
-			<name>HAL/Include/hal_UART.h</name>
-			<type>1</type>
-			<locationURI>SRC_COMMON/hal/src/inc/hal_UART.h</locationURI>
 		</link>
 		<link>
 			<name>HAL/Target/CC2650</name>
@@ -440,34 +440,34 @@
 		<variable>
 			<name>BIOS_BASE</name>
 			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_16_01_14/products/bios_6_45_02_31/packages</value>
-		</variable>	
+		</variable>
+		<variable>
+			<name>BLESDK_LOC</name>
+			<value>file:/C:/ti/simplelink/ble_sdk_2_02_00_14</value>
+		</variable>
 		<variable>
 			<name>CC26XXWARE</name>
 			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_16_01_14/products/cc26xxware_2_23_02_16941</value>
 		</variable>
 		<variable>
 			<name>ORG_PROJ_DIR</name>
-			<value>${PARENT-2-PROJECT_LOC}/iar/stack</value>
-		</variable>
-		<variable>
-			<name>TI_RTOS_DRIVERS_BASE</name>
-			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_16_01_14/products/tidrivers_cc13xx_cc26xx_2_16_01_13/packages</value>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/iar/stack</value>
 		</variable>
 		<variable>
 			<name>ROM</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/src/rom</value>
+			<value>$%7BBLESDK_LOC%7D/src/rom</value>
 		</variable>
 		<variable>
 			<name>SRC_BLE_CORE</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/src</value>
+			<value>$%7BBLESDK_LOC%7D/src</value>
 		</variable>
 		<variable>
 			<name>SRC_COMMON</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/src/components</value>
+			<value>$%7BBLESDK_LOC%7D/src/components</value>
 		</variable>
 		<variable>
 			<name>SRC_EX</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/src</value>
+			<value>$%7BBLESDK_LOC%7D/src</value>
 		</variable>
 		<variable>
 			<name>TI_RTOS_DRIVERS_BASE</name>
@@ -475,7 +475,7 @@
 		</variable>
 		<variable>
 			<name>TOOLS_BLE</name>
-			<value>${PARENT-5-ORG_PROJ_DIR}/tools</value>
+			<value>$%7BBLESDK_LOC%7D/tools</value>
 		</variable>
 	</variableList>
 </projectDescription>
