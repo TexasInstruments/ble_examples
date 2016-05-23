@@ -328,13 +328,14 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\src\profiles\roles\cc26xx</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
           <state>$SRC_EX$/profiles/dev_info</state>
-          <state>$SRC_EX$/profiles/roles</state>
+          <state>$SRC_EX$/profiles/roles/</state>
           <state>$SRC_EX$/profiles/roles/cc26xx</state>
           <state>$SRC_EX$/profiles/simple_profile</state>
           <state>$SRC_EX$/profiles/simple_profile/cc26xx</state>
@@ -1005,10 +1006,10 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_key.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_key.h</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\multi_role.c</name>
@@ -1017,10 +1018,10 @@
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\multi_role.h</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\util.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\util.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\util.h</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\util.h</name>
     </file>
   </group>
   <group>
@@ -1131,13 +1132,13 @@
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$SRC_EX$\icall\app\ble_user_config.c</name>
+      <name>$SRC_BLE_CORE$\icall\app\ble_user_config.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\icall\inc\ble_user_config.h</name>
+      <name>$SRC_BLE_CORE$\icall\inc\ble_user_config.h</name>
     </file>
     <file>
-      <name>$SRC_EX$\icall\app\icall_api.c</name>
+      <name>$SRC_BLE_CORE$\icall\app\icall_api.c</name>
     </file>
     <file>
       <name>\\SRC_EX\icall\inc\icall_apimsg.h</name>
@@ -1167,10 +1168,10 @@
   <group>
     <name>Profiles</name>
     <file>
-      <name>$SRC_EX$\profiles\dev_info\cc26xx\devinfoservice.c</name>
+      <name>$SRC_BLE_CORE$\profiles\dev_info\cc26xx\devinfoservice.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\dev_info\devinfoservice.h</name>
+      <name>$SRC_BLE_CORE$\profiles\dev_info\devinfoservice.h</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\host\gatt_uuid.c</name>
@@ -1182,16 +1183,16 @@
       <name>$SRC_BLE_CORE$\host\gattservapp_util.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\multi.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\roles\cc26xx\multi.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\app\multi.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\roles\cc26xx\multi.h</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\simple_profile\cc26xx\simple_gatt_profile.c</name>
+      <name>$SRC_BLE_CORE$\profiles\simple_profile\cc26xx\simple_gatt_profile.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\simple_profile\simple_gatt_profile.h</name>
+      <name>$SRC_BLE_CORE$\profiles\simple_profile\simple_gatt_profile.h</name>
     </file>
   </group>
   <group>
