@@ -443,7 +443,7 @@
 		</variable>
 		<variable>
 			<name>BLESDK_LOC</name>
-			<value>file:/C:/ti/simplelink/ble_sdk_2_02_00_14</value>
+			<value>file:/C:/ti/simplelink/ble_sdk_2_02_00_17</value>
 		</variable>
 		<variable>
 			<name>CC26XXWARE</name>
