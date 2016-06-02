@@ -12,7 +12,7 @@
     </variable>
     <variable>
       <name>XDCPATH</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_00_eng\products\tidrivers_cc13xx_cc26xx_2_18_00_00_eng\packages;C:\ti\tirtos_cc13xx_cc26xx_2_18_00_00_eng\products\bios_6_45_02_31\packages;C:\ti\simplelink\ble_sdk_2_02_00_17</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_00_eng\products\tidrivers_cc13xx_cc26xx_2_18_00_00_eng\packages;C:\ti\tirtos_cc13xx_cc26xx_2_18_00_00_eng\products\bios_6_45_02_31\packages;C:\ti\simplelink\ble_sdk_2_02_00_22</value>
     </variable>
     <variable>
       <name>CC26XXWARE</name>
@@ -24,23 +24,23 @@
     </variable>
     <variable>
       <name>SRC_EX</name>
-      <value>C:\ti\simplelink\ble_sdk_2_02_00_17\src</value>
+      <value>C:\ti\simplelink\ble_sdk_2_02_00_22\src</value>
     </variable>
     <variable>
       <name>SRC_BLE_CORE</name>
-      <value>C:\ti\simplelink\ble_sdk_2_02_00_17\src</value>
+      <value>C:\ti\simplelink\ble_sdk_2_02_00_22\src</value>
     </variable>
     <variable>
       <name>SRC_COMMON</name>
-      <value>C:\ti\simplelink\ble_sdk_2_02_00_17\src\components</value>
+      <value>C:\ti\simplelink\ble_sdk_2_02_00_22\src\components</value>
     </variable>
     <variable>
       <name>TOOLS_BLE</name>
-      <value>C:\ti\simplelink\ble_sdk_2_02_00_17\tools</value>
+      <value>C:\ti\simplelink\ble_sdk_2_02_00_22\tools</value>
     </variable>
     <variable>
       <name>ROM</name>
-      <value>C:\ti\simplelink\ble_sdk_2_02_00_17\src\rom</value>
+      <value>C:\ti\simplelink\ble_sdk_2_02_00_22\src\rom</value>
     </variable>
   </group>
 </iarUserArgVars>

@@ -440,7 +440,7 @@
 	<variableList>
 		<variable>
 			<name>BLESDK_LOC</name>
-			<value>file:/C:/ti/simplelink/ble_sdk_2_02_00_17</value>
+			<value>file:/C:/ti/simplelink/ble_sdk_2_02_00_22</value>
 		</variable>
 		<variable>
 			<name>CC26XXWARE</name>
