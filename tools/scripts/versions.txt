@@ -1,4 +1,4 @@
-s|ble_sdk_[0-9_]*\(eng\)\?|ble_sdk_2_02_00_17|g
+s|ble_sdk_[0-9_]*\(eng\)\?|ble_sdk_2_02_00_22|g
 s|tirtos_cc13xx_cc26xx_[0-9_]*\(eng\)\?|tirtos_cc13xx_cc26xx_2_18_00_00_eng|g
 s|bios_[0-9_]*\(eng\)\?|bios_6_45_02_31|g
 s|cc13xxware_[0-9_]*\(eng\)\?|cc13xxware_2_03_03_17162|g
