@@ -190,11 +190,11 @@
           <state>xTESTMODES</state>
           <state>xTEST_BLEBOARD</state>
           <state>OSAL_CBTIMER_NUM_TASKS=1</state>
-          <state>DEBUG</state>
-          <state>EXT_HAL_ASSERT</state>
+          <state>xDEBUG</state>
           <state>xDEBUG_GPIO</state>
           <state>xDEBUG_ENC</state>
           <state>xDEBUG_SW_TRACE</state>
+          <state>EXT_HAL_ASSERT</state>
           <state>NEAR_FUNC=</state>
           <state>DATA=</state>
           <state>CC26XXWARE</state>
@@ -329,19 +329,17 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
+          <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/common/cc26xx/npi/stack</state>
-          <state>$SRC_COMMON$/hal/src/target/_common</state>
-          <state>$SRC_EX$/examples/simple_central/cc26xx/stack</state>
-          <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
+          <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/profiles/roles</state>
           <state>$SRC_COMMON$/hal/src/inc</state>
-          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON$/hal/src/target/_common</state>
           <state>$SRC_COMMON$/hal/src/target</state>
+          <state>$SRC_COMMON$/hal/src/target/_common</state>
+          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
           <state>$SRC_COMMON$/icall/src/inc</state>
           <state>$SRC_COMMON$/npi/src</state>
           <state>$SRC_COMMON$/osal/src/inc</state>
@@ -1114,10 +1112,10 @@
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$SRC_EX$\icall\stack\ble_dispatch.c</name>
+      <name>$SRC_BLE_CORE$\icall\stack\ble_dispatch.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\icall\inc\ble_dispatch.h</name>
+      <name>$SRC_BLE_CORE$\icall\inc\ble_dispatch.h</name>
     </file>
   </group>
   <group>
@@ -1159,7 +1157,7 @@
   <group>
     <name>NPI</name>
     <file>
-      <name>$SRC_EX$\common\cc26xx\npi\stack\npi.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\npi\stack\npi.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\common\cc26xx\npi\stack\npi.h</name>
@@ -1225,13 +1223,13 @@
   <group>
     <name>PROFILES</name>
     <file>
-      <name>$SRC_EX$\profiles\roles\gap.c</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\gap.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\roles\gapbondmgr.c</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\roles\gapbondmgr.h</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.h</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\host\gattservapp_util.c</name>
@@ -1240,19 +1238,19 @@
   <group>
     <name>Startup</name>
     <file>
-      <name>$SRC_EX$\icall\stack\ble_user_config.c</name>
+      <name>$SRC_BLE_CORE$\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\rom\common_rom_init.c</name>
+      <name>$ROM$\common_rom_init.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\icall_startup.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\stack\osal_icall_ble.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\rom\rom_init.c</name>
+      <name>$ROM$\rom_init.c</name>
     </file>
   </group>
   <group>
@@ -1270,10 +1268,10 @@
       <name>$PROJ_DIR$\..\config\iar_boundary.xcl</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\onboard.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\onboard.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\onboard.h</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\onboard.h</name>
     </file>
   </group>
 </project>

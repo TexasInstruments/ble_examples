@@ -181,12 +181,10 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>BROKEN</state>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
           <state>MAX_NUM_BLE_CONNS=4</state>
           <state>HEAPMGR_SIZE=0</state>
-          <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
           <state>xBOARD_DISPLAY_EXCLUDE_LCD</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
@@ -339,12 +337,11 @@
           <state>$SRC_EX$/profiles/roles/cc26xx</state>
           <state>$SRC_EX$/profiles/simple_profile</state>
           <state>$SRC_EX$/profiles/simple_profile/cc26xx</state>
-          <state>$SRC_COMMON$/heapmgr</state>
+          <state>$SRC_EX$/target</state>
           <state>$SRC_COMMON$/hal/src/inc</state>
-          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON$/hal/src/target/cc2650/rom</state>
           <state>$SRC_COMMON$/hal/src/target/_common</state>
-          <state>$SRC_COMMON$/hal/src/target</state>
+          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
+          <state>$SRC_COMMON$/heapmgr</state>
           <state>$SRC_COMMON$/icall/src/inc</state>
           <state>$SRC_COMMON$/osal/src/inc</state>
           <state>$SRC_COMMON$/services/src/saddr</state>
@@ -1198,7 +1195,7 @@
   <group>
     <name>Startup</name>
     <file>
-      <name>$SRC_COMMON$\hal\src\target\board.c</name>
+      <name>$SRC_BLE_CORE$\target\board.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>
