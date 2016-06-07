@@ -61,8 +61,8 @@
 #include "osal_snv.h"
 #include "icall_apimsg.h"
 
+#include <ti/mw/display/Display.h>
 #include "util.h"
-#include "board_display.h"
 #include "board_key.h"
 #include "board.h"
 
@@ -112,6 +112,12 @@ typedef struct
   uint8_t *pData;  // event data 
 } sepEvt_t;
 
+/*********************************************************************
+ * GLOBAL VARIABLES
+ */
+
+// Display Interface
+Display_Handle dispHandle = NULL;
 
 /*********************************************************************
  * LOCAL VARIABLES
@@ -336,7 +342,7 @@ static void security_examples_peripheral_init(void)
 
   Board_initKeys(security_examples_peripheral_keyChangeHandler);
   
-  Board_openDisplay(BOARD_DISPLAY_TYPE_LCD);
+  dispHandle = Display_open(Display_Type_LCD, NULL);
  
   // Setup the GAP Peripheral Role Profile
   {
@@ -438,15 +444,14 @@ static void security_examples_peripheral_init(void)
   GAP_RegisterForMsgs(selfEntity);
   
 // pass OOB data to GAPBondMgr for OOB SC pairing
-#if ((PAIRING == OOB_SC) || (PAIRING == OOB_LE))
-#if STATIC_KEYS       //we already have the keys so find confirm value
-  // Get the confirm value
-  SM_GetScConfirmOob(eccKeys.publicKeyX, oobData.oob, oobData.confirm);  
-  
+#if (PAIRING == OOB_SC)
+#if (STATIC_KEYS)  // We already have the keys...get the confirm value
+  SM_GetScConfirmOob(eccKeys.publicKeyX, oobRemoteData.oob, oobRemoteData.confirm);  
+
   uint8_t oobEnabled = TRUE;
   
   GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );    
-  GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_DATA, sizeof(gapBondOobSC_t), &oobData); 
+  GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_DATA, sizeof(gapBondOobSC_t), &oobRemoteData); 
 #else //keys will be returned from the stack
   // Register to receive SM messages
   SM_RegisterTask(selfEntity); 
@@ -454,9 +459,9 @@ static void security_examples_peripheral_init(void)
   // Get ECC Keys - response comes in through callback.
   SM_GetEccKeys();  
 #endif //STATIC_KEYS
-#endif //OOB
+#endif //OOB_SC
   
-  DISPLAY_WRITE_STRING("Security Ex Periph", LCD_PAGE0);
+  Display_print0(dispHandle, LCD_PAGE0, 0, "Security Ex Periph");
 }
 
 /*********************************************************************
@@ -630,13 +635,13 @@ static void security_examples_peripheral_processStateChangeEvt(gaprole_States_t 
         DevInfo_SetParameter(DEVINFO_SYSTEM_ID, DEVINFO_SYSTEM_ID_LEN, systemId);
 
         // Display device address
-        DISPLAY_WRITE_STRING(Util_convertBdAddr2Str(ownAddress), LCD_PAGE1);
-        DISPLAY_WRITE_STRING("Initialized", LCD_PAGE2);
+        Display_print0(dispHandle, LCD_PAGE1, 0, Util_convertBdAddr2Str(ownAddress));
+        Display_print0(dispHandle, LCD_PAGE2, 0, "Initialized");
       }
       break;
 
     case GAPROLE_ADVERTISING:
-      DISPLAY_WRITE_STRING("Advertising", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "Advertising");
       break;
 
     case GAPROLE_CONNECTED:
@@ -646,39 +651,39 @@ static void security_examples_peripheral_processStateChangeEvt(gaprole_States_t 
         GAPRole_GetParameter(GAPROLE_CONN_BD_ADDR, peerAddress);
         GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connHandle);
 
-        DISPLAY_WRITE_STRING("Connected", LCD_PAGE2);
-        DISPLAY_WRITE_STRING(Util_convertBdAddr2Str(peerAddress), LCD_PAGE3);
+        Display_print0(dispHandle, LCD_PAGE2, 0, "Connected");
+        Display_print0(dispHandle, LCD_PAGE3, 0, Util_convertBdAddr2Str(peerAddress));
       }
       break;
 
     case GAPROLE_CONNECTED_ADV:
-      DISPLAY_WRITE_STRING("Connected Advertising", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "Connected Advertising");
       break;
 
     case GAPROLE_WAITING:
-      DISPLAY_WRITE_STRING("Disconnected", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "Disconnected");
 
       // Clear remaining lines
-      DISPLAY_WRITE_STRING("", LCD_PAGE3);
-      DISPLAY_WRITE_STRING("", LCD_PAGE4);
-      DISPLAY_WRITE_STRING("", LCD_PAGE5);
+      Display_print0(dispHandle, LCD_PAGE3, 0, "");
+      Display_print0(dispHandle, LCD_PAGE4, 0, "");
+      Display_print0(dispHandle, LCD_PAGE5, 0, "");
       break;
 
     case GAPROLE_WAITING_AFTER_TIMEOUT:
-      DISPLAY_WRITE_STRING("Timed Out", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "Timed Out");
       
       // Clear remaining lines
-      DISPLAY_WRITE_STRING("", LCD_PAGE3);
-      DISPLAY_WRITE_STRING("", LCD_PAGE4);
-      DISPLAY_WRITE_STRING("", LCD_PAGE5);
+      Display_print0(dispHandle, LCD_PAGE3, 0, "");
+      Display_print0(dispHandle, LCD_PAGE4, 0, "");
+      Display_print0(dispHandle, LCD_PAGE5, 0, "");
       break;
 
     case GAPROLE_ERROR:
-      DISPLAY_WRITE_STRING("Error", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "Error");
       break;
 
     default:
-      DISPLAY_WRITE_STRING("", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "");
       break;
   }
 }
@@ -694,35 +699,35 @@ static void security_examples_peripheral_processPairState(uint8_t state, uint8_t
 {
   if (state == GAPBOND_PAIRING_STATE_STARTED)
   {
-    DISPLAY_WRITE_STRING("Pairing started", LCD_PAGE2);
+    Display_print0(dispHandle, LCD_PAGE2, 0, "Pairing started");
   }
   else if (state == GAPBOND_PAIRING_STATE_COMPLETE)
   {
     if (status == SUCCESS)
     {
-      DISPLAY_WRITE_STRING("Pairing success", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "Pairing success");
     }
     else
     {
-      DISPLAY_WRITE_STRING_VALUE("Pairing fail: %d", status, LCD_PAGE2);
+      Display_print1(dispHandle, LCD_PAGE2, 0, "Pairing fail: %d", status);
     }
   }
   else if (state == GAPBOND_PAIRING_STATE_BONDED)
   {
     if (status == SUCCESS)
     {
-      DISPLAY_WRITE_STRING("Bonding success", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "Bonding success");
     }
   }
   else if (state == GAPBOND_PAIRING_STATE_BOND_SAVED)
   {
     if (status == SUCCESS)
     {
-      DISPLAY_WRITE_STRING("Bond save success", LCD_PAGE2);
+      Display_print0(dispHandle, LCD_PAGE2, 0, "Bond save success");
     }
     else
     {
-      DISPLAY_WRITE_STRING_VALUE("Bond save failed: %d", status, LCD_PAGE2);
+      Display_print1(dispHandle, LCD_PAGE2, 0, "Bond save failed: %d", status);
     }
   }
 }
@@ -751,7 +756,7 @@ static void security_examples_peripheral_handleKeys(uint8_t shift, uint8_t keys)
     {
       //increment passcode digit
       passcode += passcode_multiplier;
-      DISPLAY_WRITE_STRING_VALUE("%d",passcode, LCD_PAGE5);
+      Display_print1(dispHandle, LCD_PAGE5, 0, "%d",passcode);
       return;
     }
     else if (judgeNumericComparison)
@@ -761,7 +766,7 @@ static void security_examples_peripheral_handleKeys(uint8_t shift, uint8_t keys)
       // overload 3rd parameter as TRUE when instead of the passcode when
       // numeric comparisons is used.
       GAPBondMgr_PasscodeRsp(connHandle, SUCCESS, TRUE);      
-      DISPLAY_WRITE_STRING("Codes Match!", LCD_PAGE5);
+      Display_print0(dispHandle, LCD_PAGE5, 0, "Codes Match!");
       return;
     }
   }
@@ -807,7 +812,7 @@ static void security_examples_peripheral_processPasscode(uint16_t connectionHand
 #endif    
     
     //Display passcode
-    DISPLAY_WRITE_STRING_VALUE("Num Cmp: %d", pData->numComparison, LCD_PAGE4);
+    Display_print1(dispHandle, LCD_PAGE4, 0, "Num Cmp: %d", pData->numComparison);
   }
   else //passkey entry
   {
@@ -822,8 +827,8 @@ static void security_examples_peripheral_processPasscode(uint16_t connectionHand
       waiting_for_passcode = TRUE;
       passcode_connHandle = connectionHandle;
 #endif         
-      DISPLAY_WRITE_STRING("Enter Passcode:", LCD_PAGE4);
-      DISPLAY_WRITE_STRING_VALUE("%d", passcode, LCD_PAGE5);      
+      Display_print0(dispHandle, LCD_PAGE4, 0, "Enter Passcode:");
+      Display_print1(dispHandle, LCD_PAGE5, 0, "%d", passcode);
     }
     else if (pData->uiOutputs) // if we are to display passkey
     {
@@ -834,7 +839,7 @@ static void security_examples_peripheral_processPasscode(uint16_t connectionHand
       passcode = Util_GetTRNG();
       passcode %= 1000000;
 #endif
-      DISPLAY_WRITE_STRING_VALUE("Passcode: %d", passcode, LCD_PAGE4);
+      Display_print1(dispHandle, LCD_PAGE4, 0, "Passcode: %d", passcode);
       
       // Send passcode response
       GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, passcode);   
@@ -950,6 +955,7 @@ static uint8_t security_examples_peripheral_enqueueMsg(uint8_t event, uint8_t st
  *
  * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
  */
+#pragma optimize=none
 static uint8_t security_example_peripheral_processStackMsg(ICall_Hdr *pMsg)
 {
   uint8_t safeToDealloc = TRUE;
@@ -964,7 +970,7 @@ static uint8_t security_example_peripheral_processStackMsg(ICall_Hdr *pMsg)
 #endif // Broken      
 
     //receive keys from stack for OOB SC pairing without static keys
-#if ((PAIRING == OOB_SC) && (STATIC_KEYS))
+#if ((PAIRING == OOB_SC) && !(STATIC_KEYS))
     case SM_MSG_EVENT:
       {
         //check for correct event
@@ -975,11 +981,11 @@ static uint8_t security_example_peripheral_processStackMsg(ICall_Hdr *pMsg)
           uint8_t oobEnabled = TRUE;
           
           // Get the confirm value
-//          SM_GetScConfirmOob(eccKeys.publicKeyX, oobData.oob, oobData.confirm);  
+          SM_GetScConfirmOob(eccKeyspublicKeyX, oobRemoteData.oob, oobRemoteData.confirm);  
           
           //pass OOB data to GAPBondMgr
           GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_ENABLED, sizeof(uint8_t), &oobEnabled );    
-          GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_DATA, sizeof(gapBondOobSC_t), &oobData);            
+          GAPBondMgr_SetParameter(GAPBOND_REMOTE_OOB_SC_DATA, sizeof(gapBondOobSC_t), &oobRemoteData);            
         }
       }
       break;

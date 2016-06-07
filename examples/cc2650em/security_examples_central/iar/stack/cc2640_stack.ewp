@@ -1090,16 +1090,22 @@
         <group>
           <name>Drivers</name>
           <file>
-            <name>$SRC_COMMON$\hal\src\target\cc2650tirtos\hal_flash_wrapper.c</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_flash_wrapper.c</name>
           </file>
           <file>
-            <name>$SRC_COMMON$\hal\src\target\cc2650tirtos\hal_rtc_wrapper.h</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_gpio_wrapper.h</name>
           </file>
           <file>
-            <name>$SRC_COMMON$\hal\src\target\cc2650tirtos\hal_trng_wrapper.c</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_rtc_wrapper.c</name>
           </file>
           <file>
-            <name>$SRC_COMMON$\hal\src\target\cc2650tirtos\hal_trng_wrapper.h</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_rtc_wrapper.h</name>
+          </file>
+          <file>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_trng_wrapper.c</name>
+          </file>
+          <file>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_trng_wrapper.h</name>
           </file>
         </group>
       </group>
@@ -1108,10 +1114,10 @@
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$SRC_EX$\icall\stack\ble_dispatch.c</name>
+      <name>$SRC_BLE_CORE$\icall\stack\ble_dispatch.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\icall\inc\ble_dispatch.h</name>
+      <name>$SRC_BLE_CORE$\icall\inc\ble_dispatch.h</name>
     </file>
   </group>
   <group>
@@ -1153,10 +1159,10 @@
   <group>
     <name>NPI</name>
     <file>
-      <name>$SRC_EX$\common\cc26xx\npi\stack\npi.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\npi\stack\npi.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\npi\stack\npi.h</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\npi\stack\npi.h</name>
     </file>
   </group>
   <group>
@@ -1219,13 +1225,13 @@
   <group>
     <name>PROFILES</name>
     <file>
-      <name>$SRC_EX$\profiles\roles\gap.c</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\gap.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\roles\gapbondmgr.c</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\roles\gapbondmgr.h</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.h</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\host\gattservapp_util.c</name>
@@ -1234,37 +1240,37 @@
   <group>
     <name>Startup</name>
     <file>
-      <name>$SRC_EX$\icall\stack\ble_user_config.c</name>
+      <name>$SRC_BLE_CORE$\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\rom\common_rom_init.c</name>
+      <name>$ROM$\common_rom_init.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\icall_startup.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\stack\osal_icall_ble.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\rom\rom_init.c</name>
+      <name>$ROM$\rom_init.c</name>
     </file>
   </group>
   <group>
     <name>TOOLS</name>
     <file>
-      <name>$SRC_EX$\config\build_components.opt</name>
+      <name>$SRC_BLE_CORE$\config\build_components.opt</name>
     </file>
     <file>
       <name>$PROJ_DIR$\build_config.opt</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\iar\cc26xx_stack.icf</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\iar\cc26xx_stack.icf</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\onboard.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\onboard.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\onboard.h</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\onboard.h</name>
     </file>
   </group>
 </project>

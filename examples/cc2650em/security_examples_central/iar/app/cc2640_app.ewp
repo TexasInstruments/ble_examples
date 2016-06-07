@@ -185,7 +185,6 @@
           <state>MAX_PDU_SIZE=69</state>
           <state>POWER_SAVING</state>
           <state>HEAPMGR_SIZE=0</state>
-          <state>TI_DRIVERS_DISPLAY_INCLUDED</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
           <state>xBOARD_DISPLAY_EXCLUDE_LCD</state>
           <state>GAPCENTRALROLE_NUM_RSSI_LINKS=1</state>
@@ -333,15 +332,16 @@
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
-          <state>$SRC_EX$/profiles/roles</state>
+          <state>$SRC_EX$/profiles/dev_info</state>
+          <state>$SRC_EX$/profiles/roles/</state>
           <state>$SRC_EX$/profiles/roles/cc26xx</state>
           <state>$SRC_EX$/profiles/simple_profile</state>
-          <state>$SRC_COMMON$/heapmgr</state>
+          <state>$SRC_EX$/profiles/simple_profile/cc26xx</state>
+          <state>$SRC_EX$/target</state>
           <state>$SRC_COMMON$/hal/src/inc</state>
-          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON$/hal/src/target/cc2650/rom</state>
           <state>$SRC_COMMON$/hal/src/target/_common</state>
-          <state>$SRC_COMMON$/hal/src/target</state>
+          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
+          <state>$SRC_COMMON$/heapmgr</state>
           <state>$SRC_COMMON$/icall/src/inc</state>
           <state>$SRC_COMMON$/osal/src/inc</state>
           <state>$SRC_COMMON$/services/src/saddr</state>
@@ -1004,16 +1004,10 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_display.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_display.h</name>
-    </file>
-    <file>
-      <name>$SRC_EX$\common\cc26xx\board_key.c</name>
-    </file>
-    <file>
-      <name>$SRC_EX$\common\cc26xx\board_key.h</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\app\security_example_central.c</name>
@@ -1022,111 +1016,102 @@
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\app\security_examples_central.h</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\util.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\util.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\util.h</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\util.h</name>
     </file>
   </group>
   <group>
     <name>Drivers</name>
     <group>
-      <name>ECC</name>
+      <name>Display</name>
       <file>
-        <name>$SRC_EX$\common\cc26xx\ecc\ECCROMCC26XX.c</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\Display.c</name>
       </file>
       <file>
-        <name>$SRC_EX$\common\cc26xx\ecc\ECCROMCC26XX.h</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\Display.h</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\DisplayDogm1286.c</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\DisplayDogm1286.h</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\DisplayUart.c</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\DisplayUart.h</name>
+      </file>
+    </group>
+    <group>
+      <name>ECC</name>
+      <file>
+        <name>$SRC_BLE_CORE$\common\cc26xx\ecc\ECCROMCC26XX.c</name>
+      </file>
+      <file>
+        <name>$SRC_BLE_CORE$\common\cc26xx\ecc\ECCROMCC26XX.h</name>
       </file>
     </group>
     <group>
       <name>LCD</name>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\lcd\LCDDogm1286.c</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\lcd\LCDDogm1286.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\lcd\LCDDogm1286.h</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\lcd\LCDDogm1286.h</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\lcd\LCDDogm1286_util.c</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\lcd\LCDDogm1286_util.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\lcd\LCDDogm1286_util.h</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\lcd\LCDDogm1286_util.h</name>
       </file>
     </group>
     <group>
       <name>PIN</name>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\PIN.h</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\PIN.h</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\pin\PINCC26XX.c</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\pin\PINCC26XX.h</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.h</name>
+      </file>
+    </group>
+    <group>
+      <name>RF</name>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.c</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
       </file>
     </group>
     <group>
       <name>SPI</name>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\SPI.c</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\SPI.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\SPI.h</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\SPI.h</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\spi\SPICC26XXDMA.c</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\spi\SPICC26XXDMA.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\spi\SPICC26XXDMA.h</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\spi\SPICC26XXDMA.h</name>
       </file>
     </group>
     <group>
       <name>UDMA</name>
       <file>
         <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\dma\UDMACC26XX.c</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\dma\UDMACC26XX.h</name>
-        <excluded>
-          <configuration>FlashROM</configuration>
-        </excluded>
       </file>
     </group>
   </group>
@@ -1142,7 +1127,7 @@
       <name>$SRC_COMMON$\icall\src\inc\icall.h</name>
     </file>
     <file>
-      <name>$SRC_EX$\icall\inc\icall_addrs.h</name>
+      <name>$SRC_BLE_CORE$\icall\inc\icall_addrs.h</name>
     </file>
     <file>
       <name>$SRC_COMMON$\icall\src\icall_cc2650.c</name>
@@ -1154,16 +1139,16 @@
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$SRC_EX$\icall\app\ble_user_config.c</name>
+      <name>$SRC_BLE_CORE$\icall\app\ble_user_config.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\ble_user_config.h</name>
     </file>
     <file>
-      <name>$SRC_EX$\icall\app\icall_api.c</name>
+      <name>$SRC_BLE_CORE$\icall\app\icall_api.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\icall\inc\icall_apimsg.h</name>
+      <name>$SRC_BLE_CORE$\icall\inc\icall_apimsg.h</name>
     </file>
   </group>
   <group>
@@ -1172,10 +1157,10 @@
       <name>$SRC_BLE_CORE$\inc\gap.h</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\roles\gapbondmgr.h</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\gapbondmgr.h</name>
     </file>
     <file>
-      <name>$SRC_EX$\inc\gapgattserver.h</name>
+      <name>$SRC_BLE_CORE$\inc\gapgattserver.h</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\inc\gatt.h</name>
@@ -1190,16 +1175,16 @@
   <group>
     <name>PROFILES</name>
     <file>
-      <name>$SRC_EX$\profiles\roles\cc26xx\central.c</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\cc26xx\central.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\profiles\roles\cc26xx\central.h</name>
+      <name>$SRC_BLE_CORE$\profiles\roles\cc26xx\central.h</name>
     </file>
   </group>
   <group>
     <name>Startup</name>
     <file>
-      <name>$SRC_COMMON$\hal\src\target\cc2650tirtos\board.c</name>
+      <name>$SRC_BLE_CORE$\target\board.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>
@@ -1230,7 +1215,7 @@
       </configuration>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\iar\cc26xx_app.icf</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\iar\cc26xx_app.icf</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\iar_boundary.bdef</name>

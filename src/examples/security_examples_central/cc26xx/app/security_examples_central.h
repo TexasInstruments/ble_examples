@@ -57,16 +57,22 @@ extern "C"
  * CONSTANTS
  */
 
-#define OOB_LE                  0x00
-#define OOB_SC                  0x01
-#define JUSTWORKS               0x02
-#define PASSCODE                0x03
-#define NUMCOMP                 0x04
+#define OOB_LE                  0x01    // out of band legacy
+#define OOB_SC                  0x02    // out of band secure connections
+#define JUSTWORKS               0x03    // just works
+#define PASSCODE                0x04    // passcode
+#define NUMCOMP                 0x05    // numeric comparison
 
-#define PAIRING                 PASSCODE
+#define PAIRING                 OOB_SC
   
 #define STATIC_PASSCODE         0x01
-#define STATIC_KEYS             0x00
+#define STATIC_KEYS             0x01
+  
+#if !defined( PAIRING )
+  #warning No Pairing mode selected!
+#elif (PAIRING > NUMCOMP) || (PAIRING == 0)
+  #warning Invalid pairing mode!
+#endif
 
   
 /*********************************************************************
