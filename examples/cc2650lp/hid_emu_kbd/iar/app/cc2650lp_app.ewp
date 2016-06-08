@@ -336,6 +336,7 @@
           <state>$SRC_EX$/profiles/roles/cc26xx</state>
           <state>$SRC_EX$/profiles/scan_param</state>
           <state>$SRC_EX$/profiles/scan_param/cc26xx</state>
+          <state>$SRC_EX$/target</state>
           <state>$SRC_COMMON$/heapmgr</state>
           <state>$SRC_COMMON$/hal/src/inc</state>
           <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>

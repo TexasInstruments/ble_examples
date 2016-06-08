@@ -439,15 +439,15 @@
 	<variableList>
 		<variable>
 			<name>BIOS_BASE</name>
-			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_18_00_00_eng/products/bios_6_45_02_31/packages</value>
+			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_18_00_01_eng/products/bios_6_45_02_31/packages</value>
 		</variable>
 		<variable>
 			<name>BLESDK_LOC</name>
-			<value>file:/C:/ti/simplelink/ble_sdk_2_02_00_22</value>
+			<value>file:/C:/ti/simplelink/ble_sdk_2_02_00_25</value>
 		</variable>
 		<variable>
 			<name>CC26XXWARE</name>
-			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_18_00_00_eng/products/cc26xxware_2_23_03_17162</value>
+			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_18_00_01_eng/products/cc26xxware_2_23_03_17162</value>
 		</variable>
 		<variable>
 			<name>ORG_PROJ_DIR</name>
@@ -471,7 +471,7 @@
 		</variable>
 		<variable>
 			<name>TI_RTOS_DRIVERS_BASE</name>
-			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_18_00_00_eng/products/tidrivers_cc13xx_cc26xx_2_18_00_00_eng/packages</value>
+			<value>file:/C:/ti/tirtos_cc13xx_cc26xx_2_18_00_01_eng/products/tidrivers_cc13xx_cc26xx_2_18_00_01_eng/packages</value>
 		</variable>
 		<variable>
 			<name>TOOLS_BLE</name>
