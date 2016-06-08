@@ -156,12 +156,12 @@ static void Board_keyCallback(PIN_Handle hPin, PIN_Id pinId)
 
   if ( PIN_getInputValue(Board_BTN1) == 0 )
   {
-    keysPressed |= KEY_LEFT;
+    keysPressed |= KEY_BTN1;
   }
 
   if ( PIN_getInputValue(Board_BTN2) == 0 )
   {
-    keysPressed |= KEY_RIGHT;
+    keysPressed |= KEY_BTN2;
   }
 
   Util_startClock(&keyChangeClock);
