@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2016, Texas Instruments Incorporated
+ Copyright (c) 2013-2016, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -38,10 +38,7 @@
  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- ******************************************************************************
- Release Name: ble_sdk_2_02_00_14
- Release Date: 2016-05-16 19:21:19
+ 
  *****************************************************************************/
 
 //
