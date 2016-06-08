@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<projectSpec>
+    <!-- add your your options here -->
+    <project
+        name="beacon_rfdriver_cc2650lp"
+        device="CC2650F128"
+        connection="TIXDS110_Connection.xml"
+        toolChain="TI"
+        cgtVersion="5.2.7"
+        linkerCommandFile="cc26xx_app.cmd"
+
+        postBuildStep="
+        ${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out
+        "
+
+        compilerBuildOptions="
+        --silicon_version=7M3
+        --code_state=16
+        --float_support=vfplib
+        -O4
+        --opt_for_speed=0
+        --c99
+        --relaxed_ansi
+        --diag_suppress=48
+        --diag_warning=225
+        --diag_wrap=off
+        --gen_func_subsections=on
+        --fp_reassoc=off
+        --unaligned_access=on
+        --embedded_constants=on
+        --wchar_t=16
+        --enum_type=packed
+        --common=on
+        --sat_reassoc=off
+        --plain_char=unsigned
+
+        -DPOWER_SAVING
+		-DADV_NC_OPTIMIZED
+        -DEVERY_OTHER
+        -DCC2650_LAUNCHXL
+        -DCC26XXWARE
+        -Dxdc_runtime_Assert_DISABLE_ALL
+        -Dxdc_runtime_Log_DISABLE_ALL
+		
+		-I${CG_TOOL_ROOT}/include
+		-I${PROJECT_IMPORT_LOC}/../../../../src/examples/beacon_rfdriver/
+		-I${SRC_BLE_CORE}/target
+		-I${SRC_BLE_CORE}/target/cc2650lp
+		-I${CC26XXWARE}
+		-I${TI_RTOS_DRIVERS_BASE}
+        "
+
+        linkerBuildOptions="
+        -l${SRC_EX}/common/cc26xx/ccs/cc26xx_app.cmd
+        --library=&quot;libc.a&quot;
+        --library=${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib
+        --library=${ROM}/common_rom_releases/03282014/common_rom.symbols
+        --diag_wrap=off
+        --unused_section_elimination=on
+        --compress_dwarf=on
+        --xml_link_info=${ProjName}_linkInfo.xml
+        --diag_suppress=10247-D
+        --diag_suppress=16002-D
+        -x
+        "
+        description=""
+        launchWizard="false"
+
+        references="">
+        <!-- Project properties -->
+        <property name="type" value="rtsc"/>
+        <property name="products" value="com.ti.rtsc.TIRTOSCC13XX_CC26XX:2.18.00.01_eng"/>
+        <property name="xdcToolsVersion" value="3.32.00.06"/>
+
+        <property name="target" value="ti.targets.arm.elf.M3"/>
+        <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
+        <property name="buildProfile" value="release"/>
+        <property name="isHybrid" value="true"/>
+        <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; --xdcpath &quot;${TI_BLE_SDK_BASE} &quot;"/>
+
+        <!-- Env Vars -->
+        <pathVariable name="TI_RTOS_DRIVERS_BASE" path="c:/ti/tirtos_cc13xx_cc26xx_2_18_00_01_eng/products/tidrivers_cc13xx_cc26xx_2_18_00_01_eng/packages" scope="project"></pathVariable>
+        <pathVariable name="TI_BLE_SDK_BASE" path="c:/ti/simplelink/ble_sdk_2_02_00_25" scope="project"></pathVariable>
+        <pathVariable name="SRC_EX" path="${TI_BLE_SDK_BASE}/src" scope="project"></pathVariable>
+        <pathVariable name="SRC_COMMON" path="${TI_BLE_SDK_BASE}/src/components" scope="project"></pathVariable>
+        <pathVariable name="SRC_BLE_CORE" path="${TI_BLE_SDK_BASE}/src/" scope="project"></pathVariable>
+        <pathVariable name="ROM" path="${TI_BLE_SDK_BASE}/src/rom" scope="project"></pathVariable>
+        <pathVariable name="TOOLS_BLE" path="${TI_BLE_SDK_BASE}/tools" scope="project"></pathVariable>
+        <pathVariable name="CC26XXWARE" path="c:/ti/tirtos_cc13xx_cc26xx_2_18_00_01_eng/products/cc26xxware_2_23_03_17162" scope="project"></pathVariable>
+        <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
+
+
+        <!-- Application Folder -->
+        <file path="../../../../src/examples/beacon_rfdriver/main_tirtos.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        </file>
+        <file path="../../../../src/examples/beacon_rfdriver/smartrf_settings.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        </file>
+		<file path="../../../../src/examples/beacon_rfdriver/smartrf_settings.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        </file>
+		
+		<!-- Drivers/PIN Folder -->
+        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/PIN.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/PIN" createVirtualFolders="true">
+        </file>
+        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/pin/PINCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/PIN" createVirtualFolders="true">
+        </file>
+        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/pin/PINCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/PIN" createVirtualFolders="true">
+        </file>
+
+        <!-- Drivers/RF Folder -->
+        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
+        </file>
+        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
+        </file>
+
+        <!-- Startup Folder -->
+        <file path="SRC_BLE_CORE/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        </file>
+        <file path="../iar/config/ccfg.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        </file>
+
+        <!-- Tools Folder -->
+        <file path="../iar/config/rom.cfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        </file>		
+        </project>
+</projectSpec>
