@@ -1010,7 +1010,7 @@
       <name>$SRC_BLE_CORE$\common\cc26xx\board_key.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\app\security_example_central.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\app\security_examples_central.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_central\cc26xx\app\security_examples_central.h</name>
@@ -1108,10 +1108,10 @@
     <group>
       <name>UDMA</name>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\dma\UDMACC26XX.c</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\dma\UDMACC26XX.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\..\ti\tirtos_simplelink_2_13_00_06\packages\ti\drivers\dma\UDMACC26XX.h</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\dma\UDMACC26XX.h</name>
       </file>
     </group>
   </group>

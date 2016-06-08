@@ -2,7 +2,7 @@
 
 <projectSpec>
     <project
-        name="multi_role_cc2650em_stack"
+        name="security_examples_peripheral_cc2650em_stack"
         device="CC2650F128"
         connection="TIXDS100v3_Dot7_Connection.xml"
         toolChain="TI"
@@ -120,7 +120,7 @@
         </file>
         <file path="SRC_EX/icall/stack/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="../../../../../src/examples/multi_role/cc26xx/stack/osal_icall_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="../../../../../src/examples/security_examples_peripheral/cc26xx/stack/osal_icall_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
         <file path="SRC_BLE_CORE/rom/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
