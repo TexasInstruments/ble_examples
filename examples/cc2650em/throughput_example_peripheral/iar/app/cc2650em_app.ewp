@@ -325,6 +325,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
+          <state>$SRC_EX$/examples/simple_peripheral/cc26xx/app</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
           <state>$SRC_EX$/common/cc26xx</state>
@@ -1003,7 +1004,7 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\examples\throughput_example_peripheral\cc26xx\app\throughput_example_peripheral.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\throughput_example_peripheral\cc26xx\app\throughput_example_peripheral.c</name>
     </file>
     <file>
       <name>$SRC_EX$\examples\simple_peripheral\cc26xx\app\simple_peripheral.h</name>

@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
 <project>
   <fileVersion>2</fileVersion>
   <configuration>
@@ -1127,6 +1128,9 @@
     <name>NPI</name>
     <file>
       <name>$SRC_EX$\common\cc26xx\npi\stack\npi.c</name>
+    </file>
+    <file>
+      <name>$SRC_EX$\common\cc26xx\npi\stack\npi.h</name>
     </file>
   </group>
   <group>
