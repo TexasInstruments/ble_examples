@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\app\cc2650em_app.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\stack\cc2650em_stack.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+
