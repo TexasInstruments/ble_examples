@@ -646,7 +646,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>simple_peripheral_cc2650em_stack.hex</state>
+          <state>throughput_example_peripheral_cc2650em_stack.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -677,7 +677,7 @@
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild>"$TOOLS_BLE$/lib_search/lib_search.exe" $PROJ_DIR$/build_config.opt "$TOOLS_BLE$/lib_search/params_split_cc2640.xml" $SRC_BLE_CORE$/../blelib  $PROJ_DIR$/../config/lib_linker.cmd</prebuild>
-        <postbuild>"$TOOLS_BLE$/frontier/frontier.exe" iar "$PROJ_DIR$/$CONFIG_NAME$/List/simple_peripheral_cc2650em_stack.map" "$PROJ_DIR$/../config/iar_boundary.bdef" "$PROJ_DIR$/../config/iar_boundary.xcl"</postbuild>
+        <postbuild>"$TOOLS_BLE$/frontier/frontier.exe" iar "$PROJ_DIR$/$CONFIG_NAME$/List/throughput_example_peripheral_cc2650em_stack.map" "$PROJ_DIR$/../config/iar_boundary.bdef" "$PROJ_DIR$/../config/iar_boundary.xcl"</postbuild>
       </data>
     </settings>
     <settings>
@@ -701,7 +701,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>simple_peripheral_cc2650em_stack.out</state>
+          <state>throughput_example_peripheral_cc2650em_stack.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
