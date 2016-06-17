@@ -22,8 +22,10 @@ main()
 {
     files=$(find ../../ -name *.custom_argvars)
     for fil in $files; do sedFile $fil ; done
+
     files=$(find ../../ -name *.project)
     for fil in $files; do sedFile $fil ; done
+
     files=$(find ../../ -name *.projectspec)
     for fil in $files; do sedFile $fil ; done
 }
