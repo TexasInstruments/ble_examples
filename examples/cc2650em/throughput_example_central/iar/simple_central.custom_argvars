@@ -4,19 +4,19 @@
   <group active="true" name="CC26xx TI-RTOS">
     <variable>
       <name>TI_RTOS_DRIVERS_BASE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_02_eng\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages</value>
     </variable>
     <variable>
       <name>BIOS_BASE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_02_eng\products\bios_6_45_02_31\packages</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\bios_6_45_02_31\packages</value>
     </variable>
     <variable>
       <name>XDCPATH</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_02_eng\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages;C:\ti\tirtos_cc13xx_cc26xx_2_18_00_02_eng\products\bios_6_45_02_31\packages</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages;C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\bios_6_45_02_31\packages</value>
     </variable>
     <variable>
       <name>CC26XXWARE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_02_eng\products\cc26xxware_2_23_03_17162</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\cc26xxware_2_23_03_17162</value>
     </variable>
     <variable>
       <name>XDCROOT</name>

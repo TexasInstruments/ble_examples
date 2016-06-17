@@ -99,15 +99,15 @@
         <property name="isHybrid" value="true"/>
         <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; "/>
 
-        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_01_eng/products/cc26xxware_2_23_03_17162" scope="project"></pathVariable>
-        <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_01_eng/products/tidrivers_cc13xx_cc26xx_2_18_00_01_eng/packages" scope="project"></pathVariable>
+        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_03/products/cc26xxware_2_23_03_17162" scope="project"></pathVariable>
+        <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_03/products/tidrivers_cc13xx_cc26xx_2_16_01_13/packages" scope="project"></pathVariable>
         <pathVariable name="SRC_EX" path="${TI_BLE_SDK_BASE}/src" scope="project"></pathVariable>
         <pathVariable name="SRC_COMMON" path="${TI_BLE_SDK_BASE}/src/components" scope="project"></pathVariable>
         <pathVariable name="SRC_BLE_CORE" path="${TI_BLE_SDK_BASE}/src/" scope="project"></pathVariable>
         <pathVariable name="ROM" path="${TI_BLE_SDK_BASE}/src/rom" scope="project"></pathVariable>
         <pathVariable name="TOOLS_BLE" path="${TI_BLE_SDK_BASE}/tools" scope="project"></pathVariable>
-        <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_00_29" scope="project"></pathVariable>
-        <pathVariable name="PROJECT_BUILD_BASE" path="C:/ti/simplelink/ble_sdk_2_02_00_29/examples/cc2650em/simple_central" scope="project"></pathVariable>
+        <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_00_31" scope="project"></pathVariable>
+        <pathVariable name="PROJECT_BUILD_BASE" path="C:/ti/simplelink/ble_sdk_2_02_00_31/examples/cc2650em/simple_central" scope="project"></pathVariable>
         <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
 
         <!-- HAL/Common Folder-->

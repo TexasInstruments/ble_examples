@@ -4,7 +4,7 @@
   <group active="true" name="CC26xx TI-RTOS">
     <variable>
       <name>TI_BLE_SDK</name>
-      <value>C:\TI\simplelink\ble_sdk_2_02_00_29</value>
+      <value>C:\TI\simplelink\ble_sdk_2_02_00_31</value>
     </variable>
      <variable>
       <name>TI_RTOS_DRIVERS_BASE</name>
