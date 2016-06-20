@@ -132,10 +132,6 @@
           <state>0</state>
         </option>
         <option>
-          <name>OCImagesPath2</name>
-          <state>$PROJ_DIR$\..\..\..\..\..\..\lprf-sd-rom\ble_rom_releases\04242014\ble_rom_patch.symbols</state>
-        </option>
-        <option>
           <name>OCImagesSuppressCheck3</name>
           <state>0</state>
         </option>
@@ -1647,10 +1643,6 @@
           <state>0</state>
         </option>
         <option>
-          <name>OCImagesPath2</name>
-          <state>$PROJ_DIR$\..\..\..\..\..\..\lprf-sd-rom\ble_rom_releases\04242014\ble_rom_patch.symbols</state>
-        </option>
-        <option>
           <name>OCImagesSuppressCheck3</name>
           <state>0</state>
         </option>
@@ -3160,10 +3152,6 @@
         <option>
           <name>OCImagesSuppressCheck2</name>
           <state>0</state>
-        </option>
-        <option>
-          <name>OCImagesPath2</name>
-          <state>$PROJ_DIR$\..\..\..\..\..\..\lprf-sd-rom\ble_rom_releases\04242014\ble_rom_patch.symbols</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck3</name>
