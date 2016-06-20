@@ -1190,7 +1190,7 @@
       <name>$SRC_EX$\target\board.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>
+      <name>$TI_BLE_SDK_BASE$\examples\cc2650em\simple_peripheral\iar\config\ccfg_app_ble.c</name>
     </file>
     <file>
       <name>$SRC_EX$\examples\simple_peripheral\cc26xx\app\main.c</name>
