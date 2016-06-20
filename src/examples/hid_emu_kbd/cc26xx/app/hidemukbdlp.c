@@ -570,8 +570,8 @@ static void HidEmuKbd_keyPressHandler(uint8_t keys)
  *
  * @param   shift - true if in shift/alt.
  * @param   keys - bit field for key events. Valid entries:
- *                 KEY_UP
- *                 KEY_RIGHT
+ *                 KEY_BTN1
+ *                 KEY_BTN2
  *
  * @return  none
  */
@@ -579,7 +579,7 @@ static void HidEmuKbd_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
 
-  if (keys & KEY_LEFT)
+  if (keys & KEY_BTN1)
   {
     // Key Press.
     HidEmuKbd_sendReport(HID_KEYBOARD_LEFT_ARROW);
@@ -590,7 +590,7 @@ static void HidEmuKbd_handleKeys(uint8_t shift, uint8_t keys)
     HidEmuKbd_sendReport(KEY_NONE);
   }
 
-  if (keys & KEY_RIGHT)
+  if (keys & KEY_BTN2)
   {
     // Key Press.
     HidEmuKbd_sendReport(HID_KEYBOARD_RIGHT_ARROW);
