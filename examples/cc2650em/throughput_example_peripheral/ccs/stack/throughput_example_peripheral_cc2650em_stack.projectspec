@@ -10,7 +10,7 @@
         linkerCommandFile="cc26xx_stack.cmd"
 
         preBuildStep="
-        &quot;${TOOLS_BLE}/lib_search/lib_search.exe&quot; ${PROJECT_IMPORT_LOC}/build_config.opt &quot;${TOOLS_BLE}/lib_search/params_split_cc2640.xml&quot; ${SRC_BLE_CORE}/../blelib &quot;${PROJECT_IMPORT_LOC}/../config/lib_linker.cmd&quot;
+        &quot;${TOOLS_BLE}/lib_search/lib_search.exe&quot; ${PROJECT_IMPORT_LOC}/../../iar/build_config.opt &quot;${TOOLS_BLE}/lib_search/params_split_cc2640.xml&quot; ${SRC_BLE_CORE}/../blelib &quot;${PROJECT_IMPORT_LOC}/../config/lib_linker.cmd&quot;
         "
 
         postBuildStep="
@@ -18,7 +18,7 @@
         ${TOOLS_BLE}/frontier/frontier.exe ccs ${PROJECT_LOC}/${ConfigName}/${ProjName}_linkInfo.xml ${PROJECT_IMPORT_LOC}/../config/ccs_compiler_defines.bcfg ${PROJECT_IMPORT_LOC}/../config/ccs_linker_defines.cmd
         "
         compilerBuildOptions="
-        --cmd_file=${PROJECT_IMPORT_LOC}/build_config.opt
+        --cmd_file=${PROJECT_IMPORT_LOC}/../../iar/build_config.opt
         --cmd_file=${TI_BLE_SDK_BASE}/src/config/build_components.opt
         -O4
         --opt_for_speed=0
@@ -264,7 +264,7 @@
         </file>
         <file path="SRC_EX/config/build_components.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/build_config.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../iar/build_config.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
         <file path="PROJECT_IMPORT_LOC/../config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
