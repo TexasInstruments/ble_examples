@@ -162,6 +162,9 @@
 #define SBC_TASK_STACK_SIZE                   864
 #endif
 
+#define APP_SUGGESTED_PDU_SIZE 251
+#define APP_SUGGESTED_TX_TIME 2120
+
 // Application states
 enum
 {
@@ -289,7 +292,7 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg);
 static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent);
 static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg);
 static void SimpleBLECentral_startDiscovery(void);
-static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData, 
+static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData,
                                          uint8_t dataLen);
 static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType);
 static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status);
@@ -313,7 +316,7 @@ void SimpleBLECentral_startDiscHandler(UArg a0);
 void SimpleBLECentral_keyChangeHandler(uint8 keys);
 void SimpleBLECentral_readRssiHandler(UArg a0);
 
-static uint8_t SimpleBLECentral_enqueueMsg(uint8_t event, uint8_t status, 
+static uint8_t SimpleBLECentral_enqueueMsg(uint8_t event, uint8_t status,
                                            uint8_t *pData);
 
 /*********************************************************************
@@ -349,13 +352,13 @@ static gapBondCBs_t SimpleBLECentral_bondCB =
 void SimpleBLECentral_createTask(void)
 {
   Task_Params taskParams;
-    
+
   // Configure task
   Task_Params_init(&taskParams);
   taskParams.stack = sbcTaskStack;
   taskParams.stackSize = SBC_TASK_STACK_SIZE;
   taskParams.priority = SBC_TASK_PRIORITY;
-  
+
   Task_construct(&sbcTask, SimpleBLECentral_taskFxn, &taskParams, NULL);
 }
 
@@ -375,7 +378,7 @@ void SimpleBLECentral_createTask(void)
 static void SimpleBLECentral_init(void)
 {
   uint8_t i;
-    
+
   // ******************************************************************
   // N0 STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
   // ******************************************************************
@@ -386,47 +389,47 @@ static void SimpleBLECentral_init(void)
   // Hard code the DB Address till CC2650 board gets its own IEEE address
   //uint8 bdAddress[B_ADDR_LEN] = { 0x11, 0x11, 0x11, 0x11, 0x11, 0x11 };
   //HCI_EXT_SetBDADDRCmd(bdAddress);
-  
+
   // Set device's Sleep Clock Accuracy
   //HCI_EXT_SetSCACmd(40);
-  
+
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
-     
+
   // Setup discovery delay as a one-shot timer
   Util_constructClock(&startDiscClock, SimpleBLECentral_startDiscHandler,
                       DEFAULT_SVC_DISCOVERY_DELAY, 0, false, 0);
-  
+
   Board_initKeys(SimpleBLECentral_keyChangeHandler);
-  
+
   dispHandle = Display_open(Display_Type_LCD, NULL);
-  
+
   // Initialize internal data
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
     readRssi[i].connHandle = GAP_CONNHANDLE_ALL;
     readRssi[i].pClock = NULL;
   }
-  
+
   // Setup Central Profile
   {
     uint8_t scanRes = DEFAULT_MAX_SCAN_RES;
-    
+
     GAPCentralRole_SetParameter(GAPCENTRALROLE_MAX_SCAN_RES, sizeof(uint8_t), 
                                 &scanRes);
   }
-  
+
   // Setup GAP
   GAP_SetParamValue(TGAP_GEN_DISC_SCAN, DEFAULT_SCAN_DURATION);
   GAP_SetParamValue(TGAP_LIM_DISC_SCAN, DEFAULT_SCAN_DURATION);
   GGS_SetParameter(GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN, 
                    (void *)attDeviceName);
-  
+
   GAP_SetParamValue(TGAP_CONN_EST_INT_MIN, 160);
   GAP_SetParamValue(TGAP_CONN_EST_INT_MAX, 160);
   GAP_SetParamValue(TGAP_CONN_EST_LATENCY, 0);
   GAP_SetParamValue(TGAP_CONN_EST_SUPERV_TIMEOUT, 2000);
-  
+
   // Setup the GAP Bond Manager
   {
     uint32_t passkey = DEFAULT_PASSCODE;
@@ -434,14 +437,14 @@ static void SimpleBLECentral_init(void)
     uint8_t mitm = DEFAULT_MITM_MODE;
     uint8_t ioCap = DEFAULT_IO_CAPABILITIES;
     uint8_t bonding = DEFAULT_BONDING_MODE;
-    
+
     GAPBondMgr_SetParameter(GAPBOND_DEFAULT_PASSCODE, sizeof(uint32_t), 
                             &passkey);
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
     GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
-  }  
+  }
 
   // Initialize GATT Client
   VOID GATT_InitClient();
@@ -452,7 +455,7 @@ static void SimpleBLECentral_init(void)
   // Initialize GATT attributes
   GGS_AddService(GATT_ALL_SERVICES);         // GAP
   GATTServApp_AddService(GATT_ALL_SERVICES); // GATT attributes
-  
+
   // Start the Device
   VOID GAPCentralRole_StartDevice(&SimpleBLECentral_roleCB);
 
@@ -461,11 +464,14 @@ static void SimpleBLECentral_init(void)
 
   // Register with GAP for HCI/Host messages (for RSSI)
   GAP_RegisterForMsgs(selfEntity);
-  
+
   // Register for GATT local events and ATT Responses pending for transmission
   GATT_RegisterForMsgs(selfEntity);
-  
+
   Display_print0(dispHandle, 0, 0, "BLE Central");
+
+  // Enable controller data payloads of up to 251 bytes
+  HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
 }
 
 /*********************************************************************
@@ -481,7 +487,7 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
 {
   // Initialize application
   SimpleBLECentral_init();
-  
+
   // Application main loop
   for (;;)
   {
@@ -496,7 +502,7 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
       ICall_EntityID dest;
       ICall_ServiceEnum src;
       ICall_HciExtEvt *pMsg = NULL;
-      
+
       if (ICall_fetchServiceMsg(&src, &dest, 
                                 (void **)&pMsg) == ICALL_ERRNO_SUCCESS)
       {
@@ -521,16 +527,16 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
       {
         // Process message
         SimpleBLECentral_processAppMsg(pMsg);
-        
+
         // Free the space from the message
         ICall_free(pMsg);
       }
     }
-    
+
     if (events & SBC_START_DISCOVERY_EVT)
-    {      
+    {
       events &= ~SBC_START_DISCOVERY_EVT;
-      
+
       SimpleBLECentral_startDiscovery();
     }
   }
@@ -552,7 +558,7 @@ static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg)
     case GAP_MSG_EVENT:
       SimpleBLECentral_processRoleEvent((gapCentralRoleEvent_t *)pMsg);
       break;
-      
+
     case GATT_MSG_EVENT:
       SimpleBLECentral_processGATTMsg((gattMsgEvent_t *)pMsg);
       break;
@@ -565,13 +571,13 @@ static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg)
           case HCI_COMMAND_COMPLETE_EVENT_CODE:
             SimpleBLECentral_processCmdCompleteEvt((hciEvt_CmdComplete_t *)pMsg);
             break;
-            
+
           default:
             break;
         }
       }
       break;
-      
+
     default:
       break;
   }
@@ -592,15 +598,15 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
   {
     case SBC_STATE_CHANGE_EVT:
       SimpleBLECentral_processStackMsg((ICall_Hdr *)pMsg->pData);
-      
+
       // Free the stack message
       ICall_freeMsg(pMsg->pData);
       break;
-      
+
     case SBC_KEY_CHANGE_EVT:
       SimpleBLECentral_handleKeys(0, pMsg->hdr.state); 
       break;
-      
+
     case SBC_RSSI_READ_EVT:
       {
         readRssi_t *pRssi = (readRssi_t *)pMsg->pData;
@@ -617,25 +623,25 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         }
       }
       break;
-      
-    // Pairing event  
+
+    // Pairing event
     case SBC_PAIRING_STATE_EVT:
       {
         SimpleBLECentral_processPairState(pMsg->hdr.state, *pMsg->pData);
-        
+
         ICall_free(pMsg->pData);
         break;
       }
-      
-    // Passcode event    
+
+    // Passcode event
     case SBC_PASSCODE_NEEDED_EVT:
-      {     
+      {
         SimpleBLECentral_processPasscode(connHandle, *pMsg->pData);
-        
+
         ICall_free(pMsg->pData);
         break;
       }
-      
+
     default:
       // Do nothing.
       break;
@@ -655,10 +661,10 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 {
   switch (pEvent->gap.opcode)
   {
-    case GAP_DEVICE_INIT_DONE_EVENT:  
+    case GAP_DEVICE_INIT_DONE_EVENT:
       {
         maxPduSize = pEvent->initDone.dataPktLen;
-        
+
         Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
         Display_print0(dispHandle, 2, 0, "Initialized");
       }
@@ -679,7 +685,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         }
       }
       break;
-      
+
     case GAP_DEVICE_DISCOVERY_EVENT:
       {
         // discovery complete
@@ -693,9 +699,9 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           memcpy(devList, pEvent->discCmpl.pDevList,
                  (sizeof(gapDevRec_t) * scanRes));
         }
-        
+
         Display_print1(dispHandle, 2, 0, "Devices Found %d", scanRes);
-        
+
         if (scanRes > 0)
         {
           Display_print0(dispHandle, 3, 0, "<- To Select");
@@ -713,7 +719,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         {
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
-          procedureInProgress = TRUE;    
+          procedureInProgress = TRUE;
 
           // If service discovery not performed initiate service discovery
           if (charHdl == 0)
@@ -723,9 +729,9 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
           Display_print0(dispHandle, 2, 0, "Connected");
           Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));
-          
+
           // Discover GATT Server's Rx MTU size
-          req.clientRxMTU = maxPduSize - L2CAP_HDR_SIZE;          
+          req.clientRxMTU = maxPduSize - L2CAP_HDR_SIZE;
           VOID GATT_ExchangeMTU(connHandle, &req, selfEntity);
         }
         else
@@ -733,7 +739,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           state = BLE_STATE_IDLE;
           connHandle = GAP_CONNHANDLE_INIT;
           discState = BLE_DISC_STATE_IDLE;
-          
+
           Display_print0(dispHandle, 2, 0, "Connect Failed");
           Display_print1(dispHandle, 3, 0, "Reason: %d", pEvent->gap.hdr.status);
         }
@@ -747,10 +753,10 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         discState = BLE_DISC_STATE_IDLE;
         charHdl = 0;
         procedureInProgress = FALSE;
-          
+
         // Cancel RSSI reads
         SimpleBLECentral_CancelRssi(pEvent->linkTerminate.connectionHandle);
-        
+
         Display_print0(dispHandle, 2, 0, "Disconnected");
         Display_print1(dispHandle, 3, 0, "Reason: %d", pEvent->linkTerminate.reason);
         Display_clearLine(dispHandle, 4);
@@ -762,7 +768,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         Display_print1(dispHandle, 2, 0, "Param Update: %d", pEvent->linkUpdate.status);
       }
       break;
-      
+
     default:
       break;
   }
@@ -812,14 +818,14 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
       {
         scanningStarted = TRUE;
         scanRes = 0;
-        
+
         Display_print0(dispHandle, 2, 0, "Discovering...");
         Display_clearLines(dispHandle, 3, 4);
 
-        
+
         GAPCentralRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
                                       DEFAULT_DISCOVERY_ACTIVE_SCAN,
-                                      DEFAULT_DISCOVERY_WHITE_LIST);      
+                                      DEFAULT_DISCOVERY_WHITE_LIST);
       }
       else
       {
@@ -862,7 +868,7 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
       {
         // Do a read
         attReadReq_t req;
-        
+
         req.handle = charHdl;
         status = GATT_ReadCharValue(connHandle, &req, selfEntity);
       }
@@ -888,7 +894,7 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
                                 DEFAULT_UPDATE_SLAVE_LATENCY,
                                 DEFAULT_UPDATE_CONN_TIMEOUT);
     }
-    
+
     return;
   }
 
@@ -896,7 +902,7 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
   {
     uint8_t addrType;
     uint8_t *peerAddr;
-    
+
     // Connect or disconnect
     if (state == BLE_STATE_IDLE)
     {
@@ -906,13 +912,13 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
         // connect to current device in scan result
         peerAddr = devList[scanIdx].addr;
         addrType = devList[scanIdx].addrType;
-      
+
         state = BLE_STATE_CONNECTING;
-        
+
         GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
                                      DEFAULT_LINK_WHITE_LIST,
                                      addrType, peerAddr);
-  
+
         Display_print0(dispHandle, 2, 0, "Connecting");
         Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddr));
         Display_clearLine(dispHandle, 4);
@@ -925,7 +931,7 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
       state = BLE_STATE_DISCONNECTING;
 
       GAPCentralRole_TerminateLink(connHandle);
-      
+
       Display_print0(dispHandle, 2, 0, "Disconnecting");
       Display_clearLine(dispHandle, 4);
     }
@@ -977,7 +983,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               (pMsg->msg.errorRsp.reqOpcode == ATT_READ_REQ)))
     {
       if (pMsg->method == ATT_ERROR_RSP)
-      {      
+      {
         Display_print1(dispHandle, 4, 0, "Read Error %d", pMsg->msg.errorRsp.errCode);
       }
       else
@@ -985,7 +991,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         // After a successful read, display the read value
         Display_print1(dispHandle, 4, 0, "Read rsp: %d", pMsg->msg.readRsp.pValue[0]);
       }
-      
+
       procedureInProgress = FALSE;
     }
     else if ((pMsg->method == ATT_WRITE_RSP)  ||
@@ -993,7 +999,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               (pMsg->msg.errorRsp.reqOpcode == ATT_WRITE_REQ)))
     {
       if (pMsg->method == ATT_ERROR_RSP)
-      {     
+      {
         Display_print1(dispHandle, 4, 0, "Write Error %d", pMsg->msg.errorRsp.errCode);
       }
       else
@@ -1002,8 +1008,8 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         // increment value
         Display_print1(dispHandle, 4, 0, "Write sent: %d", charVal++);
       }
-      
-      procedureInProgress = FALSE;    
+
+      procedureInProgress = FALSE;
 
     }
     else if (pMsg->method == ATT_FLOW_CTRL_VIOLATED_EVENT)
@@ -1011,12 +1017,12 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       // ATT request-response or indication-confirmation flow control is
       // violated. All subsequent ATT requests or indications will be dropped.
       // The app is informed in case it wants to drop the connection.
-      
+
       // Display the opcode of the message that caused the violation.
       Display_print1(dispHandle, 4, 0, "FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
     }
     else if (pMsg->method == ATT_MTU_UPDATED_EVENT)
-    {   
+    {
       // MTU size updated
       Display_print1(dispHandle, 4, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
     }
@@ -1025,7 +1031,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       SimpleBLECentral_processGATTDiscEvent(pMsg);
     }
   } // else - in case a GATT message came after a connection has dropped, ignore it.
-  
+
   // Needed only for ATT Protocol messages
   GATT_bm_free(&pMsg->msg, pMsg->method);
 }
@@ -1050,7 +1056,7 @@ static void SimpleBLECentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
         Display_print1(dispHandle, 4, 0, "RSSI -dB: %d", (uint32_t)(-rssi));
       }
       break;
-      
+
     default:
       break;
   }
@@ -1083,7 +1089,7 @@ static bStatus_t SimpleBLECentral_StartRssi(uint16_t connHandle, uint16_t period
   {
     // Stop timer
     Util_stopClock(pRssi->pClock);
-    
+
     pRssi->period = period;
   }
   // Allocate structure
@@ -1151,14 +1157,14 @@ static readRssi_t *SimpleBLECentral_RssiAlloc(uint16_t connHandle)
     if (readRssi[i].connHandle == GAP_CONNHANDLE_ALL)
     {
       readRssi_t *pRssi = &readRssi[i];
-      
+
       pRssi->pClock = (Clock_Struct *)ICall_malloc(sizeof(Clock_Struct));
       if (pRssi->pClock)
       {
         Util_constructClock(pRssi->pClock, SimpleBLECentral_readRssiHandler,
                             0, 0, false, i);
         pRssi->connHandle = connHandle;
-        
+
         return pRssi;
       }
     }
@@ -1216,12 +1222,12 @@ static void SimpleBLECentral_RssiFree(uint16_t connHandle)
       if (pRssi->pClock)
       {
         Clock_destruct(pRssi->pClock);
-        
+
         // Free clock struct
         ICall_free(pRssi->pClock);
         pRssi->pClock = NULL;
       }
-      
+
       pRssi->connHandle = GAP_CONNHANDLE_ALL;
       break;
     }
@@ -1293,7 +1299,7 @@ static void SimpleBLECentral_processPasscode(uint16_t connectionHandle,
   {
     Display_print1(dispHandle, 4, 0, "Passcode: %d", passcode);
   }
-  
+
   // Send passcode response
   GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, passcode);
 }
@@ -1308,15 +1314,15 @@ static void SimpleBLECentral_processPasscode(uint16_t connectionHandle,
 static void SimpleBLECentral_startDiscovery(void)
 {
   attExchangeMTUReq_t req;
-  
+
   // Initialize cached handles
   svcStartHdl = svcEndHdl = charHdl = 0;
-    
+
   discState = BLE_DISC_STATE_MTU;
-  
+
   // Discover GATT Server's Rx MTU size
   req.clientRxMTU = maxPduSize - L2CAP_HDR_SIZE;
-  
+
   // ATT MTU size should be set to the minimum of the Client Rx MTU
   // and Server Rx MTU values
   VOID GATT_ExchangeMTU(connHandle, &req, selfEntity);
@@ -1330,7 +1336,7 @@ static void SimpleBLECentral_startDiscovery(void)
  * @return  none
  */
 static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
-{ 
+{
   if (discState == BLE_DISC_STATE_MTU)
   {
     // MTU size response received, discover simple BLE service
@@ -1338,10 +1344,10 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     {
       uint8_t uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SIMPLEPROFILE_SERV_UUID),
                                          HI_UINT16(SIMPLEPROFILE_SERV_UUID) };
-      
+
       // Just in case we're using the default MTU size (23 octets)
       Display_print1(dispHandle, 4, 0, "MTU Size: %d", ATT_MTU_SIZE);
-        
+
       discState = BLE_DISC_STATE_SVC;
 
       // Discovery simple BLE service
@@ -1358,7 +1364,7 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       svcStartHdl = ATT_ATTR_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
       svcEndHdl = ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
     }
-    
+
     // If procedure complete
     if (((pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP) && 
          (pMsg->hdr.status == bleProcedureComplete))  ||
@@ -1367,10 +1373,10 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       if (svcStartHdl != 0)
       {
         attReadByTypeReq_t req;
-          
+
         // Discover characteristic
         discState = BLE_DISC_STATE_CHAR;
-        
+
         req.startHandle = svcStartHdl;
         req.endHandle = svcEndHdl;
         req.type.len = ATT_BT_UUID_SIZE;
@@ -1389,13 +1395,13 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     {
       charHdl = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[0],
                              pMsg->msg.readByTypeRsp.pDataList[1]);
-      
+
       Display_print0(dispHandle, 2, 0, "Simple Svc Found");
       procedureInProgress = FALSE;
     }
-    
+
     discState = BLE_DISC_STATE_IDLE;
-  }    
+  }
 }
 
 /*********************************************************************
@@ -1411,9 +1417,9 @@ static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData,
   uint8_t adLen;
   uint8_t adType;
   uint8_t *pEnd;
-  
+
   pEnd = pData + dataLen - 1;
-  
+
   // While end of data not reached
   while (pData < pEnd)
   {
@@ -1422,14 +1428,14 @@ static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData,
     if (adLen > 0)
     {
       adType = *pData;
-      
+
       // If AD type is for 16-bit service UUID
       if ((adType == GAP_ADTYPE_16BIT_MORE) || 
           (adType == GAP_ADTYPE_16BIT_COMPLETE))
       {
         pData++;
         adLen--;
-        
+
         // For each UUID in list
         while (adLen >= 2 && pData < pEnd)
         {
@@ -1439,12 +1445,12 @@ static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData,
             // Match found
             return TRUE;
           }
-          
+
           // Go to next
           pData += 2;
           adLen -= 2;
         }
-        
+
         // Handle possible erroneous extra byte in UUID list
         if (adLen == 1)
         {
@@ -1458,7 +1464,7 @@ static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData,
       }
     }
   }
-  
+
   // Match not found
   return FALSE;
 }
@@ -1473,7 +1479,7 @@ static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData,
 static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType)
 {
   uint8_t i;
-  
+
   // If result count not at max
   if (scanRes < DEFAULT_MAX_SCAN_RES)
   {
@@ -1485,11 +1491,11 @@ static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType)
         return;
       }
     }
-    
+
     // Add addr to scan result list
     memcpy(devList[scanRes].addr, pAddr, B_ADDR_LEN);
     devList[scanRes].addrType = addrType;
-    
+
     // Increment scan result count
     scanRes++;
   }
@@ -1513,7 +1519,7 @@ static uint8_t SimpleBLECentral_eventCB(gapCentralRoleEvent_t *pEvent)
     // App will process and free the event
     return FALSE;
   }
-  
+
   // Caller should free the event
   return TRUE;
 }
@@ -1529,12 +1535,12 @@ static void SimpleBLECentral_pairStateCB(uint16_t connHandle, uint8_t state,
                                          uint8_t status)
 {
   uint8_t *pData;
-  
+
   // Allocate space for the event data.
   if ((pData = ICall_malloc(sizeof(uint8_t))))
   {
-    *pData = status;  
-  
+    *pData = status;
+
     // Queue the event.
     SimpleBLECentral_enqueueMsg(SBC_PAIRING_STATE_EVT, state, pData);
   }
@@ -1551,12 +1557,12 @@ static void SimpleBLECentral_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle
                                         uint8_t uiInputs, uint8_t uiOutputs)
 {
   uint8_t *pData;
-  
+
   // Allocate space for the passcode event.
   if ((pData = ICall_malloc(sizeof(uint8_t))))
   {
     *pData = uiOutputs;
-    
+
     // Enqueue the event.
     SimpleBLECentral_enqueueMsg(SBC_PASSCODE_NEEDED_EVT, 0, pData);
   }
@@ -1623,18 +1629,18 @@ static uint8_t SimpleBLECentral_enqueueMsg(uint8_t event, uint8_t state,
                                            uint8_t *pData)
 {
   sbcEvt_t *pMsg = ICall_malloc(sizeof(sbcEvt_t));
-  
+
   // Create dynamic pointer to message.
   if (pMsg)
   {
     pMsg->hdr.event = event;
     pMsg->hdr.state = state;
     pMsg->pData = pData;
-    
+
     // Enqueue the message.
     return Util_enqueueMsg(appMsgQueue, sem, (uint8_t *)pMsg);
   }
-  
+
   return FALSE;
 }
 

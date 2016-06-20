@@ -182,7 +182,7 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>MAX_PDU_SIZE=255</state>
+          <state>MAX_PDU_SIZE=251</state>
           <state>MAX_NUM_PDU=6</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>xDisplay_DISABLE_ALL</state>

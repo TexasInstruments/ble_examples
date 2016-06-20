@@ -72,7 +72,7 @@
 #ifdef USE_RCOSC
 #include "rcosc_calibration.h"
 #endif //USE_RCOSC
-   
+
 #include <ti/mw/display/Display.h>
 #include "board_key.h"
 
@@ -145,6 +145,9 @@
 #define SBP_CHAR_CHANGE_EVT                   0x0002
 #define SBP_PERIODIC_EVT                      0x0004
 #define SBP_CONN_EVT_END_EVT                  0x0008
+
+#define APP_SUGGESTED_PDU_SIZE 251
+#define APP_SUGGESTED_TX_TIME 2120
 
 /*********************************************************************
  * TYPEDEFS
@@ -547,8 +550,11 @@ static void SimpleBLEPeripheral_init(void)
   Display_print0(dispHandle, 0, 0, "BLE Peripheral");
 #endif // FEATURE_OAD
 
-  // Open pin structure for use 
+  // Open pin structure for use
   hSbpPins = PIN_open(&sbpPins, SBP_configTable);
+
+  // Enable controller data payloads of up to 251 bytes
+  HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
 }
 
 /*********************************************************************
@@ -625,7 +631,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
         }
       }
     }
-    
+
     if (events & SBP_PERIODIC_EVT)
     {
       events &= ~SBP_PERIODIC_EVT;
@@ -955,7 +961,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
         uint8_t numActive = 0;
 
         //Util_startClock(&periodicClock);
-        
+
         numActive = linkDB_NumActive();
 
         // Use numActive to determine the connection handle of the last

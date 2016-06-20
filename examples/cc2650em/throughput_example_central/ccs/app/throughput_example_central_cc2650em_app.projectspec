@@ -37,6 +37,8 @@
 
         -DUSE_ICALL
         -DPOWER_SAVING
+        -DMAX_NUM_PDU=6
+        -DMAX_PDU_SIZE=251
         -DGAPCENTRALROLE_TASK_STACK_SIZE=510
         -DHEAPMGR_SIZE=0
         -DxDisplay_DISABLE_ALL

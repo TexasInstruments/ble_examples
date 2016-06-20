@@ -183,6 +183,8 @@
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
           <state>HEAPMGR_SIZE=0</state>
+          <state>MAX_PDU_SIZE=251</state>
+          <state>MAX_NUM_PDU=6</state>
           <state>xDisplay_DISABLE_ALL</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
           <state>xBOARD_DISPLAY_EXCLUDE_LCD</state>
