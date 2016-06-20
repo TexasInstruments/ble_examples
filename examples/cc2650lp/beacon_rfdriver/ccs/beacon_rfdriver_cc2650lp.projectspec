@@ -7,7 +7,7 @@
         device="CC2650F128"
         connection="TIXDS110_Connection.xml"
         toolChain="TI"
-        cgtVersion="5.2.2"
+        cgtVersion="5.2.6"
         linkerCommandFile="cc26xx_app.cmd"
 
         postBuildStep="
