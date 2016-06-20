@@ -6,8 +6,25 @@
         device="CC2650F128"
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"
-        linkerCommandFile=""
-        compilerBuildOptions="--cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot; --cmd_file=&quot;${PROJECT_ROOT}/TOOLS/build_config.opt&quot;  -mv7M3 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_warning=255 --diag_wrap=off
+        linkerCommandFile="cc26xx_stack.cmd"
+        compilerBuildOptions="
+        --cmd_file=&quot;${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt&quot;
+        --cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot;
+        -O4
+        --opt_for_speed=0
+        -mv7M3
+        --code_state=16
+        --abi=eabi
+        -me
+        --c99
+        --display_error_number
+        --diag_wrap=off
+        --diag_suppress=48
+        --diag_suppress=16004
+        --diag_warning=225
+        --diag_warning=2
+        --c99
+
         -DUSE_ICALL
         -DFLASH_ROM_BUILD
         -DPOWER_SAVING
@@ -54,15 +71,29 @@
         -I${TI_BLE_SDK_BASE}/src/profiles/roles
         -I${CC26XXWARE}
         "
-        linkerBuildOptions="-l${}libc.a -l${PROJECT_LOC}/TOOLS/lib_linker.cmd -l${TI_BLE_SDK_BASE}/src/rom/enc_lib/cc26xx_ecc_rom_api.a -l${TI_BLE_SDK_BASE}/src/rom/ble_rom_releases/04242014/ble_rom_patch.symbols -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib -l${PROJECT_LOC}/TOOLS/ccs_linker_defines.cmd -l${TI_BLE_SDK_BASE}/src/common/cc26xx/ccs/cc26xx_stack.cmd  -x --entry_point=startup_entry  --diag_suppress=16002-D --diag_suppress=10247-D --diag_suppress=10325-D --diag_suppress=10229-D"
+
+        linkerBuildOptions="
+        -l${PROJECT_IMPORT_LOC}/../../iar/config/lib_linker.cmd
+        -l${TI_BLE_SDK_BASE}/src/rom/enc_lib/cc26xx_ecc_rom_api.a
+        -l${TI_BLE_SDK_BASE}/src/rom/ble_rom_releases/04242014/ble_rom_patch.symbols
+        -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib
+        -llibc.a -x
+        --entry_point=startup_entry
+        --diag_suppress=16002-D
+        --diag_suppress=10247-D
+        --diag_suppress=10325-D
+        --diag_suppress=10229-D
+        "
         description=""
         launchWizard="false"
 
-
-        preBuildStep="&quot;${TI_BLE_SDK_BASE}/tools/lib_search/lib_search.exe&quot; ${PROJECT_ROOT}/TOOLS/build_config.opt &quot;${TI_BLE_SDK_BASE}/tools/lib_search/params_split_cc2640.xml&quot; ${TI_BLE_SDK_BASE}/blelib &quot;${PROJECT_ROOT}/TOOLS/lib_linker.cmd&quot;"
-        postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out;${TI_BLE_SDK_BASE}/tools/frontier/frontier.exe ccs ${PROJECT_LOC}/${ConfigName}/${ProjName}_linkInfo.xml ${PROJECT_ROOT}/TOOLS/ccs_compiler_defines.bcfg ${PROJECT_ROOT}/TOOLS/ccs_linker_defines.cmd"
+        preBuildStep="
+        &quot;${TI_BLE_SDK_BASE}/tools/lib_search/lib_search.exe&quot; ${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt
+        &quot;${TI_BLE_SDK_BASE}/tools/lib_search/params_split_cc2640.xml&quot;
+        ${TI_BLE_SDK_BASE}/blelib &quot;${PROJECT_IMPORT_LOC}/../../iar/config/lib_linker.cmd&quot;"
+        postBuildStep=
+        "${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out;${TI_BLE_SDK_BASE}/tools/frontier/frontier.exe ccs ${PROJECT_LOC}/${ConfigName}/${ProjName}_linkInfo.xml ${PROJECT_IMPORT_LOC}/../config/ccs_compiler_defines.bcfg ${PROJECT_IMPORT_LOC}/../config/ccs_linker_defines.cmd"
         >
-
 
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
@@ -73,6 +104,7 @@
         <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_03/products/cc26xxware_2_23_03_17162" scope="project"></pathVariable>
         <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_03/products/tidrivers_cc13xx_cc26xx_2_16_01_13/packages" scope="project"></pathVariable>
         <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_00_31" scope="project"></pathVariable>
+        <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
 
 
         <file path="TI_BLE_SDK_BASE/src/icall/stack/ble_dispatch.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
@@ -157,7 +189,7 @@
         </file>
         <file path="TI_BLE_SDK_BASE/src/config/build_components.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="TI_BLE_SDK_BASE/src/common/cc26xx/ccs/cc26xx_stack.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="TI_BLE_SDK_BASE/src/common/cc26xx/ccs/cc26xx_stack.cmd" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/common/cc26xx/onboard.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
@@ -201,9 +233,9 @@
         </file>
         <file path="PROJECT_IMPORT_LOC/../iar/config/build_config.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/config/ccs_linker_defines.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../config/ccs_linker_defines.cmd" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
         </project>
 </projectSpec>

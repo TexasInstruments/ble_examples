@@ -274,7 +274,6 @@ static void HidEmuKbd_handleKeys(uint8_t shift, uint8_t keys);
 
 // HID reports.
 static void HidEmuKbd_sendReport(uint8_t keycode);
-static void HidEmuKbd_sendMouseReport(uint8_t buttons);
 static uint8_t HidEmuKbd_receiveReport(uint8_t len, uint8_t *pData);
 static uint8_t HidEmuKbd_reportCB(uint8_t id, uint8_t type, uint16_t uuid,
                                   uint8_t oper, uint16_t *pLen, uint8_t *pData);
@@ -627,29 +626,6 @@ static void HidEmuKbd_sendReport(uint8_t keycode)
 
   HidDev_Report(HID_RPT_ID_KEY_IN, HID_REPORT_TYPE_INPUT,
                 HID_KEYBOARD_IN_RPT_LEN, buf);
-}
-
-/*********************************************************************
- * @fn      HidEmuKbd_sendMouseReport
- *
- * @brief   Build and send a HID mouse report.
- *
- * @param   buttons - Mouse button code
- *
- * @return  none
- */
-static void HidEmuKbd_sendMouseReport(uint8_t buttons)
-{
-  uint8_t buf[HID_MOUSE_IN_RPT_LEN];
-
-  buf[0] = buttons;   // Buttons
-  buf[1] = 0;         // X
-  buf[2] = 0;         // Y
-  buf[3] = 0;         // Wheel
-  buf[4] = 0;         // AC Pan
-
-  HidDev_Report(HID_RPT_ID_MOUSE_IN, HID_REPORT_TYPE_INPUT,
-                HID_MOUSE_IN_RPT_LEN, buf);
 }
 
 /*********************************************************************
