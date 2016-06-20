@@ -89,7 +89,7 @@
         </option>
         <option>
           <name>OCLastSavedByProductVersion</name>
-          <state>7.20.2.7418</state>
+          <state>7.50.3.10745</state>
         </option>
         <option>
           <name>OCDownloadAttachToProgram</name>
@@ -117,7 +117,7 @@
         </option>
         <option>
           <name>FlashLoadersV3</name>
-          <state>$TOOLKIT_DIR$\config\flashloader\TexasInstruments\FlashCC26xx.board</state>
+          <state>$TOOLKIT_DIR$\config\flashloader\TexasInstruments\FlashCC26xxF128RAM20.board</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck1</name>
@@ -125,7 +125,7 @@
         </option>
         <option>
           <name>OCImagesPath1</name>
-          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\simple_central_cc2650em_stack.out</state>
+          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\throughput_example_central_cc2650em_stack.out</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck2</name>
@@ -1295,11 +1295,11 @@
         </option>
         <option>
           <name>TIPackageOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>TIPackage</name>
-          <state>C:\ti\ccs_base</state>
+          <state>C:\ti\ccsv6\ccs_base</state>
         </option>
         <option>
           <name>BoardFile</name>

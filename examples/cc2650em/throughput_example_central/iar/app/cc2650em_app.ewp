@@ -324,6 +324,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
+          <state>$SRC_EX$/examples/simple_central/cc26xx/app</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
           <state>$SRC_EX$/common/cc26xx</state>
