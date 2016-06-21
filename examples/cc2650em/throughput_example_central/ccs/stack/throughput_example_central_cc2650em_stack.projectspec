@@ -2,14 +2,14 @@
 
 <projectSpec>
     <project
-        name="simple_central_cc2650em_stack_FlashROM"
+        name="throughput_example_central_cc2650em_stack"
         device="CC2650F128"
         connection="common/targetdb/connections/TIXDS100v3_Dot7_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_stack.cmd"
 
         preBuildStep="
-        &quot;${TOOLS_BLE}/lib_search/lib_search.exe&quot; ${PROJECT_IMPORT_LOC}/../../iar/build_config.opt &quot;${TOOLS_BLE}/lib_search/params_split_cc2640.xml&quot; ${SRC_BLE_CORE}/../blelib &quot;${PROJECT_IMPORT_LOC}/../config/lib_linker.cmd&quot;
+        &quot;${TOOLS_BLE}/lib_search/lib_search.exe&quot; ${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt &quot;${TOOLS_BLE}/lib_search/params_split_cc2640.xml&quot; ${SRC_BLE_CORE}/../blelib &quot;${PROJECT_IMPORT_LOC}/../config/lib_linker.cmd&quot;
         "
 
         postBuildStep="
@@ -18,7 +18,7 @@
         "
 
         compilerBuildOptions="
-        --cmd_file=${PROJECT_IMPORT_LOC}/../../iar/build_config.opt
+        --cmd_file=${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt
         --cmd_file=${TI_BLE_SDK_BASE}/src/config/build_components.opt
         -O4
         --opt_for_speed=0
@@ -139,6 +139,18 @@
         <!-- HAL/Target Folder -->
         <file path="SRC_COMMON/hal/src/target/_common/hal_board_cfg.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Config" createVirtualFolders="true">
         </file>
+        <file path="SRC_COMMON/hal/src/target/_common/hal_mcu.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/_common" createVirtualFolders="true">
+        </file>
+        <file path="SRC_COMMON/hal/src/target/_common/cc26xx/mb_patch.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/_common" createVirtualFolders="true">
+        </file>
+        <file path="SRC_COMMON/hal/src/target/_common/hal_trng_wrapper.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Drivers" createVirtualFolders="true">
+        </file>
+        <file path="SRC_COMMON/hal/src/target/_common/hal_trng_wrapper.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Drivers" createVirtualFolders="true">
+        </file>
+        <file path="SRC_COMMON/hal/src/target/_common/hal_rtc_wrapper.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Drivers" createVirtualFolders="true">
+        </file>
+        <file path="SRC_COMMON/hal/src/target/_common/hal_flash_wrapper.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/Drivers" createVirtualFolders="true">
+        </file>
 
         <!-- ICallBLE Folder -->
         <file path="SRC_EX/icall/stack/ble_dispatch.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
@@ -239,15 +251,15 @@
         <!-- Tools -->
         <file path="TI_BLE_SDK_BASE/src/config/build_components.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/common/cc26xx/ccs/cc26xx_stack.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="SRC_EX/common/cc26xx/ccs/cc26xx_stack.cmd" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
         <file path="SRC_EX/common/cc26xx/onboard.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../iar/build_config.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../iar/stack/build_config.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../config/ccs_linker_defines.cmd" openOnCreation="" excludeFromBuild="true" action="copy" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../config/ccs_linker_defines.cmd" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
         <file path="SRC_EX/common/cc26xx/onboard.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>

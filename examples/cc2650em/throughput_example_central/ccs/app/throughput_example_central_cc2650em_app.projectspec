@@ -53,16 +53,16 @@
         -DCC26XX
 
         -I${CG_TOOL_ROOT}/include
-        -I${SRC_EX}/src/examples/simple_central/cc26xx/app
-        -I${SRC_EX}/src/inc
-        -I${SRC_EX}/src/icall/inc
-        -I${SRC_EX}/src/profiles/roles/cc26xx
-        -I${SRC_EX}/src/profiles/roles
-        -I${SRC_EX}/src/profiles/simple_profile
-        -I${SRC_EX}/src/common/cc26xx
+        -I${SRC_EX}/examples/simple_central/cc26xx/app
+        -I${SRC_EX}/inc
+        -I${SRC_EX}/icall/inc
+        -I${SRC_EX}/profiles/roles/cc26xx
+        -I${SRC_EX}/profiles/roles
+        -I${SRC_EX}/profiles/simple_profile
+        -I${SRC_EX}/common/cc26xx
         -I${SRC_COMMON}/heapmgr
-        -I${SRC_BLE_CORE}/src/controller/cc26xx/inc
-        -I${SRC_COMMON}hal/src/target/_common
+        -I${SRC_BLE_CORE}/controller/cc26xx/inc
+        -I${SRC_COMMON}/hal/src/target/_common
         -I${TI_BLE_SDK_BASE}/src/target
         -I${SRC_COMMON}/hal/src/target/_common/cc26xx
         -I${SRC_COMMON}/hal/src/inc
