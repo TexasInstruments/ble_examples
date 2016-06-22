@@ -125,7 +125,7 @@
         </option>
         <option>
           <name>OCImagesPath1</name>
-          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\hid_emu_kbd_cc2650em_stack.out</state>
+          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\hid_emu_kbd_cc2650lp_stack.out</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck2</name>
