@@ -324,6 +324,7 @@
           <name>CCIncludePath2</name>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
+          <state>$PROJ_DIR$/../../../../../src/common/cc2650lp</state>
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>

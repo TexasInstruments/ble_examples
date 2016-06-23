@@ -50,6 +50,7 @@
         -I${TI_BLE_SDK_BASE}/src/profiles/scan_param
         -I${TI_BLE_SDK_BASE}/src/profiles/hid_dev/cc26xx
         -I${TI_BLE_SDK_BASE}/src/profiles/batt/cc26xx
+        -I${PROJECT_IMPORT_LOC}/../../../../../src/common/cc2650lp
         -I${TI_BLE_SDK_BASE}/src/common/cc26xx
         -I${TI_BLE_SDK_BASE}/src/components/heapmgr
         -I${TI_BLE_SDK_BASE}/src/controller/cc26xx/inc
