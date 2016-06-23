@@ -253,8 +253,6 @@ static hidDevCfg_t hidEmuKbdCfg =
   HID_KBD_FLAGS               // HID feature flags
 };
 
-// TRUE if boot mouse enabled
-static uint8_t hidBootMouseEnabled = FALSE;
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -700,22 +698,6 @@ static uint8_t HidEmuKbd_reportCB(uint8_t id, uint8_t type, uint16_t uuid,
     if (status == SUCCESS)
     {
       *pLen = len;
-    }
-  }
-  // Notifications enabled
-  else if (oper == HID_DEV_OPER_ENABLE)
-  {
-    if (id == HID_RPT_ID_MOUSE_IN && type == HID_REPORT_TYPE_INPUT)
-    {
-      hidBootMouseEnabled = TRUE;
-    }
-  }
-  // Notifications disabled
-  else if (oper == HID_DEV_OPER_DISABLE)
-  {
-    if (id == HID_RPT_ID_MOUSE_IN && type == HID_REPORT_TYPE_INPUT)
-    {
-      hidBootMouseEnabled = FALSE;
     }
   }
 
