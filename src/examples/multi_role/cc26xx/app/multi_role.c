@@ -96,8 +96,8 @@
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         6
 
 //connection parameters
-#define DEFAULT_CONN_INT                      40
-#define DEFAULT_CONN_TIMEOUT                  200
+#define DEFAULT_CONN_INT                      80
+#define DEFAULT_CONN_TIMEOUT                  1000
 #define DEFAULT_CONN_LATENCY                  0
 
 // Default service discovery timer delay in ms
@@ -638,7 +638,7 @@ static void multi_role_taskFxn(UArg a0, UArg a1)
         {
           // Process message.
           multi_role_processAppMsg(pMsg);
-          
+
           // Free the space from the message.
           ICall_free(pMsg);
         }
@@ -885,22 +885,26 @@ static void multi_role_processAppMsg(mrEvt_t *pMsg)
     
   case MR_CHAR_CHANGE_EVT:
     multi_role_processCharValueChangeEvt(*(pMsg->pData));
+    // Free the app data
+    ICall_free(pMsg->pData);
     break;
     
   case MR_KEY_CHANGE_EVT:
     multi_role_handleKeys(*(pMsg->pData));
+    // Free the app data
+    ICall_free(pMsg->pData);
     break;
     
   case MR_PAIRING_STATE_EVT:
     multi_role_processPairState((gapPairStateEvent_t*)pMsg->pData);
-    // Free the stack message
-    ICall_freeMsg(pMsg->pData);
+    // Free the app data
+    ICall_free(pMsg->pData);
     break;
 
   case MR_PASSCODE_NEEDED_EVT:
     multi_role_processPasscode((gapPasskeyNeededEvent_t*)pMsg->pData);
-    // Free the stack message
-    ICall_freeMsg(pMsg->pData);
+    // Free the app data
+    ICall_free(pMsg->pData);
     break;    
     
   default:
@@ -1102,7 +1106,7 @@ static void multi_role_charValueChangeCB(uint8_t paramID)
   
   // Allocate space for the event data.
   if ((pData = ICall_malloc(sizeof(uint8_t))))
-  {
+  {    
     *pData = paramID;  
   
     // Queue the event.
@@ -1203,7 +1207,7 @@ void multi_role_keyChangeHandler(uint8 keys)
   
   // Allocate space for the event data.
   if ((pData = ICall_malloc(sizeof(uint8_t))))
-  {
+  {    
     *pData = keys;  
   
     // Queue the event.
@@ -1715,7 +1719,7 @@ static void multi_role_pairStateCB(uint16_t connHandle, uint8_t state,
   
   // Allocate space for the passcode event.
   if ((pData = ICall_malloc(sizeof(gapPairStateEvent_t))))
-  {
+  {    
     pData->connectionHandle = connHandle;    
     pData->state = state;
     pData->status = status;

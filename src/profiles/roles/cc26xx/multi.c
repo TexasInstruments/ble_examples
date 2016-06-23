@@ -1281,6 +1281,6 @@ static void gapRole_abort(void)
 {
 #ifdef DEBUG  
   while(1);
-#endif  
+#endif  //DEBUG
 }
 

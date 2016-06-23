@@ -63,7 +63,7 @@ extern "C"
 #define PASSCODE                0x04    // passcode
 #define NUMCOMP                 0x05    // numeric comparison
   
-#define PAIRING                 OOB_SC
+#define PAIRING                 PASSCODE
   
 #define STATIC_PASSCODE         0x01
 #define STATIC_KEYS             0x01
