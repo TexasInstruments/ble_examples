@@ -644,7 +644,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>hid_emu_kbd_cc2650lp_app.hex</state>
+          <state>spp_ble_server_cc2650lp_app.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -699,7 +699,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>hid_emu_kbd_cc2650lp_app.out</state>
+          <state>spp_ble_server_cc2650lp_app.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
