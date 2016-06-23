@@ -97,9 +97,8 @@
         -x
         "
         description=""
-        launchWizard="false"
+        launchWizard="false">
 
-        references="spp_ble_client_cc2650lp_stack">
         <!-- Project properties -->
         <property name="type" value="rtsc"/>
         <property name="products" value="com.ti.rtsc.TIRTOSCC13XX_CC26XX:2.18.00.03"/>
