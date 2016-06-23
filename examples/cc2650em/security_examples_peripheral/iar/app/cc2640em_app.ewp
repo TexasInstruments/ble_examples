@@ -642,7 +642,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>security_examples_peripheral_app.hex</state>
+          <state>security_examples_peripheral_cc2650em_app.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -697,7 +697,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>security_examples_peripheral_app.out</state>
+          <state>security_examples_peripheral_cc2650em_app.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
