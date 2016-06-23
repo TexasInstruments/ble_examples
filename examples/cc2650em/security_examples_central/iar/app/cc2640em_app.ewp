@@ -698,7 +698,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>security_examples_central_app.out</state>
+          <state>security_examples_central_cc2650em_app.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
