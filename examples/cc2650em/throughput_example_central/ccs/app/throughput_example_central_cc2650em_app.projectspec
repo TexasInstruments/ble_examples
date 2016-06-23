@@ -86,10 +86,7 @@
         --diag_suppress=16002-D
         "
         description=""
-        launchWizard="false"
-
-        references="throughput_example_central_cc2650em_stack"
-        >
+        launchWizard="false">
 
 
         <property name="type" value="rtsc"/>
