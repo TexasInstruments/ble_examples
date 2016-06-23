@@ -2,7 +2,7 @@
 
 <projectSpec>
     <project
-        name="hid_emu_kbd_cc2650lp_stack_FlashROM"
+        name="hid_emu_kbd_cc2650lp_stack"
         device="CC2650F128"
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"

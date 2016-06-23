@@ -2,7 +2,7 @@
 
 <projectSpec>
     <project
-        name="hid_emu_kbd_cc2650lp_app_FlashROM"
+        name="hid_emu_kbd_cc2650lp_app"
         device="CC2650F128"
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"
@@ -79,7 +79,6 @@
         description=""
         launchWizard="false"
         
-        references="hid_emu_kbd_cc2650lp_stack_FlashROM"
         preBuildStep=""
         postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out"
         >
