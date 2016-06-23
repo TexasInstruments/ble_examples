@@ -77,15 +77,17 @@
 #include "rcosc_calibration.h"
 #endif //USE_RCOSC
    
-#include <ti/mw/display/Display.h>
+//#include <ti/mw/display/Display.h>
 #include "board_key.h"
 
 #include "board.h"
 
-#include "SerialPortService.h"
+#include "serial_port_service.h"
 #include "spp_ble_server.h"
 #include "inc/sdi_task.h" 
 #include "inc/sdi_tl_uart.h"
+
+
 
 /*********************************************************************
  * CONSTANTS
@@ -101,11 +103,11 @@
 #ifndef FEATURE_OAD
 // Minimum connection interval (units of 1.25ms, 80=100ms) if automatic
 // parameter update request is enabled
-#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     80
+#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     16
 
 // Maximum connection interval (units of 1.25ms, 800=1000ms) if automatic
 // parameter update request is enabled
-#define DEFAULT_DESIRED_MAX_CONN_INTERVAL     800
+#define DEFAULT_DESIRED_MAX_CONN_INTERVAL     16
 #else //!FEATURE_OAD
 // Minimum connection interval (units of 1.25ms, 8=10ms) if automatic
 // parameter update request is enabled
@@ -121,7 +123,7 @@
 
 // Supervision timeout value (units of 10ms, 1000=10s) if automatic parameter
 // update request is enabled
-#define DEFAULT_DESIRED_CONN_TIMEOUT          1000
+#define DEFAULT_DESIRED_CONN_TIMEOUT          200
 
 // Whether to enable automatic parameter update request when a connection is
 // formed
@@ -152,6 +154,9 @@
 #define SBP_PERIODIC_EVT                      0x0004
 #define SBP_CONN_EVT_END_EVT                  0x0008
 
+#define APP_SUGGESTED_PDU_SIZE 27
+#define APP_SUGGESTED_TX_TIME 328
+
 /*********************************************************************
  * TYPEDEFS
  */
@@ -172,7 +177,7 @@ typedef struct
 typedef struct
 {
   uint8_t event;  // Type of event
-  uint8_t data[20];  // New data
+  uint8_t data[SERIALPORTSERVICE_DATA_LEN];  // New data
   uint8_t length; // New status
 } sbpUARTEvt_t; //size = 22 bytes
 /*********************************************************************
@@ -180,8 +185,11 @@ typedef struct
  */
 
 // Display Interface
-Display_Handle dispHandle = NULL;
+//Display_Handle dispHandle = NULL;
 
+// Global pin resources
+PIN_State pinGpioState;
+PIN_Handle hGpioPin;
 /*********************************************************************
  * LOCAL VARIABLES
  */
@@ -223,28 +231,23 @@ static gaprole_States_t gapProfileState = GAPROLE_INIT;
 static uint8_t scanRspData[] =
 {
   // complete name
-  0x14,   // length of this data
+  0x0F,   // length of this data
   GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-  'T',
-  'i',
-  'm',
-  'p',
-  'l',
-  'e',
+  'S',
+  'P',
+  'P',
+  ' ',
   'B',
   'L',
   'E',
-  'P',
-  'e',
-  'r',
-  'i',
-  'p',
-  'h',
-  'e',
-  'r',
-  'a',
-  'l',
-
+  ' ',
+  'S',
+  'E',
+  'R',
+  'V',
+  'E',
+  'R',
+  
   // connection interval range
   0x05,   // length of this data
   GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
@@ -289,38 +292,47 @@ static uint8_t advertData[] =
 };
 
 // GAP GATT Attributes
-static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE Peripheral";
+static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "SPP BLE Server";
 
 // Globals used for ATT Response retransmission
 static gattMsgEvent_t *pAttRsp = NULL;
 static uint8_t rspTxRetry = 0;
 
+// Pins that are actively used by the application
+static PIN_Config SPPBLEAppPinTable[] =
+{
+    Board_LED1       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
+    Board_LED2       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
+
+    PIN_TERMINATE
+};
+
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
 
-static void SimpleBLEPeripheral_init( void );
-static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1);
+static void SPPBLEServer_init( void );
+static void SPPBLEServer_taskFxn(UArg a0, UArg a1);
 
-static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg);
-static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg);
-static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg);
-static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState);
-static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID);
-static void SimpleBLEPeripheral_performPeriodicTask(void);
-static void SimpleBLEPeripheral_clockHandler(UArg arg);
+static uint8_t SPPBLEServer_processStackMsg(ICall_Hdr *pMsg);
+static uint8_t SPPBLEServer_processGATTMsg(gattMsgEvent_t *pMsg);
+static void SPPBLEServer_processAppMsg(sbpEvt_t *pMsg);
+static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState);
+static void SPPBLEServer_processCharValueChangeEvt(uint8_t paramID);
+static void SPPBLEServer_performPeriodicTask(void);
+static void SPPBLEServer_clockHandler(UArg arg);
 
-static void SimpleBLEPeripheral_sendAttRsp(void);
-static void SimpleBLEPeripheral_freeAttRsp(uint8_t status);
+static void SPPBLEServer_sendAttRsp(void);
+static void SPPBLEServer_freeAttRsp(uint8_t status);
 
-static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState);
+static void SPPBLEServer_stateChangeCB(gaprole_States_t newState);
 #ifndef FEATURE_OAD_ONCHIP
-static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID);
+static void SPPBLEServer_charValueChangeCB(uint8_t paramID);
 #endif //!FEATURE_OAD_ONCHIP
-static void SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state);
+static void SPPBLEServer_enqueueMsg(uint8_t event, uint8_t state);
 void SPPBLEServer_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len);
 #ifdef FEATURE_OAD
-void SimpleBLEPeripheral_processOadWriteCB(uint8_t event, uint16_t connHandle,
+void SPPBLEServer_processOadWriteCB(uint8_t event, uint16_t connHandle,
                                            uint8_t *pData);
 #endif //FEATURE_OAD
 
@@ -330,13 +342,13 @@ void SimpleBLEPeripheral_processOadWriteCB(uint8_t event, uint16_t connHandle,
  */
 
 // GAP Role Callbacks
-static gapRolesCBs_t SimpleBLEPeripheral_gapRoleCBs =
+static gapRolesCBs_t SPPBLEServer_gapRoleCBs =
 {
-  SimpleBLEPeripheral_stateChangeCB     // Profile State Change Callbacks
+  SPPBLEServer_stateChangeCB     // Profile State Change Callbacks
 };
 
 // GAP Bond Manager Callbacks
-static gapBondCBs_t simpleBLEPeripheral_BondMgrCBs =
+static gapBondCBs_t SPPBLEServer_BondMgrCBs =
 {
   NULL, // Passcode callback (not used by application)
   NULL  // Pairing / Bonding state Callback (not used by application)
@@ -346,14 +358,14 @@ static gapBondCBs_t simpleBLEPeripheral_BondMgrCBs =
 #ifndef FEATURE_OAD_ONCHIP
 static SerialPortServiceCBs_t SPPBLEServer_SerialPortService_CBs =
 {
-  SimpleBLEPeripheral_charValueChangeCB // Characteristic value change callback
+  SPPBLEServer_charValueChangeCB // Characteristic value change callback
 };
 #endif //!FEATURE_OAD_ONCHIP
 
 #ifdef FEATURE_OAD
-static oadTargetCBs_t simpleBLEPeripheral_oadCBs =
+static oadTargetCBs_t SPPBLEServer_oadCBs =
 {
-  SimpleBLEPeripheral_processOadWriteCB // Write Callback.
+  SPPBLEServer_processOadWriteCB // Write Callback.
 };
 #endif //FEATURE_OAD
 
@@ -362,7 +374,7 @@ static oadTargetCBs_t simpleBLEPeripheral_oadCBs =
  */
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_createTask
+ * @fn      SPPBLEServer_createTask
  *
  * @brief   Task creation function for the Simple BLE Peripheral.
  *
@@ -370,7 +382,7 @@ static oadTargetCBs_t simpleBLEPeripheral_oadCBs =
  *
  * @return  None.
  */
-void SimpleBLEPeripheral_createTask(void)
+void SPPBLEServer_createTask(void)
 {
   Task_Params taskParams;
 
@@ -380,11 +392,58 @@ void SimpleBLEPeripheral_createTask(void)
   taskParams.stackSize = SBP_TASK_STACK_SIZE;
   taskParams.priority = SBP_TASK_PRIORITY;
 
-  Task_construct(&sbpTask, SimpleBLEPeripheral_taskFxn, &taskParams, NULL);
+  Task_construct(&sbpTask, SPPBLEServer_taskFxn, &taskParams, NULL);
+}
+
+/*******************************************************************************
+ * @fn      SPPBLEServer_blinkLed
+ *
+ * @brief   Blinks a led 'n' times, duty-cycle 50-50
+ * @param   led - led identifier
+ * @param   nBlinks - number of blinks
+ *
+ * @return  none
+ */
+void SPPBLEServer_blinkLed(uint8_t led, uint8_t nBlinks)
+{
+  uint8_t i;
+
+  for (i=0; i<nBlinks; i++)
+  {
+    PIN_setOutputValue(hGpioPin, led, Board_LED_ON);
+    delay_ms(BLINK_DURATION);
+    PIN_setOutputValue(hGpioPin, led, Board_LED_OFF);
+    delay_ms(BLINK_DURATION);
+  }
+}
+
+/*******************************************************************************
+ * @fn      SPPBLEClient_toggleLed
+ *
+ * @brief   Blinks a led 'n' times, duty-cycle 50-50
+ * @param   led - led identifier
+ * @param   nBlinks - number of blinks
+ *
+ * @return  none
+ */
+void SPPBLEServer_toggleLed(uint8_t led, uint8_t state)
+{
+    uint8_t nextLEDstate = 0;
+  
+    if(state == Board_LED_TOGGLE)
+    {
+      nextLEDstate = !(PIN_getOutputValue(led));
+    }
+    else
+    { 
+      nextLEDstate = state;
+    }
+                    
+    PIN_setOutputValue(hGpioPin, led, nextLEDstate);
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_init
+ * @fn      SPPBLEServer_init
  *
  * @brief   Called during initialization and contains application
  *          specific initialization (ie. hardware initialization/setup,
@@ -395,7 +454,7 @@ void SimpleBLEPeripheral_createTask(void)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_init(void)
+static void SPPBLEServer_init(void)
 {
   // ******************************************************************
   // N0 STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
@@ -404,6 +463,13 @@ static void SimpleBLEPeripheral_init(void)
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &sem);
     
+  // Hard code the BD Address till CC2650 board gets its own IEEE address
+  uint8 bdAddress[B_ADDR_LEN] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 };
+  HCI_EXT_SetBDADDRCmd(bdAddress);
+  
+  // Handling of LED
+  hGpioPin = PIN_open(&pinGpioState, SPPBLEAppPinTable);
+  
 #ifdef USE_RCOSC
   RCOSC_enableCalibration();
 #endif // USE_RCOSC
@@ -412,7 +478,7 @@ static void SimpleBLEPeripheral_init(void)
   appMsgQueue = Util_constructQueue(&appMsg);
   appUARTMsgQueue = Util_constructQueue(&appUARTMsg);
   // Create one-shot clocks for internal periodic events.
-  Util_constructClock(&periodicClock, SimpleBLEPeripheral_clockHandler,
+  Util_constructClock(&periodicClock, SPPBLEServer_clockHandler,
                       SBP_PERIODIC_EVT_PERIOD, 0, false, SBP_PERIODIC_EVT);
   
 //  dispHandle = Display_open(Display_Type_UART, NULL);
@@ -499,7 +565,7 @@ static void SimpleBLEPeripheral_init(void)
 
 #ifdef FEATURE_OAD
   VOID OAD_addService();                 // OAD Profile
-  OAD_register((oadTargetCBs_t *)&simpleBLEPeripheral_oadCBs);
+  OAD_register((oadTargetCBs_t *)&SPPBLEServer_oadCBs);
   hOadQ = Util_constructQueue(&oadQ);
 #endif //FEATURE_OAD
 
@@ -536,10 +602,10 @@ static void SimpleBLEPeripheral_init(void)
 #endif //!FEATURE_OAD_ONCHIP
 
   // Start the Device
-  VOID GAPRole_StartDevice(&SimpleBLEPeripheral_gapRoleCBs);
+  VOID GAPRole_StartDevice(&SPPBLEServer_gapRoleCBs);
 
   // Start Bond Manager
-  VOID GAPBondMgr_Register(&simpleBLEPeripheral_BondMgrCBs);
+  VOID GAPBondMgr_Register(&SPPBLEServer_BondMgrCBs);
 
   // Register with GAP for HCI/Host messages
   GAP_RegisterForMsgs(selfEntity);
@@ -552,7 +618,10 @@ static void SimpleBLEPeripheral_init(void)
   
   HCI_LE_ReadMaxDataLenCmd();
 
-  unsigned char hello[] = "Hello from SPP BLE Server!\n\r";
+  //This API is documented in hci.h
+  //HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
+
+  unsigned char hello[] = "Hello from SPP BLE Server! With Data Length Extension support!\n\r";
   DEBUG(hello);
   
 #if defined FEATURE_OAD
@@ -562,12 +631,15 @@ static void SimpleBLEPeripheral_init(void)
   Display_print0(dispHandle, 0, 0, "BLE Peripheral B");
 #endif // HAL_IMAGE_A
 #else
-  Display_print0(dispHandle, 0, 0, "BLE Peripheral");
+  Display_print0(dispHandle, 0, 0, "SPP BLE Server");
 #endif // FEATURE_OAD
+  
+  SPPBLEServer_blinkLed(Board_RLED, 1);
+  
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_taskFxn
+ * @fn      SPPBLEServer_taskFxn
  *
  * @brief   Application task entry point for the Simple BLE Peripheral.
  *
@@ -575,10 +647,10 @@ static void SimpleBLEPeripheral_init(void)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
+static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
 {
   // Initialize application
-  SimpleBLEPeripheral_init();
+  SPPBLEServer_init();
 
   // Application main loop
   for (;;)
@@ -610,13 +682,13 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
             if (pEvt->event_flag & SBP_CONN_EVT_END_EVT)
             {
               // Try to retransmit pending ATT Response (if any)
-              SimpleBLEPeripheral_sendAttRsp();
+              SPPBLEServer_sendAttRsp();
             }
           }
           else
           {
             // Process inter-task message
-            safeToDealloc = SimpleBLEPeripheral_processStackMsg((ICall_Hdr *)pMsg);
+            safeToDealloc = SPPBLEServer_processStackMsg((ICall_Hdr *)pMsg);
           }
         }
 
@@ -673,16 +745,16 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
                   
                   //Toggle LED to indicate data received from UART terminal and sent over the air
                   //SPPBLEServer_toggleLed(Board_LED2, Board_LED_TOGGLE);
-                  
+                    
+                  // Free the space from the message.
+                  ICall_free(pMsg);
+                }
+                
                   if(!Queue_empty(appUARTMsgQueue))
                   {
                     // Wake up the application to flush out any remaining UART data in the queue.
                     Semaphore_post(sem);
                   }
-                  
-                  // Free the space from the message.
-                  ICall_free(pMsg);
-                }
                 break;
               }
             default:
@@ -699,7 +771,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
         if (pMsg)
         {
           // Process message.
-          SimpleBLEPeripheral_processAppMsg(pMsg);
+          SPPBLEServer_processAppMsg(pMsg);
 
           // Free the space from the message.
           ICall_free(pMsg);
@@ -714,7 +786,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
       Util_startClock(&periodicClock);
 
       // Perform periodic application task
-      SimpleBLEPeripheral_performPeriodicTask();
+      SPPBLEServer_performPeriodicTask();
     }
 
 #ifdef FEATURE_OAD
@@ -741,7 +813,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processStackMsg
+ * @fn      SPPBLEServer_processStackMsg
  *
  * @brief   Process an incoming stack message.
  *
@@ -749,7 +821,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
  *
  * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
  */
-static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg)
+static uint8_t SPPBLEServer_processStackMsg(ICall_Hdr *pMsg)
 {
   uint8_t safeToDealloc = TRUE;
 
@@ -757,7 +829,7 @@ static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg)
   {
     case GATT_MSG_EVENT:
       // Process GATT message
-      safeToDealloc = SimpleBLEPeripheral_processGATTMsg((gattMsgEvent_t *)pMsg);
+      safeToDealloc = SPPBLEServer_processGATTMsg((gattMsgEvent_t *)pMsg);
       break;
 
     case HCI_GAP_EVENT_EVENT:
@@ -784,13 +856,13 @@ static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processGATTMsg
+ * @fn      SPPBLEServer_processGATTMsg
  *
  * @brief   Process GATT messages and events.
  *
  * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
  */
-static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
+static uint8_t SPPBLEServer_processGATTMsg(gattMsgEvent_t *pMsg)
 {
   // See if GATT server was unable to transmit an ATT response
   if (pMsg->hdr.status == blePending)
@@ -801,7 +873,7 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
                                    SBP_CONN_EVT_END_EVT) == SUCCESS)
     {
       // First free any pending response
-      SimpleBLEPeripheral_freeAttRsp(FAILURE);
+      SPPBLEServer_freeAttRsp(FAILURE);
 
       // Hold on to the response message for retransmission
       pAttRsp = pMsg;
@@ -833,7 +905,7 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_sendAttRsp
+ * @fn      SPPBLEServer_sendAttRsp
  *
  * @brief   Send a pending ATT response message.
  *
@@ -841,7 +913,7 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_sendAttRsp(void)
+static void SPPBLEServer_sendAttRsp(void)
 {
   // See if there's a pending ATT Response to be transmitted
   if (pAttRsp != NULL)
@@ -860,7 +932,7 @@ static void SimpleBLEPeripheral_sendAttRsp(void)
       HCI_EXT_ConnEventNoticeCmd(pAttRsp->connHandle, selfEntity, 0);
 
       // We're done with the response message
-      SimpleBLEPeripheral_freeAttRsp(status);
+      SPPBLEServer_freeAttRsp(status);
     }
     else
     {
@@ -871,7 +943,7 @@ static void SimpleBLEPeripheral_sendAttRsp(void)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_freeAttRsp
+ * @fn      SPPBLEServer_freeAttRsp
  *
  * @brief   Free ATT response message.
  *
@@ -879,7 +951,7 @@ static void SimpleBLEPeripheral_sendAttRsp(void)
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_freeAttRsp(uint8_t status)
+static void SPPBLEServer_freeAttRsp(uint8_t status)
 {
   // See if there's a pending ATT response message
   if (pAttRsp != NULL)
@@ -907,7 +979,7 @@ static void SimpleBLEPeripheral_freeAttRsp(uint8_t status)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processAppMsg
+ * @fn      SPPBLEServer_processAppMsg
  *
  * @brief   Process an incoming callback from a profile.
  *
@@ -915,17 +987,17 @@ static void SimpleBLEPeripheral_freeAttRsp(uint8_t status)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
+static void SPPBLEServer_processAppMsg(sbpEvt_t *pMsg)
 {
   switch (pMsg->hdr.event)
   {
     case SBP_STATE_CHANGE_EVT:
-      SimpleBLEPeripheral_processStateChangeEvt((gaprole_States_t)pMsg->
+      SPPBLEServer_processStateChangeEvt((gaprole_States_t)pMsg->
                                                 hdr.state);
       break;
 
     case SBP_CHAR_CHANGE_EVT:
-      SimpleBLEPeripheral_processCharValueChangeEvt(pMsg->hdr.state);
+      SPPBLEServer_processCharValueChangeEvt(pMsg->hdr.state);
       break;
 
     default:
@@ -935,7 +1007,7 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_stateChangeCB
+ * @fn      SPPBLEServer_stateChangeCB
  *
  * @brief   Callback from GAP Role indicating a role state change.
  *
@@ -943,13 +1015,13 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState)
+static void SPPBLEServer_stateChangeCB(gaprole_States_t newState)
 {
-  SimpleBLEPeripheral_enqueueMsg(SBP_STATE_CHANGE_EVT, newState);
+  SPPBLEServer_enqueueMsg(SBP_STATE_CHANGE_EVT, newState);
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processStateChangeEvt
+ * @fn      SPPBLEServer_processStateChangeEvt
  *
  * @brief   Process a pending GAP Role state change event.
  *
@@ -957,7 +1029,7 @@ static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
+static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
 {
 #ifdef PLUS_BROADCASTER
   static bool firstConnFlag = false;
@@ -1021,7 +1093,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
         // Reset flag for next connection.
         firstConnFlag = false;
 
-        SimpleBLEPeripheral_freeAttRsp(bleNotConnected);
+        SPPBLEServer_freeAttRsp(bleNotConnected);
       }
       break;
 #endif //PLUS_BROADCASTER
@@ -1052,6 +1124,8 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
           Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddress));
         }
 
+        SPPBLEServer_toggleLed(Board_GLED, Board_LED_TOGGLE);
+        
         #ifdef PLUS_BROADCASTER
           // Only turn advertising on for this state when we first connect
           // otherwise, when we go from connected_advertising back to this state
@@ -1082,21 +1156,21 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
 
     case GAPROLE_WAITING:
       Util_stopClock(&periodicClock);
-      SimpleBLEPeripheral_freeAttRsp(bleNotConnected);
+      SPPBLEServer_freeAttRsp(bleNotConnected);
 
       Display_print0(dispHandle, 2, 0, "Disconnected");
 
       // Clear remaining lines
-      Display_clearLines(dispHandle, 3, 5);
+      //Display_clearLines(dispHandle, 3, 5);
       break;
 
     case GAPROLE_WAITING_AFTER_TIMEOUT:
-      SimpleBLEPeripheral_freeAttRsp(bleNotConnected);
+      SPPBLEServer_freeAttRsp(bleNotConnected);
 
       Display_print0(dispHandle, 2, 0, "Timed Out");
 
       // Clear remaining lines
-      Display_clearLines(dispHandle, 3, 5);
+      //Display_clearLines(dispHandle, 3, 5);
 
       #ifdef PLUS_BROADCASTER
         // Reset flag for next connection.
@@ -1109,7 +1183,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
       break;
 
     default:
-      Display_clearLine(dispHandle, 2);
+      //Display_clearLine(dispHandle, 2);
       break;
   }
 
@@ -1119,7 +1193,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
 
 #ifndef FEATURE_OAD_ONCHIP
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_charValueChangeCB
+ * @fn      SPPBLEServer_charValueChangeCB
  *
  * @brief   Callback from Simple Profile indicating a characteristic
  *          value change.
@@ -1128,14 +1202,14 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID)
+static void SPPBLEServer_charValueChangeCB(uint8_t paramID)
 {
-  SimpleBLEPeripheral_enqueueMsg(SBP_CHAR_CHANGE_EVT, paramID);
+  SPPBLEServer_enqueueMsg(SBP_CHAR_CHANGE_EVT, paramID);
 }
 #endif //!FEATURE_OAD_ONCHIP
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processCharValueChangeEvt
+ * @fn      SPPBLEServer_processCharValueChangeEvt
  *
  * @brief   Process a pending Simple Profile characteristic value change
  *          event.
@@ -1144,7 +1218,7 @@ static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
+static void SPPBLEServer_processCharValueChangeEvt(uint8_t paramID)
 {
 #ifndef FEATURE_OAD_ONCHIP
   uint8_t newValue;
@@ -1171,7 +1245,7 @@ static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_performPeriodicTask
+ * @fn      SPPBLEServer_performPeriodicTask
  *
  * @brief   Perform a periodic application task. This function gets called
  *          every five seconds (SBP_PERIODIC_EVT_PERIOD). In this example,
@@ -1183,7 +1257,7 @@ static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_performPeriodicTask(void)
+static void SPPBLEServer_performPeriodicTask(void)
 {
 #ifndef FEATURE_OAD_ONCHIP
   uint8_t valueToCopy;
@@ -1204,7 +1278,7 @@ static void SimpleBLEPeripheral_performPeriodicTask(void)
 
 #ifdef FEATURE_OAD
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processOadWriteCB
+ * @fn      SPPBLEServer_processOadWriteCB
  *
  * @brief   Process a write request to the OAD profile.
  *
@@ -1216,7 +1290,7 @@ static void SimpleBLEPeripheral_performPeriodicTask(void)
  *
  * @return  None.
  */
-void SimpleBLEPeripheral_processOadWriteCB(uint8_t event, uint16_t connHandle,
+void SPPBLEServer_processOadWriteCB(uint8_t event, uint16_t connHandle,
                                            uint8_t *pData)
 {
   oadTargetWrite_t *oadWriteEvt = ICall_malloc( sizeof(oadTargetWrite_t) + \
@@ -1243,7 +1317,7 @@ void SimpleBLEPeripheral_processOadWriteCB(uint8_t event, uint16_t connHandle,
 #endif //FEATURE_OAD
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_clockHandler
+ * @fn      SPPBLEServer_clockHandler
  *
  * @brief   Handler function for clock timeouts.
  *
@@ -1251,7 +1325,7 @@ void SimpleBLEPeripheral_processOadWriteCB(uint8_t event, uint16_t connHandle,
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_clockHandler(UArg arg)
+static void SPPBLEServer_clockHandler(UArg arg)
 {
   // Store the event.
   events |= arg;
@@ -1292,7 +1366,7 @@ void SPPBLEServer_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_enqueueMsg
+ * @fn      SPPBLEServer_enqueueMsg
  *
  * @brief   Creates a message and puts the message in RTOS queue.
  *
@@ -1301,7 +1375,7 @@ void SPPBLEServer_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state)
+static void SPPBLEServer_enqueueMsg(uint8_t event, uint8_t state)
 {
   sbpEvt_t *pMsg;
 

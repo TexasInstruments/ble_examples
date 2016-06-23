@@ -216,6 +216,8 @@ void SDITLUART_initializeTransport(Char *tRxBuf, Char *tTxBuf, sdiCB_t sdiCBack)
     paramsUART.readCallback = SDITLUART_readCallBack;
     paramsUART.writeCallback = SDITLUART_writeCallBack;
 
+    //paramsUART.readReturnMode = UART_RETURN_FULL;
+    
     // Open / power on the UART.
     uartHandle = UART_open(Board_UART, &paramsUART);
     if(uartHandle != NULL)

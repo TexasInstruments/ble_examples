@@ -86,7 +86,7 @@ extern "C"
 #  define SRDY_DISABLE()
 #endif
 
-#define SDI_TL_BUF_SIZE         512 //270
+#define SDI_TL_BUF_SIZE         270
 #define SDI_SPI_PAYLOAD_SIZE    255
 #define SDI_SPI_HDR_LEN         4
   

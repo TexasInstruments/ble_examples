@@ -159,7 +159,7 @@ static uint8 SerialPortServiceDataProps = GATT_PROP_WRITE_NO_RSP | GATT_PROP_NOT
 static gattCharCfg_t *SerialPortServiceDataConfig;
 
 // Characteristic Data Value
-uint8 SerialPortServiceData[SERIALPORTSERVICE_DATA_LEN] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint8 SerialPortServiceData[SERIALPORTSERVICE_DATA_LEN] = {0,};
 
 // Serial Port Profile Characteristic Data User Description
 static uint8 SerialPortServiceDataUserDesp[21] = "Data Characteristic \0";
@@ -190,7 +190,7 @@ static uint8 SerialPortServiceConfig[SERIALPORTSERVICE_CONFIG_LEN] = {0x2D,0x00,
 static uint8 SerialPortServiceConfigUserDesp[23] = "Config Characteristic \0";
 
 //Keep track of length
-static uint8 charDataValueLen = 20;
+static uint8 charDataValueLen = SERIALPORTSERVICE_DATA_LEN;
 
 /*********************************************************************
  * Profile Attributes - Table
@@ -911,7 +911,7 @@ static bStatus_t SerialPortService_WriteAttrCB( uint16 connHandle, gattAttribute
       case SERIALPORTSERVICE_DATA_UUID:
         if ( offset == 0 )
         {
-          if ( len > 20 )
+          if ( len > SERIALPORTSERVICE_DATA_LEN )
           {
             status = ATT_ERR_INVALID_VALUE_SIZE;
           }
@@ -937,7 +937,7 @@ static bStatus_t SerialPortService_WriteAttrCB( uint16 connHandle, gattAttribute
           SNP_replyToHost_send(0x55, 0xFF, NULL, len, pCurValue);
 #endif
           //Toggle LED to indicate data received from client
-//          SPPBLEServer_toggleLed(Board_LED1, Board_LED_TOGGLE);
+          SPPBLEServer_toggleLed(Board_RLED, Board_LED_TOGGLE);
           
           if (len > 0)
           {

@@ -184,6 +184,7 @@
           <state>USE_ICALL</state>
           <state>xPOWER_SAVING</state>
           <state>SDI_USE_UART</state>
+          <state>MAX_PDU_SIZE=162</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>ICALL_MAX_NUM_TASKS=4</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
@@ -328,13 +329,12 @@
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
-          <state>$SRC_EX$/profiles/batt/cc26xx</state>
           <state>$SRC_EX$/profiles/dev_info</state>
           <state>$SRC_EX$/profiles/roles</state>
           <state>$SRC_EX$/profiles/roles/cc26xx</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src\profiles\serial_port\</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src\profiles\serial_port\cc26xx</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\src\examples\spp_ble_server\cc26xx\app\</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\src\examples\spp_ble_client\cc26xx\app\</state>
           <state>$SRC_EX$/target</state>
           <state>$SRC_COMMON$/heapmgr</state>
           <state>$SRC_COMMON$/hal/src/inc</state>
@@ -1022,39 +1022,6 @@
     <file>
       <name>$TI_BLE_SDK$\src\common\cc26xx\util.h</name>
     </file>
-  </group>
-  <group>
-    <name>Drivers</name>
-    <group>
-      <name>ECC</name>
-      <file>
-        <name>$TI_BLE_SDK$\src\common\cc26xx\ecc\ECCROMCC26XX.c</name>
-      </file>
-      <file>
-        <name>$TI_BLE_SDK$\src\common\cc26xx\ecc\ECCROMCC26XX.h</name>
-      </file>
-    </group>
-    <group>
-      <name>PIN</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\PIN.h</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.h</name>
-      </file>
-    </group>
-    <group>
-      <name>RF</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
-      </file>
-    </group>
   </group>
   <group>
     <name>ICall</name>

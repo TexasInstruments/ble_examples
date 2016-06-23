@@ -2,11 +2,11 @@
 
 <projectSpec>
     <project
-        name="spp_ble_server_cc2650lp_stack"
+        name="spp_ble_client_cc2650lp_stack"
         device="CC2650F128"
         connection="TIXDS110_Connection.xml"
         toolChain="TI"
-        cgtVersion="5.2.6"
+        cgtVersion="5.2.7"
         linkerCommandFile="cc26xx_stack.cmd"
 
         preBuildStep="
@@ -59,7 +59,7 @@
         -I${SRC_BLE_CORE}/controller/cc26xx/inc
         -I${SRC_EX}/common/cc26xx		
         -I${SRC_EX}/common/cc26xx/npi/stack		
-        -I${SRC_EX}/examples/simple_peripheral/cc26xx/stack
+        -I${SRC_EX}/examples/simple_central/cc26xx/stack
         -I${SRC_EX}/inc
         -I${SRC_EX}/icall/inc
         -I${SRC_EX}/profiles/roles
@@ -85,6 +85,7 @@
         -l${SRC_BLE_CORE}\rom\enc_lib\cc26xx_ecc_rom_api.a
         -llibc.a  -x
         --unused_section_elimination=on
+        --compress_dwarf=on
         --xml_link_info=${ProjName}_linkInfo.xml
         --entry_point=startup_entry
         --diag_suppress=16002-D

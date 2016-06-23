@@ -84,7 +84,7 @@ extern "C"
 #define SERIALPORTSERVICE_CONFIG_LEN            3
   
 //Length of Data Characteristic in bytes
-#define SERIALPORTSERVICE_DATA_LEN              20  
+#define SERIALPORTSERVICE_DATA_LEN              128 //20  
    
 #define SERVAPP_NUM_ATTR_SUPPORTED              11   
 extern gattAttribute_t SerialPortServiceAttrTbl[SERVAPP_NUM_ATTR_SUPPORTED];      

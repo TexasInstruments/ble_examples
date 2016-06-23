@@ -45,11 +45,11 @@
         </option>
         <option>
           <name>MemFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\debugger\TexasInstruments\CC2650F128.ddf</state>
+          <state></state>
         </option>
         <option>
           <name>RunToEnable</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>RunToName</name>
@@ -81,7 +81,7 @@
         </option>
         <option>
           <name>OCProductVersion</name>
-          <state>7.30.1.7765</state>
+          <state>7.40.2.8567</state>
         </option>
         <option>
           <name>OCDynDriverList</name>
@@ -89,7 +89,7 @@
         </option>
         <option>
           <name>OCLastSavedByProductVersion</name>
-          <state>7.40.2.8567</state>
+          <state>7.50.3.10745</state>
         </option>
         <option>
           <name>OCDownloadAttachToProgram</name>
@@ -117,7 +117,7 @@
         </option>
         <option>
           <name>FlashLoadersV3</name>
-          <state>$TOOLKIT_DIR$\config\flashloader\TexasInstruments\FlashCC26xxF128RAM20.board</state>
+          <state>$TOOLKIT_DIR$\config\flashloader\</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck1</name>
@@ -1303,7 +1303,7 @@
         </option>
         <option>
           <name>BoardFile</name>
-          <state>$TOOLKIT_DIR$\config\debugger\TexasInstruments\xds\CC2650_XDS110.dat</state>
+          <state>$TOOLKIT_DIR$\config\debugger\TexasInstruments\xds\UNKNOWN_XDS110_JTAG.dat</state>
         </option>
         <option>
           <name>DoLogfile</name>
@@ -1391,7 +1391,7 @@
         </option>
         <option>
           <name>CCXds100CpuClockEdit</name>
-          <state>72.0</state>
+          <state></state>
         </option>
         <option>
           <name>CCXds100SwoClockAuto</name>

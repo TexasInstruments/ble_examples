@@ -105,7 +105,8 @@ typedef struct SDI_QueueRec_t
 uint8 buf[SDI_TL_BUF_SIZE] ={0x00,};
 uint16 length;
 uint8 lengthRead;
-
+uint8 bufTest[SDI_TL_BUF_SIZE] ={0x00,};
+uint16 lenTest = 0;
 //! \brief ICall ID for stack which will be sending SDI messages
 //!
 //static uint32_t stackServiceID = 0x0000;
@@ -242,16 +243,18 @@ static void SDITask_process(void)
             // The Transport Layer has received some bytes
             if(postedEvents & SDITASK_TRANSPORT_RX_EVENT)
             {
-         
+#define MAX_UART_LENGTH 128
                 length = SDIRxBuf_GetRxBufLen();
-                
-                if(length > 20)
+
+                if(length > MAX_UART_LENGTH)
                 {
-                  lengthRead = 20;
+                  lengthRead = MAX_UART_LENGTH;
                 }else
                 {
                   lengthRead = (length & 0xFF);
                 }
+                
+                //bufTest[lenTest++] = length;
                 
                 //Do custom app processing
                 SDIRxBuf_ReadFromRxBuf(buf, lengthRead);
@@ -264,7 +267,7 @@ static void SDITask_process(void)
                   incomingRXEventAppCBFunc( UART_DATA_EVT , buf, lengthRead);
                 }
                 
-                if(length > 20)
+                if(length > MAX_UART_LENGTH)
                 {
                     // Additional bytes to collect, preserve the flag and repost
                     // to the semaphore
@@ -361,9 +364,12 @@ void SDITask_registerIncomingRXEventAppCB(sdiIncomingEventCBack_t appRxCB)
 // -----------------------------------------------------------------------------
 void SDITask_sendToUART(uint8_t *pMsg, uint16 length)
 {
+    ICall_CSState key;
     SDI_QueueRec *recPtr;
 
     SDIMSG_msg_t *pSDIMsg =(SDIMSG_msg_t *)ICall_malloc( sizeof(SDIMSG_msg_t));
+    
+    key = ICall_enterCriticalSection();	
     
     if(pSDIMsg)
     {
@@ -396,6 +402,7 @@ void SDITask_sendToUART(uint8_t *pMsg, uint16 length)
             break;
         }
     }
+    ICall_leaveCriticalSection(key);
 }
 
 

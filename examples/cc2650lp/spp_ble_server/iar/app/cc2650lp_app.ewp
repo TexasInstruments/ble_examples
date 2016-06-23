@@ -73,7 +73,7 @@
         </option>
         <option>
           <name>OGProductVersion</name>
-          <state>6.50.5.4846</state>
+          <state>7.40.2.8567</state>
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
@@ -184,6 +184,7 @@
           <state>USE_ICALL</state>
           <state>xPOWER_SAVING</state>
           <state>SDI_USE_UART</state>
+          <state>MAX_PDU_SIZE=162</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>ICALL_MAX_NUM_TASKS=4</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
@@ -328,12 +329,11 @@
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
-          <state>$SRC_EX$/profiles/batt/cc26xx</state>
           <state>$SRC_EX$/profiles/dev_info</state>
           <state>$SRC_EX$/profiles/roles</state>
           <state>$SRC_EX$/profiles/roles/cc26xx</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\src\profiles\SerialPortService\</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\src\profiles\SerialPortService\cc26xx</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\src\profiles\serial_port\</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\src\profiles\serial_port\cc26xx</state>
           <state>$PROJ_DIR$\..\..\..\..\..\src\examples\spp_ble_server\cc26xx\app\</state>
           <state>$SRC_EX$/target</state>
           <state>$SRC_COMMON$/heapmgr</state>
@@ -838,11 +838,11 @@
         </option>
         <option>
           <name>FillerStart</name>
-          <state>0x0</state>
+          <state>0x0000</state>
         </option>
         <option>
           <name>FillerEnd</name>
-          <state>0x0</state>
+          <state>0x1FFFF</state>
         </option>
         <option>
           <name>CrcSize</name>
@@ -1024,39 +1024,6 @@
     </file>
   </group>
   <group>
-    <name>Drivers</name>
-    <group>
-      <name>ECC</name>
-      <file>
-        <name>$TI_BLE_SDK$\src\common\cc26xx\ecc\ECCROMCC26XX.c</name>
-      </file>
-      <file>
-        <name>$TI_BLE_SDK$\src\common\cc26xx\ecc\ECCROMCC26XX.h</name>
-      </file>
-    </group>
-    <group>
-      <name>PIN</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\PIN.h</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.h</name>
-      </file>
-    </group>
-    <group>
-      <name>RF</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
-      </file>
-    </group>
-  </group>
-  <group>
     <name>ICall</name>
     <file>
       <name>$TI_BLE_SDK$\src\components\heapmgr\heapmgr.h</name>
@@ -1140,10 +1107,10 @@
       <name>$TI_BLE_SDK$\src\profiles\roles\cc26xx\peripheral.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\SerialPortService\CC26xx\SerialPortService.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\serial_port\CC26xx\serial_port_service.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\SerialPortService\SerialPortService.h</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\serial_port\serial_port_service.h</name>
     </file>
   </group>
   <group>
