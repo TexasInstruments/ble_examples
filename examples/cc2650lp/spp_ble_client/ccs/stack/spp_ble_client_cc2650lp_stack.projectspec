@@ -85,7 +85,6 @@
         -l${SRC_BLE_CORE}\rom\enc_lib\cc26xx_ecc_rom_api.a
         -llibc.a  -x
         --unused_section_elimination=on
-        --compress_dwarf=on
         --xml_link_info=${ProjName}_linkInfo.xml
         --entry_point=startup_entry
         --diag_suppress=16002-D

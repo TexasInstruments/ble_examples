@@ -90,7 +90,6 @@
         --library=${ROM}/common_rom_releases/03282014/common_rom.symbols
         --diag_wrap=off
         --unused_section_elimination=on
-        --compress_dwarf=on
         --xml_link_info=${ProjName}_linkInfo.xml
         --diag_suppress=10247-D
         --diag_suppress=16002-D
