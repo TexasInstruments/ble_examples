@@ -674,7 +674,7 @@
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild>"$TOOLS_BLE$/lib_search/lib_search.exe" $PROJ_DIR$/build_config.opt "$TOOLS_BLE$/lib_search/params_split_cc2640.xml" $SRC_BLE_CORE$/../blelib  $PROJ_DIR$/../config/lib_linker.cmd</prebuild>
-        <postbuild>"$TOOLS_BLE$/frontier/frontier.exe" iar "$PROJ_DIR$/$CONFIG_NAME$/List/multi_role_cc2650em_stack.map" "$PROJ_DIR$/../config/iar_boundary.bdef" "$PROJ_DIR$/../config/iar_boundary.xcl"</postbuild>
+        <postbuild>"$TOOLS_BLE$/frontier/frontier.exe" iar "$PROJ_DIR$/$CONFIG_NAME$/List/multi_role_cc2640em_stack.map" "$PROJ_DIR$/../config/iar_boundary.bdef" "$PROJ_DIR$/../config/iar_boundary.xcl"</postbuild>
       </data>
     </settings>
     <settings>
