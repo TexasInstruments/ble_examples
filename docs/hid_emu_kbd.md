@@ -24,5 +24,7 @@ Operation
    The device starts advertising by default.
 
 1. Initiate a device discovery and connection procedure to discover and connect
-to the HID device from a HID Host peer device.
-   This can be done using an android device.
+   to the HID device from a HID Host peer device.
+   An example in doing this is can be done by pairing this example with an
+   android device. By pressing Buttons 1 or 2, you can see different items being
+   selected on the "home" screen.
