@@ -1,47 +1,42 @@
-/******************************************************************************
-
- @file  simple_peripheral.c
-
- @brief This file contains the Simple BLE Peripheral sample application for use
-        with the CC2650 Bluetooth Low Energy Protocol Stack.
-
- Group: WCS, BTS
- $Target Device: DEVICES $
-
- ******************************************************************************
- Copyright (c) 2013-2016, Texas Instruments Incorporated
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
-
- *  Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-
- *  Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-
- *  Neither the name of Texas Instruments Incorporated nor the names of
-    its contributors may be used to endorse or promote products derived
-    from this software without specific prior written permission.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- ******************************************************************************
- $Release Name: PACKAGE NAME $
- $Release Date: PACKAGE RELEASE DATE $
- *****************************************************************************/
+/*
+ * Filename: spp_ble_server.c
+ *
+ * Description: This is the simple_peripheral example modified to send
+ * data over BLE at a high throughput.
+ *
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 /*********************************************************************
  * INCLUDES
@@ -301,7 +296,7 @@ static uint8_t rspTxRetry = 0;
 // Pins that are actively used by the application
 static PIN_Config SPPBLEAppPinTable[] =
 {
-    Board_LED1       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
+    Board_RLED       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
     Board_LED2       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
 
     PIN_TERMINATE
@@ -335,7 +330,7 @@ void SPPBLEServer_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len);
 void SPPBLEServer_processOadWriteCB(uint8_t event, uint16_t connHandle,
                                            uint8_t *pData);
 #endif //FEATURE_OAD
-
+char* convInt32ToText(int32 value);
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -573,28 +568,10 @@ static void SPPBLEServer_init(void)
   Reset_addService();
 #endif //IMAGE_INVALIDATE
 
-  // Register callback with SerialPortService
-  //SerialPortService_RegisterAppCBs(&SPPBLEServer_SerialPortService_CBs); //ZH
-
 #ifndef FEATURE_OAD_ONCHIP
-  // Setup the SimpleProfile Characteristic Values
+  // Setup the Profile Characteristic Values
   {
-//    uint8_t charValue1 = 1;
-//    uint8_t charValue2 = 2;
-//    uint8_t charValue3 = 3;
-//    uint8_t charValue4 = 4;
-//    uint8_t charValue5[SIMPLEPROFILE_CHAR5_LEN] = { 1, 2, 3, 4, 5 };
-//
-//    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR1, sizeof(uint8_t),
-//                               &charValue1);
-//    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR2, sizeof(uint8_t),
-//                               &charValue2);
-//    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR3, sizeof(uint8_t),
-//                               &charValue3);
-//    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR4, sizeof(uint8_t),
-//                               &charValue4);
-//    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR5, SIMPLEPROFILE_CHAR5_LEN,
-//                               charValue5);
+
   }
 
   // Register callback with SimpleGATTprofile
@@ -621,8 +598,8 @@ static void SPPBLEServer_init(void)
   //This API is documented in hci.h
   //HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
 
-  unsigned char hello[] = "Hello from SPP BLE Server! With Data Length Extension support!\n\r";
-  DEBUG(hello);
+  //unsigned char hello[] = "Hello from SPP BLE Server! With Data Length Extension support!\n\r";
+  //DEBUG(hello);
   
 #if defined FEATURE_OAD
 #if defined (HAL_IMAGE_A)
@@ -731,7 +708,7 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
                 if(retVal != SUCCESS)
                 {
                   //Display_print1(dispHandle, 5, 0, "FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
-                  Display_print1(dispHandle, 4, 0, "NotiFAIL: %d", retVal);
+                  Display_print1(dispHandle, 4, 0, " %d", retVal);
                   //LCD_WRITE_STRING_VALUE("Data length:", pMsg->length, 10, LCD_PAGE5);
                   //LCD_WRITE_STRING(pMsg->data, LCD_PAGE6);
                 }
@@ -1220,28 +1197,8 @@ static void SPPBLEServer_charValueChangeCB(uint8_t paramID)
  */
 static void SPPBLEServer_processCharValueChangeEvt(uint8_t paramID)
 {
-#ifndef FEATURE_OAD_ONCHIP
-  uint8_t newValue;
 
-  switch(paramID)
-  {
-//    case SIMPLEPROFILE_CHAR1:
-//      SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR1, &newValue);
-//
-//      Display_print1(dispHandle, 4, 0, "Char 1: %d", (uint16_t)newValue);
-//      break;
-//
-//    case SIMPLEPROFILE_CHAR3:
-//      SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR3, &newValue);
-//
-//      Display_print1(dispHandle, 4, 0, "Char 3: %d", (uint16_t)newValue);
-//      break;
-//
-//    default:
-//      // should not reach here!
-//      break;
-  }
-#endif //!FEATURE_OAD_ONCHIP
+  
 }
 
 /*********************************************************************
@@ -1259,20 +1216,7 @@ static void SPPBLEServer_processCharValueChangeEvt(uint8_t paramID)
  */
 static void SPPBLEServer_performPeriodicTask(void)
 {
-#ifndef FEATURE_OAD_ONCHIP
-  uint8_t valueToCopy;
 
-  // Call to retrieve the value of the third characteristic in the profile
-//  if (SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR3, &valueToCopy) == SUCCESS)
-//  {
-//    // Call to set that value of the fourth characteristic in the profile.
-//    // Note that if notifications of the fourth characteristic have been
-//    // enabled by a GATT client device, then a notification will be sent
-//    // every time this function is called.
-//    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR4, sizeof(uint8_t),
-//                               &valueToCopy);
-//  }
-#endif //!FEATURE_OAD_ONCHIP
 }
 
 
@@ -1388,6 +1332,49 @@ static void SPPBLEServer_enqueueMsg(uint8_t event, uint8_t state)
     // Enqueue the message.
     Util_enqueueMsg(appMsgQueue, sem, (uint8*)pMsg);
   }
+}
+
+/*******************************************************************************
+* @fn          convInt32ToText
+*
+* @brief       Converts 32 bit int to text
+*
+* @param       int32 value
+*
+* @return      char* - pointer to text buffer which is a file scope allocated array
+*/
+char* convInt32ToText(int32 value) {
+    static char pValueToTextBuffer[12];
+    char *pLast;
+    char *pFirst;
+    char last;
+    uint8 negative;
+
+    pLast = pValueToTextBuffer;
+
+    // Record the sign of the value
+    negative = (value < 0);
+    value = ABS(value);
+
+    // Print the value in the reverse order
+    do {
+        *(pLast++) = '0' + (uint8)(value % 10);
+        value /= 10;
+    } while (value);
+
+    // Add the '-' when the number is negative, and terminate the string
+    if (negative) *(pLast++) = '-';
+    *(pLast--) = 0x00;
+
+    // Now reverse the string
+    pFirst = pValueToTextBuffer;
+    while (pLast > pFirst) {
+        last = *pLast;
+        *(pLast--) = *pFirst;
+        *(pFirst++) = last;
+    }
+
+    return pValueToTextBuffer;
 }
 
 /*********************************************************************

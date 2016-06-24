@@ -1137,7 +1137,7 @@
       <name>$TI_BLE_SDK$\src\components\hal\src\target\board.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>
+      <name>$TI_BLE_SDK$\examples\cc2650lp\simple_peripheral\iar\config\ccfg_app_ble.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\spp_ble_server\cc26xx\app\main.c</name>

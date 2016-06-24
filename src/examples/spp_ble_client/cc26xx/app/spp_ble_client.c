@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file  simple_central.c
+ @file  spp_ble_client.c
 
  @brief This file contains the Simple BLE Central sample application for use
         with the CC2650 Bluetooth Low Energy Protocol Stack.
@@ -8,12 +8,39 @@
  Group: WCS, BTS
  $Target Device: DEVICES $
 
- ******************************************************************************
- $License: BSD3 2013 $
- ******************************************************************************
- $Release Name: PACKAGE NAME $
- $Release Date: PACKAGE RELEASE DATE $
- *****************************************************************************/
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 
 /*********************************************************************
  * INCLUDES
@@ -293,9 +320,6 @@ static uint8_t uuidDataChar[ATT_UUID_SIZE] = { TI_BASE_UUID_128(SERIALPORTSERVIC
 // Value to write
 static uint8_t charVal = 0x41;
 
-// Value read/write toggle
-static bool doWrite = FALSE;
-
 // GATT read/write procedure state
 static bool procedureInProgress = FALSE;
 
@@ -305,8 +329,8 @@ static uint16 maxPduSize;
 // Pins that are actively used by the application
 static PIN_Config SPPBLEAppPinTable[] =
 {
-    Board_LED1       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
-    Board_LED2       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
+    Board_RLED       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
+    Board_GLED       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
 
     PIN_TERMINATE
 };
@@ -335,11 +359,11 @@ static void SPPBLEClient_processPasscode(uint16_t connectionHandle,
                                              uint8_t uiOutputs);
 
 static void SPPBLEClient_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg);
-static bStatus_t SPPBLEClient_StartRssi(uint16_t connHandle, uint16_t period);
-static bStatus_t SPPBLEClient_CancelRssi(uint16_t connHandle);
-static readRssi_t *SPPBLEClient_RssiAlloc(uint16_t connHandle);
-static readRssi_t *SPPBLEClient_RssiFind(uint16_t connHandle);
-static void SPPBLEClient_RssiFree(uint16_t connHandle);
+//static bStatus_t SPPBLEClient_StartRssi(uint16_t connHandle, uint16_t period);
+//static bStatus_t SPPBLEClient_CancelRssi(uint16_t connHandle);
+//static readRssi_t *SPPBLEClient_RssiAlloc(uint16_t connHandle);
+//static readRssi_t *SPPBLEClient_RssiFind(uint16_t connHandle);
+//static void SPPBLEClient_RssiFree(uint16_t connHandle);
 
 static uint8_t SPPBLEClient_eventCB(gapCentralRoleEvent_t *pEvent);
 static void SPPBLEClient_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
@@ -559,8 +583,8 @@ static void SPPBLEClient_init(void)
   //This API is documented in hci.h
   //HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
   
-  unsigned char hello[] = "Hello from SPP BLE Client! With Data Length Extension support!\n\r";
-  DEBUG(hello);
+  //unsigned char hello[] = "Hello from SPP BLE Client! With Data Length Extension support!\n\r";
+  //DEBUG(hello);
   
   Display_print0(dispHandle, 0, 0, "BLE Central");
   
@@ -653,7 +677,7 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
               Util_dequeueMsg(appUARTMsgQueue);
 
               //Toggle LED to indicate data received from UART terminal and sent over the air
-              //SPPBLEClient_toggleLed(Board_LED2, Board_LED_TOGGLE);
+              //SPPBLEClient_toggleLed(Board_GLED, Board_LED_TOGGLE);
                   
               // Free the space from the message.
               ICall_free(pMsg);
@@ -721,7 +745,9 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
     {
       events &= ~SBC_START_DISCOVERY_EVT;
      
+      if(!scanningStarted)
       SPPBLEClient_startDiscovery();   
+      
     }
 
     if (events & SBC_AUTO_CONNECT_EVT)
@@ -995,22 +1021,40 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
     //SPPBLEClient_toggleLed(Board_GLED, Board_LED_TOGGLE);
     
     if (state == BLE_STATE_CONNECTED )
-   //          procedureInProgress == FALSE)
     {    
 
       //Request max supported size
       uint16_t requestedPDUSize = 251;
       uint16_t requestedTxTime = 2120;
-
-      //procedureInProgress = TRUE;
    
       //This API is documented in hci.h
       if(SUCCESS != HCI_LE_SetDataLenCmd(connHandle, requestedPDUSize, requestedTxTime))
       {
         DEBUG("Data length update failed");
       }
+
+    }else
+    {
+      uint8_t addrType;
+      uint8_t *peerAddr;
       
-      //procedureInProgress = FALSE;
+      // Connect or disconnect
+      if (state == BLE_STATE_IDLE)
+      {
+        // if there is a scan result
+        if (scanRes > 0)
+        {
+          // connect to current device in scan result
+          peerAddr = devList[scanIdx].addr;
+          addrType = devList[scanIdx].addrType;
+        
+          state = BLE_STATE_CONNECTING;
+          
+          GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
+                                       DEFAULT_LINK_WHITE_LIST,
+                                       addrType, peerAddr);
+        }
+      }
     }
     return;
   }
@@ -1021,13 +1065,13 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
     
     // Start or stop discovery
     if (state == BLE_STATE_CONNECTED &&
-             charDataHdl != 0 )//                &&
-   //          procedureInProgress == FALSE)
+             charDataHdl != 0  &&
+             procedureInProgress == FALSE)
     {
       uint8_t status;
 
       // Do a read or write as long as no other read or write is in progress
-     // procedureInProgress = TRUE;
+      procedureInProgress = TRUE;
       {
         // Do a write
         attWriteReq_t req;
@@ -1052,7 +1096,7 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
           status = bleMemAllocError;
         }
       }
-     // procedureInProgress = FALSE;
+      procedureInProgress = FALSE;
 
     }
     else
@@ -1198,13 +1242,13 @@ static void SPPBLEClient_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
 {
   switch (pMsg->cmdOpcode)
   {
-    case HCI_READ_RSSI:
-      {
-        int8 rssi = (int8)pMsg->pReturnParam[3];
-
-        Display_print1(dispHandle, 4, 0, "RSSI -dB: %d", (uint32_t)(-rssi));
-      }
-      break;
+//    case HCI_READ_RSSI:
+//      {
+//        int8 rssi = (int8)pMsg->pReturnParam[3];
+//
+//        Display_print1(dispHandle, 4, 0, "RSSI -dB: %d", (uint32_t)(-rssi));
+//      }
+//      break;
 
     default:
       break;
@@ -1223,40 +1267,40 @@ static void SPPBLEClient_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
  *          bleIncorrectMode: No link
  *          bleNoResources: No resources
  */
-static bStatus_t SPPBLEClient_StartRssi(uint16_t connHandle, uint16_t period)
-{
-  readRssi_t *pRssi;
-
-  // Verify link is up
-  if (!linkDB_Up(connHandle))
-  {
-    return bleIncorrectMode;
-  }
-
-  // If already allocated
-  if ((pRssi = SPPBLEClient_RssiFind(connHandle)) != NULL)
-  {
-    // Stop timer
-    Util_stopClock(pRssi->pClock);
-
-    pRssi->period = period;
-  }
-  // Allocate structure
-  else if ((pRssi = SPPBLEClient_RssiAlloc(connHandle)) != NULL)
-  {
-    pRssi->period = period;
-  }
-  // Allocate failed
-  else
-  {
-    return bleNoResources;
-  }
-
-  // Start timer
-  Util_restartClock(pRssi->pClock, period);
-
-  return SUCCESS;
-}
+//static bStatus_t SPPBLEClient_StartRssi(uint16_t connHandle, uint16_t period)
+//{
+//  readRssi_t *pRssi;
+//
+//  // Verify link is up
+//  if (!linkDB_Up(connHandle))
+//  {
+//    return bleIncorrectMode;
+//  }
+//
+//  // If already allocated
+//  if ((pRssi = SPPBLEClient_RssiFind(connHandle)) != NULL)
+//  {
+//    // Stop timer
+//    Util_stopClock(pRssi->pClock);
+//
+//    pRssi->period = period;
+//  }
+//  // Allocate structure
+//  else if ((pRssi = SPPBLEClient_RssiAlloc(connHandle)) != NULL)
+//  {
+//    pRssi->period = period;
+//  }
+//  // Allocate failed
+//  else
+//  {
+//    return bleNoResources;
+//  }
+//
+//  // Start timer
+//  Util_restartClock(pRssi->pClock, period);
+//
+//  return SUCCESS;
+//}
 
 /*********************************************************************
  * @fn      SPPBLEClient_CancelRssi
@@ -1268,60 +1312,60 @@ static bStatus_t SPPBLEClient_StartRssi(uint16_t connHandle, uint16_t period)
  * @return  SUCCESS: Operation successful
  *          bleIncorrectMode: No link
  */
-static bStatus_t SPPBLEClient_CancelRssi(uint16_t connHandle)
-{
-  readRssi_t *pRssi;
+//static bStatus_t SPPBLEClient_CancelRssi(uint16_t connHandle)
+//{
+//  readRssi_t *pRssi;
+//
+//  if ((pRssi = SPPBLEClient_RssiFind(connHandle)) != NULL)
+//  {
+//    // Stop timer
+//    Util_stopClock(pRssi->pClock);
+//
+//    // Free RSSI structure
+//    SPPBLEClient_RssiFree(connHandle);
+//
+//    return SUCCESS;
+//  }
+//
+//  // Not found
+//  return bleIncorrectMode;
+//}
 
-  if ((pRssi = SPPBLEClient_RssiFind(connHandle)) != NULL)
-  {
-    // Stop timer
-    Util_stopClock(pRssi->pClock);
-
-    // Free RSSI structure
-    SPPBLEClient_RssiFree(connHandle);
-
-    return SUCCESS;
-  }
-
-  // Not found
-  return bleIncorrectMode;
-}
-
-/*********************************************************************
- * @fn      gapCentralRole_RssiAlloc
- *
- * @brief   Allocate an RSSI structure.
- *
- * @param   connHandle - Connection handle
- *
- * @return  pointer to structure or NULL if allocation failed.
- */
-static readRssi_t *SPPBLEClient_RssiAlloc(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find free RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == GAP_CONNHANDLE_ALL)
-    {
-      readRssi_t *pRssi = &readRssi[i];
-
-      pRssi->pClock = (Clock_Struct *)ICall_malloc(sizeof(Clock_Struct));
-      if (pRssi->pClock)
-      {
-        Util_constructClock(pRssi->pClock, SPPBLEClient_readRssiHandler,
-                            0, 0, false, i);
-        pRssi->connHandle = connHandle;
-
-        return pRssi;
-      }
-    }
-  }
-
-  // No free structure found
-  return NULL;
-}
+///*********************************************************************
+// * @fn      gapCentralRole_RssiAlloc
+// *
+// * @brief   Allocate an RSSI structure.
+// *
+// * @param   connHandle - Connection handle
+// *
+// * @return  pointer to structure or NULL if allocation failed.
+// */
+//static readRssi_t *SPPBLEClient_RssiAlloc(uint16_t connHandle)
+//{
+//  uint8_t i;
+//
+//  // Find free RSSI structure
+//  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
+//  {
+//    if (readRssi[i].connHandle == GAP_CONNHANDLE_ALL)
+//    {
+//      readRssi_t *pRssi = &readRssi[i];
+//
+//      pRssi->pClock = (Clock_Struct *)ICall_malloc(sizeof(Clock_Struct));
+//      if (pRssi->pClock)
+//      {
+//        Util_constructClock(pRssi->pClock, SPPBLEClient_readRssiHandler,
+//                            0, 0, false, i);
+//        pRssi->connHandle = connHandle;
+//
+//        return pRssi;
+//      }
+//    }
+//  }
+//
+//  // No free structure found
+//  return NULL;
+//}
 
 /*********************************************************************
  * @fn      gapCentralRole_RssiFind
@@ -1332,22 +1376,22 @@ static readRssi_t *SPPBLEClient_RssiAlloc(uint16_t connHandle)
  *
  * @return  pointer to structure or NULL if not found.
  */
-static readRssi_t *SPPBLEClient_RssiFind(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find free RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == connHandle)
-    {
-      return &readRssi[i];
-    }
-  }
-
-  // Not found
-  return NULL;
-}
+//static readRssi_t *SPPBLEClient_RssiFind(uint16_t connHandle)
+//{
+//  uint8_t i;
+//
+//  // Find free RSSI structure
+//  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
+//  {
+//    if (readRssi[i].connHandle == connHandle)
+//    {
+//      return &readRssi[i];
+//    }
+//  }
+//
+//  // Not found
+//  return NULL;
+//}
 
 /*********************************************************************
  * @fn      gapCentralRole_RssiFree
@@ -1358,30 +1402,30 @@ static readRssi_t *SPPBLEClient_RssiFind(uint16_t connHandle)
  *
  * @return  none
  */
-static void SPPBLEClient_RssiFree(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == connHandle)
-    {
-      readRssi_t *pRssi = &readRssi[i];
-      if (pRssi->pClock)
-      {
-        Clock_destruct(pRssi->pClock);
-
-        // Free clock struct
-        ICall_free(pRssi->pClock);
-        pRssi->pClock = NULL;
-      }
-
-      pRssi->connHandle = GAP_CONNHANDLE_ALL;
-      break;
-    }
-  }
-}
+//static void SPPBLEClient_RssiFree(uint16_t connHandle)
+//{
+//  uint8_t i;
+//
+//  // Find RSSI structure
+//  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
+//  {
+//    if (readRssi[i].connHandle == connHandle)
+//    {
+//      readRssi_t *pRssi = &readRssi[i];
+//      if (pRssi->pClock)
+//      {
+//        Clock_destruct(pRssi->pClock);
+//
+//        // Free clock struct
+//        ICall_free(pRssi->pClock);
+//        pRssi->pClock = NULL;
+//      }
+//
+//      pRssi->connHandle = GAP_CONNHANDLE_ALL;
+//      break;
+//    }
+//  }
+//}
 
 /*********************************************************************
  * @fn      SPPBLEClient_processPairState

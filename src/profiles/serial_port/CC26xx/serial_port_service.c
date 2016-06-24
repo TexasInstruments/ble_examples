@@ -1,41 +1,42 @@
-/**************************************************************************************************
-  Filename:       SerialPortService.c
-  Revised:        $Date: 2014-10-13 10:31:43 -0700 (Mon, 13 Oct 2014) $
-  Revision:       $Revision: 40585 $
-
-  Description:    This file contains the Serial Port Profile sample GATT service 
-                  profile for use with the BLE sample application.
-
-  Copyright 2010 - 2014 Texas Instruments Incorporated. All rights reserved.
-
-  IMPORTANT: Your use of this Software is limited to those specific rights
-  granted under the terms of a software license agreement between the user
-  who downloaded the software, his/her employer (which must be your employer)
-  and Texas Instruments Incorporated (the "License").  You may not use this
-  Software unless you agree to abide by the terms of the License. The License
-  limits your use, and you acknowledge, that the Software may not be modified,
-  copied or distributed unless embedded on a Texas Instruments microcontroller
-  or used solely and exclusively in conjunction with a Texas Instruments radio
-  frequency transceiver, which is integrated into your product.  Other than for
-  the foregoing purpose, you may not use, reproduce, copy, prepare derivative
-  works of, modify, distribute, perform, display or sell this Software and/or
-  its documentation for any purpose.
-
-  YOU FURTHER ACKNOWLEDGE AND AGREE THAT THE SOFTWARE AND DOCUMENTATION ARE
-  PROVIDED “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, 
-  INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, TITLE, 
-  NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL
-  TEXAS INSTRUMENTS OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER CONTRACT,
-  NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR OTHER
-  LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-  INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE
-  OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT
-  OF SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
-  (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
-
-  Should you have any questions regarding your right to use this Software,
-  contact Texas Instruments Incorporated at www.TI.com. 
-**************************************************************************************************/
+/*
+ * Filename: serial_port_service.c
+ *
+ * Description: This is the simple_peripheral example modified to send
+ * data over BLE at a high throughput.
+ *
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 /*********************************************************************
  * INCLUDES
@@ -299,49 +300,6 @@ static bStatus_t SerialPortService_WriteAttrCB( uint16 connHandle, gattAttribute
                                             uint8 *pValue, uint16 len, uint16 offset,
                                             uint8 method );
 
-
-/*******************************************************************************
-* @fn          convInt32ToText
-*
-* @brief       Converts 32 bit int to text
-*
-* @param       int32 value
-*
-* @return      char* - pointer to text buffer which is a file scope allocated array
-*/
-char* convInt32ToText(int32 value) {
-    static char pValueToTextBuffer[12];
-    char *pLast;
-    char *pFirst;
-    char last;
-    uint8 negative;
-
-    pLast = pValueToTextBuffer;
-
-    // Record the sign of the value
-    negative = (value < 0);
-    value = ABS(value);
-
-    // Print the value in the reverse order
-    do {
-        *(pLast++) = '0' + (uint8)(value % 10);
-        value /= 10;
-    } while (value);
-
-    // Add the '-' when the number is negative, and terminate the string
-    if (negative) *(pLast++) = '-';
-    *(pLast--) = 0x00;
-
-    // Now reverse the string
-    pFirst = pValueToTextBuffer;
-    while (pLast > pFirst) {
-        last = *pLast;
-        *(pLast--) = *pFirst;
-        *(pFirst++) = last;
-    }
-
-    return pValueToTextBuffer;
-}
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -642,8 +600,8 @@ bStatus_t SerialPortService_SetUartConfig( UART_Params *params )
     SerialPortServiceConfig[1] = count & 0x00ff;
     SerialPortServiceConfig[0] = (count & 0xff00) >> 8;
     
-    DEBUG("UART Baud Rate: ");
-    DEBUG((uint8_t*)convInt32ToText(SerialPortParams.baudRate)); DEBUG_NEWLINE();
+    //DEBUG("UART Baud Rate: ");
+    //DEBUG((uint8_t*)convInt32ToText(SerialPortParams.baudRate)); DEBUG_NEWLINE();
     
     SerialPortServiceConfig[2] &= 0xfe; //Start bit Low
     SerialPortServiceConfig[2] |= 0x02; //Stop bit High
