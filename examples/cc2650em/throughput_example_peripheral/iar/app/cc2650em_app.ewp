@@ -180,6 +180,7 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
+          <state>xDLE_ENABLED</state>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
           <state>MAX_PDU_SIZE=251</state>
