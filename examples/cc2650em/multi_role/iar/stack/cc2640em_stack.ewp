@@ -185,7 +185,7 @@
           <state>FLASH_ROM_BUILD</state>
           <state>POWER_SAVING</state>
           <state>INCLUDE_AES_DECRYPT</state>
-          <state>OSAL_SNV=1</state>
+          <state>OSAL_SNV=2</state>
           <state>xPM_DISABLE_PWRDOWN</state>
           <state>xTESTMODES</state>
           <state>xTEST_BLEBOARD</state>
