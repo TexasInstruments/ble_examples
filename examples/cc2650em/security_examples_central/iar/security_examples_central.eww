@@ -2,10 +2,10 @@
 
 <workspace>
   <project>
-    <path>$WS_DIR$\app\cc2640em_app.ewp</path>
+    <path>$WS_DIR$\app\cc2650em_app.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\stack\cc2640em_stack.ewp</path>
+    <path>$WS_DIR$\stack\cc2650em_stack.ewp</path>
   </project>
   <batchBuild/>
 </workspace>

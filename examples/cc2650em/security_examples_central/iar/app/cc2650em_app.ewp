@@ -89,7 +89,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>CC2640F128	TexasInstruments CC2640F128</state>
+          <state>CC2650F128	TexasInstruments CC2650F128</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -149,7 +149,7 @@
         </option>
         <option>
           <name>GFPUDeviceSlave</name>
-          <state>CC2640F128	TexasInstruments CC2640F128</state>
+          <state>CC2650F128	TexasInstruments CC2650F128</state>
         </option>
         <option>
           <name>FPU2</name>
@@ -643,7 +643,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>security_examples_central_cc2640em_app.hex</state>
+          <state>security_examples_central_cc2650em_app.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
