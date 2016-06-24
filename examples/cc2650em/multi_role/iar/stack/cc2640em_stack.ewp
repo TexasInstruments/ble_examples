@@ -643,7 +643,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>multi_role_cc2650em_stack.hex</state>
+          <state>multi_role_cc2640em_stack.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -698,7 +698,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>multi_role_cc2650em_stack.out</state>
+          <state>multi_role_cc2640em_stack.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>

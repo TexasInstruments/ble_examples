@@ -8,7 +8,7 @@
  Target Device: CC2650, CC2640, CC1350
 
  ******************************************************************************
- 
+
  Copyright (c) 2013-2016, Texas Instruments Incorporated
  All rights reserved.
 
@@ -152,18 +152,18 @@ void osalInitTasks( void )
 
 	  /* SM Task */
   SM_Init( taskID++ );
-	
+
   /* GATT Task */
   GATT_Init( taskID++ );
- 
+
   /* GATT Server App Task */
   GATTServApp_Init( taskID++ );
-    
+
 #if defined ( GAP_BOND_MGR )
   /* Bond Manager Task */
   GAPBondMgr_Init( taskID++ );
 #endif
-  
+
   /* ICall BLE Dispatcher Task */
   bleDispatch_Init( taskID );
 
@@ -194,7 +194,7 @@ int stack_main( void *arg )
 {
   /* User reconfiguration of BLE Controller and Host variables */
   setBleUserConfig( (bleUserCfg_t *)arg );
-  
+
   /* Establish OSAL for a stack service that requires accompanying
    * messaging service */
   if (ICall_enrollService(ICALL_SERVICE_CLASS_BLE_MSG,
@@ -208,7 +208,7 @@ int stack_main( void *arg )
 
   halIntState_t state;
   HAL_ENTER_CRITICAL_SECTION(state);
-  
+
   // Turn off interrupts
   //osal_int_disable( INTS_ALL );
 

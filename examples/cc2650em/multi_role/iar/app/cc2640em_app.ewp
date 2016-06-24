@@ -277,6 +277,7 @@
         <option>
           <name>IExtraOptions</name>
           <state>-f $SRC_EX$/config/build_components.opt</state>
+          <state>-f $PROJ_DIR$\..\stack\build_config.opt</state>
           <state>-f $PROJ_DIR$\..\config\configPkg\compiler.opt.defs</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.bdef</state>
         </option>
@@ -644,7 +645,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>multi_role_cc2650em_app.hex</state>
+          <state>multi_role_cc2640em_app.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -699,7 +700,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>multi_role_app.out</state>
+          <state>multi_role_cc2640em_app.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -813,6 +814,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
+          <state>$ROM$\common_rom_releases\03282014\common_rom.symbols</state>
           <state>$CC26XXWARE$\driverlib\bin\iar\driverlib.lib</state>
         </option>
         <option>
@@ -1115,16 +1117,16 @@
       <name>$SRC_COMMON$\icall\src\icall.c</name>
     </file>
     <file>
-      <name>\\SRC_COMMON\icall\src\inc\icall.h</name>
+      <name>$SRC_COMMON$\icall\src\inc\icall.h</name>
     </file>
     <file>
-      <name>\\SRC_EX\icall\inc\icall_addrs.h</name>
+      <name>$SRC_BLE_CORE$\icall\inc\icall_addrs.h</name>
     </file>
     <file>
       <name>$SRC_COMMON$\icall\src\icall_cc2650.c</name>
     </file>
     <file>
-      <name>\\SRC_COMMON\icall\src\icall_platform.h</name>
+      <name>$SRC_COMMON$\icall\src\icall_platform.h</name>
     </file>
   </group>
   <group>
@@ -1139,7 +1141,7 @@
       <name>$SRC_BLE_CORE$\icall\app\icall_api.c</name>
     </file>
     <file>
-      <name>\\SRC_EX\icall\inc\icall_apimsg.h</name>
+      <name>$SRC_BLE_CORE$\icall\inc\icall_apimsg.h</name>
     </file>
   </group>
   <group>
@@ -1160,7 +1162,7 @@
       <name>$SRC_BLE_CORE$\inc\hci.h</name>
     </file>
     <file>
-      <name>\\SRC_COMMON\osal\src\inc\osal_snv.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_snv.h</name>
     </file>
   </group>
   <group>
@@ -1227,7 +1229,7 @@
       </configuration>
     </file>
     <file>
-      <name>\\SRC_EX\common\cc26xx\iar\cc26xx_app.icf</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\iar\cc26xx_app.icf</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\iar_boundary.bdef</name>

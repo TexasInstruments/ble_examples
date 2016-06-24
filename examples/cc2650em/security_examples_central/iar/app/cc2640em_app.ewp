@@ -643,7 +643,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>security_examples_central_app.hex</state>
+          <state>security_examples_central_cc2640em_app.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -1142,7 +1142,7 @@
       <name>$SRC_BLE_CORE$\icall\app\ble_user_config.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\config\ble_user_config.h</name>
+      <name>$SRC_BLE_CORE$\icall\inc\ble_user_config.h</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\icall\app\icall_api.c</name>
