@@ -119,9 +119,10 @@
         </file>
         <file path="SRC_EX/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/examples/simple_central/cc26xx/app/simple_central.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true">
+        <file path="SRC_EX/examples/simple_central/cc26xx/app/simple_central.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
-        <file path="../../../../../src/examples/throughput_example_central/cc26xx/app/throughput_example_central.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true">
+        <file
+        path="../../../../../src/examples/throughput_example_central/cc26xx/app/throughput_example_central.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
 
         <!-- Drivers/Display Folder -->
@@ -217,13 +218,13 @@
         </file>
         <file path="SRC_COMMON/osal/src/inc/osal_snv.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/profiles/roles/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Include" createVirtualFolders="true">
+        <file path="SRC_EX/profiles/roles/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
         </file>
 
         <!-- Profiles Folder -->
-        <file path="SRC_EX/profiles/roles/cc26xx/central.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true">
+        <file path="SRC_EX/profiles/roles/cc26xx/central.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/profiles/roles/cc26xx/central.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true">
+        <file path="SRC_EX/profiles/roles/cc26xx/central.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
 
         <!-- Startup Folder  -->
@@ -231,7 +232,7 @@
         </file>
         <file path="TI_BLE_SDK_BASE/examples/cc2650em/simple_central/iar/config/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/examples/simple_central/cc26xx/app/main.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="SRC_EX/examples/simple_central/cc26xx/app/main.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
 
         <!-- Tools Folder -->
