@@ -4,7 +4,7 @@
     <project
         name="security_examples_peripheral_cc2650em_app"
         device="CC2650F128"
-        connection="common/targetdb/connections/TIXDS100v3_Dot7_Connection.xml"
+        connection="TIXDS100v3_Dot7_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_app.cmd"
 
@@ -36,7 +36,6 @@
         --sat_reassoc=off
         --plain_char=unsigned
 
-        -DxDLE_ENABLED
         -DUSE_ICALL
 		-DMAX_PDU_SIZE=69
         -DPOWER_SAVING

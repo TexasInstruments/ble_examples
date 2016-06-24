@@ -4,7 +4,7 @@
     <project
         name="security_examples_central_cc2650em_stack"
         device="CC2650F128"
-        connection="common/targetdb/connections/TIXDS100v3_Dot7_Connection.xml"
+        connection="TIXDS100v3_Dot7_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_stack.cmd"
 

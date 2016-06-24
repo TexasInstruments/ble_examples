@@ -50,10 +50,14 @@
 #define ADVLEN 31
 
 // Advertisment data. Must be global for other files to access it.
+#ifndef CCS_BUILD
 #pragma data_alignment=4
+#endif
 char advData[ADVLEN] = {0};
 
+#ifndef CCS_BUILD
 #pragma data_alignment=8
+#endif
 static uint64_t devAddress = { 0xEEEEEEEEEEEE };
 
 //#pragma data_alignment=4
@@ -129,7 +133,9 @@ rfc_CMD_RADIO_SETUP_t RF_cmdBleRadioSetup =
   5 dBm = 0x0030 | 0x0000 | 0x9300 = 0x9330
 */
 
+#ifndef CCS_BUILD
 #pragma data_alignment=4
+#endif
 rfc_bleAdvPar_t cmdAdvParam = {
   .advLen                     = ADVLEN,
   .pAdvData                   = (uint8_t*)advData,
