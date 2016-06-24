@@ -30,7 +30,7 @@ If the BLE SDK must be installed to a different location, then the examples in t
 
         TI_BLE_SDK_BASE
 
-Follow your IDE specific instructions for changing environment variables or simply do a global search and replace within the ble_examples folder.
+Follow your IDE specific instructions for changing environment variables or simply do a global search and replace within the ble\_examples folder.
 
 By default, TI\_BLE\_SDK\_BASE points to C:\ti\simplelink\ble\_sdk\_2\_02\_00\_31. If you installed the SDK there, no change is required.
 
@@ -39,7 +39,7 @@ Examples List
 
 The following examples are currently supported:
 
- * beacon_rfdriver
+ * beacon\_rfdriver
  * hid\_emu\_kbd
  * multi\_role
  * security\_examples\_central
