@@ -2,7 +2,7 @@
 Purpose / Scope
 ===============
 
-This wiki page will demonstrate the maximum BLE throughput that can be
+This example page will demonstrate the maximum BLE throughput that can be
 achieved with a Texas Instruments CC2640 where the following assumptions
 are made:
 
@@ -30,9 +30,10 @@ This example is based on the simple\_peripheral and simple\_central projects
 from the **BLE-Stack v2.2.0** installer.
 
 These projects are slightly modified to:
-* Use max ATT_MTU values
-* Use max data payload of LE controller (Data length extension)
-* Queue and send data (notifications) over BLE
+
+ - Use max ATT_MTU values
+ - Use max data payload of LE controller (Data length extension)
+ - Queue and send data (notifications) over BLE
 
 Parameters
 ==========
@@ -54,11 +55,11 @@ sent. This means that there is a 7 byte L2CAP overhead for every 244
 bytes sent. In order to achieve this, both SBP and SBC project must set
 the following defines in bleUserConfig.h:
 
-``` {.c}
-#define MAX_NUM_PDU                   6
 
-#define MAX_PDU_SIZE                  251
-```
+    #define MAX_NUM_PDU                   6
+
+    #define MAX_PDU_SIZE                  251
+
 
 This will allocate 6 Tx buffers of 251 bytes. A custom application will
 need to be profiled to verify that there is enough heap for the desired
@@ -96,10 +97,12 @@ With DLE enabled, the LE controller can spend more time sending application
 data and less time processing packet overhead, thus increasing throughput.
 
 In order to optimize the pipe between the two devices, the ATT\_MTU is limited
-to be 251 bytes. As mentioned above, the largest data payload supported by the
+to be 251 bytes (instead of 255).
+As mentioned above, the largest data payload supported by the
 controller is 251 bytes. Setting ATT\_MTU to be 255 would cause the controller
-to fragment and recombine data packets at the link layer. This will negatively
-affect throughput.
+to have to fragment and recombine host data packets at the link layer. This will negatively
+affect throughput. This is because there is overhead for each data packet sent.
+See the packet overhead section for more details.
 
 Note that not all 4.2 devices will support DLE. Throughput to mobile devices
 may be limited based on the capabilities of the device's BLE stack.
@@ -115,54 +118,52 @@ to using higher intervals in a real world scenario: missed connection
 events due to RF interference will drastically decrease the throughput.
 Therefore, it is up to the user to decide what throughput / latency
 tradeoff is desired. Note that there is not much of a throughput
-increase after \~ 100 ms connection interval:
+increase after ~ 100 ms connection interval:
 
 ### Notification Queuing
 
 The case considered here assumes that the application is able to queue
 up notifications quickly enough so that there is always a notification
 ready to be sent when a slot opens. This is achieved by the application
-RTOS task running in an infinite loop in simpleBLEPeripheral.c:
+RTOS task running in an infinite loop in throughput\_example\_peripheral.c:
 
-``` {.c}
-static void blastData()
-{
-  uint16 len = MAX_PDU_SIZE-7;
-  attHandleValueNoti_t noti;
-  bStatus_t status;
-  noti.handle = 0x1E;
-  noti.len = len;
-
-  while(1)
-  {
-    //attempt to allocate payload
-    noti.pValue = (uint8 *)GATT_bm_alloc( 0, ATT_HANDLE_VALUE_NOTI, GATT_MAX_MTU, &len );
-
-    if ( noti.pValue != NULL ) //if allocated
+    static void blastData()
     {
-      //place index
-      noti.pValue[0] = (msg_counter >> 24) & 0xFF;
-      noti.pValue[1] = (msg_counter >> 16) & 0xFF;
-      noti.pValue[2] = (msg_counter >> 8) & 0xFF;
-      noti.pValue[3] = msg_counter & 0xFF;
-      status = GATT_Notification( 0, &noti, 0 );    //attempt to send
-      if ( status != SUCCESS ) //if noti not sent
+      uint16 len = MAX_PDU_SIZE-7;
+      attHandleValueNoti_t noti;
+      bStatus_t status;
+      noti.handle = 0x1E;
+      noti.len = len;
+
+      while(1)
       {
-        GATT_bm_free( (gattMsg_t *)&noti, ATT_HANDLE_VALUE_NOTI );
-      }
-      else //noti sent, increment counter
-      {
-        msg_counter++;
+        //attempt to allocate payload
+        noti.pValue = (uint8 *)GATT_bm_alloc( 0, ATT_HANDLE_VALUE_NOTI, GATT_MAX_MTU, &len );
+
+        if ( noti.pValue != NULL ) //if allocated
+        {
+          //place index
+          noti.pValue[0] = (msg_counter >> 24) & 0xFF;
+          noti.pValue[1] = (msg_counter >> 16) & 0xFF;
+          noti.pValue[2] = (msg_counter >> 8) & 0xFF;
+          noti.pValue[3] = msg_counter & 0xFF;
+          status = GATT_Notification( 0, &noti, 0 );    //attempt to send
+          if ( status != SUCCESS ) //if noti not sent
+          {
+            GATT_bm_free( (gattMsg_t *)&noti, ATT_HANDLE_VALUE_NOTI );
+          }
+          else //noti sent, increment counter
+          {
+            msg_counter++;
+          }
+        }
+        else
+        {
+          //bleNoResources
+          asm("NOP");
+        }
       }
     }
-    else
-    {
-      //bleNoResources
-      asm("NOP");
-    }
-  }
-}
-```
 
 Due to other processing needs, a custom application may not be able to
 replicate or sustain this throughput (e.g., having to wait for payload
@@ -178,6 +179,38 @@ Note that the LED pins are used for debugging. Under maximum throughput
 conditions, you may expect to see a high number of blePending
 (non-SUCCESS) status results from calling GATT\_Notification.
 
+### Packet Overhead
+
+The host and controller data payloads have been optimized to be 251 bytes.
+This is the maximum value that makes sense for optimizing throughput.
+
+However, not all 251 bytes can be used as application data due to overhead that is incured at the ATT and L2CAP levels.
+These headers are required by the BLE spec and cannot be changed. A brief description of this is shown below.
+
+#### ATT Notification Header
+
+All ATT notification packets have a 3 byte header required to identify the opcode and handle of the attribute that is sending the notification.
+See the snippet below from the BLEv4.2 spec.
+
+In summary there is a 3 byte overhead to sending an ATT notification.
+
+![ATT Notification overhead](doc_resources/att_notification_packet_overhead.png)
+
+#### L2CAP Header
+
+At the L2CAP layer, similar overhead is required to set the lenght of the packet and the proper channel identifier (CID).
+
+Each of these fields are 16-bits (2 bytes) resulting in 4 bytes of L2CAP overhead.
+
+See the screen capture below from the BLEv4.2 specification.
+
+![ATT Notification overhead](doc_resources/l2cap_packet_overhead.png)
+
+
+Combining the L2CAP and ATT packet overhead yields:
+
+    TOTAL_PACKET_OVERHEAD = 7 bytes
+
 Method
 ======
 
@@ -185,6 +218,7 @@ The throughput will be calculated from an extrapolation of the amount of
 data sent in one connection event. This will be cross referenced with
 the one second throughput from an Ellisys sniffer.
 The test can be replicated via:
+
 1. Clone/download throughput_example code from this repo
   - throughput\_example\_peripheral
   - throughput\_example\_central
@@ -195,12 +229,9 @@ The test can be replicated via:
 Result
 ======
 Using the parameters described above, we are able to achieve a
-throughput of around *TODO* kbps.
-*TODO*
+throughput of around 100kB/s.
+![ATT Notification overhead](doc_resources/ellisys_throughput_dle.png)
 
-As seen in the above capture, 85 packets of 248 GATT payload bytes are
-sent in one connection event (200 ms). This comes out to *TODO* kbps.
-Frontline gives a one second throughput of *TODO* kbps. However, this
-includes 7 bytes of overhead for L2CAP headers. To account for this,
-*TODO* kbps which correlates with our extrapolated
-estimate.
+As seen in the above capture, 85 packets of 244 data payload bytes are
+sent in one connection event (200 ms). This comes out to 103.7kB/s which is
+similar to what Ellisys is calculating.
