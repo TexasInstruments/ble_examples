@@ -204,7 +204,7 @@ Each of these fields are 16-bits (2 bytes) resulting in 4 bytes of L2CAP overhea
 
 See the screen capture below from the BLEv4.2 specification.
 
-![ATT Notification overhead](doc_resources/l2cap_packet_overhead.png)
+![L2CAP Notification overhead](doc_resources/l2cap_packet_overhead.png)
 
 
 Combining the L2CAP and ATT packet overhead yields:
@@ -223,15 +223,39 @@ The test can be replicated via:
   - throughput\_example\_peripheral
   - throughput\_example\_central
 2. Compile throughput\_example\_peripheral and throughput\_example\_central projects
+  - To enable DLE set the preprocessor define: DLE_ENABLED
+  - The suggested controller payload data length can be defined by setting the define APP\_SUGGESTED\_PDU_SIZE
 3. Connect throughput\_example\_peripheral to throughput\_example\_central
 4. Once the MTU update exchange is complete, the throughput test will start
 
 Result
 ======
 Using the parameters described above, we are able to achieve a
-throughput of around 100kB/s.
-![ATT Notification overhead](doc_resources/ellisys_throughput_dle.png)
+throughput of around 38.6kB/s without data length extension
 
-As seen in the above capture, 85 packets of 244 data payload bytes are
+![Throughput 27B Controller Payload](doc_resources/ellisys_throughput.png)
+
+Using data length extension and the maximum controller data payload we see a throughput increase to 100kB/s.
+
+![Throughput 27B Controller Payload](doc_resources/ellisys_throughput_dle.png)
+
+
+Throughput calculations can be done by hand following this equation
+
+    THROUGHPUT_KBPS = (NUM_PACKETS_PER_CXN_EVT) * (NUM_BYTES_PER_PACKET - TOTAL_PACKET_OVERHEAD)/ (CONNECTION_INTERVAL)
+
+With standard controller features the throughput example will use the following vars
+
+    NUM_BYTES_PER_PACKET = 27 bytes
+    TOTAL_PACKET_OVERHEAD = 7 bytes
+    CONNECTION_INTERVAL = 200ms
+
+With DLE enabled the throughput example will use the following vars
+
+    NUM_BYTES_PER_PACKET = 251 bytes
+    TOTAL_PACKET_OVERHEAD = 7 bytes
+    CONNECTION_INTERVAL = 200ms
+
+As an example, from the above sniffer capture 85 packets of 244 data payload bytes are
 sent in one connection event (200 ms). This comes out to 103.7kB/s which is
 similar to what Ellisys is calculating.

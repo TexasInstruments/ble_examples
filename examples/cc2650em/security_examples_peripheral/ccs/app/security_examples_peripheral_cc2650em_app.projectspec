@@ -36,20 +36,21 @@
         --sat_reassoc=off
         --plain_char=unsigned
 
+        -DxDLE_ENABLED
         -DUSE_ICALL
 		-DMAX_PDU_SIZE=69
         -DPOWER_SAVING
         -DHEAPMGR_SIZE=0
         -DBOARD_DISPLAY_EXCLUDE_UART
         -DxBOARD_DISPLAY_EXCLUDE_LCD
-        -DICALL_MAX_NUM_TASKS=3		
+        -DICALL_MAX_NUM_TASKS=3
         -DICALL_MAX_NUM_ENTITIES=6
         -Dxdc_runtime_Assert_DISABLE_ALL
         -Dxdc_runtime_Log_DISABLE_ALL
         -DCC2650DK_7ID
 		-DCC26XXWARE
         -DCC26XX
-		
+
 		-I${CG_TOOL_ROOT}/include
 		-I${SRC_BLE_CORE}/inc
 		-I${SRC_BLE_CORE}/controller/cc26xx/inc
@@ -60,7 +61,7 @@
 		-I${SRC_EX}/profiles/roles/
 		-I${SRC_EX}/profiles/roles/cc26xx
 		-I${SRC_EX}/profiles/simple_profile
-		-I${SRC_EX}/profiles/simple_profile/cc26xx		
+		-I${SRC_EX}/profiles/simple_profile/cc26xx
 		-I${SRC_EX}/target
 		-I${SRC_COMMON}/hal/src/inc
 		-I${SRC_COMMON}/hal/src/target/_common

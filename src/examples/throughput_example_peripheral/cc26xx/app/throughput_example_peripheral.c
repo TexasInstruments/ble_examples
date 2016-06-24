@@ -553,8 +553,11 @@ static void SimpleBLEPeripheral_init(void)
   // Open pin structure for use
   hSbpPins = PIN_open(&sbpPins, SBP_configTable);
 
+#ifdef DLE_ENABLED
   // Enable controller data payloads of up to 251 bytes
   HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
+#endif
+
 }
 
 /*********************************************************************

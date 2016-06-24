@@ -470,8 +470,11 @@ static void SimpleBLECentral_init(void)
 
   Display_print0(dispHandle, 0, 0, "BLE Central");
 
+#ifdef DLE_ENABLED
   // Enable controller data payloads of up to 251 bytes
   HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
+#endif
+
 }
 
 /*********************************************************************
