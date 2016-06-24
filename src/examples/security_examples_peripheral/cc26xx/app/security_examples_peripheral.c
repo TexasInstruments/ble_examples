@@ -955,7 +955,6 @@ static uint8_t security_examples_peripheral_enqueueMsg(uint8_t event, uint8_t st
  *
  * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
  */
-#pragma optimize=none
 static uint8_t security_example_peripheral_processStackMsg(ICall_Hdr *pMsg)
 {
   uint8_t safeToDealloc = TRUE;

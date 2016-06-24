@@ -700,7 +700,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>security_examples_peripheral_cc2650em_stack.out</state>
+          <state>security_examples_peripheral_cc2640em_stack.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>

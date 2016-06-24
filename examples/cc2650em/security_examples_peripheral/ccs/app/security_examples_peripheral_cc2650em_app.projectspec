@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <projectSpec>
-    <!-- add your your options here -->
     <project
         name="security_examples_peripheral_cc2650em_app"
         device="CC2650F128"
-        connection="TIXDS100v3_Dot7_Connection.xml"
+        connection="common/targetdb/connections/TIXDS100v3_Dot7_Connection.xml"
         toolChain="TI"
-        cgtVersion="5.2.6"
         linkerCommandFile="cc26xx_app.cmd"
 
         postBuildStep="
@@ -44,7 +42,6 @@
         -DHEAPMGR_SIZE=0
         -DBOARD_DISPLAY_EXCLUDE_UART
         -DxBOARD_DISPLAY_EXCLUDE_LCD
-		-DGAPperipheralROLE_NUM_RSSI_LINKS=1
         -DICALL_MAX_NUM_TASKS=3		
         -DICALL_MAX_NUM_ENTITIES=6
         -Dxdc_runtime_Assert_DISABLE_ALL

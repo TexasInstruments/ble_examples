@@ -183,6 +183,7 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
+          <state>xCACHE_AS_RAM</state>
           <state>MAX_NUM_BLE_CONNS=4</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>BOARD_DISPLAY_EXCLUDE_UART</state>
