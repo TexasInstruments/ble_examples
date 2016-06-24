@@ -129,7 +129,7 @@
         </option>
         <option>
           <name>OCImagesPath1</name>
-          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\security_examples_peripheral_cc2640em_stack.out</state>
+          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\security_examples_peripheral_cc2650em_stack.out</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck2</name>
