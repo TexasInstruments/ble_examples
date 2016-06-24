@@ -5,5 +5,4 @@ s|cc13xxware_[0-9_]*\(eng\)\?|cc13xxware_2_03_03_17162|g
 s|cc26xxware_[0-9_]*\(eng\)\?|cc26xxware_2_23_03_17162|g
 s|tidrivers_cc13xx_cc26xx_[0-9_]*\(eng\)\?|tidrivers_cc13xx_cc26xx_2_16_01_13|g
 s|uia_[0-9_]*\(eng\)\?|uia_2_00_05_50|g
-s|cgtVersion="\([0-9]\+\.\?\)\+"|cgtVersion="5.2.6"|g
 s|com.ti.rtsc.TIRTOSCC13XX_CC26XX:[0-9_\.]*\(eng\)\?|com.ti.rtsc.TIRTOSCC13XX_CC26XX:2.18.00.03|g
