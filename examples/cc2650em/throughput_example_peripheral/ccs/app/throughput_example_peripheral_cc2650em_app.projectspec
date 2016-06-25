@@ -15,7 +15,7 @@
 
         compilerBuildOptions="
         --cmd_file=${SRC_EX}/config/build_components.opt
-        --cmd_file=${PROJECT_IMPORT_LOC}/../stack/build_config.opt
+        --cmd_file=${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt
         --cmd_file=${PROJECT_IMPORT_LOC}/../config/ccs_compiler_defines.bcfg
         --silicon_version=7M3
         --code_state=16
