@@ -149,7 +149,7 @@
         </option>
         <option>
           <name>GFPUDeviceSlave</name>
-          <state>CC2645F128	TexasInstruments CC2650F128</state>
+          <state>CC2650F128	TexasInstruments CC2650F128</state>
         </option>
         <option>
           <name>FPU2</name>
@@ -238,7 +238,7 @@
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state></state>
+          <state>Pa050</state>
         </option>
         <option>
           <name>CCDiagRemark</name>
