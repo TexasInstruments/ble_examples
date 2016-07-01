@@ -87,6 +87,7 @@
 #define SBC_RSSI_READ_EVT                     0x0008
 #define SBC_KEY_CHANGE_EVT                    0x0010
 #define SBC_STATE_CHANGE_EVT                  0x0020
+#define SBC_MEASURE_SPEED_EVT                 0x0040
 
 // Maximum number of scan responses
 #define DEFAULT_MAX_SCAN_RES                  8
@@ -223,6 +224,7 @@ static ICall_Semaphore sem;
 
 // Clock object used to signal timeout
 static Clock_Struct startDiscClock;
+static Clock_Struct speedClock;
 
 // Queue object used for app messages
 static Queue_Struct appMsg;
@@ -279,6 +281,10 @@ static uint16 maxPduSize;
 // Array of RSSI read structures
 static readRssi_t readRssi[MAX_NUM_BLE_CONNS];
 
+// Received byte counters
+static volatile uint32_t bytesRecvd = 0;
+static volatile uint32_t bytesRecvdShadow = 0;
+
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -318,6 +324,7 @@ void SimpleBLECentral_readRssiHandler(UArg a0);
 
 static uint8_t SimpleBLECentral_enqueueMsg(uint8_t event, uint8_t status,
                                            uint8_t *pData);
+static void SimpleBLECentral_speedHandler(UArg a0);
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -400,6 +407,8 @@ static void SimpleBLECentral_init(void)
   Util_constructClock(&startDiscClock, SimpleBLECentral_startDiscHandler,
                       DEFAULT_SVC_DISCOVERY_DELAY, 0, false, 0);
 
+  Util_constructClock(&speedClock, SimpleBLECentral_speedHandler,
+                      1000, 1000, false, 0);
   Board_initKeys(SimpleBLECentral_keyChangeHandler);
 
   dispHandle = Display_open(Display_Type_LCD, NULL);
@@ -456,6 +465,8 @@ static void SimpleBLECentral_init(void)
   GGS_AddService(GATT_ALL_SERVICES);         // GAP
   GATTServApp_AddService(GATT_ALL_SERVICES); // GATT attributes
 
+  //uint8 bdAddressWhl[B_ADDR_LEN] = { 0xE1, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE };
+  //HCI_LE_AddWhiteListCmd(HCI_PUBLIC_DEVICE_ADDRESS, bdAddressWhl);
   // Start the Device
   VOID GAPCentralRole_StartDevice(&SimpleBLECentral_roleCB);
 
@@ -468,7 +479,7 @@ static void SimpleBLECentral_init(void)
   // Register for GATT local events and ATT Responses pending for transmission
   GATT_RegisterForMsgs(selfEntity);
 
-  Display_print0(dispHandle, 0, 0, "BLE Central");
+  Display_print0(dispHandle, 0, 0, "Throughput Central");
 
 #ifdef DLE_ENABLED
   // Enable controller data payloads of up to 251 bytes
@@ -541,6 +552,12 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
       events &= ~SBC_START_DISCOVERY_EVT;
 
       SimpleBLECentral_startDiscovery();
+    }
+    if (events & SBC_MEASURE_SPEED_EVT)
+    {
+      events &= ~SBC_MEASURE_SPEED_EVT;
+
+      Display_print1(dispHandle, 7, 0, "Rate (B/s): %d", bytesRecvdShadow);
     }
   }
 }
@@ -729,6 +746,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           {
             Util_startClock(&startDiscClock);
           }
+          Util_startClock(&speedClock);
 
           Display_print0(dispHandle, 2, 0, "Connected");
           Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));
@@ -1023,6 +1041,10 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 
       // Display the opcode of the message that caused the violation.
       Display_print1(dispHandle, 4, 0, "FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
+	}
+    else if (pMsg->method == ATT_HANDLE_VALUE_NOTI)
+    {
+      bytesRecvd += pMsg->msg.handleValueNoti.len;
     }
     else if (pMsg->method == ATT_MTU_UPDATED_EVENT)
     {
@@ -1348,9 +1370,6 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       uint8_t uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SIMPLEPROFILE_SERV_UUID),
                                          HI_UINT16(SIMPLEPROFILE_SERV_UUID) };
 
-      // Just in case we're using the default MTU size (23 octets)
-      Display_print1(dispHandle, 4, 0, "MTU Size: %d", ATT_MTU_SIZE);
-
       discState = BLE_DISC_STATE_SVC;
 
       // Discovery simple BLE service
@@ -1645,6 +1664,24 @@ static uint8_t SimpleBLECentral_enqueueMsg(uint8_t event, uint8_t state,
   }
 
   return FALSE;
+}
+
+/*********************************************************************
+ * @fn      SimpleBLECentral_speedHandler
+ *
+ * @brief   RTOS clock handler that counts number of bytes recieved
+ *			in a clock period.
+ *
+ * @param   a0 - RTOS clock arg0.
+ *
+ * @return  void
+ */
+static void SimpleBLECentral_speedHandler(UArg a0)
+{
+  bytesRecvdShadow = bytesRecvd;
+  bytesRecvd = 0;
+  events |= SBC_MEASURE_SPEED_EVT;
+  Semaphore_post(sem);
 }
 
 /*********************************************************************
