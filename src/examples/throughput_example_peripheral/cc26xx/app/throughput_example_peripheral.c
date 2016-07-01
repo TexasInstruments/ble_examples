@@ -1,3 +1,4 @@
+
 /*
  * Filename: throughput_example_peripheral.c
  *
@@ -397,6 +398,10 @@ static void SimpleBLEPeripheral_init(void)
   // Register the current thread as an ICall dispatcher application
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &sem);
+
+  // Hard code the DB Address till CC2650 board gets its own IEEE address
+  uint8 bdAddress[B_ADDR_LEN] = { 0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA };
+  HCI_EXT_SetBDADDRCmd(bdAddress);
     
 #ifdef USE_RCOSC
   RCOSC_enableCalibration();
@@ -542,12 +547,12 @@ static void SimpleBLEPeripheral_init(void)
 
 #if defined FEATURE_OAD
 #if defined (HAL_IMAGE_A)
-  Display_print0(dispHandle, 0, 0, "BLE Peripheral A");
+  Display_print0(dispHandle, 0, 0, "Throughput Peripheral A");
 #else
-  Display_print0(dispHandle, 0, 0, "BLE Peripheral B");
+  Display_print0(dispHandle, 0, 0, "Throughput Peripheral B");
 #endif // HAL_IMAGE_A
 #else
-  Display_print0(dispHandle, 0, 0, "BLE Peripheral");
+  Display_print0(dispHandle, 0, 0, "Throughput Peripheral");
 #endif // FEATURE_OAD
 
   // Open pin structure for use
@@ -751,7 +756,7 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
   else if (pMsg->method == ATT_MTU_UPDATED_EVENT)
   {
     // MTU size updated
-    Display_print1(dispHandle, 5, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
+    Display_print1(dispHandle, 4, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
 
     // we won't leave here
     blastData();
@@ -960,29 +965,12 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
 
     case GAPROLE_CONNECTED:
       {
-        linkDBInfo_t linkInfo;
-        uint8_t numActive = 0;
+        uint8_t peerAddress[B_ADDR_LEN];
 
-        //Util_startClock(&periodicClock);
+        GAPRole_GetParameter(GAPROLE_CONN_BD_ADDR, peerAddress);
 
-        numActive = linkDB_NumActive();
-
-        // Use numActive to determine the connection handle of the last
-        // connection
-        if ( linkDB_GetInfo( numActive - 1, &linkInfo ) == SUCCESS )
-        {
-          Display_print1(dispHandle, 2, 0, "Num Conns: %d", (uint16_t)numActive);
-          Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(linkInfo.addr));
-        }
-        else
-        {
-          uint8_t peerAddress[B_ADDR_LEN];
-
-          GAPRole_GetParameter(GAPROLE_CONN_BD_ADDR, peerAddress);
-
-          Display_print0(dispHandle, 2, 0, "Connected");
-          Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddress));
-        }
+        Display_print0(dispHandle, 2, 0, "Connected");
+        Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddress));
 
         #ifdef PLUS_BROADCASTER
           // Only turn advertising on for this state when we first connect

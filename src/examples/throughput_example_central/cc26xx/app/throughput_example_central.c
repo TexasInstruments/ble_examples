@@ -102,13 +102,13 @@
 #define DEFAULT_DISCOVERY_ACTIVE_SCAN         TRUE
 
 // TRUE to use white list during discovery
-#define DEFAULT_DISCOVERY_WHITE_LIST          FALSE
+#define DEFAULT_DISCOVERY_WHITE_LIST          TRUE
 
 // TRUE to use high scan duty cycle when creating link
 #define DEFAULT_LINK_HIGH_DUTY_CYCLE          FALSE
 
 // TRUE to use white list when creating link
-#define DEFAULT_LINK_WHITE_LIST               FALSE
+#define DEFAULT_LINK_WHITE_LIST               TRUE
 
 // Default RSSI polling period in ms
 #define DEFAULT_RSSI_PERIOD                   1000
@@ -269,17 +269,14 @@ static uint16_t charHdl = 0;
 // Value to write
 static uint8_t charVal = 0;
 
-// Value read/write toggle
-static bool doWrite = FALSE;
-
-// GATT read/write procedure state
-static bool procedureInProgress = FALSE;
-
 // Maximum PDU size (default = 27 octets)
 static uint16 maxPduSize;
 
 // Array of RSSI read structures
 static readRssi_t readRssi[MAX_NUM_BLE_CONNS];
+
+// Hard code the peer address
+uint8_t throughput_peripheral_peer_addr[B_ADDR_LEN] = { 0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA };
 
 // Received byte counters
 static volatile uint32_t bytesRecvd = 0;
@@ -465,8 +462,11 @@ static void SimpleBLECentral_init(void)
   GGS_AddService(GATT_ALL_SERVICES);         // GAP
   GATTServApp_AddService(GATT_ALL_SERVICES); // GATT attributes
 
-  //uint8 bdAddressWhl[B_ADDR_LEN] = { 0xE1, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE };
-  //HCI_LE_AddWhiteListCmd(HCI_PUBLIC_DEVICE_ADDRESS, bdAddressWhl);
+  // Add throughput_peripheral to whitelist
+  uint8 bdAddressWhl[B_ADDR_LEN] = { 0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA };
+  // Add peer 0xAABBCCDDEEFF to white list.
+  HCI_LE_AddWhiteListCmd(HCI_PUBLIC_DEVICE_ADDRESS, bdAddressWhl);
+
   // Start the Device
   VOID GAPCentralRole_StartDevice(&SimpleBLECentral_roleCB);
 
@@ -687,6 +687,11 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
         Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
         Display_print0(dispHandle, 2, 0, "Initialized");
+
+        // Immediately assume that throughput_peripheral is advertising and connect
+        GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
+                                     DEFAULT_LINK_WHITE_LIST,
+                                     ADDRTYPE_PUBLIC, throughput_peripheral_peer_addr);
       }
       break;
 
@@ -739,7 +744,6 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         {
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
-          procedureInProgress = TRUE;
 
           // If service discovery not performed initiate service discovery
           if (charHdl == 0)
@@ -773,7 +777,6 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         connHandle = GAP_CONNHANDLE_INIT;
         discState = BLE_DISC_STATE_IDLE;
         charHdl = 0;
-        procedureInProgress = FALSE;
 
         // Cancel RSSI reads
         SimpleBLECentral_CancelRssi(pEvent->linkTerminate.connectionHandle);
@@ -832,75 +835,6 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
 
   if (keys & KEY_UP)
   {
-    // Start or stop discovery
-    if (state != BLE_STATE_CONNECTED)
-    {
-      if (!scanningStarted)
-      {
-        scanningStarted = TRUE;
-        scanRes = 0;
-
-        Display_print0(dispHandle, 2, 0, "Discovering...");
-        Display_clearLines(dispHandle, 3, 4);
-
-
-        GAPCentralRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
-                                      DEFAULT_DISCOVERY_ACTIVE_SCAN,
-                                      DEFAULT_DISCOVERY_WHITE_LIST);
-      }
-      else
-      {
-        GAPCentralRole_CancelDiscovery();
-      }
-    }
-    else if (state == BLE_STATE_CONNECTED &&
-             charHdl != 0                 &&
-             procedureInProgress == FALSE)
-    {
-      uint8_t status;
-
-      // Do a read or write as long as no other read or write is in progress
-      if (doWrite)
-      {
-        // Do a write
-        attWriteReq_t req;
-
-        req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
-        if ( req.pValue != NULL )
-        {
-          req.handle = charHdl;
-          req.len = 1;
-          req.pValue[0] = charVal;
-          req.sig = 0;
-          req.cmd = 0;
-
-          status = GATT_WriteCharValue(connHandle, &req, selfEntity);
-          if ( status != SUCCESS )
-          {
-            GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
-          }
-        }
-        else
-        {
-          status = bleMemAllocError;
-        }
-      }
-      else
-      {
-        // Do a read
-        attReadReq_t req;
-
-        req.handle = charHdl;
-        status = GATT_ReadCharValue(connHandle, &req, selfEntity);
-      }
-
-      if (status == SUCCESS)
-      {
-        procedureInProgress = TRUE;
-        doWrite = !doWrite;
-      }
-    }
-
     return;
   }
 
@@ -1013,7 +947,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         Display_print1(dispHandle, 4, 0, "Read rsp: %d", pMsg->msg.readRsp.pValue[0]);
       }
 
-      procedureInProgress = FALSE;
     }
     else if ((pMsg->method == ATT_WRITE_RSP)  ||
              ((pMsg->method == ATT_ERROR_RSP) &&
@@ -1029,8 +962,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         // increment value
         Display_print1(dispHandle, 4, 0, "Write sent: %d", charVal++);
       }
-
-      procedureInProgress = FALSE;
 
     }
     else if (pMsg->method == ATT_FLOW_CTRL_VIOLATED_EVENT)
@@ -1419,7 +1350,6 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
                              pMsg->msg.readByTypeRsp.pDataList[1]);
 
       Display_print0(dispHandle, 2, 0, "Simple Svc Found");
-      procedureInProgress = FALSE;
     }
 
     discState = BLE_DISC_STATE_IDLE;
