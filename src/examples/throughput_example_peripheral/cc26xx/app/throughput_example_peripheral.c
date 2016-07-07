@@ -146,9 +146,19 @@
 #define SBP_CHAR_CHANGE_EVT                   0x0002
 #define SBP_PERIODIC_EVT                      0x0004
 #define SBP_CONN_EVT_END_EVT                  0x0008
+#define SBP_KEY_CHANGE_EVT                    0x0010
 
-#define APP_SUGGESTED_PDU_SIZE 251
-#define APP_SUGGESTED_TX_TIME 2120
+#define DLE_MAX_PDU_SIZE 251
+#define DLE_MAX_TX_TIME 2120
+
+#define DEFAULT_PDU_SIZE 27
+#define DEFAULT_TX_TIME 328
+
+// The combined overhead for L2CAP and ATT notification headers
+#define TOTAL_PACKET_OVERHEAD 7
+
+// GATT notifications for throughput example don't require an authenticated link
+#define GATT_NO_AUTHENTICATION 0
 
 /*********************************************************************
  * TYPEDEFS
@@ -289,6 +299,10 @@ static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE Peripheral";
 static gattMsgEvent_t *pAttRsp = NULL;
 static uint8_t rspTxRetry = 0;
 
+// Vars to keep track of active packet length settings
+static uint16_t txOctets = DEFAULT_PDU_SIZE;
+static uint16_t txTime   = DEFAULT_TX_TIME;
+
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -318,7 +332,10 @@ void SimpleBLEPeripheral_processOadWriteCB(uint8_t event, uint16_t connHandle,
                                            uint8_t *pData);
 #endif //FEATURE_OAD
 
-static void blastData();
+void SimpleBLEPeripheral_keyChangeHandler(uint8 keys);
+static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys);
+
+static void SimpleBLEPeripheral_blastData();
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -558,10 +575,7 @@ static void SimpleBLEPeripheral_init(void)
   // Open pin structure for use
   hSbpPins = PIN_open(&sbpPins, SBP_configTable);
 
-#ifdef DLE_ENABLED
-  // Enable controller data payloads of up to 251 bytes
-  HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
-#endif
+  Board_initKeys(SimpleBLEPeripheral_keyChangeHandler);
 
 }
 
@@ -586,7 +600,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
     // Note that the semaphore associated with a thread is signaled when a
     // message is queued to the message receive queue of the thread or when
     // ICall_signal() function is called onto the semaphore.
-    ICall_Errno errno = ICall_wait(ICALL_TIMEOUT_FOREVER);
+    ICall_Errno errno = ICall_wait(0);
 
     if (errno == ICALL_ERRNO_SUCCESS)
     {
@@ -758,8 +772,8 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
     // MTU size updated
     Display_print1(dispHandle, 4, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
 
-    // we won't leave here
-    blastData();
+    // Fall into SimpleBLEPeripheral_blastData function for throughput testing
+    SimpleBLEPeripheral_blastData();
   }
 
   // Free message payload. Needed only for ATT Protocol messages
@@ -863,6 +877,10 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
 
     case SBP_CHAR_CHANGE_EVT:
       SimpleBLEPeripheral_processCharValueChangeEvt(pMsg->hdr.state);
+      break;
+
+    case SBP_KEY_CHANGE_EVT:
+      SimpleBLEPeripheral_handleKeys(0, pMsg->hdr.state);
       break;
 
     default:
@@ -1168,6 +1186,20 @@ static void SimpleBLEPeripheral_clockHandler(UArg arg)
 }
 
 /*********************************************************************
+ * @fn      SimpleBLEPeripheral_keyChangeHandler
+ *
+ * @brief   Key event handler function
+ *
+ * @param   a0 - ignored
+ *
+ * @return  none
+ */
+void SimpleBLEPeripheral_keyChangeHandler(uint8 keys)
+{
+  SimpleBLEPeripheral_enqueueMsg(SBP_KEY_CHANGE_EVT, keys);
+}
+
+/*********************************************************************
  * @fn      SimpleBLEPeripheral_enqueueMsg
  *
  * @brief   Creates a message and puts the message in RTOS queue.
@@ -1191,51 +1223,143 @@ static void SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state)
     Util_enqueueMsg(appMsgQueue, sem, (uint8*)pMsg);
   }
 }
-static void blastData()
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_handleKeys
+ *
+ * @brief   Handles all key events for this device.
+ *
+ * @param   shift - true if in shift/alt.
+ * @param   keys - bit field for key events. Valid entries:
+ *                 KEY_LEFT
+ *                 KEY_RIGHT
+ *
+ * @return  none
+ */
+static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
 {
-  uint16 len = MAX_PDU_SIZE-7;
+  (void)shift;  // Intentionally unreferenced parameter
+
+  // Check for both keys first
+  if (keys == (KEY_LEFT | KEY_RIGHT))
+  {
+    return;
+  }
+
+  if (keys & KEY_LEFT)
+  {
+    // Toggle PDU size, time based on KEY_LEFT
+    // Only toggle size once for now
+    if(DEFAULT_PDU_SIZE == txOctets)
+    {
+      txOctets = DLE_MAX_PDU_SIZE;
+      txTime = DLE_MAX_TX_TIME;
+
+      uint16_t connectionHandle;
+      uint8_t gapRoleState;
+      GAPRole_GetParameter(GAPROLE_STATE, &gapRoleState);
+      GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connectionHandle);
+
+      if(GAPROLE_CONNECTED == gapRoleState)
+      {
+        HCI_LE_SetDataLenCmd(connectionHandle,
+                             txOctets,
+                             txTime );
+
+        // Print the results to the screen
+        Display_print1(dispHandle, 5, 0, "DLE Payload size: %d", txOctets);
+      }
+    }
+    return;
+  }
+
+  if (keys & KEY_RIGHT)
+  {
+
+    return;
+  }
+
+}
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_blastData
+ *
+ * @brief   Sends ATT notifications in a tight while loop to demo
+ *          throughput
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+static void SimpleBLEPeripheral_blastData()
+{
+  // Subtract the total packet overhead of ATT and L2CAP layer from notification payload
+  uint16_t len = MAX_PDU_SIZE-TOTAL_PACKET_OVERHEAD;
   attHandleValueNoti_t noti;
   bStatus_t status;
   noti.handle = 0x1E;
   noti.len = len;
 
+  // Store hte connection handle for future reference
+  uint16_t connectionHandle;
+  GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connectionHandle);
+
   while(1)
   {
-    PIN_setOutputValue(hSbpPins, Board_LED1 , 1);
+    // If RTOS queue is not empty, process app message.
+    // We need to process the app message here in the case of a keypress
+    while (!Queue_empty(appMsgQueue))
+    {
+      sbpEvt_t *pMsg = (sbpEvt_t *)Util_dequeueMsg(appMsgQueue);
+      if (pMsg)
+      {
+        // Process message.
+        SimpleBLEPeripheral_processAppMsg(pMsg);
+
+        // Free the space from the message.
+        ICall_free(pMsg);
+      }
+    }
+
+    PIN_setOutputValue(hSbpPins, Board_LED1 , Board_LED_ON);
     //toggle debug pin
-    noti.pValue = (uint8 *)GATT_bm_alloc( 0, ATT_HANDLE_VALUE_NOTI, GATT_MAX_MTU, &len );
+    noti.pValue = (uint8 *)GATT_bm_alloc( connectionHandle, ATT_HANDLE_VALUE_NOTI, GATT_MAX_MTU, &len );
 
     if ( noti.pValue != NULL ) //if allocated
     {
-      //place index
+
+      // Place index
       noti.pValue[0] = (msg_counter >> 24) & 0xFF;
       noti.pValue[1] = (msg_counter >> 16) & 0xFF;
       noti.pValue[2] = (msg_counter >> 8) & 0xFF;
       noti.pValue[3] = msg_counter & 0xFF;
-      status = GATT_Notification( 0, &noti, 0 );    //attempt to send
+
+      // Attempt to send the notification
+      status = GATT_Notification( connectionHandle, &noti, GATT_NO_AUTHENTICATION);
       if ( status != SUCCESS ) //if noti not sent
       {
-        PIN_setOutputValue(hSbpPins, Board_LED3 , 1);
+        PIN_setOutputValue(hSbpPins, Board_LED3 , Board_LED_ON);
         GATT_bm_free( (gattMsg_t *)&noti, ATT_HANDLE_VALUE_NOTI );
       }
-      else //noti sent, increment counter
+      else
       {
-        PIN_setOutputValue(hSbpPins, Board_LED2 , 1);
+        // Notification is successfully sent, increment counters
+        PIN_setOutputValue(hSbpPins, Board_LED2 , Board_LED_ON);
         msg_counter++;
       }
     }
     else
     {
-      //bleNoResources
+      // bleNoResources was returned
       asm(" NOP ");
-      PIN_setOutputValue(hSbpPins, Board_LED4 , 1);
+      PIN_setOutputValue(hSbpPins, Board_LED4 , Board_LED_ON);
     }
 
-    //reset debug pins
-    PIN_setOutputValue(hSbpPins, Board_LED2 , 0);
-    PIN_setOutputValue(hSbpPins, Board_LED3 , 0);
-    PIN_setOutputValue(hSbpPins, Board_LED4 , 0);
-    PIN_setOutputValue(hSbpPins, Board_LED1 , 0);
+    // Reset debug pins
+    PIN_setOutputValue(hSbpPins, Board_LED2 , Board_LED_OFF);
+    PIN_setOutputValue(hSbpPins, Board_LED3 , Board_LED_OFF);
+    PIN_setOutputValue(hSbpPins, Board_LED4 , Board_LED_OFF);
+    PIN_setOutputValue(hSbpPins, Board_LED1 , Board_LED_OFF);
   }
 }
 /*********************************************************************
