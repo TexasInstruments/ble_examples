@@ -5,7 +5,7 @@
     <project
         name="throughput_example_peripheral_cc2650lp_app"
         device="CC2650F128"
-        connection="TIXDS100v3_Dot7_Connection.xml"
+        connection="TIXDS110_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_app.cmd"
 
@@ -46,8 +46,8 @@
         -DGAPROLE_TASK_STACK_SIZE=520
         -DHEAPMGR_SIZE=0
         -DxDisplay_DISABLE_ALL
-        -DBOARD_DISPLAY_EXCLUDE_UART
-        -DxBOARD_DISPLAY_EXCLUDE_LCD
+        -DxBOARD_DISPLAY_EXCLUDE_UART
+        -DBOARD_DISPLAY_EXCLUDE_LCD
         -DICALL_MAX_NUM_TASKS=3
         -DICALL_MAX_NUM_ENTITIES=6
         -Dxdc_runtime_Assert_DISABLE_ALL

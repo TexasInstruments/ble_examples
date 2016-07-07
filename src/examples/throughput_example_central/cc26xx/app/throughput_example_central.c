@@ -396,7 +396,13 @@ static void SimpleBLECentral_init(void)
   dispHandle = Display_open(Display_Type_LCD, NULL);
 
   if(dispHandle == NULL)
+  {
     dispHandle = Display_open(Display_Type_UART, NULL);
+
+    //Send the form feed char to the LCD, this is helpful if using a terminal
+    //as it will clear the terminal history
+    Display_print0(dispHandle, 0, 0, "\f");
+  }
 
   // Setup Central Profile
   {
