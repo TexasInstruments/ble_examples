@@ -417,7 +417,7 @@ static void SimpleBLEPeripheral_init(void)
   // Hard code the DB Address till CC2650 board gets its own IEEE address
   uint8 bdAddress[B_ADDR_LEN] = { 0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA };
   HCI_EXT_SetBDADDRCmd(bdAddress);
-    
+
 #ifdef USE_RCOSC
   RCOSC_enableCalibration();
 #endif // USE_RCOSC
@@ -428,7 +428,7 @@ static void SimpleBLEPeripheral_init(void)
   // Create one-shot clocks for internal periodic events.
   Util_constructClock(&periodicClock, SimpleBLEPeripheral_clockHandler,
                       SBP_PERIODIC_EVT_PERIOD, 0, false, SBP_PERIODIC_EVT);
-  
+
   dispHandle = Display_open(Display_Type_LCD, NULL);
   if(dispHandle == NULL)
   {

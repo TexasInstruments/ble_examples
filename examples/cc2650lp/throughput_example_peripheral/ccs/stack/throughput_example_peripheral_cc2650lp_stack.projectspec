@@ -4,7 +4,7 @@
     <project
         name="throughput_example_peripheral_cc2650lp_stack"
         device="CC2650F128"
-        connection="TIXDS100v3_Dot7_Connection.xml"
+        connection="TIXDS110_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_stack.cmd"
 

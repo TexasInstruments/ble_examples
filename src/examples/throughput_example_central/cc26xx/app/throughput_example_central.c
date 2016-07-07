@@ -267,10 +267,6 @@ static uint16 maxPduSize;
 // Hard code the peer address
 static uint8_t throughput_peripheral_peer_addr[B_ADDR_LEN] = { 0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA };
 
-// Vars to keep track of active packet length settings
-static uint16_t txOctets = DEFAULT_PDU_SIZE;
-static uint16_t txTime   = DEFAULT_TX_TIME;
-
 // Received byte counters
 static volatile uint32_t bytesRecvd = 0;
 static volatile uint32_t bytesRecvdShadow = 0;
