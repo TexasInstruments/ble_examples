@@ -113,7 +113,7 @@
 // Default RSSI polling period in ms
 #define DEFAULT_RSSI_PERIOD                   1000
 
-// Whether to enable automatic parameter update request when a connection is 
+// Whether to enable automatic parameter update request when a connection is
 // formed
 #define DEFAULT_ENABLE_UPDATE_REQUEST         FALSE
 
@@ -128,7 +128,7 @@
 // Slave latency to use if automatic parameter update request is enabled
 #define DEFAULT_UPDATE_SLAVE_LATENCY          0
 
-// Supervision timeout value (units of 10ms) if automatic parameter update 
+// Supervision timeout value (units of 10ms) if automatic parameter update
 // request is enabled
 #define DEFAULT_UPDATE_CONN_TIMEOUT           600
 
@@ -163,8 +163,11 @@
 #define SBC_TASK_STACK_SIZE                   864
 #endif
 
-#define APP_SUGGESTED_PDU_SIZE 251
-#define APP_SUGGESTED_TX_TIME 2120
+#define DLE_MAX_PDU_SIZE 251
+#define DLE_MAX_TX_TIME 2120
+
+#define DEFAULT_PDU_SIZE 27
+#define DEFAULT_TX_TIME 328
 
 // Application states
 enum
@@ -195,13 +198,6 @@ typedef struct
   uint8_t *pData;  // event data 
 } sbcEvt_t;
 
-// RSSI read data structure
-typedef struct
-{
-  uint16_t period;      // how often to read RSSI
-  uint16_t connHandle;  // connection handle 
-  Clock_Struct *pClock; // pointer to clock struct
-} readRssi_t;
 
 /*********************************************************************
  * GLOBAL VARIABLES
@@ -242,13 +238,9 @@ static const uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE Central";
 
 // Number of scan results and scan result index
 static uint8_t scanRes;
-static uint8_t scanIdx;
 
 // Scan result list
 static gapDevRec_t devList[DEFAULT_MAX_SCAN_RES];
-
-// Scanning state
-static bool scanningStarted = FALSE;
 
 // Connection handle of current connection 
 static uint16_t connHandle = GAP_CONNHANDLE_INIT;
@@ -272,11 +264,12 @@ static uint8_t charVal = 0;
 // Maximum PDU size (default = 27 octets)
 static uint16 maxPduSize;
 
-// Array of RSSI read structures
-static readRssi_t readRssi[MAX_NUM_BLE_CONNS];
-
 // Hard code the peer address
-uint8_t throughput_peripheral_peer_addr[B_ADDR_LEN] = { 0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA };
+static uint8_t throughput_peripheral_peer_addr[B_ADDR_LEN] = { 0xFF, 0xEE, 0xDD, 0xCC, 0xBB, 0xAA };
+
+// Vars to keep track of active packet length settings
+static uint16_t txOctets = DEFAULT_PDU_SIZE;
+static uint16_t txTime   = DEFAULT_TX_TIME;
 
 // Received byte counters
 static volatile uint32_t bytesRecvd = 0;
@@ -303,11 +296,6 @@ static void SimpleBLECentral_processPasscode(uint16_t connectionHandle,
                                              uint8_t uiOutputs);
 
 static void SimpleBLECentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg);
-static bStatus_t SimpleBLECentral_StartRssi(uint16_t connHandle, uint16_t period);
-static bStatus_t SimpleBLECentral_CancelRssi(uint16_t connHandle);
-static readRssi_t *SimpleBLECentral_RssiAlloc(uint16_t connHandle);
-static readRssi_t *SimpleBLECentral_RssiFind(uint16_t connHandle);
-static void SimpleBLECentral_RssiFree(uint16_t connHandle);
 
 static uint8_t SimpleBLECentral_eventCB(gapCentralRoleEvent_t *pEvent);
 static void SimpleBLECentral_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
@@ -317,7 +305,6 @@ static void SimpleBLECentral_pairStateCB(uint16_t connHandle, uint8_t state,
 
 void SimpleBLECentral_startDiscHandler(UArg a0);
 void SimpleBLECentral_keyChangeHandler(uint8 keys);
-void SimpleBLECentral_readRssiHandler(UArg a0);
 
 static uint8_t SimpleBLECentral_enqueueMsg(uint8_t event, uint8_t status,
                                            uint8_t *pData);
@@ -381,8 +368,6 @@ void SimpleBLECentral_createTask(void)
  */
 static void SimpleBLECentral_init(void)
 {
-  uint8_t i;
-
   // ******************************************************************
   // N0 STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
   // ******************************************************************
@@ -410,12 +395,6 @@ static void SimpleBLECentral_init(void)
 
   dispHandle = Display_open(Display_Type_LCD, NULL);
 
-  // Initialize internal data
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    readRssi[i].connHandle = GAP_CONNHANDLE_ALL;
-    readRssi[i].pClock = NULL;
-  }
 
   // Setup Central Profile
   {
@@ -480,11 +459,6 @@ static void SimpleBLECentral_init(void)
   GATT_RegisterForMsgs(selfEntity);
 
   Display_print0(dispHandle, 0, 0, "Throughput Central");
-
-#ifdef DLE_ENABLED
-  // Enable controller data payloads of up to 251 bytes
-  HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
-#endif
 
 }
 
@@ -627,23 +601,6 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
       SimpleBLECentral_handleKeys(0, pMsg->hdr.state); 
       break;
 
-    case SBC_RSSI_READ_EVT:
-      {
-        readRssi_t *pRssi = (readRssi_t *)pMsg->pData;
-
-        // If link is up and RSSI reads active
-        if (pRssi->connHandle != GAP_CONNHANDLE_ALL &&
-            linkDB_Up(pRssi->connHandle))
-        {
-          // Restart timer
-          Util_restartClock(pRssi->pClock, pRssi->period);
-
-          // Read RSSI
-          VOID HCI_ReadRssiCmd(pRssi->connHandle);
-        }
-      }
-      break;
-
     // Pairing event
     case SBC_PAIRING_STATE_EVT:
       {
@@ -687,11 +644,6 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
         Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
         Display_print0(dispHandle, 2, 0, "Initialized");
-
-        // Immediately assume that throughput_peripheral is advertising and connect
-        GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
-                                     DEFAULT_LINK_WHITE_LIST,
-                                     ADDRTYPE_PUBLIC, throughput_peripheral_peer_addr);
       }
       break;
 
@@ -713,8 +665,6 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
     case GAP_DEVICE_DISCOVERY_EVENT:
       {
-        // discovery complete
-        scanningStarted = FALSE;
 
         // if not filtering device discovery results based on service UUID
         if (DEFAULT_DEV_DISC_BY_SVC_UUID == FALSE)
@@ -732,8 +682,6 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           Display_print0(dispHandle, 3, 0, "<- To Select");
         }
 
-        // initialize scan index to last device
-        scanIdx = scanRes;
       }
       break;
 
@@ -778,9 +726,6 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         discState = BLE_DISC_STATE_IDLE;
         charHdl = 0;
 
-        // Cancel RSSI reads
-        SimpleBLECentral_CancelRssi(pEvent->linkTerminate.connectionHandle);
-
         Display_print0(dispHandle, 2, 0, "Disconnected");
         Display_print1(dispHandle, 3, 0, "Reason: %d", pEvent->linkTerminate.reason);
         Display_clearLine(dispHandle, 4);
@@ -805,8 +750,8 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
  *
  * @param   shift - true if in shift/alt.
  * @param   keys - bit field for key events. Valid entries:
- *                 HAL_KEY_SW_2
- *                 HAL_KEY_SW_1
+ *                 KEY_LEFT
+ *                 KEY_RIGHT
  *
  * @return  none
  */
@@ -814,105 +759,28 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
 
-  if (keys & KEY_LEFT)
+  // Check for both keys first
+  if (keys == (KEY_LEFT | KEY_RIGHT))
   {
-    // Display discovery results
-    if (!scanningStarted && scanRes > 0)
-    {
-      // Increment index of current result (with wraparound)
-      scanIdx++;
-      if (scanIdx >= scanRes)
-      {
-        scanIdx = 0;
-      }
-
-      Display_print1(dispHandle, 2, 0, "Device %d", (scanIdx + 1));
-      Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(devList[scanIdx].addr));
-    }
+    // Immediately assume that throughput_peripheral is advertising and connect
+    GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
+                                 DEFAULT_LINK_WHITE_LIST,
+                                 ADDRTYPE_PUBLIC, throughput_peripheral_peer_addr);
 
     return;
   }
 
-  if (keys & KEY_UP)
+  if (keys & KEY_LEFT)
   {
     return;
   }
 
   if (keys & KEY_RIGHT)
   {
-    // Connection update
-    if (state == BLE_STATE_CONNECTED)
-    {
-      GAPCentralRole_UpdateLink(connHandle,
-                                DEFAULT_UPDATE_MIN_CONN_INTERVAL,
-                                DEFAULT_UPDATE_MAX_CONN_INTERVAL,
-                                DEFAULT_UPDATE_SLAVE_LATENCY,
-                                DEFAULT_UPDATE_CONN_TIMEOUT);
-    }
 
     return;
   }
 
-  if (keys & KEY_SELECT)
-  {
-    uint8_t addrType;
-    uint8_t *peerAddr;
-
-    // Connect or disconnect
-    if (state == BLE_STATE_IDLE)
-    {
-      // if there is a scan result
-      if (scanRes > 0)
-      {
-        // connect to current device in scan result
-        peerAddr = devList[scanIdx].addr;
-        addrType = devList[scanIdx].addrType;
-
-        state = BLE_STATE_CONNECTING;
-
-        GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
-                                     DEFAULT_LINK_WHITE_LIST,
-                                     addrType, peerAddr);
-
-        Display_print0(dispHandle, 2, 0, "Connecting");
-        Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddr));
-        Display_clearLine(dispHandle, 4);
-      }
-    }
-    else if (state == BLE_STATE_CONNECTING ||
-              state == BLE_STATE_CONNECTED)
-    {
-      // disconnect
-      state = BLE_STATE_DISCONNECTING;
-
-      GAPCentralRole_TerminateLink(connHandle);
-
-      Display_print0(dispHandle, 2, 0, "Disconnecting");
-      Display_clearLine(dispHandle, 4);
-    }
-
-    return;
-  }
-
-  if (keys & KEY_DOWN)
-  {
-    // Start or cancel RSSI polling
-    if (state == BLE_STATE_CONNECTED)
-    {
-      if (SimpleBLECentral_RssiFind(connHandle) == NULL)
-      {
-        SimpleBLECentral_StartRssi(connHandle, DEFAULT_RSSI_PERIOD);
-      }
-      else
-      {
-        SimpleBLECentral_CancelRssi(connHandle);
-
-        Display_print0(dispHandle, 4, 0, "RSSI Cancelled");
-      }
-    }
-
-    return;
-  }
 }
 
 /*********************************************************************
@@ -1015,178 +883,6 @@ static void SimpleBLECentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
 
     default:
       break;
-  }
-}
-
-/*********************************************************************
- * @fn      SimpleBLECentral_StartRssi
- *
- * @brief   Start periodic RSSI reads on a link.
- *
- * @param   connHandle - connection handle of link
- * @param   period - RSSI read period in ms
- *
- * @return  SUCCESS: Terminate started
- *          bleIncorrectMode: No link
- *          bleNoResources: No resources
- */
-static bStatus_t SimpleBLECentral_StartRssi(uint16_t connHandle, uint16_t period)
-{
-  readRssi_t *pRssi;
-
-  // Verify link is up
-  if (!linkDB_Up(connHandle))
-  {
-    return bleIncorrectMode;
-  }
-
-  // If already allocated
-  if ((pRssi = SimpleBLECentral_RssiFind(connHandle)) != NULL)
-  {
-    // Stop timer
-    Util_stopClock(pRssi->pClock);
-
-    pRssi->period = period;
-  }
-  // Allocate structure
-  else if ((pRssi = SimpleBLECentral_RssiAlloc(connHandle)) != NULL)
-  {
-    pRssi->period = period;
-  }
-  // Allocate failed
-  else
-  {
-    return bleNoResources;
-  }
-
-  // Start timer
-  Util_restartClock(pRssi->pClock, period);
-
-  return SUCCESS;
-}
-
-/*********************************************************************
- * @fn      SimpleBLECentral_CancelRssi
- *
- * @brief   Cancel periodic RSSI reads on a link.
- *
- * @param   connHandle - connection handle of link
- *
- * @return  SUCCESS: Operation successful
- *          bleIncorrectMode: No link
- */
-static bStatus_t SimpleBLECentral_CancelRssi(uint16_t connHandle)
-{
-  readRssi_t *pRssi;
-
-  if ((pRssi = SimpleBLECentral_RssiFind(connHandle)) != NULL)
-  {
-    // Stop timer
-    Util_stopClock(pRssi->pClock);
-
-    // Free RSSI structure
-    SimpleBLECentral_RssiFree(connHandle);
-
-    return SUCCESS;
-  }
-
-  // Not found
-  return bleIncorrectMode;
-}
-
-/*********************************************************************
- * @fn      gapCentralRole_RssiAlloc
- *
- * @brief   Allocate an RSSI structure.
- *
- * @param   connHandle - Connection handle
- *
- * @return  pointer to structure or NULL if allocation failed.
- */
-static readRssi_t *SimpleBLECentral_RssiAlloc(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find free RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == GAP_CONNHANDLE_ALL)
-    {
-      readRssi_t *pRssi = &readRssi[i];
-
-      pRssi->pClock = (Clock_Struct *)ICall_malloc(sizeof(Clock_Struct));
-      if (pRssi->pClock)
-      {
-        Util_constructClock(pRssi->pClock, SimpleBLECentral_readRssiHandler,
-                            0, 0, false, i);
-        pRssi->connHandle = connHandle;
-
-        return pRssi;
-      }
-    }
-  }
-
-  // No free structure found
-  return NULL;
-}
-
-/*********************************************************************
- * @fn      gapCentralRole_RssiFind
- *
- * @brief   Find an RSSI structure.
- *
- * @param   connHandle - Connection handle
- *
- * @return  pointer to structure or NULL if not found.
- */
-static readRssi_t *SimpleBLECentral_RssiFind(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find free RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == connHandle)
-    {
-      return &readRssi[i];
-    }
-  }
-
-  // Not found
-  return NULL;
-}
-
-/*********************************************************************
- * @fn      gapCentralRole_RssiFree
- *
- * @brief   Free an RSSI structure.
- *
- * @param   connHandle - Connection handle
- *
- * @return  none
- */
-static void SimpleBLECentral_RssiFree(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == connHandle)
-    {
-      readRssi_t *pRssi = &readRssi[i];
-      if (pRssi->pClock)
-      {
-        Clock_destruct(pRssi->pClock);
-
-        // Free clock struct
-        ICall_free(pRssi->pClock);
-        pRssi->pClock = NULL;
-      }
-
-      pRssi->connHandle = GAP_CONNHANDLE_ALL;
-      break;
-    }
   }
 }
 
@@ -1549,21 +1245,6 @@ void SimpleBLECentral_startDiscHandler(UArg a0)
 void SimpleBLECentral_keyChangeHandler(uint8 keys)
 {
   SimpleBLECentral_enqueueMsg(SBC_KEY_CHANGE_EVT, keys, NULL);
-}
-
-/*********************************************************************
- * @fn      SimpleBLECentral_readRssiHandler
- *
- * @brief   Read RSSI handler function
- *
- * @param   a0 - read RSSI index
- *
- * @return  none
- */
-void SimpleBLECentral_readRssiHandler(UArg a0)
-{
-  SimpleBLECentral_enqueueMsg(SBC_RSSI_READ_EVT, SUCCESS, 
-                              (uint8_t *)&readRssi[a0]);
 }
 
 /*********************************************************************
