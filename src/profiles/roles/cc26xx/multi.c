@@ -308,6 +308,7 @@ bStatus_t GAPRole_SetParameter(uint16_t param, uint8_t len, void *pValue, uint8 
             // Turn on advertising.
             if (linkDB_NumActive() >= MAX_NUM_BLE_CONNS) //don't do conn adv if we don't have any avilable links
             {
+              gapRole_AdvEnabled = FALSE;
               return bleNoResources; // no more available links
             }
             else
