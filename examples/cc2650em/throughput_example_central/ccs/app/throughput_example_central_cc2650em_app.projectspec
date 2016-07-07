@@ -35,7 +35,6 @@
         --sat_reassoc=off
         --plain_char=unsigned
 
-        -DxDLE_ENABLED
         -DUSE_ICALL
         -DPOWER_SAVING
         -DMAX_NUM_PDU=6

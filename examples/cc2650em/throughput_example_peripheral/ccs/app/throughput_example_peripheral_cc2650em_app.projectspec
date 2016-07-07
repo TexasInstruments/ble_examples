@@ -120,6 +120,10 @@
 
 
         <!-- Application Folder -->
+        <file path="SRC_EX/common/cc26xx/board_key.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        </file>
+        <file path="SRC_EX/common/cc26xx/board_key.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        </file>
         <file path="../../../../../src/examples/throughput_example_peripheral/cc26xx/app/throughput_example_peripheral.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true">
         </file>
         <file path="SRC_EX/examples/simple_peripheral/cc26xx/app/simple_peripheral.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
