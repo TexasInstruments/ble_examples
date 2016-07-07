@@ -186,8 +186,6 @@ static PIN_Config SBP_configTable[] =
 {
   Board_LED1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
   Board_LED2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-  Board_LED3 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-  Board_LED4 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
   PIN_TERMINATE
 };
 
@@ -432,6 +430,8 @@ static void SimpleBLEPeripheral_init(void)
                       SBP_PERIODIC_EVT_PERIOD, 0, false, SBP_PERIODIC_EVT);
   
   dispHandle = Display_open(Display_Type_LCD, NULL);
+  if(dispHandle == NULL)
+    dispHandle = Display_open(Display_Type_UART, NULL);
 
   // Setup the GAP
   GAP_SetParamValue(TGAP_CONN_PAUSE_PERIPHERAL, DEFAULT_CONN_PAUSE_PERIPHERAL);
@@ -1321,8 +1321,6 @@ static void SimpleBLEPeripheral_blastData()
       }
     }
 
-    PIN_setOutputValue(hSbpPins, Board_LED1 , Board_LED_ON);
-    //toggle debug pin
     noti.pValue = (uint8 *)GATT_bm_alloc( connectionHandle, ATT_HANDLE_VALUE_NOTI, GATT_MAX_MTU, &len );
 
     if ( noti.pValue != NULL ) //if allocated
@@ -1338,7 +1336,7 @@ static void SimpleBLEPeripheral_blastData()
       status = GATT_Notification( connectionHandle, &noti, GATT_NO_AUTHENTICATION);
       if ( status != SUCCESS ) //if noti not sent
       {
-        PIN_setOutputValue(hSbpPins, Board_LED3 , Board_LED_ON);
+        PIN_setOutputValue(hSbpPins, Board_LED1 , Board_LED_ON);
         GATT_bm_free( (gattMsg_t *)&noti, ATT_HANDLE_VALUE_NOTI );
       }
       else
@@ -1352,14 +1350,11 @@ static void SimpleBLEPeripheral_blastData()
     {
       // bleNoResources was returned
       asm(" NOP ");
-      PIN_setOutputValue(hSbpPins, Board_LED4 , Board_LED_ON);
     }
 
     // Reset debug pins
-    PIN_setOutputValue(hSbpPins, Board_LED2 , Board_LED_OFF);
-    PIN_setOutputValue(hSbpPins, Board_LED3 , Board_LED_OFF);
-    PIN_setOutputValue(hSbpPins, Board_LED4 , Board_LED_OFF);
     PIN_setOutputValue(hSbpPins, Board_LED1 , Board_LED_OFF);
+    PIN_setOutputValue(hSbpPins, Board_LED2 , Board_LED_OFF);
   }
 }
 /*********************************************************************

@@ -187,8 +187,8 @@
           <state>MAX_NUM_PDU=6</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>xDisplay_DISABLE_ALL</state>
-          <state>BOARD_DISPLAY_EXCLUDE_UART</state>
-          <state>xBOARD_DISPLAY_EXCLUDE_LCD</state>
+          <state>xBOARD_DISPLAY_EXCLUDE_UART</state>
+          <state>BOARD_DISPLAY_EXCLUDE_LCD</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>

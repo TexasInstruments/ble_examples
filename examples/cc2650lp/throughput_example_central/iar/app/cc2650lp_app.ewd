@@ -16,6 +16,10 @@
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
+          <name>OCImagesPath2</name>
+          <state></state>
+        </option>
+        <option>
           <name>CInput</name>
           <state>1</state>
         </option>
@@ -1299,7 +1303,7 @@
         </option>
         <option>
           <name>BoardFile</name>
-          <state>$TOOLKIT_DIR$\config\debugger\TexasInstruments\xds\CC2650_XDS100v3_CJTAG.dat</state>
+          <state>$TOOLKIT_DIR$\config\debugger\TexasInstruments\xds\CC2650_XDS110_CJTAG.dat</state>
         </option>
         <option>
           <name>DoLogfile</name>
@@ -1430,7 +1434,7 @@
         <option>
           <name>CCXds100ProbeList</name>
           <version>0</version>
-          <state>1</state>
+          <state>3</state>
         </option>
       </data>
     </settings>

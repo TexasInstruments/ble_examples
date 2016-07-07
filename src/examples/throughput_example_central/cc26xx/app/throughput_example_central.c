@@ -395,6 +395,8 @@ static void SimpleBLECentral_init(void)
 
   dispHandle = Display_open(Display_Type_LCD, NULL);
 
+  if(dispHandle == NULL)
+    dispHandle = Display_open(Display_Type_UART, NULL);
 
   // Setup Central Profile
   {
