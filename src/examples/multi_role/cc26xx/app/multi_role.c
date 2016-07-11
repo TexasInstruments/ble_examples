@@ -431,6 +431,8 @@ static void multi_role_init(void)
     GAP_SetParamValue(TGAP_LIM_DISC_ADV_INT_MAX, advInt);
     GAP_SetParamValue(TGAP_GEN_DISC_ADV_INT_MIN, advInt);
     GAP_SetParamValue(TGAP_GEN_DISC_ADV_INT_MAX, advInt);    
+    GAP_SetParamValue(TGAP_CONN_ADV_INT_MIN, advInt);
+    GAP_SetParamValue(TGAP_CONN_ADV_INT_MAX, advInt);    
     /*-------------------CENTRAL-------------------*/
     GAP_SetParamValue(TGAP_GEN_DISC_SCAN, DEFAULT_SCAN_DURATION);
     GAP_SetParamValue(TGAP_CONN_SCAN_INT, DEFAULT_SCAN_INT);
