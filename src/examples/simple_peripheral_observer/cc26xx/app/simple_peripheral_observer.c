@@ -953,7 +953,7 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
 
-  if (keys & Board_BTN2)
+  if (keys & KEY_RIGHT)
   {
     uint8 status;
 
@@ -975,7 +975,7 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-  if (keys & Board_BTN1)
+  if (keys & KEY_LEFT)
   {
     uint8 status = -1;
     

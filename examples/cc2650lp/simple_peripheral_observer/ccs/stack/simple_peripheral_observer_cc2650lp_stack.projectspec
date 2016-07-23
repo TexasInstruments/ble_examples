@@ -2,7 +2,7 @@
 
 <projectSpec>
     <project
-        name="spp_ble_server_cc2650lp_stack"
+        name="simple_peripheral_observer_cc2650lp_stack"
         device="CC2650F128"
         connection="TIXDS110_Connection.xml"
         toolChain="TI"

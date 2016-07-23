@@ -3,7 +3,7 @@
 <projectSpec>
     <!-- add your your options here -->
     <project
-        name="spp_ble_server_cc2650lp_app"
+        name="simple_peripheral_observer_cc2650lp_app"
         device="CC2650F128"
         connection="TIXDS110_Connection.xml"
         toolChain="TI"
@@ -38,16 +38,16 @@
         --plain_char=unsigned
 
         -DUSE_ICALL
-		-DMAX_PDU_SIZE=69
-        -DxPOWER_SAVING
-		-DSDI_USE_UART
+		-DMAX_PDU_SIZE=27
+		-DPLUS_OBSERVER
+        -DPOWER_SAVING
 		-DDEBUG_SIMPLE
         -DHEAPMGR_SIZE=0
-		-DDisplay_DISABLE_ALL
+		-DxDisplay_DISABLE_ALL
         -DxBOARD_DISPLAY_EXCLUDE_UART
-        -DxBOARD_DISPLAY_EXCLUDE_LCD
+        -DBOARD_DISPLAY_EXCLUDE_LCD
 		-DGAPperipheralROLE_NUM_RSSI_LINKS=1
-        -DICALL_MAX_NUM_TASKS=4		
+        -DICALL_MAX_NUM_TASKS=3		
         -DICALL_MAX_NUM_ENTITIES=6
         -Dxdc_runtime_Assert_DISABLE_ALL
         -Dxdc_runtime_Log_DISABLE_ALL
@@ -64,9 +64,10 @@
 		-I${SRC_EX}/profiles/dev_info
 		-I${SRC_EX}/profiles/roles/
 		-I${SRC_EX}/profiles/roles/cc26xx
-		-I${PROJECT_IMPORT_LOC}/../../../../../src/profiles/serial_port
-		-I${PROJECT_IMPORT_LOC}/../../../../../src/profiles/serial_port/cc26xx		
-		-I${PROJECT_IMPORT_LOC}/../../../../../src/examples/spp_ble_server/cc26xx/app
+		-I${SRC_EX}/profiles/simple_profile
+		-I${SRC_EX}/profiles/simple_profile/cc26xx
+		-I${PROJECT_IMPORT_LOC}/../../../../../src/profiles/roles/cc26xx/
+		-I${PROJECT_IMPORT_LOC}/../../../../../src/examples/simple_peripheral_observer/cc26xx/app
 		-I${SRC_EX}/target
 		-I${SRC_COMMON}/hal/src/inc
 		-I${SRC_COMMON}/hal/src/target/_common
@@ -76,7 +77,6 @@
 		-I${SRC_COMMON}/osal/src/inc
 		-I${SRC_COMMON}/services/src/saddr
 		-I${SRC_COMMON}/services/src/sdata
-		-I${PROJECT_IMPORT_LOC}/../../../../../src/components/sdi
 		-I${CC26XXWARE}
 		-I${TI_RTOS_DRIVERS_BASE}
         "
@@ -125,9 +125,9 @@
         </file>
         <file path="SRC_BLE_CORE/common/cc26xx/board_key.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/examples/spp_ble_server/cc26xx/app/spp_ble_server.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../../../../src/examples/simple_peripheral_observer/cc26xx/app/simple_peripheral_observer.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/examples/spp_ble_server/cc26xx/app/spp_ble_server.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../../../../src/examples/simple_peripheral_observer/cc26xx/app/simple_peripheral_observer.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>		
         <file path="SRC_BLE_CORE/common/cc26xx/util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
@@ -186,31 +186,19 @@
         </file>
         <file path="SRC_BLE_CORE/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/profiles/roles/cc26xx/peripheral.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../../../../src/profiles/roles/cc26xx/peripheral_observer.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/profiles/roles/cc26xx/peripheral.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
-        </file>		
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/profiles/serial_port/cc26xx/serial_port_service.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../../../../src/profiles/roles/cc26xx/peripheral_observer.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
+        </file>				
+		<file path="SRC_EX/profiles/simple_profile/cc26xx/simple_gatt_profile.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/profiles/serial_port/serial_port_service.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
-        </file>			
-
-        <!-- Profiles Folder -->
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/sdi_rxbuf.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>		
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/sdi_task.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>			
-		<file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/inc/sdi_task.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
+        <file path="SRC_EX/profiles/simple_profile/simple_gatt_profile.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
         </file>	
-		<file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/sdi_tl.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>	
-		<file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/sdi_tl_uart.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>			
 		
         <!-- Startup Folder -->
         <file path="SRC_BLE_CORE/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/examples/spp_ble_server/cc26xx/app/main.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../../../../src/examples/simple_peripheral_observer/cc26xx/app/main.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/examples/cc2650lp/simple_peripheral/iar/config/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
