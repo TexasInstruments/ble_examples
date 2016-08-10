@@ -183,7 +183,6 @@
           <name>CCDefines</name>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
-          <state>PLUS_OBSERVER</state>
           <state>MAX_PDU_SIZE=27</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
@@ -192,6 +191,7 @@
           <state>xdc_runtime_Log_DISABLE_ALL</state>
           <state>CC2650_LAUNCHXL</state>
           <state>CC26XX</state>
+          <state>PLUS_OBSERVER</state>
           <state>xDisplay_DISABLE_ALL</state>
           <state>xBOARD_DISPLAY_EXCLUDE_UART</state>
           <state>BOARD_DISPLAY_EXCLUDE_LCD</state>

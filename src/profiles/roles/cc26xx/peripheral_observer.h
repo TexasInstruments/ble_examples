@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file  peripheral.h
+ @file  peripheral_observer.h
 
  @brief TI BLE GAP Peripheral Role for for RTOS Applications
         
@@ -46,8 +46,8 @@
  Release Date: 2016-06-16 18:57:29
  *****************************************************************************/
 
-#ifndef PERIPHERAL_H
-#define PERIPHERAL_H
+#ifndef PERIPHERAL_OBSERVER_H
+#define PERIPHERAL_OBSERVER_H
 
 #ifdef __cplusplus
 extern "C"
@@ -337,4 +337,4 @@ extern void GAPRole_createTask(void);
 }
 #endif
 
-#endif /* PERIPHERAL_H */
+#endif /* PERIPHERAL_OBSERVER_H */

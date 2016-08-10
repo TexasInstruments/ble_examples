@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file  simple_peripheral.c
+ @file  simple_peripheral_observer.c
 
  @brief This file contains the Simple BLE Peripheral sample application for use
         with the CC2650 Bluetooth Low Energy Protocol Stack.
@@ -141,7 +141,13 @@
 
 // Scan duration in ms
 #define DEFAULT_SCAN_DURATION                 5000
-   
+ 
+// Scan interval in ms
+#define DEFAULT_SCAN_INTERVAL                 10
+
+// Scan interval in ms
+#define DEFAULT_SCAN_WINDOW                   5
+
 // Discovey mode (limited, general, all)
 #define DEFAULT_DISCOVERY_MODE                DEVDISC_MODE_ALL
 
@@ -306,7 +312,10 @@ static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE Peripheral";
 static gattMsgEvent_t *pAttRsp = NULL;
 static uint8_t rspTxRetry = 0;
 
+#ifdef PLUS_OBSERVER  
 static bool scanningStarted = FALSE;
+static uint8_t deviceInfoCnt = 0; 
+#endif
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -454,10 +463,10 @@ static void SimpleBLEPeripheral_init(void)
     GAP_SetParamValue(TGAP_LIM_DISC_SCAN, DEFAULT_SCAN_DURATION);
     
     //Set scan interval
-    GAP_SetParamValue(TGAP_GEN_DISC_SCAN_INT, 1600); //every sec 1600*.625=1000ms 
+    GAP_SetParamValue(TGAP_GEN_DISC_SCAN_INT, (DEFAULT_SCAN_INTERVAL)/(0.625)); //period for one scan channel
 
     //Set scan window
-    GAP_SetParamValue(TGAP_GEN_DISC_SCAN_WIND, 1000); //every 320-200ms
+    GAP_SetParamValue(TGAP_GEN_DISC_SCAN_WIND, (DEFAULT_SCAN_WINDOW)/(0.625)); //active scanning time within scan interval
   
   }  
 #endif
@@ -598,7 +607,11 @@ static void SimpleBLEPeripheral_init(void)
   Display_print0(dispHandle, 0, 0, "BLE Peripheral B");
 #endif // HAL_IMAGE_A
 #else
+#ifdef PLUS_OBSERVER    
   Display_print0(dispHandle, 0, 0, "BLE Peripheral Observer");
+#else
+  Display_print0(dispHandle, 0, 0, "BLE Peripheral");
+#endif
 #endif // FEATURE_OAD
 }
 
@@ -727,18 +740,14 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeripheralObserverRo
 
     case GAP_DEVICE_INFO_EVENT:
       {
-        uint8 dummy; 
         uint8 addr[B_ADDR_LEN];
-
+        deviceInfoCnt++;
         //Display_print0(dispHandle, 0, 0, "GAP_DEVICE_INFO_EVENT");
 
+        //Display device address. TODO: could also display address type, payload content(pEvent->deviceInfo.pEvtData), etc.
         memcpy(addr, pEvent->deviceInfo.addr, B_ADDR_LEN);
-        Display_print1(dispHandle, 6, 0, "Device info: %s", Util_convertBdAddr2Str(addr));
-        
-        dummy = pEvent->deviceInfo.pEvtData[0];
-        dummy++;
-        dummy++;
-        
+        Display_print2(dispHandle, 6, 0, "Device info %u. %s", deviceInfoCnt, Util_convertBdAddr2Str(addr));
+            
         ICall_free(pEvent->deviceInfo.pEvtData);
         ICall_free(pEvent);
       } 
@@ -748,7 +757,8 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeripheralObserverRo
       {
         // discovery complete
         scanningStarted = FALSE;
-
+        deviceInfoCnt = 0;
+        
         //Display_print0(dispHandle, 7, 0, "GAP_DEVICE_DISC_EVENT");
         Display_print1(dispHandle, 5, 0, "Devices discovered: %d", pEvent->discCmpl.numDevs);
         Display_print0(dispHandle, 4, 0, "Scanning Off");
@@ -758,6 +768,7 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeripheralObserverRo
         
       }
       break;
+      
     default:
       break;
   }
@@ -982,7 +993,6 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
     //Start scanning if not already scanning
     if((scanningStarted == FALSE))
     {
-      //scanRes = 0;
       status = GAPObserverRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
                                     DEFAULT_DISCOVERY_ACTIVE_SCAN,
                                     DEFAULT_DISCOVERY_WHITE_LIST); 
@@ -1131,11 +1141,7 @@ static void SimpleBLEPeripheral_ObserverStateChangeCB(gapPeripheralObserverRoleE
  */
 static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState)
 {
-#ifdef PLUS_OBSERVER
   SimpleBLEPeripheral_enqueueMsg(SBP_STATE_CHANGE_EVT, newState, NULL);
-#else  
-  SimpleBLEPeripheral_enqueueMsg(SBP_STATE_CHANGE_EVT, newState);
-#endif
 }
 
 /*********************************************************************
@@ -1320,11 +1326,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
  */
 static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID)
 {
-#ifdef PLUS_OBSERVER
   SimpleBLEPeripheral_enqueueMsg(SBP_CHAR_CHANGE_EVT, paramID, NULL);
-#else
-  SimpleBLEPeripheral_enqueueMsg(SBP_CHAR_CHANGE_EVT, paramID);
-#endif
 }
 #endif //!FEATURE_OAD_ONCHIP
 
@@ -1473,27 +1475,7 @@ static void SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state, uint8_t
   {
     pMsg->hdr.event = event;
     pMsg->hdr.state = state;
-//#ifdef PLUS_OBSERVER    
-//    uint8 opcode = (gapPeripheralObserverRoleEvent_t *)pData)->gap.opcode;
-//    switch(opcode)
-//    {
-//    case GAP_DEVICE_INFO_EVENT:
-//      gapDeviceInfoEvent_t *pDevInfoMsg;
-//      
-//      pDevInfoMsg = ICall_malloc(sizeof(gapDeviceInfoEvent_t));
-//      memcpy(pDevInfoMsg, pData, sizeof(gapDeviceInfoEvent_t));
-//      
-//      pDevInfoMsg.pEvtData = ICall_malloc((gapDeviceInfoEvent_t*)pData->deviceInfo.dataLen);
-//      pMsg->pData = pDevInfoMsg; 
-//      break;
-//    case GAP_DEVICE_DISCOVERY_EVENT:
-//        
-//      break;
-//    
-//    default:
-//      break;
-//    }
-//#endif    
+   
     // Enqueue the message.
     Util_enqueueMsg(appMsgQueue, sem, (uint8*)pMsg);
   }

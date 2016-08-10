@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file  simple_peripheral.h
+ @file  simple_peripheral_observer.h
 
  @brief This file contains the Simple BLE Peripheral sample application
         definitions and prototypes.

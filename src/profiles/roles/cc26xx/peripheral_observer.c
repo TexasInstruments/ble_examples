@@ -277,7 +277,7 @@ void gapRole_clockHandler(UArg a0);
 /*********************************************************************
  * @brief   Set a GAP Role parameter.
  *
- * Public function defined in peripheral.h.
+ * Public function defined in peripheral_observer.h.
  */
 bStatus_t GAPRole_SetParameter(uint16_t param, uint8_t len, void *pValue)
 {
@@ -632,7 +632,7 @@ bStatus_t GAPRole_SetParameter(uint16_t param, uint8_t len, void *pValue)
 /*********************************************************************
  * @brief   Get a GAP Role parameter.
  *
- * Public function defined in peripheral.h.
+ * Public function defined in peripheral_observer.h.
  */
 bStatus_t GAPRole_GetParameter(uint16_t param, void *pValue)
 {
@@ -770,7 +770,7 @@ bStatus_t GAPRole_GetParameter(uint16_t param, void *pValue)
 /*********************************************************************
  * @brief   Does the device initialization.
  *
- * Public function defined in peripheral.h.
+ * Public function defined in peripheral_observer.h.
  */
 bStatus_t GAPRole_StartDevice(gapRolesCBs_t *pAppCallbacks)
 {
@@ -796,7 +796,7 @@ bStatus_t GAPRole_StartDevice(gapRolesCBs_t *pAppCallbacks)
 /*********************************************************************
  * @brief   Register application's callbacks.
  *
- * Public function defined in peripheral.h.
+ * Public function defined in peripheral_observer.h.
  */
 void GAPRole_RegisterAppCBs(gapRolesParamUpdateCB_t *pParamUpdateCB)
 {
@@ -809,7 +809,7 @@ void GAPRole_RegisterAppCBs(gapRolesParamUpdateCB_t *pParamUpdateCB)
 /*********************************************************************
  * @brief   Terminates the existing connection.
  *
- * Public function defined in peripheral.h.
+ * Public function defined in peripheral_observer.h.
  */
 bStatus_t GAPRole_TerminateConnection(void)
 {
@@ -1101,8 +1101,10 @@ static void gapRole_processStackMsg(ICall_Hdr *pMsg)
  */
 static void gapRole_processGAPMsg(gapEventHdr_t *pMsg)
 {
-  uint8_t notify = FALSE;   // State changed notify the app? (default no)
-  uint8_t notifyObserver = FALSE;   // Observer state changed notify the app? (default no)
+  uint8_t notify = FALSE;   // State changed, notify the app (default no)
+#ifdef PLUS_OBSERVER
+  uint8_t notifyObserver = FALSE;   // Observer state changed, notify the app (default no)
+#endif
   
   switch (pMsg->opcode)
   {
@@ -1373,14 +1375,14 @@ static void gapRole_processGAPMsg(gapEventHdr_t *pMsg)
 #ifdef PLUS_OBSERVER
     case GAP_DEVICE_INFO_EVENT:
       {
-        //gapRole_state = GAP_DEVICE_INFO_EVENT;
+        //send callback to application
         notifyObserver = TRUE;
       }
       break;
      
     case GAP_DEVICE_DISCOVERY_EVENT:
       {
-    //gapRole_state = GAP_DEVICE_DISCOVERY_EVENT;
+        //send callback to application
         notifyObserver = TRUE;
       }
       break;
