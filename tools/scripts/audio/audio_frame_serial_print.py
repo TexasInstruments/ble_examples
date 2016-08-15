@@ -1,6 +1,6 @@
 '''
 /*
- * Filename:    audio_frame_serial_print.py
+ * Filename: audio_frame_serial_print.py
  *
  * Description: This tool is used to decode audio frames from the
  * CC2650ARC and the CC2650STK development kits. These frames will saved
