@@ -148,8 +148,8 @@ uint8 audioConfigEnable = 0;
 // Default passcode
 #define DEFAULT_PASSCODE                      19655
 
-// Default GAP pairing mode
-#define DEFAULT_PAIRING_MODE                  GAPBOND_PAIRING_MODE_INITIATE // change it to initialize pairing from central since sensortag audio project does not initial pairing
+// Change it to initialize pairing from central since sensortag audio project does not initial pairing
+#define DEFAULT_PAIRING_MODE                  GAPBOND_PAIRING_MODE_INITIATE
 
 // Default MITM mode (TRUE to require passcode or OOB when pairing)
 #define DEFAULT_MITM_MODE                     FALSE
@@ -158,7 +158,7 @@ uint8 audioConfigEnable = 0;
 #define DEFAULT_BONDING_MODE                  TRUE
 
 // Default GAP bonding I/O capabilities
-#define DEFAULT_IO_CAPABILITIES               GAPBOND_IO_CAP_NO_INPUT_NO_OUTPUT 
+#define DEFAULT_IO_CAPABILITIES               GAPBOND_IO_CAP_NO_INPUT_NO_OUTPUT
 
 // Default service discovery timer delay in ms
 #define DEFAULT_SVC_DISCOVERY_DELAY           1000
@@ -181,14 +181,14 @@ uint8 audioConfigEnable = 0;
 #define APP_MIN_CONN_INTERVAL                 8      // 10ms, need short connection interval in order to reach the needed throughput for audio streaming
 #define APP_MAX_CONN_INTERVAL                 16     // 20ms
 
-#define APP_SLAVE_LATENCY                     0      // Initially 0 for fast connection. //49     // 49 slave latency (500ms effective interval)
+#define APP_SLAVE_LATENCY                     0      // Initially 0 for fast connection. 49 slave latency (500ms effective interval)
 #define APP_CONN_TIMEOUT                      500    // 1.6s supervision timeout
 
 // Gap Bond Manager States
 #define UNPAIRED_STATE                        0x00
 #define PAIRED_BONDED_STATE                   0x01
 
-#define TI_COMPANY_ID                         0x000D  //to be pair with sensortag audio project
+#define TI_COMPANY_ID                         0x000D  // To maintain connectivity with SensorTag audio project
 
 // Service Change flags
 #define NO_CHANGE                             0x00
@@ -290,7 +290,6 @@ static const uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE Central";
 
 // Number of scan results and scan result index
 static uint8_t scanRes;
-static uint8_t scanIdx;
 
 // Scan result list
 static gapDevRec_t devList[DEFAULT_MAX_SCAN_RES];
@@ -303,9 +302,6 @@ static uint16_t connHandle = GAP_CONNHANDLE_INIT;
 
 // Application state
 static uint8_t state = BLE_STATE_IDLE;
-
-// Discovery state
-static uint8_t discState = BLE_DISC_STATE_IDLE;
 
 // Discovered service start and end handle
 static uint16_t svcStartHdl = 0;
@@ -333,12 +329,7 @@ static SimpleBLECentral_HandleInfo_t remoteHandles;
 
 static uint16 serviceToDiscover = GATT_INVALID_HANDLE;
 
-static attReadByTypeReq_t readReq;
-static attAttrType_t readReqType;
-
 static uint8 enableCCCDs = TRUE;
-
-static uint8 gapBondMgrState = UNPAIRED_STATE;
 
 // Service and Characteristic discovery variables.
 
@@ -353,12 +344,7 @@ static uint16 audioDataCCCHandle         = GATT_INVALID_HANDLE;
 
 // CCC's of the notifications
 static uint16 keyCCCHandle           = GATT_INVALID_HANDLE;
-//static uint16 consumerCtrlCCCHandle  = GATT_INVALID_HANDLE;
-// Service Change Handle
-//static uint16 serviceChangeHandle = GATT_INVALID_HANDLE;
 static uint8 serviceDiscComplete = FALSE;
-
-static uint8 serviceChange = NO_CHANGE;
 
 //static uint8 keyReportFound = FALSE;
 
@@ -376,21 +362,15 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys);
 static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg);
 static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg);
 static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent);
-static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg);
 static void SimpleBLECentral_startDiscovery(void);
 static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData,
                                          uint8_t dataLen);
-static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType);
-static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status);
+static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType)
+;static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status);
 static void SimpleBLECentral_processPasscode(uint16_t connectionHandle,
                                              uint8_t uiOutputs);
 
 static void SimpleBLECentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg);
-static bStatus_t SimpleBLECentral_StartRssi(uint16_t connHandle, uint16_t period);
-static bStatus_t SimpleBLECentral_CancelRssi(uint16_t connHandle);
-static readRssi_t *SimpleBLECentral_RssiAlloc(uint16_t connHandle);
-static readRssi_t *SimpleBLECentral_RssiFind(uint16_t connHandle);
-static void SimpleBLECentral_RssiFree(uint16_t connHandle);
 
 static uint8_t SimpleBLECentral_eventCB(gapCentralRoleEvent_t *pEvent);
 static void SimpleBLECentral_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
@@ -491,20 +471,20 @@ static void SimpleBLECentral_init(void)
 
   // Open all pins
   ledPinHandle = PIN_open(&allPinState, ledPinTable);
-  
+
   // Turn on Red led to indicate nothing has been connected
   PIN_setOutputValue( ledPinHandle, Board_RLED, 1);
-  
+
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
   // Setup discovery delay as a one-shot timer
   Util_constructClock(&startDiscClock, SimpleBLECentral_startDiscHandler,
                       DEFAULT_SVC_DISCOVERY_DELAY, 0, false, 0);
-  
-  // Periodic event to toggle LED to indicate if scanning is in progress 
+
+  // Periodic event to toggle LED to indicate if scanning is in progress
   Util_constructClock(&scanningToggleClock, SimpleBLECentral_scanningToggleHandler,
-                      DEFAULT_SCANNING_TOGGLECLOCK, 0, false, SBC_SCANNING_TOGGLE_EVT);  
+                      DEFAULT_SCANNING_TOGGLECLOCK, 0, false, SBC_SCANNING_TOGGLE_EVT);
 
   // Init UART and specify non-default parameters
   UART_Params_init(&uartParams);
@@ -513,7 +493,7 @@ static void SimpleBLECentral_init(void)
   // Open the UART and do the write
   uartHandle = UART_open(Board_UART, &uartParams);
 
-  
+
   Board_initKeys(SimpleBLECentral_keyChangeHandler);
 
   dispHandle = Display_open(Display_Type_LCD, NULL);
@@ -555,7 +535,7 @@ static void SimpleBLECentral_init(void)
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
     GAPBondMgr_SetParameter(GAPBOND_BOND_FAIL_ACTION,sizeof(uint8_t), &failAction);
   }
-  
+
   // Initialize GATT Client
   VOID GATT_InitClient();
 
@@ -575,9 +555,8 @@ static void SimpleBLECentral_init(void)
     VOID GAP_SetParamValue( TGAP_CONN_EST_LATENCY, slaveLatency );
     VOID GAP_SetParamValue( TGAP_CONN_EST_SUPERV_TIMEOUT, timeout );
 
-  }  
-  
-  
+  }
+
   // Initialize GATT attributes
   GGS_AddService(GATT_ALL_SERVICES);         // GAP
   GATTServApp_AddService(GATT_ALL_SERVICES); // GATT attributes
@@ -594,7 +573,7 @@ static void SimpleBLECentral_init(void)
   // Register for GATT local events and ATT Responses pending for transmission
   GATT_RegisterForMsgs(selfEntity);
 
-  Display_print0(dispHandle, 0, 0, "BLE Central");
+  Display_print0(dispHandle, 0, 0, "BLE Audio Central");
 }
 
 /*********************************************************************
@@ -792,8 +771,8 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
 static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 {
   static uint8 addrType;
-  static uint8 peerDeviceFound = FALSE;  
-  
+  static uint8 peerDeviceFound = FALSE;
+
   switch (pEvent->gap.opcode)
   {
     case GAP_DEVICE_INIT_DONE_EVENT:
@@ -801,7 +780,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         maxPduSize = pEvent->initDone.dataPktLen;
 
         Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
-        Display_print0(dispHandle, 2, 0, "Initialized");          
+        Display_print0(dispHandle, 2, 0, "Initialized");
         if ( SimpleBLECentral_BondCount() > 0 )
         {
           // Initiate connection
@@ -831,7 +810,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
                                            pEvent->deviceInfo.addrType);
             addrType = pEvent->deviceInfo.addrType;
             osal_memcpy( remoteAddr, pEvent->deviceInfo.addr, B_ADDR_LEN );
-            peerDeviceFound = TRUE;           
+            peerDeviceFound = TRUE;
           }
         }
         if ( ( peerDeviceFound == TRUE ) &&
@@ -844,11 +823,11 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         }
       }
       break;
-      
+
   case GAP_DEVICE_DISCOVERY_EVENT:
     {
       Util_stopClock(&scanningToggleClock);
-      PIN_setOutputValue(ledPinHandle, Board_GLED, 0);     
+      PIN_setOutputValue(ledPinHandle, Board_GLED, 0);
       // discovery complete
       scanningStarted = FALSE;
       // If we have found a connectable device, establish a connection
@@ -856,14 +835,14 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
       {
 
         SimpleBLECentral_EstablishLink( FALSE, addrType, remoteAddr );
-        
+
         peerDeviceFound = FALSE;
         scanRes = 0;
       }
       else if ( scanRes > 0 )
       {
         scanRes--;
-        
+
         // Scan again
         // Begin scanning
         GAPCentralRole_StartDiscovery( DEFAULT_DISCOVERY_MODE,
@@ -875,28 +854,26 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         // Go idle
         SimpleBLECentral_SetIdle();
       }
-      // initialize scan index to last device
-      scanIdx = scanRes;
     }
     break;
-    
+
     case GAP_LINK_ESTABLISHED_EVENT:
       {
         if (pEvent->gap.hdr.status == SUCCESS)
         {
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
-          
+
           // If service discovery not performed initiate service discovery
           if (charHdl == 0)
           {
             Util_startClock(&startDiscClock);
           }
-          
+
           Display_print0(dispHandle, 2, 0, "Connected");
           Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));
           PIN_setOutputValue(ledPinHandle, Board_GLED, 1);
-          PIN_setOutputValue(ledPinHandle, Board_RLED, 0);   
+          PIN_setOutputValue(ledPinHandle, Board_RLED, 0);
         }
         else if ( SimpleBLECentral_BondCount() > 0 )
         {
@@ -906,8 +883,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         else
         {
           connHandle = GAP_CONNHANDLE_INIT;
-          discState = BLE_DISC_STATE_IDLE;
-          
+
           // Go idle
           SimpleBLECentral_SetIdle();
           Display_print0(dispHandle, 2, 0, "Connect Failed");
@@ -918,36 +894,32 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
     case GAP_LINK_TERMINATED_EVENT:
       {
-        
-        
-        gapBondMgrState = UNPAIRED_STATE;     
+
         state = BLE_STATE_IDLE;
         connHandle = GAP_CONNHANDLE_INIT;
-        discState = BLE_DISC_STATE_IDLE;
         charHdl = 0;
-        
-        
+
         Display_print0(dispHandle, 2, 0, "Disconnected");
         Display_print1(dispHandle, 3, 0, "Reason: %d", pEvent->linkTerminate.reason);
         Display_clearLine(dispHandle, 4);
-        
+
         if ( serviceDiscComplete == TRUE )
         {
           // Remember the address of the last connected remote
           osal_memcpy( remoteHandles.lastRemoteAddr, remoteAddr, B_ADDR_LEN );
-          
+
           // Save handle information
           SimpleBLECentral_SaveHandles();
         }
-        
-        
+
+
         // Invalidate service discovery variables.
         serviceDiscComplete    = FALSE;
         keyCharHandle          = GATT_INVALID_HANDLE;
-        
+
         keyCCCHandle           = GATT_INVALID_HANDLE;
         serviceToDiscover      = GATT_INVALID_HANDLE;
-        
+
 #ifdef AUDIO_SERVICE
         audioStartCharValueHandle  = GATT_INVALID_HANDLE;
         audioStartCCCHandle        = GATT_INVALID_HANDLE;
@@ -993,12 +965,11 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
  *
  * @return  none
  */
-#pragma optimize=none
 static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
 
-  if (keys & KEY_BTN1)
+  if (keys & KEY_LEFT)
   {
     // Start or stop discovery
     if  (state == BLE_STATE_IDLE )
@@ -1011,11 +982,11 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
         Display_print0(dispHandle, 2, 0, "Discovering...");
         Display_clearLines(dispHandle, 3, 5);
         PIN_setOutputValue( ledPinHandle, Board_RLED, 0);
-        
+
         GAPCentralRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
                                       DEFAULT_DISCOVERY_ACTIVE_SCAN,
                                       DEFAULT_DISCOVERY_WHITE_LIST);
-        
+
         Util_startClock(&scanningToggleClock);
       }
     }
@@ -1029,7 +1000,7 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-  if (keys & KEY_BTN2)
+  if (keys & KEY_RIGHT)
   {
     // If bonds exist, erase all of them
     if ( ( SimpleBLECentral_BondCount() > 0 ) && ( state != BLE_STATE_CONNECTED ) )
@@ -1142,8 +1113,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       if ( pMsg->hdr.status == SUCCESS )
       {
         attReadByTypeRsp_t *pRsp = &pMsg->msg.readByTypeRsp;
-        uint8 idx = 0;
-     
+
         if( serviceToDiscover ==  AUDIO_SERV_UUID )
         {
           uint16 charUUID = GATT_INVALID_HANDLE;
@@ -1218,7 +1188,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       //       will come from that GATT Service Changed Characteristic
       if ( pMsg->hdr.status == SUCCESS )
       {
-        serviceChange = CHANGE_OCCURED;
 
         // Acknowledge receipt of indication
         ATT_HandleValueCfm( pMsg->connHandle );
@@ -1262,178 +1231,6 @@ static void SimpleBLECentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
 }
 
 /*********************************************************************
- * @fn      SimpleBLECentral_StartRssi
- *
- * @brief   Start periodic RSSI reads on a link.
- *
- * @param   connHandle - connection handle of link
- * @param   period - RSSI read period in ms
- *
- * @return  SUCCESS: Terminate started
- *          bleIncorrectMode: No link
- *          bleNoResources: No resources
- */
-static bStatus_t SimpleBLECentral_StartRssi(uint16_t connHandle, uint16_t period)
-{
-  readRssi_t *pRssi;
-
-  // Verify link is up
-  if (!linkDB_Up(connHandle))
-  {
-    return bleIncorrectMode;
-  }
-
-  // If already allocated
-  if ((pRssi = SimpleBLECentral_RssiFind(connHandle)) != NULL)
-  {
-    // Stop timer
-    Util_stopClock(pRssi->pClock);
-
-    pRssi->period = period;
-  }
-  // Allocate structure
-  else if ((pRssi = SimpleBLECentral_RssiAlloc(connHandle)) != NULL)
-  {
-    pRssi->period = period;
-  }
-  // Allocate failed
-  else
-  {
-    return bleNoResources;
-  }
-
-  // Start timer
-  Util_restartClock(pRssi->pClock, period);
-
-  return SUCCESS;
-}
-
-/*********************************************************************
- * @fn      SimpleBLECentral_CancelRssi
- *
- * @brief   Cancel periodic RSSI reads on a link.
- *
- * @param   connHandle - connection handle of link
- *
- * @return  SUCCESS: Operation successful
- *          bleIncorrectMode: No link
- */
-static bStatus_t SimpleBLECentral_CancelRssi(uint16_t connHandle)
-{
-  readRssi_t *pRssi;
-
-  if ((pRssi = SimpleBLECentral_RssiFind(connHandle)) != NULL)
-  {
-    // Stop timer
-    Util_stopClock(pRssi->pClock);
-
-    // Free RSSI structure
-    SimpleBLECentral_RssiFree(connHandle);
-
-    return SUCCESS;
-  }
-
-  // Not found
-  return bleIncorrectMode;
-}
-
-/*********************************************************************
- * @fn      gapCentralRole_RssiAlloc
- *
- * @brief   Allocate an RSSI structure.
- *
- * @param   connHandle - Connection handle
- *
- * @return  pointer to structure or NULL if allocation failed.
- */
-static readRssi_t *SimpleBLECentral_RssiAlloc(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find free RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == GAP_CONNHANDLE_ALL)
-    {
-      readRssi_t *pRssi = &readRssi[i];
-
-      pRssi->pClock = (Clock_Struct *)ICall_malloc(sizeof(Clock_Struct));
-      if (pRssi->pClock)
-      {
-        Util_constructClock(pRssi->pClock, SimpleBLECentral_readRssiHandler,
-                            0, 0, false, i);
-        pRssi->connHandle = connHandle;
-
-        return pRssi;
-      }
-    }
-  }
-
-  // No free structure found
-  return NULL;
-}
-
-/*********************************************************************
- * @fn      gapCentralRole_RssiFind
- *
- * @brief   Find an RSSI structure.
- *
- * @param   connHandle - Connection handle
- *
- * @return  pointer to structure or NULL if not found.
- */
-static readRssi_t *SimpleBLECentral_RssiFind(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find free RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == connHandle)
-    {
-      return &readRssi[i];
-    }
-  }
-
-  // Not found
-  return NULL;
-}
-
-/*********************************************************************
- * @fn      gapCentralRole_RssiFree
- *
- * @brief   Free an RSSI structure.
- *
- * @param   connHandle - Connection handle
- *
- * @return  none
- */
-static void SimpleBLECentral_RssiFree(uint16_t connHandle)
-{
-  uint8_t i;
-
-  // Find RSSI structure
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    if (readRssi[i].connHandle == connHandle)
-    {
-      readRssi_t *pRssi = &readRssi[i];
-      if (pRssi->pClock)
-      {
-        Clock_destruct(pRssi->pClock);
-
-        // Free clock struct
-        ICall_free(pRssi->pClock);
-        pRssi->pClock = NULL;
-      }
-
-      pRssi->connHandle = GAP_CONNHANDLE_ALL;
-      break;
-    }
-  }
-}
-
-/*********************************************************************
  * @fn      SimpleBLECentral_processPairState
  *
  * @brief   Process the new paring state.
@@ -1453,7 +1250,6 @@ static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status)
     if (status == SUCCESS)
     {
       // Enter a GAP Bond manager Paired state
-      gapBondMgrState = PAIRED_BONDED_STATE;
       Display_print0(dispHandle, 2, 0, "Pairing success");
       
       // Begin Service Discovery of AUDIO Service to find out report handles
@@ -1476,8 +1272,6 @@ static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status)
   case GAPBOND_PAIRING_STATE_BONDED:
     if (status == SUCCESS)
     {
-      // Enter a GAP Bond manager Paired state
-      gapBondMgrState = PAIRED_BONDED_STATE;
       
       if ( osal_memcmp( remoteHandles.lastRemoteAddr, remoteAddr, B_ADDR_LEN ) == TRUE  )
       {
@@ -1579,90 +1373,12 @@ static void SimpleBLECentral_startDiscovery(void)
   // Initialize cached handles
   svcStartHdl = svcEndHdl = charHdl = 0;
 
-  discState = BLE_DISC_STATE_MTU;
-
   // Discover GATT Server's Rx MTU size
   req.clientRxMTU = maxPduSize - L2CAP_HDR_SIZE;
 
   // ATT MTU size should be set to the minimum of the Client Rx MTU
   // and Server Rx MTU values
   VOID GATT_ExchangeMTU(connHandle, &req, selfEntity);
-}
-
-/*********************************************************************
- * @fn      SimpleBLECentral_processGATTDiscEvent
- *
- * @brief   Process GATT discovery event
- *
- * @return  none
- */
-static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
-{
-  if (discState == BLE_DISC_STATE_MTU)
-  {
-    // MTU size response received, discover simple BLE service
-    if (pMsg->method == ATT_EXCHANGE_MTU_RSP)
-    {
-      uint8_t uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SIMPLEPROFILE_SERV_UUID),
-                                         HI_UINT16(SIMPLEPROFILE_SERV_UUID) };
-
-      // Just in case we're using the default MTU size (23 octets)
-      Display_print1(dispHandle, 4, 0, "MTU Size: %d", ATT_MTU_SIZE);
-
-      discState = BLE_DISC_STATE_SVC;
-
-      // Discovery simple BLE service
-      VOID GATT_DiscPrimaryServiceByUUID(connHandle, uuid, ATT_BT_UUID_SIZE,
-                                         selfEntity);
-    }
-  }
-  else if (discState == BLE_DISC_STATE_SVC)
-  {
-    // Service found, store handles
-    if (pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP &&
-        pMsg->msg.findByTypeValueRsp.numInfo > 0)
-    {
-      svcStartHdl = ATT_ATTR_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
-      svcEndHdl = ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
-    }
-
-    // If procedure complete
-    if (((pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP) &&
-         (pMsg->hdr.status == bleProcedureComplete))  ||
-        (pMsg->method == ATT_ERROR_RSP))
-    {
-      if (svcStartHdl != 0)
-      {
-        attReadByTypeReq_t req;
-
-        // Discover characteristic
-        discState = BLE_DISC_STATE_CHAR;
-
-        req.startHandle = svcStartHdl;
-        req.endHandle = svcEndHdl;
-        req.type.len = ATT_BT_UUID_SIZE;
-        req.type.uuid[0] = LO_UINT16(SIMPLEPROFILE_CHAR1_UUID);
-        req.type.uuid[1] = HI_UINT16(SIMPLEPROFILE_CHAR1_UUID);
-
-        VOID GATT_ReadUsingCharUUID(connHandle, &req, selfEntity);
-      }
-    }
-  }
-  else if (discState == BLE_DISC_STATE_CHAR)
-  {
-    // Characteristic found, store handle
-    if ((pMsg->method == ATT_READ_BY_TYPE_RSP) &&
-        (pMsg->msg.readByTypeRsp.numPairs > 0))
-    {
-      charHdl = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[0],
-                             pMsg->msg.readByTypeRsp.pDataList[1]);
-
-      Display_print0(dispHandle, 2, 0, "Simple Svc Found");
-//      procedureInProgress = FALSE;
-    }
-
-    discState = BLE_DISC_STATE_IDLE;
-  }
 }
 
 /*********************************************************************
