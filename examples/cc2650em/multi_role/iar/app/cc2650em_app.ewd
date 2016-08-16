@@ -49,7 +49,7 @@
         </option>
         <option>
           <name>MemFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\debugger\TexasInstruments\CC2640F128.ddf</state>
+          <state>$TOOLKIT_DIR$\CONFIG\debugger\TexasInstruments\CC2650F128.ddf</state>
         </option>
         <option>
           <name>RunToEnable</name>
@@ -129,7 +129,7 @@
         </option>
         <option>
           <name>OCImagesPath1</name>
-          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\multi_role_cc2640em_stack.out</state>
+          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\multi_role_cc2650em_stack.out</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck2</name>
