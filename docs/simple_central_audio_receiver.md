@@ -111,3 +111,10 @@ After building the firmware required for the voice streamer and receiver, you ar
 
 9. The Python script will read the voice frames from the CC2650 and decode them into `.wav` files. These files can be played back on the PC.
 * The files are saved in the format: `pdm_test_%Y-%m-%d_%H-%M-%S_adpcm` where Y, m, d, H, M, S are used to store the time stamp when the file was saved.
+
+References
+==========
+ * [CC2650 Remote Control User's Guide](http://processors.wiki.ti.com/index.php/CC2650RC_UG)
+ * [CC2650 Remote Control Developer's Guide](http://processors.wiki.ti.com/index.php/CC2650RC_Getting_Started_with_Development#Getting_started_with_Development)
+ * [CC2650 SensorTag User's Guide](http://processors.wiki.ti.com/index.php/CC2650_SensorTag_User%27s_Guide)
+ * [Voice Over Remote Control](http://www.ti.com/lit/an/swra506/swra506.pdf)

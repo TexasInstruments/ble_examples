@@ -82,7 +82,8 @@ The following examples are currently supported:
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_peripheral_observer.md) | [launchpad project files](examples/cc2650lp/simple_peripheral_observer) | [src](src/examples/simple_peripheral_observer)
 
 ### simple\_central\_audio\_receive
-&nbsp;&nbsp;&nbsp;&nbsp;Receive and decode voice stream over BLE using CC2650 central device and SensorTag or HID Advanced Remote peripheral device
+&nbsp;&nbsp;&nbsp;&nbsp;Receive and decode voice stream over BLE using CC2650 central device and SensorTag or <br>
+&nbsp;&nbsp;&nbsp;&nbsp;HID Advanced Remote peripheral device
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_audio_receiver.md) | [launchpad project files](examples/cc2650lp/simple_central_audio_receiver) | [src](src/examples/simple_central_audio_receiver)
 

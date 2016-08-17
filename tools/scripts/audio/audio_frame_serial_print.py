@@ -68,11 +68,11 @@ PV_Dec = 0
 def tic1_DecodeSingle(nibble):
     global SI_Dec
     global PV_Dec
-    
+
     step = tic1_stepsize_Lut[SI_Dec]
     cum_diff  = step>>3;
 
-    SI_Dec += tic1_IndexLut[nibble]; 
+    SI_Dec += tic1_IndexLut[nibble];
 
     if SI_Dec < 0:
         SI_Dec = 0
@@ -107,7 +107,7 @@ def decode_adpcm(_buf):
     global buf
     global SI_Dec
     global PV_Dec
-    
+
     buf = _buf
 
     for b in _buf:
@@ -162,9 +162,9 @@ try:
                    seqNum, SI_received, PV_received = struct.unpack('BBh', inbuffer[0:4])
                    seqNum = (seqNum >> 3)
                    print "Frame sequence number: %d" % seqNum
-                   
-                   print "SI local: %d, SI received: %d" % (SI_Dec, SI_received)
-                   print "PV local: %d, PV received: %d" % (PV_Dec, PV_received)
+
+                   print "HDR_1 local: %d, HDR_1 received: %d" % (SI_Dec, SI_received)
+                   print "HDR_2 local: %d, HDR_2 received: %d" % (PV_Dec, PV_received)
 
                    #always use received PV and SI 
                    PV_Dec = PV_received
@@ -194,7 +194,7 @@ try:
                     frameNum = 1
 
             lastByteTime = time.time()
-    
+
 except SerialException as e:
     print "Serial port error"
     print e
