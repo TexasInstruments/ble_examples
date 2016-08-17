@@ -56,7 +56,7 @@ Before running the demo, the user will need the following components:
 3. Handle Python dependencies for  `audio_frame_serial_print.py` from [tools/scripts/audio folder](../tools/scripts/audio)
   * Requires [Python 2.7](https://www.python.org/download/releases/2.7/)
   * The script also requires the following Python modules: struct, wave, serial, time, winsound
-  * Python modules can be installed using pip, for instructions see [pip docs](https://pip.pypa.io/en/stable/installing/#do-i-need-to-install-pip)
+  * See the [FAQ](faq.md) for more info
 
 
 Running the Demo
