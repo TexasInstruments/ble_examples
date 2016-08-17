@@ -72,6 +72,11 @@ The following examples are currently supported:
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_audio_receiver.md) | [launchpad project files](examples/cc2650lp/simple_central_audio_receiver) | [src](src/examples/simple_central_audio_receiver)
 
+### simple\_peripheral\_observer
+&nbsp;&nbsp;&nbsp;&nbsp;Demo Peripheral and observer roles on CC2650
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_peripheral_observer.md) | [launchpad project files](examples/cc2650lp/simple_peripheral_observer) | [src](src/examples/simple_peripheral_observer)
+
 ### spp\_over\_ble
 &nbsp;&nbsp;&nbsp;&nbsp;Send bidirectional UART data over BLE, similar to Serial Port Profile (SPP) in Bluetooth Classic
 
