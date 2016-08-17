@@ -496,7 +496,7 @@ static void SimpleBLECentral_init(void)
 
   Board_initKeys(SimpleBLECentral_keyChangeHandler);
 
-  dispHandle = Display_open(Display_Type_LCD, NULL);
+  dispHandle = Display_open(Display_Type_GRLIB, NULL);
 
   // Initialize internal data
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
@@ -573,7 +573,7 @@ static void SimpleBLECentral_init(void)
   // Register for GATT local events and ATT Responses pending for transmission
   GATT_RegisterForMsgs(selfEntity);
 
-  Display_print0(dispHandle, 0, 0, "BLE Audio Central");
+  Display_print0(dispHandle, 0, 0, "Audio Central");
 }
 
 /*********************************************************************
@@ -1039,14 +1039,14 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       // on the next connection event. Drop it for now.
       Display_print1(dispHandle, 4, 0, "ATT Rsp dropped %d", pMsg->method);
     };
-    
+
     switch ( pMsg->method )
     {
     case ATT_HANDLE_VALUE_NOTI:
-      
+
 #ifdef AUDIO_SERVICE
       if (pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle) {
-        // Output the receive packets through UART, and use audio_frame_serial_print_working.py to decode
+        // Output the receive packets through UART, and use audio_frame_serial_print.py to decode
         UART_write(uartHandle, (pMsg->msg.handleValueNoti.pValue) , 20);
         counter++;
 
@@ -1054,11 +1054,11 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
           PIN_setOutputValue(ledPinHandle, Board_RLED, !PIN_getOutputValue(Board_RLED));
           counter = 0;
         }
-        
-      } 
+
+      }
 #endif
       break;
-      
+
     case ATT_FIND_BY_TYPE_VALUE_RSP:
       // Response from GATT_DiscPrimaryServiceByUUID
       // Service found, store handles
@@ -1085,9 +1085,8 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 
         }
       }
-      break;      
- 
-      /******** Added by Y.Zhang to compatible with Normal ARC **********/
+      break;
+
     case ATT_ERROR_RSP:
 
       if (serviceToDiscover ==  AUDIO_SERV_UUID
@@ -1103,8 +1102,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
             SimpleBLECentral_EnableNotification( connHandle, keyCCCHandle );
           }
       }
-/******** ********************************************* **********/
-
       break;
 
     case ATT_READ_BY_TYPE_RSP:
@@ -1198,7 +1195,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
     default:
       // Unknown event
       break;
-    } //switch      
+    } //switch
   } // else - in case a GATT message came after a connection has dropped, ignore it.
   // Needed only for ATT Protocol messages
   GATT_bm_free(&pMsg->msg, pMsg->method);
@@ -1245,51 +1242,50 @@ static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status)
   case GAPBOND_PAIRING_STATE_STARTED:
     Display_print0(dispHandle, 2, 0, "Pairing started");
     break;
-    
+
   case GAPBOND_PAIRING_STATE_COMPLETE:
     if (status == SUCCESS)
     {
       // Enter a GAP Bond manager Paired state
       Display_print0(dispHandle, 2, 0, "Pairing success");
-      
+
       // Begin Service Discovery of AUDIO Service to find out report handles
       serviceToDiscover = AUDIO_SERV_UUID;
-      SimpleBLECentral_DiscoverService( connHandle, AUDIO_SERV_UUID );         
+      SimpleBLECentral_DiscoverService( connHandle, AUDIO_SERV_UUID );
     }
     else
     {
       Display_print1(dispHandle, 2, 0, "Pairing fail: %d", status);
     }
     break;
-    
+
   case GAPBOND_PAIRING_STATE_BOND_SAVED:
     if (status == SUCCESS)
     {
-      Display_print0(dispHandle, 2, 0, "Bond Saved");      
+      Display_print0(dispHandle, 2, 0, "Bond Saved");
     }
     break;
-    
+
   case GAPBOND_PAIRING_STATE_BONDED:
     if (status == SUCCESS)
     {
-      
+
       if ( osal_memcmp( remoteHandles.lastRemoteAddr, remoteAddr, B_ADDR_LEN ) == TRUE  )
       {
-        
-        if ( 
+
+        if (
 #ifdef AUDIO_SERVICE
             ( remoteHandles.audioStartCharValueHandle == GATT_INVALID_HANDLE )         ||
-              ( remoteHandles.audioDataCharValueHandle == GATT_INVALID_HANDLE ) 
+              ( remoteHandles.audioDataCharValueHandle == GATT_INVALID_HANDLE )
 #endif
                 )
         {
-          
           serviceToDiscover = AUDIO_SERV_UUID;
-          
+
           // We must perform service discovery again, something might have changed.
           // Begin Service Discovery
           SimpleBLECentral_DiscoverService( connHandle, serviceToDiscover );
-          
+
           serviceDiscComplete = FALSE;
           audioConfigEnable =0; //This will re-trig an audio configuration if needed
         }
@@ -1298,11 +1294,11 @@ static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status)
           // No change, restore handle info.
           // bonding indicates that we probably already enabled all these characteristics. easy fix if not.
           serviceDiscComplete    = TRUE;
-          
+
 #ifdef AUDIO_SERVICE
           audioStartCharValueHandle = remoteHandles.audioStartCharValueHandle;
           audioDataCharValueHandle  = remoteHandles.audioDataCharValueHandle;
-          
+
           //Still, Force update of Audio config for now...
           audioConfigEnable =1;
 #endif
@@ -1314,12 +1310,12 @@ static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status)
         // it was power-cycled, and that we probably already enabled all CCCDs.
         // So, we only need to find out attribute report handles.
         enableCCCDs = FALSE;
-        
+
         // Begin Service Discovery of HID Service to find out report handles
         serviceToDiscover = AUDIO_SERV_UUID;
         SimpleBLECentral_DiscoverService( connHandle, serviceToDiscover );
-      }                   
-      
+      }
+
       Display_print0(dispHandle, 2, 0, "Bond save success");
     }
     else
@@ -1327,7 +1323,7 @@ static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status)
       Display_print1(dispHandle, 2, 0, "Bond save failed: %d", status);
     }
     break;
-    
+
   default:
     break;
   }
@@ -1640,24 +1636,24 @@ static uint8 SimpleBLECentral_FindHIDRemote( uint8* pData, uint8 length )
   {
     'H', 'I', 'D', ' ', 'A', 'd', 'v', 'R', 'e', 'm', 'o', 't', 'e'
   };
-  
+
   // move pointer to the start of the scan response data.
   pData += 2;
-  
+
   // adjust length as well
   length -= 2;
-  
+
   resultFindRC = osal_memcmp( remoteNameRC, pData, length );
-  
+
   // did not find RC, then search for ST
   if (!resultFindRC){
-    
+
     static uint8 remoteNameST[] =
     {
       'C', 'C', '2', '6', '5', '0', ' ',
       'S', 'e', 'n',  's',  'o',  'r',  'T',  'a',  'g',
     };
-    
+
     //    // complete name
     //  0x11,   // length of this data
     //  GAP_ADTYPE_LOCAL_NAME_COMPLETE,
@@ -1676,14 +1672,14 @@ static uint8 SimpleBLECentral_FindHIDRemote( uint8* pData, uint8 length )
     //  0x02,   // length of this data
     //  GAP_ADTYPE_POWER_LEVEL,
     //  0       // 0dBm
-    
+
     // adjust length as well, totla length is 0x11 + 0xA = 0x1B = 27
     // the needed array size(for the name) is only 16 bytes
-//    length -= 11; // already moved when search for RC  
-    length -= 9;   
-    resultFindST = osal_memcmp( remoteNameST, pData, length ); 
+//    length -= 11; // already moved when search for RC
+    length -= 9;
+    resultFindST = osal_memcmp( remoteNameST, pData, length );
   }
-  return (resultFindRC || resultFindST); 
+  return (resultFindRC || resultFindST);
 }
 
 /*********************************************************************
@@ -1717,7 +1713,7 @@ static void SimpleBLECentral_SetIdle( void )
 {
   state = BLE_STATE_IDLE;
   Util_stopClock(&scanningToggleClock);
-  PIN_setOutputValue( ledPinHandle, Board_GLED, 0);  
+  PIN_setOutputValue( ledPinHandle, Board_GLED, 0);
   PIN_setOutputValue( ledPinHandle, Board_RLED, 1);
   Display_print0(dispHandle, 2, 0, "Idle...");
 }
@@ -1738,12 +1734,11 @@ static void SimpleBLECentral_EstablishLink( uint8 whiteList, uint8 addrType, uin
   if ( state != BLE_STATE_CONNECTED )
   {
     state = BLE_STATE_CONNECTING;
-    
+
     // Try to connect to remote device
     GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
                                  DEFAULT_LINK_WHITE_LIST,
                                  addrType, remoteAddr);
-    
   }
 }
 
