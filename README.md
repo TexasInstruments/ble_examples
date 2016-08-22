@@ -36,6 +36,16 @@ Follow your IDE specific instructions for changing environment variables or simp
 
 By default, TI\_BLE\_SDK\_BASE points to C:\ti\simplelink\ble\_sdk\_2\_02\_00\_31. If you installed the SDK there, no change is required.
 
+Required Tools
+==============
+
+Similar to the BLE-Stack SDK, the examples in this repository support the IAR and CCS toolchains. Please pay careful attention to versions of these tools, the supported version are listed below. Using a non supported version is untested and may result in unexpected behavior.
+
+ - IAR for ARM v7.50.3
+ - CCS v6.1.3 with TI ARM Compiler v5.6.7
+
+For more information on toolchain setup, please refer to our [FAQ page](docs/faq.md).
+
 FAQ
 ===
 
@@ -89,3 +99,12 @@ The following examples are currently supported:
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/throughput_example.md) | [EM central project files](examples/cc2650em/throughput_example_central) | [EM peripheral project files](examples/cc2650em/throughput_example_peripheral) | [launchpad central project files](examples/cc2650lp/throughput_example_central) <br>
 &nbsp;&nbsp;&nbsp;&nbsp;[launchpad peripheral project files](examples/cc2650lp/throughput_example_peripheral) | [central src](src/examples/throughput_example_central) | [peripheral src](src/examples/throughput_example_peripheral)
 
+References
+==========
+
+The following reference pages may be helpful during general BLE development. New users of the CC26xx platform and BLE are encouraged to read the [Software Developer's Guide](http://ti.com/lit/pdf/swru393) and complete the [SimpleLink Academy](http://software-dl.ti.com/lprf/simplelink_academy/overview.html) training.
+
+Other resources can be found below:
+
+* [BLE wiki](http://www.ti.com/ble-wiki)
+* [BLE E2E Page](www.ti.com/ble-forum)

@@ -28,3 +28,14 @@ Frequently Asked Questions
     3. If you can run the script successfully but get a runtime error, you likely don't have the necessary python modules installed.
       - Python modules can be found by looking at the `import` statements at the top of the `.py` file. You can install Python modules using the Python package manager, pip.
       - Install Pip by following [these steps](http://stackoverflow.com/questions/4750806/how-do-i-install-pip-on-windows). The section "Python 2 ≤ 2.7.8 and Python 3 ≤ 3.3" will be most helpful.
+
+3. Q: How can I setup my toolchain for use with the ble\_examples repo?
+
+    **IAR**
+
+    1. Please refer to section 2.6.2 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393). Version 7.50.03 is supported.
+
+    **CCS**
+
+    1. Please refer to section 2.6.3 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393). Version 6.1.3 is supported.
+     - Note that if your CCS install doesn't include TI ARM Compiler v5.2.7, refer to section 2.6.3.2 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393)
