@@ -1006,10 +1006,10 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\board_key.c</name>
+      <name>$SRC_EX$\common\cc26xx\board_key.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\board_key.h</name>
+      <name>$SRC_EX$\common\cc26xx\board_key.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\hid_emu_kbd\cc26xx\app\hidemukbdlp.c</name>

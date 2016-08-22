@@ -3,7 +3,7 @@
 <iarUserArgVars>
   <group active="true" name="CC26xx TI-RTOS">
     <variable>
-      <name>TI_BLE_SDK</name>
+      <name>TI_BLE_SDK_BASE</name>
       <value>C:\TI\simplelink\ble_sdk_2_02_00_31</value>
     </variable>
      <variable>
