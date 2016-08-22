@@ -1005,10 +1005,10 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\common\cc2650lp\board_key.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\board_key.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\common\cc2650lp\board_key.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\board_key.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\spp_ble_server\cc26xx\app\spp_ble_server.c</name>

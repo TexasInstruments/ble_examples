@@ -101,9 +101,9 @@
         <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
         
 
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/common/cc2650lp/board_key.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        <file path="TI_BLE_SDK_BASE/src/common/cc26xx/board_key.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/common/cc2650lp/board_key.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        <file path="TI_BLE_SDK_BASE/src/common/cc26xx/board_key.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/common/cc26xx/util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>

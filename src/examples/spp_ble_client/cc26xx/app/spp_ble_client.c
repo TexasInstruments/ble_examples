@@ -1,13 +1,10 @@
-/******************************************************************************
-
- @file  spp_ble_client.c
-
- @brief This file contains the Simple BLE Central sample application for use
-        with the CC2650 Bluetooth Low Energy Protocol Stack.
-
- Group: WCS, BTS
- $Target Device: DEVICES $
-
+/*
+ * Filename: spp_ble_client.c
+ *
+ * Description: This is the simple_peripheral example modified to send
+ * data over BLE at a high throughput.
+ *
+ *
  * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
@@ -1016,7 +1013,7 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
   
   
   // Set Packet Length in a Connection 
-  if (keys & Board_BTN2)
+  if (keys & KEY_RIGHT)
   {
     //SPPBLEClient_toggleLed(Board_GLED, Board_LED_TOGGLE);
     
@@ -1059,7 +1056,7 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
     return;
   }
 
-  if (keys & Board_BTN1)
+  if (keys & KEY_LEFT)
   {
     //SPPBLEClient_toggleLed(Board_RLED, Board_LED_TOGGLE);
     
