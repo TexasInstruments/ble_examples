@@ -30,6 +30,7 @@ Frequently Asked Questions
       - Install Pip by following [these steps](http://stackoverflow.com/questions/4750806/how-do-i-install-pip-on-windows). The section "Python 2 ≤ 2.7.8 and Python 3 ≤ 3.3" will be most helpful.
 
 3. Q: How can I setup my toolchain for use with the ble\_examples repo?
+ - A: Please check the steps below
 
     **IAR**
 
@@ -39,3 +40,27 @@ Frequently Asked Questions
 
     1. Please refer to section 2.6.3 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393). Version 6.1.3 is supported.
      - Note that if your CCS install doesn't include TI ARM Compiler v5.2.7, refer to section 2.6.3.2 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393)
+
+4. Q: I am using a LaunchPad device, how can I view display data?
+ - A: LaunchPad projects that use the display driver are already setup to do so, for more information about the driver please see the Display.h header file within the TI-RTOS install `C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages\ti\mw\display`. <br> To setup your PC to receive this data please follow the steps below:
+
+    1. Install PuTTY or another serial terminal emulator
+    2. If not done, connect the LaunchPad to the computer using the micro USB cable.
+    3. The Windows Device Manager (Start &rarr; Run &rarr; `mmc devmgmt.msc` &rarr; Ok) should show you the following devices connected:
+       ![Device Manager](doc_resources/dev_mgr_xds110.PNG)
+
+    4. Note the COM port number of the `XDS110 Class Application/User UART` listed.
+    5. Configure putty as a serial console with 115200 8N1.
+    6. Fill in the Serial Line field with the COM port from above.
+    7. When configured correctly, the program should look as below:
+
+
+    | Main Screen                                      | Serial Screen                                        |
+    |:-----------------------------------------------:|:----------------------------------------------------:|
+    |  ![Putty Main](doc_resources/putty_main_scrn.png)  |   ![Putty serial](doc_resources/putty_serial_scrn.png) |
+
+
+    **You may need to unplug/replug your launchpad and restart PuTTY if you do not see any output.**
+
+
+

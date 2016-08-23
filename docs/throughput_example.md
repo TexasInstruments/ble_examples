@@ -226,7 +226,11 @@ The test can be replicated via:
   - To enable DLE set the preprocessor define: DLE_ENABLED
   - The suggested controller payload data length can be defined by setting the define APP\_SUGGESTED\_PDU_SIZE
 3. Connect throughput\_example\_peripheral to throughput\_example\_central
-  - On the central project, use the left key
+  - The peripheral project will use a hardcoded BD_ADDR of 0xAABBCCDDEEFF, the central device will auto connect to it.
+  - Pressing KEY_LEFT on the peripheral device will initiate a data length exchange, which will enable BLE 4.2 Extended Data Length exchange. The new controller payload will be 251B.
+  - Red LED binlking on the peripheral indicates that the throughput test is running
+  - The central device will dynamically calculate the throughput and display on the LCD/UART.
+  - LaunchPad based projects use the Display driver to output display data over UART, see our [FAQ page](faq.md) for more information on using this feature.
 4. Once the MTU update exchange is complete, the throughput test will start
 
 Result
