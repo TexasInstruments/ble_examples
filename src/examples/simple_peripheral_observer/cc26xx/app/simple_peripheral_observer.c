@@ -1,49 +1,42 @@
-/******************************************************************************
-
- @file  simple_peripheral_observer.c
-
- @brief This file contains the Simple BLE Peripheral sample application for use
-        with the CC2650 Bluetooth Low Energy Protocol Stack.
-
- Group: WCS, BTS
- Target Device: CC2650, CC2640, CC1350
-
- ******************************************************************************
- 
- Copyright (c) 2013-2016, Texas Instruments Incorporated
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
-
- *  Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-
- *  Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-
- *  Neither the name of Texas Instruments Incorporated nor the names of
-    its contributors may be used to endorse or promote products derived
-    from this software without specific prior written permission.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- ******************************************************************************
- Release Name: ble_sdk_2_02_00_31
- Release Date: 2016-06-16 18:57:29
- *****************************************************************************/
+/*
+ * Filename: simple_peripheral_observer.c
+ *
+ * Description: This is the simple_central example modified to receive
+ * data over BLE at a high throughput.
+ *
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 /*********************************************************************
  * INCLUDES
@@ -79,7 +72,7 @@
 #ifdef USE_RCOSC
 #include "rcosc_calibration.h"
 #endif //USE_RCOSC
-   
+
 #include <ti/mw/display/Display.h>
 #include "board_key.h"
 
@@ -137,11 +130,11 @@
 
 #ifdef PLUS_OBSERVER
 // Maximum number of scan responses
-#define DEFAULT_MAX_SCAN_RES                  50//8 
+#define DEFAULT_MAX_SCAN_RES                  50//8
 
 // Scan duration in ms
 #define DEFAULT_SCAN_DURATION                 5000
- 
+
 // Scan interval in ms
 #define DEFAULT_SCAN_INTERVAL                 10
 
@@ -156,7 +149,7 @@
 
 // TRUE to use white list during discovery
 #define DEFAULT_DISCOVERY_WHITE_LIST          FALSE
-   
+
 #endif //#ifdef PLUS_OBSERVER
 
 #ifdef FEATURE_OAD
@@ -179,8 +172,8 @@
 #define SBP_CONN_EVT_END_EVT                  0x0008
 
 #ifdef PLUS_OBSERVER
-#define SBP_KEY_CHANGE_EVT                    0x0010 
-#define SBP_OBSERVER_STATE_CHANGE_EVT         0x0020  
+#define SBP_KEY_CHANGE_EVT                    0x0010
+#define SBP_OBSERVER_STATE_CHANGE_EVT         0x0020
 #endif
 
 /*********************************************************************
@@ -191,7 +184,7 @@
 typedef struct
 {
   appEvtHdr_t hdr;  // event header.
-#ifdef PLUS_OBSERVER  
+#ifdef PLUS_OBSERVER
   uint8 *pData; // event data pointer
 #endif
 } sbpEvt_t;
@@ -312,9 +305,9 @@ static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE Peripheral";
 static gattMsgEvent_t *pAttRsp = NULL;
 static uint8_t rspTxRetry = 0;
 
-#ifdef PLUS_OBSERVER  
+#ifdef PLUS_OBSERVER
 static bool scanningStarted = FALSE;
-static uint8_t deviceInfoCnt = 0; 
+static uint8_t deviceInfoCnt = 0;
 #endif
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -358,10 +351,10 @@ void SimpleBLEPeripheral_processOadWriteCB(uint8_t event, uint16_t connHandle,
 static gapRolesCBs_t SimpleBLEPeripheral_gapRoleCBs =
 {
   SimpleBLEPeripheral_stateChangeCB     // Profile State Change Callbacks
-#ifdef PLUS_OBSERVER  
+#ifdef PLUS_OBSERVER
   ,SimpleBLEPeripheral_ObserverStateChangeCB
-#endif  
-    
+#endif
+
 };
 
 // GAP Bond Manager Callbacks
@@ -432,7 +425,7 @@ static void SimpleBLEPeripheral_init(void)
   // Register the current thread as an ICall dispatcher application
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &sem);
-    
+
 #ifdef USE_RCOSC
   RCOSC_enableCalibration();
 #endif // USE_RCOSC
@@ -443,34 +436,34 @@ static void SimpleBLEPeripheral_init(void)
   // Create one-shot clocks for internal periodic events.
   Util_constructClock(&periodicClock, SimpleBLEPeripheral_clockHandler,
                       SBP_PERIODIC_EVT_PERIOD, 0, false, SBP_PERIODIC_EVT);
-  
+
 #ifdef PLUS_OBSERVER
   Board_initKeys(SimpleBLEPeripheral_keyChangeHandler);
 #endif
-  
+
   dispHandle = Display_open(Display_Type_UART, NULL); //ZH change to UART for LP UART support
 
 #ifdef PLUS_OBSERVER
   //Setup GAP Observer params
   {
     uint8_t scanRes = DEFAULT_MAX_SCAN_RES;
-    
-    GAPRole_SetParameter(GAPROLE_MAX_SCAN_RES, sizeof(uint8_t), 
+
+    GAPRole_SetParameter(GAPROLE_MAX_SCAN_RES, sizeof(uint8_t),
                                 &scanRes);
-    
+
     // Set the GAP Characteristics
     GAP_SetParamValue(TGAP_GEN_DISC_SCAN, DEFAULT_SCAN_DURATION); //how long to scan (in scan state)
     GAP_SetParamValue(TGAP_LIM_DISC_SCAN, DEFAULT_SCAN_DURATION);
-    
+
     //Set scan interval
     GAP_SetParamValue(TGAP_GEN_DISC_SCAN_INT, (DEFAULT_SCAN_INTERVAL)/(0.625)); //period for one scan channel
 
     //Set scan window
     GAP_SetParamValue(TGAP_GEN_DISC_SCAN_WIND, (DEFAULT_SCAN_WINDOW)/(0.625)); //active scanning time within scan interval
-  
-  }  
+
+  }
 #endif
-  
+
   // Setup the GAP
   GAP_SetParamValue(TGAP_CONN_PAUSE_PERIPHERAL, DEFAULT_CONN_PAUSE_PERIPHERAL);
 
@@ -607,7 +600,7 @@ static void SimpleBLEPeripheral_init(void)
   Display_print0(dispHandle, 0, 0, "BLE Peripheral B");
 #endif // HAL_IMAGE_A
 #else
-#ifdef PLUS_OBSERVER    
+#ifdef PLUS_OBSERVER
   Display_print0(dispHandle, 0, 0, "BLE Peripheral Observer");
 #else
   Display_print0(dispHandle, 0, 0, "BLE Peripheral");
@@ -689,7 +682,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
         }
       }
     }
-    
+
     if (events & SBP_PERIODIC_EVT)
     {
       events &= ~SBP_PERIODIC_EVT;
@@ -723,7 +716,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
   }
 }
 
-#ifdef PLUS_OBSERVER  
+#ifdef PLUS_OBSERVER
 /*********************************************************************
  * @fn      SimpleBLECentral_processRoleEvent
  *
@@ -747,28 +740,28 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeripheralObserverRo
         //Display device address. TODO: could also display address type, payload content(pEvent->deviceInfo.pEvtData), etc.
         memcpy(addr, pEvent->deviceInfo.addr, B_ADDR_LEN);
         Display_print2(dispHandle, 6, 0, "Device info %u. %s", deviceInfoCnt, Util_convertBdAddr2Str(addr));
-            
+
         ICall_free(pEvent->deviceInfo.pEvtData);
         ICall_free(pEvent);
-      } 
+      }
       break;
-      
+
     case GAP_DEVICE_DISCOVERY_EVENT:
       {
         // discovery complete
         scanningStarted = FALSE;
         deviceInfoCnt = 0;
-        
+
         //Display_print0(dispHandle, 7, 0, "GAP_DEVICE_DISC_EVENT");
         Display_print1(dispHandle, 5, 0, "Devices discovered: %d", pEvent->discCmpl.numDevs);
         Display_print0(dispHandle, 4, 0, "Scanning Off");
-  
+
         ICall_free(pEvent->discCmpl.pDevList);
         ICall_free(pEvent);
-        
+
       }
       break;
-      
+
     default:
       break;
   }
@@ -790,12 +783,12 @@ static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg)
 
   switch (pMsg->event)
   {
-#ifdef PLUS_OBSERVER   
+#ifdef PLUS_OBSERVER
     case GAP_MSG_EVENT:
     // Process GATT message
       SimpleBLEPeripheralObserver_processRoleEvent((gapPeripheralObserverRoleEvent_t *)pMsg);
       break;
-#endif  
+#endif
     case GATT_MSG_EVENT:
       // Process GATT message
       safeToDealloc = SimpleBLEPeripheral_processGATTMsg((gattMsgEvent_t *)pMsg);
@@ -971,9 +964,9 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
     if(scanningStarted == TRUE)
     {
       status = GAPObserverRole_CancelDiscovery();
-      
+
       if(status == SUCCESS)
-      { 
+      {
         scanningStarted = FALSE;
         Display_print0(dispHandle, 4, 0, "Scanning Off");
       }
@@ -982,21 +975,21 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
         Display_print0(dispHandle, 4, 0, "Scanning Off Fail");
       }
     }
-      
+
     return;
   }
 
   if (keys & KEY_LEFT)
   {
-    uint8 status = -1;
-    
+    uint8 status;
+
     //Start scanning if not already scanning
     if((scanningStarted == FALSE))
     {
       status = GAPObserverRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
                                     DEFAULT_DISCOVERY_ACTIVE_SCAN,
-                                    DEFAULT_DISCOVERY_WHITE_LIST); 
-    
+                                    DEFAULT_DISCOVERY_WHITE_LIST);
+
       if(status == SUCCESS)
       {
         scanningStarted = TRUE;
@@ -1006,9 +999,9 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
       {
         Display_print1(dispHandle, 4, 0, "Scanning failed: %d", status);
       }
-    
+
     }
-      
+
     return;
   }
 
@@ -1037,17 +1030,17 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
       SimpleBLEPeripheral_processCharValueChangeEvt(pMsg->hdr.state);
       break;
 
-#ifdef PLUS_OBSERVER      
+#ifdef PLUS_OBSERVER
     case SBP_KEY_CHANGE_EVT:
       SimpleBLEPeripheral_handleKeys(0, pMsg->hdr.state);
       break;
-    
+
     case SBP_OBSERVER_STATE_CHANGE_EVT:
       SimpleBLEPeripheral_processStackMsg((ICall_Hdr *)pMsg->pData);
-      
+
       break;
 #endif
-    
+
     default:
       // Do nothing.
       break;
@@ -1081,7 +1074,7 @@ void SimpleBLEPeripheral_keyChangeHandler(uint8 keys)
  */
 static void SimpleBLEPeripheral_ObserverStateChangeCB(gapPeripheralObserverRoleEvent_t *pEvent)
 {
-  
+
   sbpEvt_t *pMsg;
 
   // Create dynamic pointer to message.
@@ -1095,35 +1088,35 @@ static void SimpleBLEPeripheral_ObserverStateChangeCB(gapPeripheralObserverRoleE
     case GAP_DEVICE_INFO_EVENT:
       {
         gapDeviceInfoEvent_t *pDevInfoMsg;
-        
+
         pDevInfoMsg = ICall_malloc(sizeof(gapDeviceInfoEvent_t));
         memcpy(pDevInfoMsg, pEvent, sizeof(gapDeviceInfoEvent_t));
-        
+
         pDevInfoMsg->pEvtData = ICall_malloc(pEvent->deviceInfo.dataLen);
-        pMsg->pData = (uint8 *)pDevInfoMsg; 
+        pMsg->pData = (uint8 *)pDevInfoMsg;
       }
       break;
-      
+
     case GAP_DEVICE_DISCOVERY_EVENT:
       {
         gapDevDiscEvent_t *pDevDiscMsg;
-        
+
         pDevDiscMsg = ICall_malloc(sizeof(gapDevDiscEvent_t));
         memcpy(pDevDiscMsg, pEvent, sizeof(gapDevDiscEvent_t));
-        
+
         pDevDiscMsg->pDevList = ICall_malloc((pEvent->discCmpl.numDevs)*sizeof(gapDevRec_t));
-        pMsg->pData = (uint8 *)pDevDiscMsg; 
+        pMsg->pData = (uint8 *)pDevDiscMsg;
       }
       break;
-    
+
     default:
       break;
     }
-    
+
     // Enqueue the message.
     Util_enqueueMsg(appMsgQueue, sem, (uint8*)pMsg);
   }
-  
+
   // Free the stack message
   ICall_freeMsg(pEvent);
 }
@@ -1228,7 +1221,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
         uint8_t numActive = 0;
 
         Util_startClock(&periodicClock);
-        
+
         numActive = linkDB_NumActive();
 
         // Use numActive to determine the connection handle of the last
@@ -1475,7 +1468,7 @@ static void SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state, uint8_t
   {
     pMsg->hdr.event = event;
     pMsg->hdr.state = state;
-   
+
     // Enqueue the message.
     Util_enqueueMsg(appMsgQueue, sem, (uint8*)pMsg);
   }
