@@ -226,6 +226,7 @@ The test can be replicated via:
   - To enable DLE set the preprocessor define: DLE_ENABLED
   - The suggested controller payload data length can be defined by setting the define APP\_SUGGESTED\_PDU_SIZE
 3. Connect throughput\_example\_peripheral to throughput\_example\_central
+  - On the central project, use the left key
 4. Once the MTU update exchange is complete, the throughput test will start
 
 Result
@@ -237,7 +238,7 @@ throughput of around 38.6kB/s without data length extension
 
 Using data length extension and the maximum controller data payload we see a throughput increase to 100kB/s.
 
-![Throughput 27B Controller Payload](doc_resources/ellisys_throughput_dle.png)
+![Throughput 251B Controller Payload](doc_resources/ellisys_throughput_dle.png)
 
 
 Throughput calculations can be done by hand following this equation

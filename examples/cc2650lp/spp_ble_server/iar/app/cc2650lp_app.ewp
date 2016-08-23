@@ -1017,94 +1017,94 @@
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\spp_ble_server\cc26xx\app\spp_ble_server.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\common\cc26xx\util.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\util.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\common\cc26xx\util.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\util.h</name>
     </file>
   </group>
   <group>
     <name>ICall</name>
     <file>
-      <name>$TI_BLE_SDK$\src\components\heapmgr\heapmgr.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\components\heapmgr\heapmgr.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\components\icall\src\icall.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\components\icall\src\icall.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\components\icall\src\inc\icall.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\components\icall\src\inc\icall.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\icall\inc\icall_addrs.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\icall\inc\icall_addrs.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\components\icall\src\icall_cc2650.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\components\icall\src\icall_cc2650.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\components\icall\src\icall_platform.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\components\icall\src\icall_platform.h</name>
     </file>
   </group>
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$TI_BLE_SDK$\src\icall\app\ble_user_config.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\icall\app\ble_user_config.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\icall\inc\ble_user_config.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\icall\inc\ble_user_config.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\icall\app\icall_api.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\icall\app\icall_api.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\icall\inc\icall_apimsg.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\icall\inc\icall_apimsg.h</name>
     </file>
   </group>
   <group>
     <name>Include</name>
     <file>
-      <name>$TI_BLE_SDK$\src\inc\gap.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\inc\gap.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\profiles\roles\gapbondmgr.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\gapbondmgr.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\inc\gapgattserver.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\inc\gapgattserver.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\inc\gatt.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\inc\gatt.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\inc\hci.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\inc\hci.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\components\osal\src\inc\osal_snv.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_snv.h</name>
     </file>
   </group>
   <group>
     <name>Profiles</name>
     <file>
-      <name>$TI_BLE_SDK$\src\profiles\dev_info\cc26xx\devinfoservice.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\profiles\dev_info\cc26xx\devinfoservice.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\profiles\dev_info\devinfoservice.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\profiles\dev_info\devinfoservice.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\inc\gatt_profile_uuid.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\inc\gatt_profile_uuid.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\host\gatt_uuid.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\host\gatt_uuid.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\inc\gatt_uuid.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\inc\gatt_uuid.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\host\gattservapp_util.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\host\gattservapp_util.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\profiles\roles\cc26xx\peripheral.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\cc26xx\peripheral.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\profiles\roles\cc26xx\peripheral.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\cc26xx\peripheral.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\serial_port\CC26xx\serial_port_service.c</name>
@@ -1134,10 +1134,10 @@
   <group>
     <name>Startup</name>
     <file>
-      <name>$TI_BLE_SDK$\src\components\hal\src\target\board.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\board.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\examples\cc2650lp\simple_peripheral\iar\config\ccfg_app_ble.c</name>
+      <name>$TI_BLE_SDK_BASE$\examples\cc2650lp\simple_peripheral\iar\config\ccfg_app_ble.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\spp_ble_server\cc26xx\app\main.c</name>
@@ -1165,7 +1165,7 @@
       </configuration>
     </file>
     <file>
-      <name>$TI_BLE_SDK$\src\common\cc26xx\iar\cc26xx_app.icf</name>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\iar\cc26xx_app.icf</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\iar_boundary.bdef</name>
