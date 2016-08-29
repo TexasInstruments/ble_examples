@@ -90,7 +90,7 @@ The following examples are currently supported:
 ### spp\_over\_ble
 &nbsp;&nbsp;&nbsp;&nbsp;Send bidirectional UART data over BLE, similar to Serial Port Profile (SPP) in Bluetooth Classic
 
-&nbsp;&nbsp;&nbsp;&nbsp;[client docs](docs/spp_ble_client.md) | [server docs](docs/spp_ble_server.md) | [launchpad client project files](examples/cc2650lp/spp_ble_client) | [launchpad server project files](examples/cc2650lp/spp_ble_server) | [client src](src/examples/spp_ble_client) | [server src](src/examples/spp_ble_server)
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/spp_ble.md)  | [launchpad client project files](examples/cc2650lp/spp_ble_client) | [launchpad server project files](examples/cc2650lp/spp_ble_server) | [client src](src/examples/spp_ble_client) | [server src](src/examples/spp_ble_server)
 
 ### throughput\_example
 &nbsp;&nbsp;&nbsp;&nbsp;Demonstrate the maximum theoretical throughput of a BLE link using the 2x CC2650 devices. <br>
