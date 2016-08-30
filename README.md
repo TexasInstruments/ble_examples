@@ -76,12 +76,6 @@ The following examples are currently supported:
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/security_examples.md) | [EM central project files](examples/cc2650em/security_examples_central) | [EM peripheral project files](examples/cc2650em/security_examples_peripheral) | [central src](src/examples/security_examples_central) | [peripheral src](src/examples/security_examples_central)
 
-### simple\_central\_audio\_receiver
-&nbsp;&nbsp;&nbsp;&nbsp;Receive and decode a voice stream over BLE using CC2650 central device and SensorTag or <br>
-&nbsp;&nbsp;&nbsp;&nbsp;HID Advanced Remote peripheral device
-
-&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_audio_receiver.md) | [launchpad project files](examples/cc2650lp/simple_central_audio_receiver) | [src](src/examples/simple_central_audio_receiver)
-
 ### simple\_peripheral\_observer
 &nbsp;&nbsp;&nbsp;&nbsp;Demo Peripheral and observer roles on CC2650
 
