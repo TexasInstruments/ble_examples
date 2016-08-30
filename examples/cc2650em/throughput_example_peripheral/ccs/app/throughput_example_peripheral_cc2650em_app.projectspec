@@ -5,6 +5,7 @@
     <project
         name="throughput_example_peripheral_cc2650em_app"
         device="CC2650F128"
+        cgtVersion="5.2.6"
         connection="TIXDS100v3_Dot7_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_app.cmd"

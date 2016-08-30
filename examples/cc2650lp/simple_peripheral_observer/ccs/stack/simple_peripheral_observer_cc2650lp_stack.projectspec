@@ -4,6 +4,7 @@
     <project
         name="simple_peripheral_observer_cc2650lp_stack"
         device="CC2650F128"
+        cgtVersion="5.2.6"
         connection="TIXDS110_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_stack.cmd"
