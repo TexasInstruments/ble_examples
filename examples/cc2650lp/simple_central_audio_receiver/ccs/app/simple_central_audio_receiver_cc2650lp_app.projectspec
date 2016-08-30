@@ -4,6 +4,7 @@
     <project
         name="simple_central_audio_receiver_cc2650lp_app"
         device="CC2650F128"
+        cgtVersion="5.2.6"
         connection="TIXDS110_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_app.cmd"
