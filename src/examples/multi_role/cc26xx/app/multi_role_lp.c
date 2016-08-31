@@ -61,6 +61,9 @@
 
 #include <ti/mw/display/Display.h>
 #include <ti/drivers/pin/PINCC26xx.h>
+#ifdef DEBUG
+#include <driverlib/ioc.h>
+#endif //DEBUG
 #include "util.h"
 #include "board_key.h"
 #include "Board.h"
@@ -101,7 +104,7 @@
 #define DEFAULT_SVC_DISCOVERY_DELAY           1000
 
 // Scan parameters
-#define DEFAULT_SCAN_DURATION                 3000
+#define DEFAULT_SCAN_DURATION                 5000
 #define DEFAULT_SCAN_WIND                     80
 #define DEFAULT_SCAN_INT                      80
 
@@ -109,7 +112,7 @@
 #define DEFAULT_MAX_SCAN_RES                  8
 
 // TRUE to filter discovery results on desired service UUID
-#define DEFAULT_DEV_DISC_BY_SVC_UUID          FALSE
+#define DEFAULT_DEV_DISC_BY_SVC_UUID          TRUE
 
 // Discovey mode (limited, general, all)
 #define DEFAULT_DISCOVERY_MODE                DEVDISC_MODE_ALL
@@ -157,6 +160,8 @@ enum
 
 #define CONNECTED_DEVICES 0
 #define DISCOVERED_DEVICES 1
+
+#define MOVEMENT_SERV_UUID             0xAA80 
 
 /*********************************************************************
 * TYPEDEFS
@@ -278,38 +283,28 @@ static uint16_t svcEndHdl = 0;
 
 // Discovered characteristic handle
 static uint16_t charHdl[MAX_NUM_BLE_CONNS] = {0};
-
 // Maximim PDU size (default = 27 octets)
 static uint16 maxPduSize;  
 
 // Scanning state
 static bool scanningStarted = FALSE;
 
-// Number of scan results and scan result index
-static uint8_t scanRes;
-static uint8_t scanIdx;
-
 // Number of connected devices
 static int8_t connIdx = -1;
 
-// connecting state
-static uint8_t connecting_state = 0;
-
-// Scan result list
-static gapDevRec_t devList[DEFAULT_MAX_SCAN_RES];
+static uint8 connect_address_type;
+static uint8 connect_address[B_ADDR_LEN];
+static bool device_found = FALSE;
 
 // Value to write
 static uint8_t charVal = 0;
-
-// Value read/write toggle
-static bool doWrite = FALSE;
 
 static PIN_Config MR_configTable[] =
 {
 Board_LED0 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
 Board_LED1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
 Board_BUTTON0 | PIN_INPUT_EN | PIN_PULLUP | PIN_HYSTERESIS,
-Board_BUTTON0 | PIN_INPUT_EN | PIN_PULLUP | PIN_HYSTERESIS,
+Board_BUTTON1 | PIN_INPUT_EN | PIN_PULLUP | PIN_HYSTERESIS,
 PIN_TERMINATE
 };
 
@@ -333,7 +328,6 @@ static uint8_t multi_role_enqueueMsg(uint16_t event, uint8_t *pData);
 static void multi_role_startDiscovery(void);
 static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg);
 static bool multi_role_findSvcUuid(uint16_t uuid, uint8_t *pData, uint8_t dataLen);
-static void multi_role_addDeviceInfo(uint8_t *pAddr, uint8_t addrType);
 static void multi_role_startDiscovery(void);
 static void multi_role_handleKeys(uint8_t keys);
 static uint8_t multi_role_eventCB(gapMultiRoleEvent_t *pEvent);
@@ -573,6 +567,15 @@ static void multi_role_init(void)
   
   // Open pin structure for use
   hMrPins = PIN_open(&mrPins, MR_configTable);
+  
+#ifdef DEBUG
+  // Map RFC_GPO0 to DIO22
+  IOCPortConfigureSet(IOID_22, IOC_PORT_RFC_GPO0,
+                      IOC_IOMODE_NORMAL);
+  // Map RFC_GPO1 to DIO21
+  IOCPortConfigureSet(IOID_21, IOC_PORT_RFC_GPO1,
+                      IOC_IOMODE_NORMAL);
+#endif //DEBUG  
 }
 
 /*********************************************************************
@@ -949,6 +952,7 @@ static uint8_t multi_role_eventCB(gapMultiRoleEvent_t *pEvent)
 *
 * @return  none
 */
+#pragma optimize=none
 static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
 {
   switch (pEvent->gap.opcode)
@@ -989,40 +993,37 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
       // if filtering device discovery results based on service UUID
       if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
       {
-        if (multi_role_findSvcUuid(SIMPLEPROFILE_SERV_UUID,
+        if (multi_role_findSvcUuid(MOVEMENT_SERV_UUID,
                                    pEvent->deviceInfo.pEvtData,
                                    pEvent->deviceInfo.dataLen))
         {
-          multi_role_addDeviceInfo(pEvent->deviceInfo.addr,
-                                   pEvent->deviceInfo.addrType);
+          //stop scanning
+          GAPRole_CancelDiscovery();
+          
+          //store address to connect to
+          connect_address_type = pEvent->deviceInfo.addrType;
+          memcpy(connect_address, pEvent->deviceInfo.addr, B_ADDR_LEN);
+          device_found = TRUE;
         }
       }
     }
     break;
     
   case GAP_DEVICE_DISCOVERY_EVENT:
-    {
-      // discovery complete
-      scanningStarted = FALSE;
+    {      
+      Display_print0(dispHandle, LCD_PAGE3, 0, "Done scanning.");
       
-      // if not filtering device discovery results based on service UUID
-      if (DEFAULT_DEV_DISC_BY_SVC_UUID == FALSE)
+      //connect to device if found
+      if (device_found == TRUE)
       {
-        // Copy results
-        scanRes = pEvent->discCmpl.numDevs;
-        memcpy(devList, pEvent->discCmpl.pDevList,
-               (sizeof(gapDevRec_t) * scanRes));
+        bStatus_t connect_status = GAPRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE, DEFAULT_LINK_WHITE_LIST,
+                    connect_address_type, connect_address);         
+        
+        if (connect_status == SUCCESS)
+        {
+          Display_print0(dispHandle, LCD_PAGE3, 0, "Connecting...");
+        }
       }
-      
-      Display_print1(dispHandle, LCD_PAGE3, 0, "Devices Found %d", scanRes);
-      
-      if (scanRes > 0)
-      {
-        Display_print0(dispHandle, LCD_PAGE4, 0, "<- To Select");
-      }
-      
-      // initialize scan index to last device
-      scanIdx = scanRes;
     }
     break;
     
@@ -1033,8 +1034,6 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
         Display_print0(dispHandle, LCD_PAGE3, 0, "Connected!");
         Display_print1(dispHandle, LCD_PAGE0, 0, "Connected to %d", linkDB_NumActive());
         
-        //update state
-        connecting_state = 0;
         //store connection handle
         connHandle = pEvent->linkCmpl.connectionHandle;
         //add index-to-connHanlde mapping entry
@@ -1232,262 +1231,56 @@ void multi_role_keyChangeHandler(uint8 keys)
 * @return  none
 */
 static void multi_role_handleKeys(uint8_t keys)
-{
-  linkDBInfo_t pInfo;
-  
-  if (LCDmenu == MAIN_MENU)
+{  
+  if (keys & KEY_LEFT)  //Scan for devices
   {
-    if (keys & KEY_LEFT)  //show discovery results
+    // Start or stop discovery
+    if (linkDB_NumActive() < MAX_NUM_BLE_CONNS) //if we can connect to another device
     {
-      //turn on LED1
-      PIN_setOutputValue(hMrPins, Board_LED1, 1);
-      
-      selectKey = DISCOVERED_DEVICES;
-      
-      // If discovery has occurred and a device was found
-      if (!scanningStarted && scanRes > 0)
-      {
-        // Increment index of current result (with wraparound)
-        scanIdx++;
-        if (scanIdx >= scanRes)
-        {
-          scanIdx = 0;
-        }
+      if (!scanningStarted) //if we're not already scanning
+      {        
+        Display_print0(dispHandle, LCD_PAGE3, 0, "Discovering...");
+        Display_print0(dispHandle, LCD_PAGE4, 0, "");
+        Display_print0(dispHandle, LCD_PAGE6, 0, "");
+        Display_print0(dispHandle, LCD_PAGE7, 0, "");
         
-        Display_print1(dispHandle, LCD_PAGE3, 0, "Device %d", (scanIdx + 1));
-        Display_print0(dispHandle, LCD_PAGE4, 0, Util_convertBdAddr2Str(devList[scanIdx].addr));
-      }
-      return;
-    }
-    
-    if (keys & KEY_UP)  //Scan for devices
-    {
-      // Start or stop discovery
-      if (linkDB_NumActive() < MAX_NUM_BLE_CONNS) //if we can connect to another device
-      {
-        if (!scanningStarted) //if we're not already scanning
-        {
-          scanningStarted = TRUE;
-          scanRes = 0;
-          
-          Display_print0(dispHandle, LCD_PAGE3, 0, "Discovering...");
-          Display_print0(dispHandle, LCD_PAGE4, 0, "");
-          Display_print0(dispHandle, LCD_PAGE6, 0, "");
-          Display_print0(dispHandle, LCD_PAGE7, 0, "");
-          
-          GAPRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
-                                 DEFAULT_DISCOVERY_ACTIVE_SCAN,
-                                 DEFAULT_DISCOVERY_WHITE_LIST);      
-        }
-        else //cancel scanning
-        {
-          Display_print0(dispHandle, LCD_PAGE3, 0, "Discovery Cancelled");
-          GAPRole_CancelDiscovery();
-          scanningStarted = FALSE;
-        }
-      }
-      else // can't add more links at this time
-      {
-        Display_print0(dispHandle, LCD_PAGE3, 0, "Can't scan:no links ");
-      }
-      return;
-    }
-    
-    if (keys & KEY_RIGHT)  // turn advertising on / off
-    {
-      uint8_t adv;
-      uint8_t adv_status;
-      GAPRole_GetParameter(GAPROLE_ADVERT_ENABLED, &adv_status, NULL);
-      if (adv_status) //turn off
-      {
-        adv = FALSE;
-        GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
-      }
-      else //turn on
-      {
-        adv = TRUE;
-        GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
-      }
-      return;
-    }
-    
-    if (keys & KEY_SELECT) //connect to a discovered device
-    {
-      if (selectKey == DISCOVERED_DEVICES)    // connect to a device  
-      {
-        uint8_t addrType;
-        uint8_t *peerAddr;
+        //reset device found flag
+        device_found = FALSE;
         
-        if (connecting_state == 1) // if already attempting to connect, cancel connection
-        {
-          GAPRole_TerminateConnection(0xFFFE);
-          Display_print0(dispHandle, LCD_PAGE3, 0, "Connecting stopped.");
-          connecting_state = 0;
-        }
-        else //establish new connection
-        {
-          // if there is a scan result
-          if (scanRes > 0)
-          {
-            // connect to current device in scan result
-            peerAddr = devList[scanIdx].addr;
-            addrType = devList[scanIdx].addrType;
-            
-            GAPRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
-                                  DEFAULT_LINK_WHITE_LIST,
-                                  addrType, peerAddr);
-            connecting_state = 1;
-            
-            Display_print0(dispHandle, LCD_PAGE3, 0, "Connecting");
-            Display_print0(dispHandle, LCD_PAGE4, 0, Util_convertBdAddr2Str(peerAddr));
-          }
-        }
+        //start scanning
+        GAPRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
+                               DEFAULT_DISCOVERY_ACTIVE_SCAN,
+                               DEFAULT_DISCOVERY_WHITE_LIST);      
       }
-      else if (selectKey == CONNECTED_DEVICES) //enter the device menu
+      else //cancel scanning
       {
-        if (connHandleMap[connIdx] != INVALID_CONNHANDLE)    
-        {
-          linkDB_GetInfo(connHandleMap[connIdx], &pInfo);
-          LCDmenu = DEVICE_MENU;
-          Display_print0(dispHandle, LCD_PAGE3, 0, "Device Menu");
-          Display_print0(dispHandle, LCD_PAGE4, 0, Util_convertBdAddr2Str(pInfo.addr));
-          if (pInfo.connRole == GAP_PROFILE_CENTRAL)
-          {
-            Display_print0(dispHandle, LCD_PAGE5, 0, "Connected as Central");
-            Display_print0(dispHandle, LCD_PAGE6, 0, "");
-            Display_print0(dispHandle, LCD_PAGE7, 0, "");
-          }
-          else //PERIPHERAL
-          {
-            Display_print0(dispHandle, LCD_PAGE5, 0, "Connected as Periph");
-            Display_print0(dispHandle, LCD_PAGE6, 0, "");
-            Display_print0(dispHandle, LCD_PAGE7, 0, "");
-          }
-          //use this connection for all functionality
-          connHandle = connHandleMap[connIdx];
-        }
-        else // no active connection here
-        {
-          Display_print0(dispHandle, LCD_PAGE3, 0, "No Connection here.");
-        }       
+        Display_print0(dispHandle, LCD_PAGE3, 0, "Discovery Cancelled");
+        GAPRole_CancelDiscovery();
       }
-      return;
     }
-    
-    if (keys & KEY_DOWN) //browse connected devices
+    else // can't add more links at this time
     {
-      Display_print0(dispHandle, LCD_PAGE3, 0, "Connected Device:");
-      if (++connIdx >= MAX_NUM_BLE_CONNS) //increment connIdx
-      {
-        connIdx = 0;
-      }   
-      if (connHandleMap[connIdx] != INVALID_CONNHANDLE) //if there is a connection at this index
-      {
-        linkDB_GetInfo(connHandleMap[connIdx], &pInfo);
-        Display_print0(dispHandle, LCD_PAGE4, 0, Util_convertBdAddr2Str(pInfo.addr));
-      }
-      else
-      {
-        Display_print0(dispHandle, LCD_PAGE4, 0, "N/A");
-      }
-      selectKey = CONNECTED_DEVICES;
-      return;    
-    } 
+      Display_print0(dispHandle, LCD_PAGE3, 0, "Can't scan:no links ");
+    }
+    return;
   }
   
-  else if (LCDmenu == DEVICE_MENU)
+  if (keys & KEY_RIGHT)  // turn advertising on / off
   {
-    if (keys & KEY_UP) //read/whrite char
+    uint8_t adv;
+    uint8_t adv_status;
+    GAPRole_GetParameter(GAPROLE_ADVERT_ENABLED, &adv_status, NULL);
+    if (adv_status) //turn off
     {
-      if (charHdl[connIdx] != 0)
-      {
-        uint8_t status;
-        
-        // Do a read or write as long as no other read or write is in progress
-        if (doWrite)
-        {
-          // Do a write
-          attWriteReq_t req;
-          
-          req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
-          if ( req.pValue != NULL )
-          {
-            req.handle = charHdl[connIdx];
-            req.len = 1;
-            req.pValue[0] = charVal;
-            req.sig = 0;
-            req.cmd = 0;
-            
-            status = GATT_WriteCharValue(connHandle, &req, selfEntity);
-            if ( status != SUCCESS )
-            {
-              GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
-            }
-          }
-        }
-        else
-        {
-          // Do a read
-          attReadReq_t req;
-          
-          req.handle = charHdl[connIdx];
-          status = GATT_ReadCharValue(connHandle, &req, selfEntity);
-        }
-        
-        if (status == SUCCESS)
-        {
-          doWrite = !doWrite;
-        }
-      }
-      return;
+      adv = FALSE;
+      GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
     }
-    
-    if (keys & KEY_RIGHT) //connection update
+    else //turn on
     {
-      gapRole_updateConnParams_t updateParams =
-      {
-        .connHandle = connHandle,
-        .minConnInterval = 80,
-        .maxConnInterval = 150,
-        .slaveLatency = 0,
-        .timeoutMultiplier = 200
-      };
-      bStatus_t status = gapRole_connUpdate( GAPROLE_NO_ACTION, &updateParams);
-      if (status == SUCCESS)
-      {
-        Display_print0(dispHandle, LCD_PAGE6, 0, "Updating");
-      }
-      else if (status == blePending)
-      {
-        Display_print0(dispHandle, LCD_PAGE6, 0, "Already Updating");
-      }
-      return;
+      adv = TRUE;
+      GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
     }
-    
-    if (keys & KEY_SELECT)
-    {
-      GAPRole_TerminateConnection(connHandle);
-      
-      Display_print0(dispHandle, LCD_PAGE5, 0, "Disconnecting");
-      Display_print0(dispHandle, LCD_PAGE6, 0, "");
-      Display_print0(dispHandle, LCD_PAGE7, 0, "");
-      
-      return;
-    }
-    
-    if (keys & KEY_DOWN) //back to main menu
-    {
-      LCDmenu = MAIN_MENU;
-      Display_print0(dispHandle, LCD_PAGE3, 0, "Main Menu");
-      //clear screen
-      Display_print0(dispHandle, LCD_PAGE4, 0, "");
-      Display_print0(dispHandle, LCD_PAGE5, 0, "");
-      Display_print0(dispHandle, LCD_PAGE6, 0, "");
-      Display_print0(dispHandle, LCD_PAGE7, 0, "");  
-      
-      connIdx = 0;
-      return;
-    }
+    return;
   }
 }
 
@@ -1600,6 +1393,7 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
 *
 * @return  TRUE if service UUID found
 */
+#pragma optimize=none
 static bool multi_role_findSvcUuid(uint16_t uuid, uint8_t *pData,
                                    uint8_t dataLen)
 {
@@ -1656,38 +1450,6 @@ static bool multi_role_findSvcUuid(uint16_t uuid, uint8_t *pData,
   
   // Match not found
   return FALSE;
-}
-
-/*********************************************************************
-* @fn      multi_role_addDeviceInfo
-*
-* @brief   Add a device to the device discovery result list
-*
-* @return  none
-*/
-static void multi_role_addDeviceInfo(uint8_t *pAddr, uint8_t addrType)
-{
-  uint8_t i;
-  
-  // If result count not at max
-  if (scanRes < DEFAULT_MAX_SCAN_RES)
-  {
-    // Check if device is already in scan results
-    for (i = 0; i < scanRes; i++)
-    {
-      if (memcmp(pAddr, devList[i].addr , B_ADDR_LEN) == 0)
-      {
-        return;
-      }
-    }
-    
-    // Add addr to scan result list
-    memcpy(devList[scanRes].addr, pAddr, B_ADDR_LEN);
-    devList[scanRes].addrType = addrType;
-    
-    // Increment scan result count
-    scanRes++;
-  }
 }
 
 /*********************************************************************
