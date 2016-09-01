@@ -196,6 +196,7 @@
           <state>CC26XX</state>
           <state>CC2650_LAUNCHXL</state>
           <state>AUDIO_SERVICE</state>
+          <state>AUDIO_LEGACY</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1005,16 +1006,16 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_key.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_key.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\simple_central_audio_receiver\cc26xx\app\simple_central_audio_receiver.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.h</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\examples\simple_central\cc26xx\app\simple_central.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\simple_central_audio_receiver\cc26xx\app\simple_central_audio_receiver.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\common\cc26xx\util.c</name>

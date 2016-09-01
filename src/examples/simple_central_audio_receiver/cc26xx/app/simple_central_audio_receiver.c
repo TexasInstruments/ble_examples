@@ -1044,7 +1044,24 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
     {
     case ATT_HANDLE_VALUE_NOTI:
 
-#ifdef AUDIO_SERVICE
+#ifdef AUDIO_LEGACY
+      if ((pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle) && (pMsg->msg.handleValueNoti.len != 1)) {
+        // Output the receive packets through UART, and use audio_frame_serial_print.py to decode
+        uint8_t *pValueSwapped;
+        pValueSwapped = pMsg->msg.handleValueNoti.pValue;
+        pValueSwapped[1]= pMsg->msg.handleValueNoti.pValue[3];
+        pValueSwapped[2]= pMsg->msg.handleValueNoti.pValue[1];
+        pValueSwapped[3]= pMsg->msg.handleValueNoti.pValue[2];
+//        UART_write(uartHandle, (pMsg->msg.handleValueNoti.pValue) , 20);
+        UART_write(uartHandle, pValueSwapped , 20);
+        counter++;
+
+        if (counter == 50){
+          PIN_setOutputValue(ledPinHandle, Board_RLED, !PIN_getOutputValue(Board_RLED));
+          counter = 0;
+        }
+      }
+#else      
       if (pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle) {
         // Output the receive packets through UART, and use audio_frame_serial_print.py to decode
         UART_write(uartHandle, (pMsg->msg.handleValueNoti.pValue) , 20);
@@ -1115,17 +1132,24 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         {
           uint16 charUUID = GATT_INVALID_HANDLE;
           uint16 *pHandle = &charUUID;
-
+#ifdef AUDIO_LEGACY
+          /* Write into charUUID what Audio Profile char value we're dealing with */
+          *pHandle = BUILD_UINT16( pRsp->pDataList[19] , pRsp->pDataList[20]);
+#else
           /* Write into charUUID what Audio Profile char value we're dealing with */
           *pHandle = BUILD_UINT16( pRsp->pDataList[17] , pRsp->pDataList[18]);
-
-          if      (charUUID == 0xb001) {
+#endif
+          if      (charUUID == AUDIOPROFILE_START_UUID) {
             pHandle = &audioStartCharValueHandle;
             *pHandle = BUILD_UINT16( pRsp->pDataList[3] , pRsp->pDataList[4]);
           }
-          else if (charUUID == 0xb002 ){
+          else if (charUUID == AUDIOPROFILE_AUDIO_UUID ){
             pHandle = &audioDataCharValueHandle;
-            *pHandle = BUILD_UINT16( pRsp->pDataList[3] , pRsp->pDataList[4]);
+#ifdef AUDIO_LEGACY            
+            *pHandle = BUILD_UINT16( pRsp->pDataList[17] , pRsp->pDataList[18]);
+#else
+            *pHandle = BUILD_UINT16( pRsp->pDataList[3] , pRsp->pDataList[4]);            
+#endif            
           }
         }
         break;
@@ -1251,7 +1275,7 @@ static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status)
 
       // Begin Service Discovery of AUDIO Service to find out report handles
       serviceToDiscover = AUDIO_SERV_UUID;
-      SimpleBLECentral_DiscoverService( connHandle, AUDIO_SERV_UUID );
+      SimpleBLECentral_DiscoverService( connHandle, serviceToDiscover );
     }
     else
     {
@@ -1754,6 +1778,14 @@ static void SimpleBLECentral_EstablishLink( uint8 whiteList, uint8 addrType, uin
  */
 static void SimpleBLECentral_DiscoverService( uint16 connHandle, uint16 svcUuid )
 {
+#ifdef AUDIO_LEGACY
+  if(svcUuid == AUDIO_SERV_UUID) // only take care of Audio Service in this project
+  {
+    uint8 uuid[2] = {LO_UINT16(svcUuid), HI_UINT16(svcUuid)};
+
+    VOID GATT_DiscPrimaryServiceByUUID( connHandle, uuid, ATT_BT_UUID_SIZE, selfEntity );
+  }
+#else  //for CC2650
   if(svcUuid == AUDIO_SERV_UUID) // only take care of Audio Service in this project
   {
     uint8 uuid[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB0,
@@ -1761,6 +1793,7 @@ static void SimpleBLECentral_DiscoverService( uint16 connHandle, uint16 svcUuid 
 
     VOID GATT_DiscPrimaryServiceByUUID( connHandle, uuid, ATT_UUID_SIZE, selfEntity );
   }
+#endif  
 }
 
 /*********************************************************************
