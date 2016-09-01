@@ -151,8 +151,21 @@ enum
   BLE_DISC_STATE_IDLE,                // Idle
   BLE_DISC_STATE_MTU,                 // Exchange ATT MTU size
   BLE_DISC_STATE_SVC,                 // Service discovery
-  BLE_DISC_STATE_CHAR                 // Characteristic discovery
+  BLE_DISC_STATE_CHAR,                // Characteristic discovery
+  BLE_DISC_STATE_INIT_IO,             // Configure I/O Conf Char
+  BLE_DISC_STATE_INIT_KEYS,           // Configure Keys Notification
+  BLE_DISC_STATE_DONE                 // Done Discovery / Init
 };
+
+//char discovery states
+enum
+{
+  CHAR_DISC_STATE_IO_DATA,
+  CHAR_DISC_STATE_IO_CONF,
+  CHAR_DISC_STATE_KEYS_DATA,
+  CHAR_DISC_STATE_DONE,
+};
+
 
 // LCD defines
 #define MAIN_MENU 0
@@ -161,7 +174,18 @@ enum
 #define CONNECTED_DEVICES 0
 #define DISCOVERED_DEVICES 1
 
-#define MOVEMENT_SERV_UUID             0xAA80 
+//sensor tag attribute table defines
+#define IO_SERV_UUID                  0xAA64
+#define IO_DATA_UUID                  0xAA65
+#define IO_CONF_UUID                  0xAA66
+#define MOVEMENT_SERV_UUID            0xAA80 
+#define SK_SERV_UUID                  0xFFE0
+
+#define ST_LED_OFF                    0x00
+#define ST_LED_GREEN                  0x01
+#define ST_LED_RED                    0x02
+#define ST_BUTTON_RIGHT               0x01
+#define ST_BUTTON_LEFT                0x02
 
 /*********************************************************************
 * TYPEDEFS
@@ -273,41 +297,32 @@ static uint8_t rspTxRetry = 0;
 
 // Connection handle of current connection 
 static uint16_t connHandle = GAP_CONNHANDLE_INIT;
-
-// Discovery state
+// Discovery variables
 static uint8_t discState = BLE_DISC_STATE_IDLE;
-
-// Discovered service start and end handle
 static uint16_t svcStartHdl = 0;
 static uint16_t svcEndHdl = 0;
+static uint16_t io_data_hdl[MAX_NUM_BLE_CONNS] = {0};
+static uint16_t io_conf_hdl[MAX_NUM_BLE_CONNS] = {0};
+static uint16_t keys_data_hdl[MAX_NUM_BLE_CONNS] = {0};
+static uint8_t char_disc_state = CHAR_DISC_STATE_IO_DATA;
 
-// Discovered characteristic handle
-static uint16_t charHdl[MAX_NUM_BLE_CONNS] = {0};
 // Maximim PDU size (default = 27 octets)
 static uint16 maxPduSize;  
-
-// Scanning state
-static bool scanningStarted = FALSE;
-
-// Number of connected devices
-static int8_t connIdx = -1;
 
 static uint8 connect_address_type;
 static uint8 connect_address[B_ADDR_LEN];
 static bool device_found = FALSE;
 
-// Value to write
-static uint8_t charVal = 0;
+static uint8_t st_leds_value = ST_LED_OFF;
 
 static PIN_Config MR_configTable[] =
 {
-Board_LED0 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-Board_LED1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-Board_BUTTON0 | PIN_INPUT_EN | PIN_PULLUP | PIN_HYSTERESIS,
-Board_BUTTON1 | PIN_INPUT_EN | PIN_PULLUP | PIN_HYSTERESIS,
-PIN_TERMINATE
+  Board_LED0 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
+  Board_LED1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
+  Board_BUTTON0 | PIN_INPUT_EN | PIN_PULLUP | PIN_HYSTERESIS,
+  Board_BUTTON1 | PIN_INPUT_EN | PIN_PULLUP | PIN_HYSTERESIS,
+  PIN_TERMINATE
 };
-
 static PIN_State mrPins;
 static PIN_Handle hMrPins;
 
@@ -506,10 +521,10 @@ static void multi_role_init(void)
     
     // Setup Profile Characteristic Values
     {
-      uint8_t charValue1 = 1;
-      uint8_t charValue2 = 2;
-      uint8_t charValue3 = 3;
-      uint8_t charValue4 = 4;
+      uint8_t charValue1 = 0;
+      uint8_t charValue2 = 0;
+      uint8_t charValue3 = 0;
+      uint8_t charValue4 = 0;
       uint8_t charValue5[SIMPLEPROFILE_CHAR5_LEN] = { 1, 2, 3, 4, 5 };
       
       SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR1, sizeof(uint8_t),
@@ -540,7 +555,7 @@ static void multi_role_init(void)
   
   // Setup the GAP Bond Manager
   {
-    uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
+    uint8_t pairMode = GAPBOND_PAIRING_MODE_NO_PAIRING;
     uint8_t mitm = TRUE;
     uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8_t bonding = FALSE;
@@ -567,6 +582,10 @@ static void multi_role_init(void)
   
   // Open pin structure for use
   hMrPins = PIN_open(&mrPins, MR_configTable);
+  
+  //turn off LED's
+  PIN_setOutputValue(hMrPins, Board_LED0, 0);
+  PIN_setOutputValue(hMrPins, Board_LED1, 0);  
   
 #ifdef DEBUG
   // Map RFC_GPO0 to DIO22
@@ -716,6 +735,7 @@ static uint8_t multi_role_processStackMsg(ICall_Hdr *pMsg)
 *
 * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
 */
+#pragma optimize=none
 static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
 {
   // See if GATT server was unable to transmit an ATT response
@@ -751,15 +771,21 @@ static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
     Display_print1(dispHandle, LCD_PAGE6, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
   }
   
-  //messages from GATT server
+  //messages from GATT server during a connection
   if (linkDB_NumActive() > 0)
   {
-    if ((pMsg->method == ATT_READ_RSP)   ||
+    //handle discovery and intiialization
+    if (discState != BLE_DISC_STATE_IDLE)
+    {
+      multi_role_processGATTDiscEvent(pMsg);
+    }    
+    //handle reads and writes after initialization
+    else if ((pMsg->method == ATT_READ_RSP)   ||   // read response
         ((pMsg->method == ATT_ERROR_RSP) &&
          (pMsg->msg.errorRsp.reqOpcode == ATT_READ_REQ)))
     {
       if (pMsg->method == ATT_ERROR_RSP)
-      {      
+      {
         Display_print1(dispHandle, LCD_PAGE6, 0, "Read Error %d", pMsg->msg.errorRsp.errCode);
       }
       else
@@ -769,25 +795,88 @@ static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
       }
       
     }
-    else if ((pMsg->method == ATT_WRITE_RSP)  ||
+    else if ((pMsg->method == ATT_WRITE_RSP)  ||   //write response
              ((pMsg->method == ATT_ERROR_RSP) &&
               (pMsg->msg.errorRsp.reqOpcode == ATT_WRITE_REQ)))
     {
       
       if (pMsg->method == ATT_ERROR_RSP == ATT_ERROR_RSP)
-      {     
+      {
         Display_print1(dispHandle, LCD_PAGE6, 0, "Write Error %d", pMsg->msg.errorRsp.errCode);
       }
       else
       {
         // After a succesful write, display the value that was written and
         // increment value
-        Display_print1(dispHandle, LCD_PAGE6, 0, "Write sent: %d", charVal++);
+        Display_print1(dispHandle, LCD_PAGE6, 0, "Write sent to: %d", pMsg->connHandle);
       }
     }
-    else if (discState != BLE_DISC_STATE_IDLE)
+    else if (pMsg->method == ATT_HANDLE_VALUE_NOTI)   //notification
     {
-      multi_role_processGATTDiscEvent(pMsg);
+      //we're only receiving notifications from one char
+      if (pMsg->msg.handleValueNoti.pValue[0] == ST_BUTTON_LEFT)
+      {
+        //increment left button presses
+        uint8_t simpleProfile_char2;
+        SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR2, &simpleProfile_char2);
+        simpleProfile_char2++;
+        SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR2, sizeof(uint8_t), &simpleProfile_char2);
+        Display_print1(dispHandle, LCD_PAGE4, 0, "Button from: %d", pMsg->connHandle);
+        Display_print1(dispHandle, LCD_PAGE4, 0, "Button count: %d", simpleProfile_char2);
+      }
+      else if (pMsg->msg.handleValueNoti.pValue[0] == ST_BUTTON_RIGHT)
+      {
+        uint8_t i = 0;
+        attWriteReq_t req;
+        linkDBInfo_t pInfo;
+        bStatus_t status;
+        
+        //toggle sensor tag led
+        st_leds_value ^= (ST_LED_RED | ST_LED_GREEN);
+        
+        //output LP data and LED
+        if (st_leds_value == ST_LED_OFF)
+        {
+          Display_print0(dispHandle, LCD_PAGE4, 0, "Turning led's OFF");     
+          PIN_setOutputValue(hMrPins, Board_LED0, 0);
+          PIN_setOutputValue(hMrPins, Board_LED1, 0);
+        }
+        else if (st_leds_value != ST_LED_OFF)
+        {
+          Display_print0(dispHandle, LCD_PAGE4, 0, "Turning led's ON");
+          PIN_setOutputValue(hMrPins, Board_LED0, 1);
+          PIN_setOutputValue(hMrPins, Board_LED1, 1);
+        }
+        
+        //control other sensor tag led's by sending att writes to all
+        for (i=0; i < MAX_NUM_BLE_CONNS; i++)
+        {
+          connHandle = connHandleMap[i];
+          
+          linkDB_GetInfo(connHandle, &pInfo);
+          if (pInfo.connRole == GAP_PROFILE_CENTRAL)
+          {
+            req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
+            if ( req.pValue != NULL )
+            {
+              req.handle = io_data_hdl[connHandle];
+              req.len = 1;
+              req.pValue[0] = st_leds_value;
+              req.sig = 0;
+              req.cmd = 0;
+              
+              status = GATT_WriteCharValue(connHandle, &req, selfEntity);
+              if ( status != SUCCESS )
+              {
+                GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+              }
+            }
+          }
+        }        
+        
+        //notify master (assumes notifications are enabled)
+        SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR4, sizeof(uint8_t), &st_leds_value);
+      }
     }
   } // else - in case a GATT message came after a connection has dropped, ignore it.  
   
@@ -960,9 +1049,9 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
   case GAP_DEVICE_INIT_DONE_EVENT:  
     {
       maxPduSize = pEvent->initDone.dataPktLen;
-      
-      Display_print0(dispHandle, LCD_PAGE0, 0, "Connected to 0");
+            
       Display_print0(dispHandle, LCD_PAGE1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
+      Display_print0(dispHandle, LCD_PAGE0, 0, "Connected to 0");
       Display_print0(dispHandle, LCD_PAGE2, 0, "Initialized");
       
       DevInfo_SetParameter(DEVINFO_SYSTEM_ID, DEVINFO_SYSTEM_ID_LEN, pEvent->initDone.devAddr);    
@@ -980,10 +1069,6 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
       if (linkDB_NumActive() < MAX_NUM_BLE_CONNS)
       {
         Display_print0(dispHandle, LCD_PAGE2, 0, "Ready to Advertise");
-      }
-      else
-      {
-        Display_print0(dispHandle, LCD_PAGE2, 0, "Can't Adv : No links");
       }
     }
     break;      
@@ -1039,17 +1124,16 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
         //add index-to-connHanlde mapping entry
         multi_role_addMappingEntry(connHandle);
         
-        //turn off advertising if no available links
-        if (linkDB_NumActive() >= MAX_NUM_BLE_CONNS)
+        // Print last connected device
+        Display_print0(dispHandle, LCD_PAGE5, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));        
+        
+        //turn off advertising if no available links and we aren't currently discovering
+        if ((linkDB_NumActive() >= MAX_NUM_BLE_CONNS) && (discState == BLE_DISC_STATE_IDLE))
         {
           uint8_t advertEnabled = FALSE;
           GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &advertEnabled, NULL);
           Display_print0(dispHandle, LCD_PAGE2, 0, "Can't adv: no links");
         }
-        
-        // Print last connected device
-        Display_print0(dispHandle, LCD_PAGE4, 0, "");
-        Display_print0(dispHandle, LCD_PAGE5, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));
         
         // initiate service discovery
         Util_startClock(&startDiscClock);
@@ -1057,7 +1141,7 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
       else
       {
         connHandle = GAP_CONNHANDLE_INIT;        
-        discState = BLE_DISC_STATE_IDLE;
+        discState = BLE_DISC_STATE_MTU;
         
         Display_print0(dispHandle, LCD_PAGE4, 0, "Connect Failed");
         Display_print1(dispHandle, LCD_PAGE3, 0, "Reason: %d", pEvent->gap.hdr.status);
@@ -1071,9 +1155,10 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
       uint8_t index = multi_role_mapConnHandleToIndex(pEvent->linkTerminate.connectionHandle);
       //clear screen, reset discovery info, and return to main menu
       connHandleMap[index] = INVALID_CONNHANDLE;
-      charHdl[index] = 0;
+      io_data_hdl[index] = 0;
+      io_conf_hdl[index] = 0;
       Display_print1(dispHandle, LCD_PAGE0, 0, "Connected to %d", linkDB_NumActive());
-      Display_print0(dispHandle, LCD_PAGE5, 0, "Disconnected!");
+      Display_print1(dispHandle, LCD_PAGE5, 0, "Disconnected: 0x%h", pEvent->linkTerminate.reason);
       LCDmenu = MAIN_MENU;
       if (linkDB_NumActive() == (MAX_NUM_BLE_CONNS-1)) //now we can advertise again
       {
@@ -1128,22 +1213,67 @@ static void multi_role_charValueChangeCB(uint8_t paramID)
 *
 * @return  None.
 */
+#pragma optimize=none
 static void multi_role_processCharValueChangeEvt(uint8_t paramID)
 {
   uint8_t newValue;
+  attWriteReq_t req;
+  linkDBInfo_t pInfo;
+  uint8_t i = 0;
+  bStatus_t status;
   
   switch(paramID)
   {
-  case SIMPLEPROFILE_CHAR1:
-    SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR1, &newValue);
-    
-    Display_print1(dispHandle, LCD_PAGE4, 0, "Char 1: %d", (uint16_t)newValue);
-    break;
-    
   case SIMPLEPROFILE_CHAR3:
     SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR3, &newValue);
     
-    Display_print1(dispHandle, LCD_PAGE4, 0, "Char 3: %d", (uint16_t)newValue);
+    //turn off
+    if ((newValue == 0) && (st_leds_value != ST_LED_OFF))
+    {
+      Display_print0(dispHandle, LCD_PAGE4, 0, "Turning led's OFF");
+      st_leds_value = ST_LED_OFF;
+      PIN_setOutputValue(hMrPins, Board_LED0, 0);
+      PIN_setOutputValue(hMrPins, Board_LED1, 0);      
+    }
+    //turn on
+    else if ((newValue == 1) && (st_leds_value == ST_LED_OFF))
+    {
+      Display_print0(dispHandle, LCD_PAGE4, 0, "Turning led's ON");
+      st_leds_value = ST_LED_GREEN | ST_LED_RED; //turn on led's
+      PIN_setOutputValue(hMrPins, Board_LED0, 1);
+      PIN_setOutputValue(hMrPins, Board_LED1, 1);
+    }
+    //not doing anything new so don't send writes
+    else
+    {
+      break;
+    }
+    
+    //send ATT write to all slaves
+    for (i=0; i < MAX_NUM_BLE_CONNS; i++)
+    {
+      connHandle = connHandleMap[i];
+        
+      linkDB_GetInfo(connHandle, &pInfo);
+      if (pInfo.connRole == GAP_PROFILE_CENTRAL)
+      {
+        req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
+        if ( req.pValue != NULL )
+        {
+          req.handle = io_data_hdl[connHandle];
+          req.len = 1;
+          req.pValue[0] = st_leds_value;
+          req.sig = 0;
+          req.cmd = 0;
+          
+          status = GATT_WriteCharValue(connHandle, &req, selfEntity);
+          if ( status != SUCCESS )
+          {
+            GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+          }
+        }
+      }
+    }
     break;
     
   default:
@@ -1237,12 +1367,9 @@ static void multi_role_handleKeys(uint8_t keys)
     // Start or stop discovery
     if (linkDB_NumActive() < MAX_NUM_BLE_CONNS) //if we can connect to another device
     {
-      if (!scanningStarted) //if we're not already scanning
-      {        
+      if (discState == BLE_DISC_STATE_IDLE) //if we're not discovering from a previous connection
+      {
         Display_print0(dispHandle, LCD_PAGE3, 0, "Discovering...");
-        Display_print0(dispHandle, LCD_PAGE4, 0, "");
-        Display_print0(dispHandle, LCD_PAGE6, 0, "");
-        Display_print0(dispHandle, LCD_PAGE7, 0, "");
         
         //reset device found flag
         device_found = FALSE;
@@ -1251,11 +1378,6 @@ static void multi_role_handleKeys(uint8_t keys)
         GAPRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
                                DEFAULT_DISCOVERY_ACTIVE_SCAN,
                                DEFAULT_DISCOVERY_WHITE_LIST);      
-      }
-      else //cancel scanning
-      {
-        Display_print0(dispHandle, LCD_PAGE3, 0, "Discovery Cancelled");
-        GAPRole_CancelDiscovery();
       }
     }
     else // can't add more links at this time
@@ -1315,25 +1437,36 @@ static void multi_role_startDiscovery(void)
 *
 * @return  none
 */
+#pragma optimize=none
 static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
 { 
   if (pMsg->method == ATT_MTU_UPDATED_EVENT)
-  {   
+  {
     // MTU size updated
     Display_print1(dispHandle, LCD_PAGE4, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
   }
   else if (discState == BLE_DISC_STATE_MTU)
   {
-    // MTU size response received, discover simple BLE service
+    // MTU size response received, discover sensor tag I/O service
     if (pMsg->method == ATT_EXCHANGE_MTU_RSP)
     {
-      uint8_t uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SIMPLEPROFILE_SERV_UUID),
-      HI_UINT16(SIMPLEPROFILE_SERV_UUID) };        
-      discState = BLE_DISC_STATE_SVC;
-      
-      // Discovery simple BLE service
-      VOID GATT_DiscPrimaryServiceByUUID(connHandle, uuid, ATT_BT_UUID_SIZE,
-                                         selfEntity);
+      //start discovery if connected as a master
+      linkDBInfo_t pInfo;
+      linkDB_GetInfo(connHandle, &pInfo);
+      if (pInfo.connRole == GAP_PROFILE_CENTRAL)
+      {
+        uint8_t uuid[ATT_UUID_SIZE] = {TI_BASE_UUID_128(IO_SERV_UUID)};
+        discState = BLE_DISC_STATE_SVC;
+        
+        // discover sensor tag I/O service
+        VOID GATT_DiscPrimaryServiceByUUID(connHandle, uuid, ATT_UUID_SIZE,
+                                           selfEntity);
+      }
+      //otherwise stop discovery
+      else
+      {
+        discState = BLE_DISC_STATE_IDLE;
+      }
     }
   }
   else if (discState == BLE_DISC_STATE_SVC)
@@ -1353,18 +1486,11 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     {
       if (svcStartHdl != 0)
       {
-        attReadByTypeReq_t req;
-        
-        // Discover characteristic
+        // go to discover characteristic
         discState = BLE_DISC_STATE_CHAR;
         
-        req.startHandle = svcStartHdl;
-        req.endHandle = svcEndHdl;
-        req.type.len = ATT_BT_UUID_SIZE;
-        req.type.uuid[0] = LO_UINT16(SIMPLEPROFILE_CHAR1_UUID);
-        req.type.uuid[1] = HI_UINT16(SIMPLEPROFILE_CHAR1_UUID);
-        
-        VOID GATT_ReadUsingCharUUID(connHandle, &req, selfEntity);
+        //discover all chars in service
+        VOID GATT_DiscAllChars(connHandle, svcStartHdl, svcEndHdl, selfEntity);
       }
     }
   }
@@ -1376,14 +1502,125 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     {
       //find index to store handle
       uint8_t connIndex = multi_role_mapConnHandleToIndex(connHandle);
-      charHdl[connIndex] = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[0],
-                                        pMsg->msg.readByTypeRsp.pDataList[1]);
-      
-      Display_print0(dispHandle, LCD_PAGE6, 0, "Simple Svc Found");
+      if (char_disc_state == CHAR_DISC_STATE_IO_DATA)
+      {
+        io_data_hdl[connIndex] = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[3],
+                                              pMsg->msg.readByTypeRsp.pDataList[4]);
+        char_disc_state = CHAR_DISC_STATE_IO_CONF;
+      }
+      else if(char_disc_state == CHAR_DISC_STATE_IO_CONF)
+      {
+        io_conf_hdl[connIndex] = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[3],
+                                              pMsg->msg.readByTypeRsp.pDataList[4]);
+        char_disc_state = CHAR_DISC_STATE_KEYS_DATA;      
+      }
+      else if (char_disc_state == CHAR_DISC_STATE_KEYS_DATA)
+      {
+        keys_data_hdl[connIndex] = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[3],
+                                                pMsg->msg.readByTypeRsp.pDataList[4]); 
+        Display_print0(dispHandle, LCD_PAGE6, 0, "Chars Discovered");        
+        char_disc_state = CHAR_DISC_STATE_DONE;
+      }
     }
-    
-    discState = BLE_DISC_STATE_IDLE;
-  }    
+    // If procedure complete
+    if (((pMsg->method == ATT_READ_BY_TYPE_RSP) && 
+         (pMsg->hdr.status == bleProcedureComplete))  ||
+        (pMsg->method == ATT_ERROR_RSP))
+    {
+      //discover next service
+      if (char_disc_state == CHAR_DISC_STATE_KEYS_DATA)
+      {
+        discState = BLE_DISC_STATE_SVC;
+        uint8_t uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SK_SERV_UUID), HI_UINT16(SK_SERV_UUID) };               
+        VOID GATT_DiscPrimaryServiceByUUID(connHandle, uuid, ATT_BT_UUID_SIZE,
+                                           selfEntity);
+      }
+      else if (char_disc_state == CHAR_DISC_STATE_DONE)
+      {
+        attWriteReq_t req;
+        // start initializing characteristics
+        //write led value to IO data characteristic
+        req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
+        if ( req.pValue != NULL )
+        {
+          req.handle = io_data_hdl[connHandle];
+          req.len = 1;
+          req.pValue[0] = st_leds_value;
+          req.sig = 0;
+          req.cmd = 0;
+          
+          bStatus_t status = GATT_WriteCharValue(connHandle, &req, selfEntity);
+          discState = BLE_DISC_STATE_INIT_IO;
+          if ( status != SUCCESS )
+          {
+            GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+          }      
+        }         
+      }
+    }
+  }
+  else if (discState == BLE_DISC_STATE_INIT_IO)
+  {
+    //we've configured the IO conf char
+    if (pMsg->method == ATT_WRITE_RSP)
+    {
+      attWriteReq_t req;
+      //write 1 to I/O char to enable remote control
+      req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
+      if ( req.pValue != NULL )
+      {
+        req.handle = io_conf_hdl[connHandle];
+        req.len = 1;
+        req.pValue[0] = 1;
+        req.sig = 0;
+        req.cmd = 0;
+        
+        bStatus_t status = GATT_WriteCharValue(connHandle, &req, selfEntity);
+        discState = BLE_DISC_STATE_INIT_KEYS;
+        if ( status != SUCCESS )  //todo: this would break the discovery process...
+        {
+          GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+        }      
+      }
+    }
+  }
+  else if (discState == BLE_DISC_STATE_INIT_KEYS)
+  {
+    if (pMsg->method == ATT_WRITE_RSP)
+    {
+      //configure Keys char CCC
+      attWriteReq_t req;
+      //write 1 to IO Conf characteristic to enable key press notifications
+      req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 2, NULL);
+      if ( req.pValue != NULL )
+      {
+        req.handle = keys_data_hdl[connHandle]+1; //CCC is handle after data handle
+        req.len = 2;
+        req.pValue[0] = 0x01;
+        req.pValue[1] = 0x00;
+        req.sig = 0;
+        req.cmd = 0;
+        
+        bStatus_t status = GATT_WriteCharValue(connHandle, &req, selfEntity);
+        discState = BLE_DISC_STATE_DONE;
+        if ( status != SUCCESS )
+        {
+          GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+        }      
+      }
+    }
+  }
+  else if (discState == BLE_DISC_STATE_DONE)
+  {
+    if (pMsg->method == ATT_WRITE_RSP)
+    {    
+      //we're done discovering and initing chars!!
+      Display_print0(dispHandle, LCD_PAGE6, 0, "Chars Init'd");
+      //reset state machines for next connection
+      discState = BLE_DISC_STATE_IDLE;
+      char_disc_state = CHAR_DISC_STATE_IO_DATA;
+    }
+  }
 }
 
 /*********************************************************************
