@@ -5,7 +5,7 @@ This repository contains additional sample applications and components for the T
 
 To use the examples and tools in this repository, please [download and install the SDK](http://www.ti.com/ble-stack) first, and if necessary [buy an evaluation kit](https://store.ti.com/Search.aspx?k=CC2650).
 
-For other hardware and software resources, [please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions please refer to the FAQ.
+For other hardware and software resources, [please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions please refer to the [FAQ page](docs/faq.md).
 
 **Note:** Not all additional sample projects are migrated to GitHub - please refer to the Examples List below.
 
@@ -32,7 +32,7 @@ If the BLE SDK must be installed to a different location, then the examples in t
 
         TI_BLE_SDK_BASE
 
-Follow your IDE specific instructions for changing environment variables or simply do a global search and replace within the ble\_examples folder. See the FAQ section for more details.
+Follow your IDE specific instructions for changing environment variables or simply do a global search and replace within the ble\_examples folder. See the [FAQ page](docs/faq.md) for more details.
 
 By default, TI\_BLE\_SDK\_BASE points to C:\ti\simplelink\ble\_sdk\_2\_02\_00\_31. If you installed the SDK there, no change is required.
 

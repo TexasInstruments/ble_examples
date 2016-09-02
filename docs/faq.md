@@ -47,7 +47,7 @@ Frequently Asked Questions
     1. Install PuTTY or another serial terminal emulator
     2. If not done, connect the LaunchPad to the computer using the micro USB cable.
     3. The Windows Device Manager (Start &rarr; Run &rarr; `mmc devmgmt.msc` &rarr; Ok) should show you the following devices connected:
-       ![Device Manager](doc_resources/dev_mgr_xds110.PNG)
+       ![Device Manager](doc_resources/dev_mgr_xds110.png)
 
     4. Note the COM port number of the `XDS110 Class Application/User UART` listed.
     5. Configure putty as a serial console with 115200 8N1.
