@@ -2,7 +2,7 @@
 
 <projectSpec>
     <project
-        name="throughput_example_central_cc2650lp_stack"
+        name="multi_role_cc2650lp_stack"
         device="CC2650F128"
         connection="TIXDS110_Connection.xml"
         toolChain="TI"
