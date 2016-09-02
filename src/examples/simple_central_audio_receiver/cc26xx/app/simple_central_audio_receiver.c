@@ -1028,6 +1028,7 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
  * @return  none
  */
 static uint8_t counter;
+static uint8_t packetCount;
 static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 {
   if (state == BLE_STATE_CONNECTED)
@@ -1047,15 +1048,19 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 #ifdef AUDIO_LEGACY
       if ((pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle) && (pMsg->msg.handleValueNoti.len != 1)) {
         // Output the receive packets through UART, and use audio_frame_serial_print.py to decode
-        uint8_t *pValueSwapped;
-        pValueSwapped = pMsg->msg.handleValueNoti.pValue;
-        pValueSwapped[1]= pMsg->msg.handleValueNoti.pValue[3];
-        pValueSwapped[2]= pMsg->msg.handleValueNoti.pValue[1];
-        pValueSwapped[3]= pMsg->msg.handleValueNoti.pValue[2];
-//        UART_write(uartHandle, (pMsg->msg.handleValueNoti.pValue) , 20);
+        static uint8_t *pValueSwapped;
+        
+        pValueSwapped = pMsg->msg.handleValueNoti.pValue;       
+        if (counter % 5 == 0){
+        uint8_t PV1 = pMsg->msg.handleValueNoti.pValue[1];
+        uint8_t PV2 = pMsg->msg.handleValueNoti.pValue[2];
+        uint8_t SI = pMsg->msg.handleValueNoti.pValue[3];  
+        pValueSwapped[1]= (pValueSwapped[1] & 0x00)| SI;
+        pValueSwapped[2]= (pValueSwapped[2] & 0x00)|PV1;
+        pValueSwapped[3]= (pValueSwapped[3] & 0x00)|PV2;
+        }
         UART_write(uartHandle, pValueSwapped , 20);
         counter++;
-
         if (counter == 50){
           PIN_setOutputValue(ledPinHandle, Board_RLED, !PIN_getOutputValue(Board_RLED));
           counter = 0;
@@ -1162,6 +1167,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         if ( serviceToDiscover == AUDIO_SERV_UUID )
         {
           counter = 0;
+          packetCount = 0;
           /* This kicks off the enabling the 1st of notification enable event */
           if (audioStartCharValueHandle != GATT_INVALID_HANDLE) {
             audioStartCCCHandle = audioStartCharValueHandle + 1 ;
