@@ -191,7 +191,7 @@ Display_Handle dispHandle = NULL;
 * LOCAL VARIABLES
 */
 // array to store index to connection handle map
-extern uint16_t connHandleMap[MAX_NUM_BLE_CONNS];
+uint16_t connHandleMap[MAX_NUM_BLE_CONNS];
 
 /*********************************************************************
 * LOCAL VARIABLES
