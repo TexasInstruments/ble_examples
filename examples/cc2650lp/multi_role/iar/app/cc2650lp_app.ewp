@@ -181,7 +181,7 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>DEBUG</state>
+          <state>xDEBUG</state>
           <state>USE_ICALL</state>
           <state>POWER_SAVING</state>
           <state>MAX_NUM_BLE_CONNS=4</state>

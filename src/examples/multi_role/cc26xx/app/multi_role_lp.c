@@ -76,28 +76,19 @@
 * CONSTANTS
 */
 // Advertising interval when device is discoverable (units of 625us, 160=100ms)
-#define DEFAULT_ADVERTISING_INTERVAL          160
+#define DEFAULT_ADVERTISING_INTERVAL          320
 
 // Limited discoverable mode advertises for 30.72s, and then stops
 // General discoverable mode advertises indefinitely
 #define DEFAULT_DISCOVERABLE_MODE             GAP_ADTYPE_FLAGS_GENERAL
 
-// Connection parameters if automatic  parameter update request is enabled
-#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     80
-#define DEFAULT_DESIRED_MAX_CONN_INTERVAL     800
-#define DEFAULT_DESIRED_SLAVE_LATENCY         0
-#define DEFAULT_DESIRED_CONN_TIMEOUT          1000
-
 // Whether to enable automatic parameter update request when a connection is
 // formed
 #define DEFAULT_ENABLE_UPDATE_REQUEST         FALSE
 
-// Connection Pause Peripheral time value (in seconds)
-#define DEFAULT_CONN_PAUSE_PERIPHERAL         6
-
 //connection parameters
 #define DEFAULT_CONN_INT                      80
-#define DEFAULT_CONN_TIMEOUT                  1000
+#define DEFAULT_CONN_TIMEOUT                  200
 #define DEFAULT_CONN_LATENCY                  0
 
 // Default service discovery timer delay in ms
@@ -166,21 +157,12 @@ enum
   CHAR_DISC_STATE_DONE,
 };
 
-
-// LCD defines
-#define MAIN_MENU 0
-#define DEVICE_MENU 1
-
-#define CONNECTED_DEVICES 0
-#define DISCOVERED_DEVICES 1
-
-//sensor tag attribute table defines
+//sensor tag  defines
 #define IO_SERV_UUID                  0xAA64
 #define IO_DATA_UUID                  0xAA65
 #define IO_CONF_UUID                  0xAA66
 #define MOVEMENT_SERV_UUID            0xAA80 
 #define SK_SERV_UUID                  0xFFE0
-
 #define ST_LED_OFF                    0x00
 #define ST_LED_GREEN                  0x01
 #define ST_LED_RED                    0x02
@@ -216,12 +198,6 @@ Display_Handle dispHandle = NULL;
 /*********************************************************************
 * LOCAL VARIABLES
 */
-// array to store index to connection handle map
-extern uint16_t connHandleMap[MAX_NUM_BLE_CONNS];
-
-/*********************************************************************
-* LOCAL VARIABLES
-*/
 
 // Entity ID globally used to check for source and/or destination of messages
 static ICall_EntityID selfEntity;
@@ -243,10 +219,6 @@ static uint16_t events;
 Task_Struct mrTask;
 Char mrTaskStack[MR_TASK_STACK_SIZE];
 
-// LCD menu variables
-uint8_t LCDmenu = MAIN_MENU;
-uint8_t selectKey = DISCOVERED_DEVICES;
-
 // GAP - SCAN RSP data (max size = 31 bytes)
 static uint8_t scanRspData[] =
 {
@@ -254,14 +226,6 @@ static uint8_t scanRspData[] =
   13,   // length of this data
   GAP_ADTYPE_LOCAL_NAME_COMPLETE,
   'M', 'u', 'l', 't', 'i', ' ', 'R', 'o', 'l', 'e', ':', ')',
-  
-  // connection interval range
-  0x05,   // length of this data
-  GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
-  LO_UINT16(DEFAULT_DESIRED_MIN_CONN_INTERVAL),   // 100ms
-  HI_UINT16(DEFAULT_DESIRED_MIN_CONN_INTERVAL),
-  LO_UINT16(DEFAULT_DESIRED_MAX_CONN_INTERVAL),   // 1s
-  HI_UINT16(DEFAULT_DESIRED_MAX_CONN_INTERVAL),
   
   // Tx power level
   0x02,   // length of this data
@@ -312,6 +276,8 @@ static uint16 maxPduSize;
 static uint8 connect_address_type;
 static uint8 connect_address[B_ADDR_LEN];
 static bool device_found = FALSE;
+// array to store index to connection handle map
+static uint16_t connHandleMap[MAX_NUM_BLE_CONNS];
 
 static uint8_t st_leds_value = ST_LED_OFF;
 
@@ -358,6 +324,8 @@ static void multi_role_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
                                         uint8_t uiInputs, uint8_t uiOutputs, uint32_t numComparison);
 static void multi_role_pairStateCB(uint16_t connHandle, uint8_t state,
                                          uint8_t status);
+static bStatus_t multiRole_WriteCharValuesToAllSlaves(uint8_t size, 
+                                                      uint8_t *value, uint16_t *handles);
 
 /*********************************************************************
 * PROFILE CALLBACKS
@@ -444,7 +412,6 @@ static void multi_role_init(void)
   {
     /*-------------------PERIPHERAL-------------------*/
     uint16_t advInt = DEFAULT_ADVERTISING_INTERVAL;
-    GAP_SetParamValue(TGAP_CONN_PAUSE_PERIPHERAL, DEFAULT_CONN_PAUSE_PERIPHERAL);    
     GAP_SetParamValue(TGAP_LIM_DISC_ADV_INT_MIN, advInt);
     GAP_SetParamValue(TGAP_LIM_DISC_ADV_INT_MAX, advInt);
     GAP_SetParamValue(TGAP_GEN_DISC_ADV_INT_MIN, advInt);
@@ -478,10 +445,6 @@ static void multi_role_init(void)
     // being discoverable for 30.72 second, and will not being advertising again
     // until the enabler is set back to TRUE
     uint16_t advertOffTime = 0;
-    uint16_t desiredMinInterval = DEFAULT_DESIRED_MIN_CONN_INTERVAL;
-    uint16_t desiredMaxInterval = DEFAULT_DESIRED_MAX_CONN_INTERVAL;
-    uint16_t desiredSlaveLatency = DEFAULT_DESIRED_SLAVE_LATENCY;
-    uint16_t desiredConnTimeout = DEFAULT_DESIRED_CONN_TIMEOUT;
     
     GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t),
                          &initialAdvertEnable, NULL);
@@ -490,14 +453,6 @@ static void multi_role_init(void)
     GAPRole_SetParameter(GAPROLE_SCAN_RSP_DATA, sizeof(scanRspData),
                          scanRspData, NULL);
     GAPRole_SetParameter(GAPROLE_ADVERT_DATA, sizeof(advertData), advertData, NULL);
-    GAPRole_SetParameter(GAPROLE_MIN_CONN_INTERVAL, sizeof(uint16_t),
-                         &desiredMinInterval, NULL);
-    GAPRole_SetParameter(GAPROLE_MAX_CONN_INTERVAL, sizeof(uint16_t),
-                         &desiredMaxInterval, NULL);
-    GAPRole_SetParameter(GAPROLE_SLAVE_LATENCY, sizeof(uint16_t),
-                         &desiredSlaveLatency, NULL);
-    GAPRole_SetParameter(GAPROLE_TIMEOUT_MULTIPLIER, sizeof(uint16_t),
-                         &desiredConnTimeout, NULL);
     /*--------------CENTRAL-----------------*/
     uint8_t scanRes = DEFAULT_MAX_SCAN_RES;
     GAPRole_SetParameter(GAPROLE_MAX_SCAN_RES, sizeof(uint8_t), 
@@ -555,7 +510,7 @@ static void multi_role_init(void)
   
   // Setup the GAP Bond Manager
   {
-    uint8_t pairMode = GAPBOND_PAIRING_MODE_NO_PAIRING;
+    uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
     uint8_t mitm = TRUE;
     uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8_t bonding = FALSE;
@@ -588,10 +543,9 @@ static void multi_role_init(void)
   PIN_setOutputValue(hMrPins, Board_LED1, 0);  
   
 #ifdef DEBUG
-  // Map RFC_GPO0 to DIO22
+  //RF observables useful for controller timing info
   IOCPortConfigureSet(IOID_22, IOC_PORT_RFC_GPO0,
                       IOC_IOMODE_NORMAL);
-  // Map RFC_GPO1 to DIO21
   IOCPortConfigureSet(IOID_21, IOC_PORT_RFC_GPO1,
                       IOC_IOMODE_NORMAL);
 #endif //DEBUG  
@@ -672,6 +626,7 @@ static void multi_role_taskFxn(UArg a0, UArg a1)
       }
     }
     
+    //Start Service / Characteristic discovery
     if (events & MR_START_DISCOVERY_EVT)
     {      
       events &= ~MR_START_DISCOVERY_EVT;
@@ -735,7 +690,6 @@ static uint8_t multi_role_processStackMsg(ICall_Hdr *pMsg)
 *
 * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
 */
-#pragma optimize=none
 static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
 {
   // See if GATT server was unable to transmit an ATT response
@@ -774,12 +728,13 @@ static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
   //messages from GATT server during a connection
   if (linkDB_NumActive() > 0)
   {
-    //handle discovery and intiialization
+    //handle discovery and intitialization GATT events
     if (discState != BLE_DISC_STATE_IDLE)
     {
       multi_role_processGATTDiscEvent(pMsg);
     }    
-    //handle reads and writes after initialization
+    
+    //handle read responses after initialization
     else if ((pMsg->method == ATT_READ_RSP)   ||   // read response
         ((pMsg->method == ATT_ERROR_RSP) &&
          (pMsg->msg.errorRsp.reqOpcode == ATT_READ_REQ)))
@@ -795,6 +750,8 @@ static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
       }
       
     }
+    
+    //handle write responses after initialization
     else if ((pMsg->method == ATT_WRITE_RSP)  ||   //write response
              ((pMsg->method == ATT_ERROR_RSP) &&
               (pMsg->msg.errorRsp.reqOpcode == ATT_WRITE_REQ)))
@@ -806,31 +763,31 @@ static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
       }
       else
       {
-        // After a succesful write, display the value that was written and
-        // increment value
+        // After a succesful write, display the value that was written
         Display_print1(dispHandle, LCD_PAGE6, 0, "Write sent to: %d", pMsg->connHandle);
       }
     }
+    
+    //handle notifications after initialization
     else if (pMsg->method == ATT_HANDLE_VALUE_NOTI)   //notification
     {
-      //we're only receiving notifications from one char
+      //we're only receiving notifications from one char so no need to check
+      //the notification handle
       if (pMsg->msg.handleValueNoti.pValue[0] == ST_BUTTON_LEFT)
       {
         //increment left button presses
         uint8_t simpleProfile_char2;
+        //read value from simple profile
         SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR2, &simpleProfile_char2);
+        //increment
         simpleProfile_char2++;
+        //store value in simple profile
         SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR2, sizeof(uint8_t), &simpleProfile_char2);
         Display_print1(dispHandle, LCD_PAGE4, 0, "Button from: %d", pMsg->connHandle);
         Display_print1(dispHandle, LCD_PAGE4, 0, "Button count: %d", simpleProfile_char2);
       }
       else if (pMsg->msg.handleValueNoti.pValue[0] == ST_BUTTON_RIGHT)
-      {
-        uint8_t i = 0;
-        attWriteReq_t req;
-        linkDBInfo_t pInfo;
-        bStatus_t status;
-        
+      {                
         //toggle sensor tag led
         st_leds_value ^= (ST_LED_RED | ST_LED_GREEN);
         
@@ -848,37 +805,14 @@ static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
           PIN_setOutputValue(hMrPins, Board_LED1, 1);
         }
         
-        //control other sensor tag led's by sending att writes to all
-        for (i=0; i < MAX_NUM_BLE_CONNS; i++)
-        {
-          connHandle = connHandleMap[i];
-          
-          linkDB_GetInfo(connHandle, &pInfo);
-          if (pInfo.connRole == GAP_PROFILE_CENTRAL)
-          {
-            req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
-            if ( req.pValue != NULL )
-            {
-              req.handle = io_data_hdl[connHandle];
-              req.len = 1;
-              req.pValue[0] = st_leds_value;
-              req.sig = 0;
-              req.cmd = 0;
-              
-              status = GATT_WriteCharValue(connHandle, &req, selfEntity);
-              if ( status != SUCCESS )
-              {
-                GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
-              }
-            }
-          }
-        }        
+        //send led value to all slaves
+        multiRole_WriteCharValuesToAllSlaves(1, &st_leds_value, io_data_hdl);
         
         //notify master (assumes notifications are enabled)
         SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR4, sizeof(uint8_t), &st_leds_value);
       }
     }
-  } // else - in case a GATT message came after a connection has dropped, ignore it.  
+  }
   
   // Free message payload. Needed only for ATT Protocol messages
   GATT_bm_free(&pMsg->msg, pMsg->method);
@@ -1041,11 +975,11 @@ static uint8_t multi_role_eventCB(gapMultiRoleEvent_t *pEvent)
 *
 * @return  none
 */
-#pragma optimize=none
 static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
 {
   switch (pEvent->gap.opcode)
   {
+  //finished initializing device
   case GAP_DEVICE_INIT_DONE_EVENT:  
     {
       maxPduSize = pEvent->initDone.dataPktLen;
@@ -1058,12 +992,14 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
     }
     break;
     
+  //advertising has started
   case GAP_MAKE_DISCOVERABLE_DONE_EVENT:
     {
       Display_print0(dispHandle, LCD_PAGE2, 0, "Advertising");
     }
     break;
     
+  //advertising has finished
   case GAP_END_DISCOVERABLE_DONE_EVENT:
     {
       if (linkDB_NumActive() < MAX_NUM_BLE_CONNS)
@@ -1073,19 +1009,22 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
     }
     break;      
     
+  //an advertisement / scan response has been found
   case GAP_DEVICE_INFO_EVENT:
     {
       // if filtering device discovery results based on service UUID
       if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
       {
+        //only care about sensor tags...search for advertisements
+        //with the MOVEMENT_SERV_UUID
         if (multi_role_findSvcUuid(MOVEMENT_SERV_UUID,
                                    pEvent->deviceInfo.pEvtData,
                                    pEvent->deviceInfo.dataLen))
         {
-          //stop scanning
+          //stop scanning...we found a device we want to connect to
           GAPRole_CancelDiscovery();
           
-          //store address to connect to
+          //store address to connect to after scanning is stopped
           connect_address_type = pEvent->deviceInfo.addrType;
           memcpy(connect_address, pEvent->deviceInfo.addr, B_ADDR_LEN);
           device_found = TRUE;
@@ -1094,11 +1033,12 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
     }
     break;
     
+  // a report at the end of scanning
   case GAP_DEVICE_DISCOVERY_EVENT:
     {      
       Display_print0(dispHandle, LCD_PAGE3, 0, "Done scanning.");
       
-      //connect to device if found
+      //connect to device if found during scanning
       if (device_found == TRUE)
       {
         bStatus_t connect_status = GAPRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE, DEFAULT_LINK_WHITE_LIST,
@@ -1112,6 +1052,7 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
     }
     break;
     
+  //connection has been established
   case GAP_LINK_ESTABLISHED_EVENT:
     {
       if (pEvent->gap.hdr.status == SUCCESS)
@@ -1127,12 +1068,19 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
         // Print last connected device
         Display_print0(dispHandle, LCD_PAGE5, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));        
         
-        //turn off advertising if no available links and we aren't currently discovering
-        if ((linkDB_NumActive() >= MAX_NUM_BLE_CONNS) && (discState == BLE_DISC_STATE_IDLE))
+        //turn off advertising if no available links or if we formed as a master (to allow 
+        //discovery to complete before forming a new connection). if the latter case,
+        //advertising will be restarted after service / char discovery / initializtion
+        //is complete
+        if ((linkDB_NumActive() >= MAX_NUM_BLE_CONNS) || (pEvent->linkCmpl.connRole == GAP_PROFILE_CENTRAL))
         {
           uint8_t advertEnabled = FALSE;
-          GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &advertEnabled, NULL);
-          Display_print0(dispHandle, LCD_PAGE2, 0, "Can't adv: no links");
+          GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &advertEnabled, NULL);          
+          //if we can't advertise any more due to no available connections
+          if (linkDB_NumActive() >= MAX_NUM_BLE_CONNS)
+          {
+            Display_print0(dispHandle, LCD_PAGE2, 0, "Can't adv: no links");
+          }
         }
         
         // initiate service discovery
@@ -1140,6 +1088,7 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
       }
       else
       {
+        //reset state machine
         connHandle = GAP_CONNHANDLE_INIT;        
         discState = BLE_DISC_STATE_MTU;
         
@@ -1149,18 +1098,20 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
     }
     break;
     
+  //connection has terminated
   case GAP_LINK_TERMINATED_EVENT:
     {
-      //find index
+      //find index from connection handle
       uint8_t index = multi_role_mapConnHandleToIndex(pEvent->linkTerminate.connectionHandle);
-      //clear screen, reset discovery info, and return to main menu
+      //reset connection info
       connHandleMap[index] = INVALID_CONNHANDLE;
       io_data_hdl[index] = 0;
       io_conf_hdl[index] = 0;
+      keys_data_hdl[index] = 0;
+      Display_print1(dispHandle, LCD_PAGE5, 0, "Disconnected: 0x%h", pEvent->linkTerminate.reason);      
       Display_print1(dispHandle, LCD_PAGE0, 0, "Connected to %d", linkDB_NumActive());
-      Display_print1(dispHandle, LCD_PAGE5, 0, "Disconnected: 0x%h", pEvent->linkTerminate.reason);
-      LCDmenu = MAIN_MENU;
-      if (linkDB_NumActive() == (MAX_NUM_BLE_CONNS-1)) //now we can advertise again
+      //if there were previously no available links, we can start adv / scanning again
+      if (linkDB_NumActive() == (MAX_NUM_BLE_CONNS-1))
       {
         Display_print0(dispHandle, LCD_PAGE2, 0, "Ready to Advertise");
         Display_print0(dispHandle, LCD_PAGE3, 0, "Ready to Scan");
@@ -1168,6 +1119,7 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
     }
     break;
     
+  //parameter pdate finished
   case GAP_LINK_PARAM_UPDATE_EVENT:
     {
       Display_print1(dispHandle, LCD_PAGE6, 0, "Param Update %d", pEvent->linkUpdate.status);
@@ -1213,21 +1165,17 @@ static void multi_role_charValueChangeCB(uint8_t paramID)
 *
 * @return  None.
 */
-#pragma optimize=none
 static void multi_role_processCharValueChangeEvt(uint8_t paramID)
 {
   uint8_t newValue;
-  attWriteReq_t req;
-  linkDBInfo_t pInfo;
-  uint8_t i = 0;
-  bStatus_t status;
   
   switch(paramID)
   {
   case SIMPLEPROFILE_CHAR3:
+    //get value from simple profile
     SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR3, &newValue);
     
-    //turn off
+    //turn off LEDs
     if ((newValue == 0) && (st_leds_value != ST_LED_OFF))
     {
       Display_print0(dispHandle, LCD_PAGE4, 0, "Turning led's OFF");
@@ -1235,7 +1183,7 @@ static void multi_role_processCharValueChangeEvt(uint8_t paramID)
       PIN_setOutputValue(hMrPins, Board_LED0, 0);
       PIN_setOutputValue(hMrPins, Board_LED1, 0);      
     }
-    //turn on
+    //turn on LEDs
     else if ((newValue == 1) && (st_leds_value == ST_LED_OFF))
     {
       Display_print0(dispHandle, LCD_PAGE4, 0, "Turning led's ON");
@@ -1250,30 +1198,7 @@ static void multi_role_processCharValueChangeEvt(uint8_t paramID)
     }
     
     //send ATT write to all slaves
-    for (i=0; i < MAX_NUM_BLE_CONNS; i++)
-    {
-      connHandle = connHandleMap[i];
-        
-      linkDB_GetInfo(connHandle, &pInfo);
-      if (pInfo.connRole == GAP_PROFILE_CENTRAL)
-      {
-        req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
-        if ( req.pValue != NULL )
-        {
-          req.handle = io_data_hdl[connHandle];
-          req.len = 1;
-          req.pValue[0] = st_leds_value;
-          req.sig = 0;
-          req.cmd = 0;
-          
-          status = GATT_WriteCharValue(connHandle, &req, selfEntity);
-          if ( status != SUCCESS )
-          {
-            GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
-          }
-        }
-      }
-    }
+    multiRole_WriteCharValuesToAllSlaves(1, &st_leds_value, io_data_hdl);
     break;
     
   default:
@@ -1387,21 +1312,8 @@ static void multi_role_handleKeys(uint8_t keys)
     return;
   }
   
-  if (keys & KEY_RIGHT)  // turn advertising on / off
+  if (keys & KEY_RIGHT)  // nothing for now
   {
-    uint8_t adv;
-    uint8_t adv_status;
-    GAPRole_GetParameter(GAPROLE_ADVERT_ENABLED, &adv_status, NULL);
-    if (adv_status) //turn off
-    {
-      adv = FALSE;
-      GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
-    }
-    else //turn on
-    {
-      adv = TRUE;
-      GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
-    }
     return;
   }
 }
@@ -1437,9 +1349,11 @@ static void multi_role_startDiscovery(void)
 *
 * @return  none
 */
-#pragma optimize=none
 static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
 { 
+  //map connection handle to index for storing data in arrays
+  uint8_t connIndex = multi_role_mapConnHandleToIndex(connHandle);  
+  
   if (pMsg->method == ATT_MTU_UPDATED_EVENT)
   {
     // MTU size updated
@@ -1500,8 +1414,6 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     if ((pMsg->method == ATT_READ_BY_TYPE_RSP) && 
         (pMsg->msg.readByTypeRsp.numPairs > 0))
     {
-      //find index to store handle
-      uint8_t connIndex = multi_role_mapConnHandleToIndex(connHandle);
       if (char_disc_state == CHAR_DISC_STATE_IO_DATA)
       {
         io_data_hdl[connIndex] = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[3],
@@ -1543,7 +1455,7 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
         req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
         if ( req.pValue != NULL )
         {
-          req.handle = io_data_hdl[connHandle];
+          req.handle = io_data_hdl[connIndex];
           req.len = 1;
           req.pValue[0] = st_leds_value;
           req.sig = 0;
@@ -1569,7 +1481,7 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
       if ( req.pValue != NULL )
       {
-        req.handle = io_conf_hdl[connHandle];
+        req.handle = io_conf_hdl[connIndex];
         req.len = 1;
         req.pValue[0] = 1;
         req.sig = 0;
@@ -1594,7 +1506,7 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 2, NULL);
       if ( req.pValue != NULL )
       {
-        req.handle = keys_data_hdl[connHandle]+1; //CCC is handle after data handle
+        req.handle = keys_data_hdl[connIndex]+1; //CCC is handle after data handle
         req.len = 2;
         req.pValue[0] = 0x01;
         req.pValue[1] = 0x00;
@@ -1619,6 +1531,12 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       //reset state machines for next connection
       discState = BLE_DISC_STATE_IDLE;
       char_disc_state = CHAR_DISC_STATE_IO_DATA;
+      //if advertising restarting was delayed due to discovery, restart now
+      if (linkDB_NumActive() < MAX_NUM_BLE_CONNS)
+      {
+        uint8_t advertEnabled = TRUE;
+        GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &advertEnabled, NULL);
+      }
     }
   }
 }
@@ -1630,7 +1548,6 @@ static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
 *
 * @return  TRUE if service UUID found
 */
-#pragma optimize=none
 static bool multi_role_findSvcUuid(uint16_t uuid, uint8_t *pData,
                                    uint8_t dataLen)
 {
@@ -1709,7 +1626,9 @@ static uint16_t multi_role_mapConnHandleToIndex(uint16_t connHandle)
     }
   }
   //not found if we got here
-  return INVALID_CONNHANDLE;
+  //abort to prevent invalid array access
+  gapRole_abort();
+  return 0xFFFF;
 }
 
 /************************************************************************
@@ -1843,6 +1762,51 @@ static uint8_t multi_role_addMappingEntry(uint16_t connHandle)
   //no room if we get here
   return bleNoResources;
 }        
+
+static bStatus_t multiRole_WriteCharValuesToAllSlaves(uint8_t size, uint8_t *value, uint16_t *handles)
+{
+  uint8_t i, j = 0;
+  attWriteReq_t req;
+  linkDBInfo_t pInfo;  
+  bStatus_t status;
+  
+  //check all connections to send data to
+  for (i=0; i < MAX_NUM_BLE_CONNS; i++)
+  {
+    //map index to conn handle
+    connHandle = connHandleMap[i];
+    
+    //if connection is as a master
+    linkDB_GetInfo(connHandle, &pInfo);
+    if (pInfo.connRole == GAP_PROFILE_CENTRAL)
+    {
+      //allocate space for data
+      req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, size, NULL);
+      //fill up request if allocated
+      if ( req.pValue != NULL )
+      {
+        req.handle = handles[i];
+        req.len = size;
+        for (j = 0; j < size; j ++)
+        {
+          req.pValue[j] = value[j];
+        }        
+        req.sig = 0;
+        req.cmd = 0;
         
+        //send GATT write to controller
+        status = GATT_WriteCharValue(connHandle, &req, selfEntity);
+        //free data if failed, otherwise controller will free
+        if ( status != SUCCESS )
+        {
+          GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+          return status;
+        }
+      }
+    }
+  }
+  return status;
+}
+
 /*********************************************************************
 *********************************************************************/

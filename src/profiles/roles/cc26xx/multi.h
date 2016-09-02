@@ -348,8 +348,7 @@ extern bStatus_t gapRole_connUpdate(uint8_t handleFailure,
  */
 extern void GAPRole_createTask(void);
 
-// array to store index to connection handle mapping
-extern uint16_t connHandleMap[MAX_NUM_BLE_CONNS];
+extern void gapRole_abort(void);
 
 /*-------------------------------------------------------------------
 -------------------------------------------------------------------*/

@@ -130,9 +130,6 @@ typedef struct
  * GLOBAL VARIABLES
  */
 
-// array to store index to connection handle map
-uint16_t connHandleMap[MAX_NUM_BLE_CONNS];
-
 // Link DB maximum number of connections
 uint8 linkDBNumConns;
 
@@ -234,9 +231,6 @@ static void gapRole_SetupGAP(void);
 static void gapRole_setEvent(uint32_t event);
 
 static void      gapRole_HandleParamUpdateNoSuccess(void);
-
-// for debugging
-static void gapRole_abort(void);
 
 /*********************************************************************
  * CALLBACKS
@@ -647,6 +641,19 @@ void GAPRole_createTask(void)
   taskParams.priority = GAPROLE_TASK_PRIORITY;
   
   Task_construct(&gapRoleTask, gapRole_taskFxn, &taskParams, NULL);
+}
+
+/*********************************************************************
+ * @fn      gapRole_abort
+ *
+ * @brief   to catch errors during debugging
+ *
+ * @return  none
+ */
+void gapRole_abort(void)
+{
+  volatile uint8_t i = 1;
+  while(i==1){asm("NOP");};
 }
 
 /*********************************************************************
@@ -1268,20 +1275,5 @@ static void gapRole_setEvent(uint32_t event)
 void gapRole_clockHandler(UArg a0)
 {
   gapRole_setEvent(a0);
-}
-
-
-/*********************************************************************
- * @fn      gapRole_abort
- *
- * @brief   to catch errors during debugging
- *
- * @return  none
- */
-static void gapRole_abort(void)
-{
-#ifdef DEBUG  
-  while(1);
-#endif  //DEBUG
 }
 
