@@ -67,9 +67,9 @@ The following examples are currently supported:
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/hid_emu_kbd.md) | [launchpad project files](examples/cc2650lp/hid_emu_kbd) | [src](src/examples/hid_emu_kbd)
 
 ### multi\_role
-&nbsp;&nbsp;&nbsp;&nbsp;Implement multiple GAP roles on a single device
+&nbsp;&nbsp;&nbsp;&nbsp;Implement multiple GAP roles on a single device. Note there are both LaunchPad and EM versions of this demo.
 
-&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/multi_role.md) | [EM project files](examples/cc2650em/multi_role) | [src](src/examples/multi_role)
+&nbsp;&nbsp;&nbsp;&nbsp;[EM docs](docs/multi_role.md) | [LaunchPad docs](docs/multi_role_lp.md) |[EM project files](examples/cc2650em/multi_role) | [LP project files](examples/cc2650lp/multi_role) | [src](src/examples/multi_role)
 
 ### security\_examples
 &nbsp;&nbsp;&nbsp;&nbsp;Demonstrate BLE 4.2 Security Features on CC2650
