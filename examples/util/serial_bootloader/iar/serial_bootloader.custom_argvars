@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<iarUserArgVars>
+  <group active="true" name="WORKSPACE">
+    <variable>
+      <name>CC26XXWARE</name>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\cc26xxware_2_23_03_17162</value>
+    </variable>
+  </group>
+</iarUserArgVars>
+
+
