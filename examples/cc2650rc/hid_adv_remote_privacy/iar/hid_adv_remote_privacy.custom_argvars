@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<iarUserArgVars>
+  <group active="true" name="CC26xx TI-RTOS">
+    <variable>
+      <name>TI_BLE_SDK_BASE</name>
+      <value>C:\ti\simplelink\ble_sdk_2_02_00_31</value>
+    </variable>
+    <variable>
+      <name>TI_RTOS_DRIVERS_BASE</name>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages</value>
+    </variable>
+    <variable>
+      <name>BIOS_BASE</name>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\bios_6_45_02_31\packages</value>
+    </variable>
+    <variable>
+      <name>XDCPATH</name>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages;C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\bios_6_45_02_31\packages</value>
+    </variable>
+    <variable>
+      <name>CC26XXWARE</name>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\cc26xxware_2_23_03_17162</value>
+    </variable>
+    <variable>
+      <name>XDCROOT</name>
+      <value>C:\ti\xdctools_3_32_00_06_core</value>
+    </variable>
+    <variable>
+      <name>SRC_EX</name>
+      <value>$TI_BLE_SDK_BASE$\src</value>
+    </variable>
+    <variable>
+      <name>SRC_BLE_CORE</name>
+      <value>$TI_BLE_SDK_BASE$\src</value>
+    </variable>
+    <variable>
+      <name>SRC_COMMON</name>
+      <value>$TI_BLE_SDK_BASE$\src\components</value>
+    </variable>
+    <variable>
+      <name>TOOLS_BLE</name>
+      <value>$TI_BLE_SDK_BASE$\tools</value>
+    </variable>
+    <variable>
+      <name>ROM</name>
+      <value>$TI_BLE_SDK_BASE$\src\rom</value>
+    </variable>
+  </group>
+</iarUserArgVars>
