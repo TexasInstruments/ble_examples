@@ -101,8 +101,8 @@ The following examples are currently supported:
 &nbsp;&nbsp;&nbsp;&nbsp;Demonstrate the maximum theoretical throughput of a BLE link using the 2x CC2650 devices. <br>
 &nbsp;&nbsp;&nbsp;&nbsp;These projects include a demo of 4.2 Data Length Extension, which improves throughput.
 
-&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/throughput_example.md) | [EM central project files](examples/cc2650em/throughput_example_central) | [EM peripheral project files](examples/cc2650em/throughput_example_peripheral) | [launchpad central project files](examples/cc2650lp/throughput_example_central) <br>
-&nbsp;&nbsp;&nbsp;&nbsp;[launchpad peripheral project files](examples/cc2650lp/throughput_example_peripheral) | [central src](src/examples/throughput_example_central) | [peripheral src](src/examples/throughput_example_peripheral)
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/throughput_example.md) | [EM central project files](examples/cc2650em/throughput_example_central) | [EM peripheral project files](examples/cc2650em/throughput_example_peripheral) | [Launchpad central project files](examples/cc2650lp/throughput_example_central) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;[Launchpad peripheral project files](examples/cc2650lp/throughput_example_peripheral) | [central src](src/examples/throughput_example_central) | [peripheral src](src/examples/throughput_example_peripheral)
 
 ### serial\_bootloader
 &nbsp;&nbsp;&nbsp;&nbsp;Show implementation of the ROM Bootloader running from Flash memory. <br>
