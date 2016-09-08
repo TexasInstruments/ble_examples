@@ -59,38 +59,43 @@ The following examples are currently supported:
 ### beacon\_rfdriver
 &nbsp;&nbsp;&nbsp;&nbsp;Send BLE advertisements directly using the RF driver
 
-&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/beacon_rfdriver.md) | [launchpad project files](examples/cc2650lp/beacon_rfdriver) | [src](src/examples/beacon_rfdriver)
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/beacon_rfdriver.md) | [Launchpad project files](examples/cc2650lp/beacon_rfdriver) | [src](src/examples/beacon_rfdriver)
+
+### hid\_adv\_remote\_privacy
+&nbsp;&nbsp;&nbsp;&nbsp;Taking the BLE SDK HID advanced remote example and enableing Privacy 1.2
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/hid_adv_remote_privacy.md) | [CC2650RC project files](examples/cc2650rc/hid_adv_remote_privacy) | [src](src/examples/hid_adv_remote_privacy)
 
 ### hid\_emu\_kbd
 &nbsp;&nbsp;&nbsp;&nbsp;Emulate emulate a HID keyboard using the LaunchPad
 
-&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/hid_emu_kbd.md) | [launchpad project files](examples/cc2650lp/hid_emu_kbd) | [src](src/examples/hid_emu_kbd)
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/hid_emu_kbd.md) | [Launchpad project files](examples/cc2650lp/hid_emu_kbd) | [src](src/examples/hid_emu_kbd)
 
 ### multi\_role
 &nbsp;&nbsp;&nbsp;&nbsp;Implement multiple GAP roles on a single device. Note there are both LaunchPad and EM versions of this demo.
 
-&nbsp;&nbsp;&nbsp;&nbsp;[EM docs](docs/multi_role.md) | [LaunchPad docs](docs/multi_role_lp.md) |[EM project files](examples/cc2650em/multi_role) | [LP project files](examples/cc2650lp/multi_role) | [src](src/examples/multi_role)
+&nbsp;&nbsp;&nbsp;&nbsp;[EM docs](docs/multi_role.md) | [LaunchPad docs](docs/multi_role_lp.md) | [EM project files](examples/cc2650em/multi_role) | [LP project files](examples/cc2650lp/multi_role) | [src](src/examples/multi_role)
 
 ### security\_examples
 &nbsp;&nbsp;&nbsp;&nbsp;Demonstrate BLE 4.2 Security Features on CC2650
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/security_examples.md) | [EM central project files](examples/cc2650em/security_examples_central) | [EM peripheral project files](examples/cc2650em/security_examples_peripheral) | [central src](src/examples/security_examples_central) | [peripheral src](src/examples/security_examples_central)
 
+### simple\_central\_audio\_receiver
+&nbsp;&nbsp;&nbsp;&nbsp;Receive and decode a voice stream over BLE using CC2650 central device and SensorTag or <br>
+&nbsp;&nbsp;&nbsp;&nbsp;HID Advanced Remote peripheral device
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_audio_receiver.md) | [Launchpad project files](examples/cc2650lp/simple_central_audio_receiver) | [src](src/examples/simple_central_audio_receiver)
+
 ### simple\_peripheral\_observer
 &nbsp;&nbsp;&nbsp;&nbsp;Demo Peripheral and observer roles on CC2650
 
-&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_peripheral_observer.md) | [launchpad project files](examples/cc2650lp/simple_peripheral_observer) | [src](src/examples/simple_peripheral_observer)
-
-### simple\_central\_audio\_receive
-&nbsp;&nbsp;&nbsp;&nbsp;Receive and decode voice stream over BLE using CC2650 central device and SensorTag or <br>
-&nbsp;&nbsp;&nbsp;&nbsp;HID Advanced Remote peripheral device
-
-&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_audio_receiver.md) | [launchpad project files](examples/cc2650lp/simple_central_audio_receiver) | [src](src/examples/simple_central_audio_receiver)
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_peripheral_observer.md) | [Launchpad project files](examples/cc2650lp/simple_peripheral_observer) | [src](src/examples/simple_peripheral_observer)
 
 ### spp\_over\_ble
 &nbsp;&nbsp;&nbsp;&nbsp;Send bidirectional UART data over BLE, similar to Serial Port Profile (SPP) in Bluetooth Classic
 
-&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/spp_ble.md)  | [launchpad client project files](examples/cc2650lp/spp_ble_client) | [launchpad server project files](examples/cc2650lp/spp_ble_server) | [client src](src/examples/spp_ble_client) | [server src](src/examples/spp_ble_server)
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/spp_ble.md)  | [Launchpad client project files](examples/cc2650lp/spp_ble_client) | [Launchpad server project files](examples/cc2650lp/spp_ble_server) | [client src](src/examples/spp_ble_client) | [server src](src/examples/spp_ble_server)
 
 ### throughput\_example
 &nbsp;&nbsp;&nbsp;&nbsp;Demonstrate the maximum theoretical throughput of a BLE link using the 2x CC2650 devices. <br>
