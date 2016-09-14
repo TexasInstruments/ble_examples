@@ -125,7 +125,7 @@
         </option>
         <option>
           <name>OCImagesPath1</name>
-          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\simple_central_cc2650lp_stack.out</state>
+          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\simple_central_audio_receiver_cc2650lp_stack.out</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck2</name>
