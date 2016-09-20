@@ -51,9 +51,7 @@
 
 /* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
-#ifdef CACHE_AS_RAM
 #include <driverlib/vims.h>
-#endif
 
 #ifndef USE_DEFAULT_USER_CFG
 
@@ -122,8 +120,9 @@ int main()
   // Wait for disabling to be complete
   while ( VIMSModeGet( VIMS_BASE ) != VIMS_MODE_DISABLED );  
   // retain cache during standby
-  Power_setConstraint(PowerCC26XX_SB_VIMS_CACHE_RETAIN);
-#endif  
+  Power_setConstraint(PowerCC26XX_SB_VIMS_CACHE_RETAIN); 
+  Power_setConstraint(PowerCC26XX_NEED_FLASH_IN_IDLE);
+#endif //CACHE_AS_RAM
   
   RegisterAssertCback(AssertHandler);
   

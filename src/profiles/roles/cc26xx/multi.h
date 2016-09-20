@@ -52,7 +52,7 @@ extern "C"
 /*-------------------------------------------------------------------
  * CONSTANTS
  */
-
+  
 /** @defgroup GAPROLE_PROFILE_PARAMETERS GAP Role Parameters
  * @{
  */

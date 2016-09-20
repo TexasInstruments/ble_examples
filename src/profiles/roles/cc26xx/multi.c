@@ -162,6 +162,13 @@ static uint16_t events = 0;
 
 // Task setup
 Task_Struct gapRoleTask;
+#if defined(__IAR_SYSTEMS_ICC__)
+#ifdef CACHE_AS_RAM
+#pragma location = ".gpram"
+#endif //CACHE_AS_RAM
+#elif defined(__TI_COMPILER_VERSION__)
+//todo
+#endif //compiler version
 Char gapRoleTaskStack[GAPROLE_TASK_STACK_SIZE];
 
 /*********************************************************************

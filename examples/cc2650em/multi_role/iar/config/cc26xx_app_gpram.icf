@@ -1,0 +1,159 @@
+/*
+ * Filename: cc26xx_app_gpram.icf
+ *
+ * Description: linker file to create GPRAM region
+ *
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+////////////////////////////////////////////////////////////////////////////////
+// Memory Sizes
+////////////////////////////////////////////////////////////////////////////////
+  define symbol RAM_SIZE            = 0x00005000;  // 20K
+  define symbol FLASH_SIZE          = 0x00020000;  // 128K
+  define symbol ROM_SIZE            = 0x0001C000;  // 115K
+
+////////////////////////////////////////////////////////////////////////////////
+// Memory Definitions
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+// RAM
+//
+define symbol RAM_START           = 0x20000000;
+define symbol RAM_RESERVED_START  = 0x20004F00;
+
+if ( isdefinedsymbol(ICALL_RAM0_START) )
+{
+  define symbol RAM_END           = (ICALL_RAM0_START-1);
+}
+else // default
+{
+  define symbol RAM_END           = RAM_RESERVED_START - 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Flash
+//
+define symbol FLASH_START         = 0x00000000;
+
+if ( isdefinedsymbol(ICALL_STACK0_START) )
+{
+  define symbol FLASH_END         = (ICALL_STACK0_START-1);
+}
+else // default
+{
+  // Default includes all but last page, which is defined later.
+  define symbol FLASH_END         = FLASH_START + FLASH_SIZE - 0x1001;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Stack
+//
+
+define symbol STACK_SIZE          = 0x400;
+define symbol STACK_START         = RAM_END + 1;
+define symbol STACK_END           = STACK_START - STACK_SIZE;
+//
+define symbol STACK_TOP           = RAM_END + 1;
+export symbol STACK_TOP;
+
+////////////////////////////////////////////////////////////////////////////////
+// Flash Interrupt Vector Table
+//
+
+define symbol INTVEC_NUM_ENTRIES  = 50 + 1; // first entry is stack location
+define symbol INTVEC_SIZE         = INTVEC_NUM_ENTRIES + 4;
+
+////////////////////////////////////////////////////////////////////////////////
+// Memory Regions
+////////////////////////////////////////////////////////////////////////////////
+
+define memory mem with size = 4G;
+
+define region RAM                 = mem:[from RAM_START   to RAM_END];
+define region FLASH_LAST_PAGE     = mem:[from(FLASH_SIZE) - 0x1000 to FLASH_SIZE-1];
+define region FLASH               = mem:[from FLASH_START to FLASH_END] |
+                                         FLASH_LAST_PAGE;
+define region GPRAM               = mem:[from 0x11000000 size 8096];                                         
+
+////////////////////////////////////////////////////////////////////////////////
+// Memory Placement
+////////////////////////////////////////////////////////////////////////////////
+
+// Code and RO Data
+place in FLASH { readonly };
+
+// CCFG
+place at end of FLASH_LAST_PAGE { readonly section .ccfg };
+keep { section .ccfg };
+
+// Interrupt Vector Table
+place at address mem:FLASH_START { readonly section .intvec };
+keep                             { readonly section .intvec };
+
+// RAM Vector Table
+place at start of RAM { section .vtable_ram };
+
+// Runtime Stack
+define block CSTACK with alignment = 8, size = STACK_SIZE { section .stack };
+place at end of RAM { block CSTACK };
+
+// RW Data
+define block RWDATA { rw };
+place in RAM { block RWDATA };
+
+define block GPDATA { rw section .gpram };
+place in GPRAM {block GPDATA};
+
+////////////////////////////////////////////////////////////////////////////////
+// Initialization
+////////////////////////////////////////////////////////////////////////////////
+
+initialize by copy { readwrite };
+
+do not initialize
+{
+  section .noinit,
+  section .stack,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// The USE_TIRTOS_ROM symbol is defined internally in the build flow (using
+// --config_def USE_TIRTOS_ROM=1) for TI-RTOS applications whose appBLE.cfg file
+// specifies to use the ROM.
+//
+if (isdefinedsymbol(USE_TIRTOS_ROM)) {
+     include "TIRTOS_ROM.icf";
+}

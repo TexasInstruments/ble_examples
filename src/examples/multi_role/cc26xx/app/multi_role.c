@@ -75,6 +75,9 @@
 /*********************************************************************
 * CONSTANTS
 */
+
+
+
 // Advertising interval when device is discoverable (units of 625us, 160=100ms)
 #define DEFAULT_ADVERTISING_INTERVAL          160
 
@@ -96,7 +99,7 @@
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         6
 
 //connection parameters
-#define DEFAULT_CONN_INT                      80
+#define DEFAULT_CONN_INT                      200
 #define DEFAULT_CONN_TIMEOUT                  1000
 #define DEFAULT_CONN_LATENCY                  0
 
@@ -104,7 +107,7 @@
 #define DEFAULT_SVC_DISCOVERY_DELAY           1000
 
 // Scan parameters
-#define DEFAULT_SCAN_DURATION                 3000
+#define DEFAULT_SCAN_DURATION                 7000
 #define DEFAULT_SCAN_WIND                     80
 #define DEFAULT_SCAN_INT                      80
 
@@ -112,7 +115,7 @@
 #define DEFAULT_MAX_SCAN_RES                  8
 
 // TRUE to filter discovery results on desired service UUID
-#define DEFAULT_DEV_DISC_BY_SVC_UUID          FALSE
+#define DEFAULT_DEV_DISC_BY_SVC_UUID          TRUE
 
 // Discovey mode (limited, general, all)
 #define DEFAULT_DISCOVERY_MODE                DEVDISC_MODE_ALL
@@ -215,6 +218,13 @@ static uint16_t events;
 
 // Task configuration
 Task_Struct mrTask;
+#if defined(__IAR_SYSTEMS_ICC__)
+#ifdef CACHE_AS_RAM
+#pragma location = ".gpram"
+#endif //CACHE_AS_RAM
+#elif defined(__TI_COMPILER_VERSION__)
+//todo
+#endif //compiler version
 Char mrTaskStack[MR_TASK_STACK_SIZE];
 
 // LCD menu variables
@@ -540,7 +550,7 @@ static void multi_role_init(void)
     uint8_t pairMode = GAPBOND_PAIRING_MODE_INITIATE;
     uint8_t mitm = TRUE;
     uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
-    uint8_t bonding = FALSE;
+    uint8_t bonding = TRUE;
 
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
