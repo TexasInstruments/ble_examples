@@ -1,5 +1,5 @@
 /*
- * Filename:ccfg_app_ble.c
+ * Filename: ccfg_app_ble.c
  *
  * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
  *
