@@ -1764,7 +1764,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>C:\ble_examples\examples\cc2650em\multi_role\iar\app\cc26xx_app_gpram.icf</state>
+          <state>C:\ble_examples\examples\cc2650em\multi_role\iar\config\cc26xx_app_gpram.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -2168,7 +2168,7 @@
   <group>
     <name>Profiles</name>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\dev_info\cc26xx\devinfoservice.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\dev_info\cc26xx\devinfoservice-multi_role.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\profiles\dev_info\devinfoservice.h</name>
@@ -2189,7 +2189,7 @@
       <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\roles\cc26xx\multi.h</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\profiles\simple_profile\cc26xx\simple_gatt_profile.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\simple_profile\cc26xx\simple_gatt_profile-multi_role.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\profiles\simple_profile\simple_gatt_profile.h</name>

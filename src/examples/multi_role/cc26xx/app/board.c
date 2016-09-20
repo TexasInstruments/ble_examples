@@ -209,6 +209,13 @@ const UDMACC26XX_Config UDMACC26XX_config[] = {
 #include <ti/drivers/spi/SPICC26XXDMA.h>
 
 /* SPI objects */
+#if defined(__IAR_SYSTEMS_ICC__)
+#ifdef CACHE_AS_RAM
+#pragma location = ".gpram"
+#endif //CACHE_AS_RAM
+#elif defined(__TI_COMPILER_VERSION__)
+//todo
+#endif //compiler version
 SPICC26XXDMA_Object spiCC26XXDMAObjects[CC2650DK_7ID_SPICOUNT];
 
 /* SPI configuration structure, describing which pins are to be used */
