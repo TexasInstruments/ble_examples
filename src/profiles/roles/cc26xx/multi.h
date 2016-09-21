@@ -297,22 +297,6 @@ extern bStatus_t GAPRole_StartDiscovery(uint8_t mode, uint8_t activeScan, uint8_
 extern bStatus_t GAPRole_CancelDiscovery(void);
 
 /**
- * @brief   Update the link connection parameters.
- *
- * @param   connHandle - connection handle
- * @param   connIntervalMin - minimum connection interval in 1.25ms units
- * @param   connIntervalMax - maximum connection interval in 1.25ms units
- * @param   connLatency - number of LL latency connection events
- * @param   connTimeout - connection timeout in 10ms units
- *
- * @return  SUCCESS: Connection update started started.<BR>
- *          bleIncorrectMode: No connection to update.<BR>
- */
-extern bStatus_t GAPRole_UpdateLink(uint16_t connHandle, uint16_t connIntervalMin,
-                                           uint16_t connIntervalMax, uint16_t connLatency,
-                                           uint16_t connTimeout);
-
-/**
  * @brief   Establish a link to a peer device.
  *
  * @param   highDutyCycle -  TRUE to high duty cycle scan, FALSE if not

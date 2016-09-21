@@ -717,17 +717,6 @@ static void gapRole_init(void)
                      &gapRole_signCounter);
 }
 
-
-/**
- * @brief   Terminate a link.
- *
- * Public function defined in central.h.
- */
-bStatus_t GAPRole_TerminateLink(uint16_t connHandle)
-{
-  return GAP_TerminateLinkReq(selfEntity, connHandle, HCI_DISCONNECT_REMOTE_USER_TERM) ;
-}
-
 /**
  * @brief   Establish a link to a peer device.
  *
