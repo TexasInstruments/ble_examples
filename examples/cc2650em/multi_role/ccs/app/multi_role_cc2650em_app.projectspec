@@ -38,7 +38,6 @@
         --plain_char=unsigned
 
         -DUSE_ICALL
-		-DxCACHE_AS_RAM
         -DPOWER_SAVING
 		-DMAX_NUM_BLE_CONNS=4
         -DHEAPMGR_SIZE=0
@@ -74,8 +73,7 @@
 		-I${SRC_COMMON}/osal/src/inc
 		-I${SRC_COMMON}/services/src/saddr
 		-I${SRC_COMMON}/services/src/sdata
-		-I${CC26XXWARE}
-		-I${TI_RTOS_DRIVERS_BASE}
+        -I${CC26XXWARE}
         "
 
         linkerBuildOptions="

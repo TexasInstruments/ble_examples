@@ -669,7 +669,7 @@ void GAPRole_createTask(void)
 void gapRole_abort(void)
 {
   volatile uint8_t i = 1;
-  while(i==1){asm("NOP");};
+  while(i==1){asm(" NOP");};
 }
 
 /*********************************************************************

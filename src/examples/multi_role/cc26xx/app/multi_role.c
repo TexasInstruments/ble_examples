@@ -240,14 +240,6 @@ Char mrTaskStack[MR_TASK_STACK_SIZE];
 uint8_t LCDmenu = MAIN_MENU;
 uint8_t selectKey = DISCOVERED_DEVICES;
 
-// GAP - SCAN RSP data (max size = 31 bytes)
-#if defined(__IAR_SYSTEMS_ICC__)
-#ifdef CACHE_AS_RAM
-#pragma location = ".gpram"
-#endif //CACHE_AS_RAM
-#elif defined(__TI_COMPILER_VERSION__)
-//todo
-#endif //compiler version
 static uint8_t scanRspData[] =
 {
   // complete name
@@ -271,13 +263,6 @@ static uint8_t scanRspData[] =
 
 // GAP - Advertisement data (max size = 31 bytes, though this is
 // best kept short to conserve power while advertisting)
-#if defined(__IAR_SYSTEMS_ICC__)
-#ifdef CACHE_AS_RAM
-#pragma location = ".gpram"
-#endif //CACHE_AS_RAM
-#elif defined(__TI_COMPILER_VERSION__)
-//todo
-#endif //compiler version
 static uint8_t advertData[] =
 {
   // Flags; this sets the device to use limited discoverable
@@ -296,13 +281,6 @@ static uint8_t advertData[] =
 };
 
 // GAP GATT Attributes
-#if defined(__IAR_SYSTEMS_ICC__)
-#ifdef CACHE_AS_RAM
-#pragma location = ".gpram"
-#endif //CACHE_AS_RAM
-#elif defined(__TI_COMPILER_VERSION__)
-//todo
-#endif //compiler version
 static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple Topology";
 
 // Globals used for ATT Response retransmission
