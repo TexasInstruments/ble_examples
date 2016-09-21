@@ -1,11 +1,13 @@
 **/Obj/
 **/Exe/
+**/List/
 **/Debug/
 **/Flash/
 **/FlashROM/
+**/FlashOnly*/
 **/configPkg/
 **/settings
-**/config\/src
+**/config/src
 *.dep
 *.log
 *.ewt
@@ -15,3 +17,7 @@
 *.a
 *.pos
 *.pp
+.tags
+.tags_sorted_by_file
+*.bin
+*.hex
