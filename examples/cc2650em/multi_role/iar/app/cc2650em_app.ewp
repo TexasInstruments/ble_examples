@@ -2251,7 +2251,7 @@
       </excluded>
     </file>
     <file>
-      <name>$PROJ_DIR$\cc26xx_app_gpram.icf</name>
+      <name>$PROJ_DIR$\..\config\cc26xx_app_gpram.icf</name>
       <excluded>
         <configuration>FlashROM</configuration>
       </excluded>
