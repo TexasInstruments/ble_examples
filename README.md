@@ -104,6 +104,10 @@ The following examples are currently supported:
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/throughput_example.md) | [EM central project files](examples/cc2650em/throughput_example_central) | [EM peripheral project files](examples/cc2650em/throughput_example_peripheral) | [launchpad central project files](examples/cc2650lp/throughput_example_central) <br>
 &nbsp;&nbsp;&nbsp;&nbsp;[launchpad peripheral project files](examples/cc2650lp/throughput_example_peripheral) | [central src](src/examples/throughput_example_central) | [peripheral src](src/examples/throughput_example_peripheral)
 
+### serial\_bootloader
+&nbsp;&nbsp;&nbsp;&nbsp;Show implementation of the ROM Bootloader running from Flash memory. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/serial_bootloader.md) | [Project files](examples/util/serial_bootloader) | [src](src/util/serial_bootloader)
+
 References
 ==========
 
