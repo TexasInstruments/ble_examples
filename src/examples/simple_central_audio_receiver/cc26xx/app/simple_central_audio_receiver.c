@@ -1028,7 +1028,6 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
  * @return  none
  */
 static uint8_t counter;
-static uint8_t packetCount;
 static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 {
   if (state == BLE_STATE_CONNECTED)
@@ -1043,30 +1042,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 
     switch ( pMsg->method )
     {
-    case ATT_HANDLE_VALUE_NOTI:
-
-#ifdef AUDIO_LEGACY
-      if ((pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle) && (pMsg->msg.handleValueNoti.len != 1)) {
-        // Output the receive packets through UART, and use audio_frame_serial_print.py to decode
-        static uint8_t *pValueSwapped;
-        
-        pValueSwapped = pMsg->msg.handleValueNoti.pValue;       
-        if (counter % 5 == 0){
-        uint8_t PV1 = pMsg->msg.handleValueNoti.pValue[1];
-        uint8_t PV2 = pMsg->msg.handleValueNoti.pValue[2];
-        uint8_t SI = pMsg->msg.handleValueNoti.pValue[3];  
-        pValueSwapped[1]= (pValueSwapped[1] & 0x00)| SI;
-        pValueSwapped[2]= (pValueSwapped[2] & 0x00)|PV1;
-        pValueSwapped[3]= (pValueSwapped[3] & 0x00)|PV2;
-        }
-        UART_write(uartHandle, pValueSwapped , 20);
-        counter++;
-        if (counter == 50){
-          PIN_setOutputValue(ledPinHandle, Board_RLED, !PIN_getOutputValue(Board_RLED));
-          counter = 0;
-        }
-      }
-#else      
+    case ATT_HANDLE_VALUE_NOTI:    
       if (pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle) {
         // Output the receive packets through UART, and use audio_frame_serial_print.py to decode
         UART_write(uartHandle, (pMsg->msg.handleValueNoti.pValue) , 20);
@@ -1078,7 +1054,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         }
 
       }
-#endif
       break;
 
     case ATT_FIND_BY_TYPE_VALUE_RSP:
@@ -1137,24 +1112,15 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         {
           uint16 charUUID = GATT_INVALID_HANDLE;
           uint16 *pHandle = &charUUID;
-#ifdef AUDIO_LEGACY
-          /* Write into charUUID what Audio Profile char value we're dealing with */
-          *pHandle = BUILD_UINT16( pRsp->pDataList[19] , pRsp->pDataList[20]);
-#else
           /* Write into charUUID what Audio Profile char value we're dealing with */
           *pHandle = BUILD_UINT16( pRsp->pDataList[17] , pRsp->pDataList[18]);
-#endif
           if      (charUUID == AUDIOPROFILE_START_UUID) {
             pHandle = &audioStartCharValueHandle;
             *pHandle = BUILD_UINT16( pRsp->pDataList[3] , pRsp->pDataList[4]);
           }
           else if (charUUID == AUDIOPROFILE_AUDIO_UUID ){
             pHandle = &audioDataCharValueHandle;
-#ifdef AUDIO_LEGACY            
-            *pHandle = BUILD_UINT16( pRsp->pDataList[17] , pRsp->pDataList[18]);
-#else
-            *pHandle = BUILD_UINT16( pRsp->pDataList[3] , pRsp->pDataList[4]);            
-#endif            
+            *pHandle = BUILD_UINT16( pRsp->pDataList[3] , pRsp->pDataList[4]);                     
           }
         }
         break;
@@ -1167,7 +1133,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         if ( serviceToDiscover == AUDIO_SERV_UUID )
         {
           counter = 0;
-          packetCount = 0;
           /* This kicks off the enabling the 1st of notification enable event */
           if (audioStartCharValueHandle != GATT_INVALID_HANDLE) {
             audioStartCCCHandle = audioStartCharValueHandle + 1 ;
@@ -1664,7 +1629,7 @@ static uint8 SimpleBLECentral_FindHIDRemote( uint8* pData, uint8 length )
   resultFindST = FALSE;
   static uint8 remoteNameRC[] =
   {
-    'H', 'I', 'D', ' ', 'A', 'd', 'v', 'R', 'e', 'm', 'o', 't', 'e'
+    'C', 'C', '2', '6', '5', '0', ' ', 'R', 'C'
   };
 
   // move pointer to the start of the scan response data.
@@ -1681,7 +1646,7 @@ static uint8 SimpleBLECentral_FindHIDRemote( uint8* pData, uint8 length )
     static uint8 remoteNameST[] =
     {
       'C', 'C', '2', '6', '5', '0', ' ',
-      'S', 'e', 'n',  's',  'o',  'r',  'T',  'a',  'g',
+      'S', 'e', 'n',  's',  'o',  'r',  'T',  'a',  'g'
     };
 
     //    // complete name
@@ -1784,14 +1749,6 @@ static void SimpleBLECentral_EstablishLink( uint8 whiteList, uint8 addrType, uin
  */
 static void SimpleBLECentral_DiscoverService( uint16 connHandle, uint16 svcUuid )
 {
-#ifdef AUDIO_LEGACY
-  if(svcUuid == AUDIO_SERV_UUID) // only take care of Audio Service in this project
-  {
-    uint8 uuid[2] = {LO_UINT16(svcUuid), HI_UINT16(svcUuid)};
-
-    VOID GATT_DiscPrimaryServiceByUUID( connHandle, uuid, ATT_BT_UUID_SIZE, selfEntity );
-  }
-#else  //for CC2650
   if(svcUuid == AUDIO_SERV_UUID) // only take care of Audio Service in this project
   {
     uint8 uuid[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB0,
@@ -1799,7 +1756,6 @@ static void SimpleBLECentral_DiscoverService( uint16 connHandle, uint16 svcUuid 
 
     VOID GATT_DiscPrimaryServiceByUUID( connHandle, uuid, ATT_UUID_SIZE, selfEntity );
   }
-#endif  
 }
 
 /*********************************************************************

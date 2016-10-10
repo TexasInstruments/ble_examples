@@ -196,7 +196,6 @@
           <state>CC26XX</state>
           <state>CC2650_LAUNCHXL</state>
           <state>AUDIO_SERVICE</state>
-          <state>AUDIO_LEGACY</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
