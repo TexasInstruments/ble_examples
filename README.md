@@ -81,16 +81,31 @@ The following examples are currently supported:
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/security_examples.md) | [EM central project files](examples/cc2650em/security_examples_central) | [EM peripheral project files](examples/cc2650em/security_examples_peripheral) | [central src](src/examples/security_examples_central) | [peripheral src](src/examples/security_examples_central)
 
+### simple\_beacon
+&nbsp;&nbsp;&nbsp;&nbsp;Demonstrate an implementation of a beacon that uses iBeacon technology
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_beacon.md) | [Launchpad project files ](examples/cc2650lp/simple_beacon) | [src](src/examples/simple_beacon)
+
 ### simple\_central\_audio\_receiver
 &nbsp;&nbsp;&nbsp;&nbsp;Receive and decode a voice stream over BLE using CC2650 central device and SensorTag or <br>
 &nbsp;&nbsp;&nbsp;&nbsp;HID Advanced Remote peripheral device
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_audio_receiver.md) | [Launchpad project files](examples/cc2650lp/simple_central_audio_receiver) | [src](src/examples/simple_central_audio_receiver)
 
+### simple\_eddystone
+&nbsp;&nbsp;&nbsp;&nbsp;Demonstrate an implementation of a beacon that uses the Eddystone beacon format
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_eddystone.md) | [Launchpad project files ](examples/cc2650lp/simple_eddystone) | [src](src/examples/simple_eddystone)
+
 ### simple\_peripheral\_observer
 &nbsp;&nbsp;&nbsp;&nbsp;Demo Peripheral and observer roles on CC2650
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_peripheral_observer.md) | [Launchpad project files](examples/cc2650lp/simple_peripheral_observer) | [src](src/examples/simple_peripheral_observer)
+
+### simple\_proprietary\_beacon
+&nbsp;&nbsp;&nbsp;&nbsp;Demonstrate an implementation of a beacon that uses a potential proprietary beacon format
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_proprietary_beacon.md) | [Launchpad project files ](examples/cc2650lp/simple_proprietary_beacon) | [src](src/examples/simple_proprietary_beacon)
 
 ### spp\_over\_ble
 &nbsp;&nbsp;&nbsp;&nbsp;Send bidirectional UART data over BLE, similar to Serial Port Profile (SPP) in Bluetooth Classic
