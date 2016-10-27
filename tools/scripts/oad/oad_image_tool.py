@@ -1,63 +1,69 @@
-'''
-/*
- * Filename:    oad_image_tool.py
- *
- * Description: This tool is used to generate OAD/production images for OAD
- * Enabled projects using the TI-BLE SDK.
- *
- *
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
- *
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-*/
-'''
+# Filename:    oad_image_tool.py
+#
+# Description: This tool is used to generate OAD/production images for OAD
+# Enabled projects using the TI-BLE SDK.
+#
+#
+# Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+#
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+#
+#    Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+#    Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the
+#    distribution.
+#
+#    Neither the name of Texas Instruments Incorporated nor the names of
+#    its contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+#  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+#  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+#  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+#  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+#  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 
 # Needs python 2.7.10
 from __future__ import print_function
 import __builtin__
 import argparse
-import crcmod # pip -[--proxy <addr>] install crcmod
-from intelhex import IntelHex # pip [--proxy <addr>] install intelhex, needs latest version
+import os
+import sys
 import struct
 import textwrap
-import sys
 import math
-import ntpath
 from collections import namedtuple
+
+try:
+    import crcmod  # pip [--proxy <addr>] install crcmod
+except ImportError:
+    print("Could not load module 'crcmod'. Please install package. pip [--proxy <addr>] install crcmod")
+    sys.exit(1)
+
+try:
+    from intelhex import IntelHex # pip [--proxy <addr>] install intelhex
+except ImportError:
+    print("Could not load module IntelHex. Please install package. pip [--proxy <addr>] install intelhex.")
+    sys.exit(1)
 
 #tool version number
 tool_version = "1.0"
-#CRC related data
+# CRC related data
 # CRC Polynomial used by OAD for CC254x
-#crc16 = crcmod.mkCrcFun(0x18005, rev=False, initCrc=0x0000, xorOut=0x0000)
+# crc16 = crcmod.mkCrcFun(0x18005, rev=False, initCrc=0x0000, xorOut=0x0000)
 # CRC Poly used by OAD for CC26xx
 crc16 = crcmod.mkCrcFun(0x11021, rev=False, initCrc=0x0000, xorOut=0x0000)
 
@@ -93,7 +99,47 @@ INT_FL_OAD_IMG_A_END        = 0x8FFF
 EXT_FL_OAD_META_BEGIN =   0x1000      #First addr of app space for ext flash OAD
 EXT_FL_OAD_META_END   =   EXT_FL_OAD_META_BEGIN + OAD_METADATA_SIZE
 
+class TermColors:
+    FAIL = '\033[41m'
+    RESET = '\033[0m'
 
+    def __init__(self):
+        pass
+
+def mem_usage(start_sect, stop_sect, segments, legalSegs=[], reqSegs=[], ih=None):
+    def addr(sect, ln, col):
+        return sect * 4096 + ((3 - ln) + 4 * col) * 256
+
+    def calc_overlap(r1, r2):
+        overlaps = max(r1[0], r2[0]) <= min(r1[1]-1, r2[1]-1)
+        if overlaps:
+            return min(r1[1]-1, r2[1]-1)-max(r1[0], r2[0])
+        return 0
+
+    ret = '|'.join([' %02d ' % i for i in xrange(start_sect, stop_sect)]) + '\n'
+
+    for line in xrange(4):
+        for sect in xrange(start_sect, stop_sect):
+            for col in xrange(4):
+                a = addr(sect, line, col)
+                overlap = max([calc_overlap([a, a + 256], seg) for seg in segments])
+                if overlap == 0: sym = '-'
+                elif overlap < 128: sym = '.'
+                elif overlap < 255: sym = 'x'
+                else:
+                    sym = 'X'
+                    if ih is not None:
+                        content = ih.tobinstr(a, a+255)
+                        if content == '\xff'*len(content): sym = 'F'
+                        elif content == '\x00'*len(content): sym = '0'
+
+                if overlap:
+                    ret += sym if max([calc_overlap([a, a + 256], seg) for seg in legalSegs]) else TermColors.FAIL + sym + TermColors.RESET
+                else:
+                    ret += sym if not max([calc_overlap([a, a + 256], seg) for seg in reqSegs]) else TermColors.FAIL + sym + TermColors.RESET
+            ret += ' '
+        ret += '\n'
+    return ret
 
 
 #Argparse is a class that helps to make friendlier command line interfaces.
@@ -101,12 +147,11 @@ EXT_FL_OAD_META_END   =   EXT_FL_OAD_META_BEGIN + OAD_METADATA_SIZE
 #to use the tool, similar to a man command
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog="Texas Instruments OAD Image Tool",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''\
            Merges Intel Hex format files provided as command line arguments or via stdin.
-           Default output is Intel-Hex to stdout. Input via stdin and/or missing output
-           file specifiers implies --quiet.
+           Default output is Intel-Hex to stdout. Input via stdin and/or output via stdout
+           implies --quiet
 
            Generates and inserts or appends metadata needed for Over the Air Download.
 
@@ -128,7 +173,7 @@ if __name__ == "__main__":
         epilog=textwrap.dedent('''\
 
             Usage examples:
-              %(prog)s app.hex stack.hex > merged_oad.hex
+              %(prog)s app.hex stack.hex -o - > merged_oad.hex
                   Merges app.hex and stack.hex, filling in metadata from defaults.
               %(prog)s app.hex -ob app_oad.bin -m 0x1000 -r :0xE000
                   Place metadata at 0x1000, and fill or cut off image at 0xE000, starting from
@@ -143,6 +188,12 @@ if __name__ == "__main__":
         if len(r) == 1: r.append('')
         return [int(x, 0) if x != '' else None for x in r]
 
+    def auto_usrId(usrId):
+        usrId = usrId.strip()
+        if ':' in usrId: usrId = ''.join([chr(int(x, 16)) for x in usrId.split(':')][:4])
+        else: usrId = usrId[:4]
+        return '\x00' * (4-len(usrId)) + usrId
+
     def strip_path_filetype(*args, **kwargs):
         ft = argparse.FileType(*args, **kwargs)
         def inner(filename):
@@ -154,61 +205,75 @@ if __name__ == "__main__":
 
     #helper functions to aide in printing to the console
     def print_metadata(metaVector):
-        metaDataDispStr = "Data : | 0x%04X |  0x%04X  | 0x%04X | 0x%04X |  " %  (metaVector[0], metaVector[1],metaVector[2], metaVector[3]) + metaVector[4] + \
-                        "    | 0x%04X  |  0x%02X   | 0x%02X |\n"  % (metaVector[5], metaVector[6], metaVector[7])
-        print("\n")
-        print("The script has calculated the 16 Byte OAD Metadata vector below\n")
-        print("Bytes: | 0 - 2  |  2 - 4   | 4 - 6  | 6 - 8  |  8-12    | 12 - 14 |   15    |  16  |")
-        print("Desc : |  CRC   | CRC-SHDW | imgVer | imgLen |  usrId   | imgAddr | imgType | stat |")
-        print("------------------------------------------------------------------------------------")
-        print(metaDataDispStr)
-        print("******************************************************************************************")
-        return
+        hdr = metaVector._asdict()
+        hdr['usrId'] = ':'.join(['%02X' % ord(x) for x in hdr['usrId']])
+        print(textwrap.dedent("""
+        The script has calculated the 16 Byte OAD Metadata vector below
+
+        Bytes: | 0 - 2  |  2 - 4   | 4 - 6  | 6 - 8  |     8-12    | 12 - 14 |   15    |  16  |
+        Desc : |  CRC   | CRC-SHDW | imgVer | imgLen |     usrId   | imgAddr | imgType | stat |
+        ---------------------------------------------------------------------------------------
+        Data : | 0x{crc:04X} |  0x{crcShdw:04X}  |   {imgVer:=3d}  | {imgLen:=6d} | {usrId:s} | {imgAddr:=6X}  |   {imgType:02X}    |  {status:02X}  |
+        ******************************************************************************************
+        """.format(**hdr)))
 
     def print_console_header():
-        print("******************************************************************************************")
-        print(parser.prog)
-        print("Version: " + tool_version)
-        print("******************************************************************************************")
-        return
+        print(textwrap.dedent("""
+        ******************************************************************************************
+        Texas Instruments OAD Image Tool
+        Version: {tool_version}
+        ******************************************************************************************
+        """.format(tool_version=tool_version)))
 
-    def print_args_info(inputFileList, outHex, outBin, oadType, imgType):
-        inputFileStr = ""
-        for f in inputFileList:
-            inputFileStr += (", " + ntpath.basename(f))
-
-        if outHex is not None:
-            outHexStr = ntpath.basename(outHex.name)
+    def print_args_info(inputFileList, outHex, outBin, oadType, imgType, mergedHex):
+        legalSegs = [(0, 0)]
+        requiredSegs = [(0, 0)]
+        if vargs.imgtype in ['app', 'stack']:
+            if vargs.oadtype == 'offchip': legalSegs = [(0x1000, 0x1efff)] # 1-30 is legal
+            elif vargs.oadtype == 'onchip': legalSegs = [(0x9000, 0x1efff)] # 9-30 is legal
         else:
-            outHexStr = "none"
+            legalSegs = [(0, 0x20000)]
+            requiredSegs = [(0, 0x3c), (0x20000-100, 0x20000)]
 
-        if outBin is not None:
-            outBinStr = ntpath.basename(outBin.name)
-        else:
-            outBinStr = "none"
+        mem_layout = mem_usage(0, 16, mergedHex.segments(), legalSegs, requiredSegs, mergedHex) +\
+                     mem_usage(16, 32, mergedHex.segments(), legalSegs, requiredSegs, mergedHex)
 
-        print("OAD Type: " + oadType)
-        print("Img Type: " + imgType.upper())
-        print("Input file(s): " + inputFileStr)
-        print("Output Hex file: " + outHexStr)
-        print("Output Bin file: " + outBinStr)
-        print("******************************************************************************************")
-        print("Runtime Output:\n")
+        print(textwrap.dedent("""
+        OAD Type: {oadType}
+        Img Type: {imgType}
+        Input file(s): {inputFiles}
+        Output Hex file: {outHex}
+        Output Bin file: {outBin}
 
-        return
+        Layout of concatenated input files, per flash sector, before applying --range.
+        """.strip('\n').format(
+            oadType = oadType,
+            imgType = imgType.upper(),
+            inputFiles = ', '.join([os.path.basename(f) for f in inputFileList]),
+            outHex = os.path.basename(outHex.name) if outHex else "None",
+            outBin = os.path.basename(outBin.name) if outBin else "None",
+        )))
+        print(mem_layout)
+        print(textwrap.dedent("""
+          Legend: `X` 100% full, `x` >50% full, `.` <50% full, `-` empty, `F` all 0xFF,
+          `0` all 0x00.
+        ******************************************************************************************
+        Runtime Output:
+        """.strip('\n')))
 
     def addr_is_in_oad_imgspace(addr):
         #check if the provided address lies within the OAD image space
         #for on or offchip
         if vargs.oadtype == 'offchip':
-            return addr >= INT_FL_RSVD_PG1 and addr < INT_FL_RSVD_PG31
+            return INT_FL_RSVD_PG1 <= addr < INT_FL_RSVD_PG31
         elif vargs.imgtype == 'production':
             #oad imgA on chip app space is between end of pg0-9
-            return addr >= INT_FL_OAD_IMG_A_BEGIN and addr <= INT_FL_OAD_IMG_A_END
+            return INT_FL_OAD_IMG_A_BEGIN <= addr <= INT_FL_OAD_IMG_A_END
         else:
             #right now on chip OAD considers App space to be between pg9-30, which includes the stack.
             #assume for now that the user doesn't try to udpate the stack
-            return addr >= INT_FL_OAD_IMG_B_META_BEGIN and addr <= INT_FL_OAD_IMG_B_END
+            return INT_FL_OAD_IMG_B_META_BEGIN <= addr <= INT_FL_OAD_IMG_B_END
+
 
     def argument_sanity_check(vargs, mergedHex):
         #onchip OAD only supports app or production images
@@ -232,7 +297,9 @@ if __name__ == "__main__":
         elif vargs.imgtype == 'app' or vargs.imgtype == 'stack':
             #else we are inspecting an OAD ready that is targeted for internal flash of SoC/AP
             #check to ensure that no data is placed invalid sectors pg 0-6,31 for onchip, pg0,31 for offchip
-            addrSegmentsList = mergedHex.segments()
+            testStartRange = vargs.range[0] if vargs.range and vargs.range[0] else mergedHex.minaddr()
+            testEndRange = vargs.range[1] if vargs.range and vargs.range[1] else mergedHex.maxaddr()
+            addrSegmentsList = mergedHex[testStartRange:testEndRange].segments()
             for seg in  addrSegmentsList:
                 #note that the end addr seems to not be inclusive so we need to do a minus 1
                 if not addr_is_in_oad_imgspace(int(seg[0])) or not addr_is_in_oad_imgspace(int(seg[1] - 1)):
@@ -263,39 +330,45 @@ if __name__ == "__main__":
             else:
                 #other images should have range within their app space
                 #might have a potential off by one here
-                if not addr_is_in_oad_imgspace(vargs.range[0]) or not addr_is_in_oad_imgspace(vargs.range[1]):
-                    print("Warning: --  range should be within oad app space...attempting to override")
-
-
-
-
+                if (vargs.range[0] and not addr_is_in_oad_imgspace(vargs.range[0])) or (vargs.range[1] and not addr_is_in_oad_imgspace(vargs.range[1])):
+                    print("Warning: --  range should be within oad app space.")
 
 
 
 
     #setup the command line argument options
-    parser.add_argument('hexfile', help="Path(s) to input image(s)", nargs='*', type=strip_path_filetype('r'), default=[sys.stdin])
-    parser.add_argument('-t', '--oadtype', help="Whether to generate hex files for on or off chip OAD", choices=['onchip','offchip'], default='offchip')
+    parser.add_argument('hexfile', help="Path(s) to input image(s)", nargs='*', type=strip_path_filetype('r'))
+    parser.add_argument('-t', '--oadtype', help="Whether to generate hex files for on- or off-chip (ExtFlash) OAD", choices=['onchip','offchip'], default='offchip')
     parser.add_argument('-i', '--imgtype', help="Defines the img type. For Onchip: only app and production are valid. For Offchip: app, stack, prodcution, np are valid",
                         choices=['app', 'stack', 'np', 'production'], default='app')
     parser.add_argument('-v', '--imgVer', help="Defines the version of the application to be downloaded", type=auto_int, default=0)
-    parser.add_argument('-o', '--out', help='Path to output hex file. Missing -o and -ob implies -q', type=strip_path_filetype('w'), default=sys.stdout)
-    parser.add_argument('-ob', '--outbin', help='Path to output bin file. Missing -o and -ob implies -q', type=strip_path_filetype('wb'), nargs='?', const=sys.stdout)
+    parser.add_argument('-o', '--out', help='Path to output hex file.', type=strip_path_filetype('w'))
+    parser.add_argument('--usrId', help='Metadata UsrId. 4 bytes. Ex EEEE or 45:45:45:45', default='EEEE', type=auto_usrId)
+    parser.add_argument('-ob', '--outbin', help='Path to output bin file.', type=strip_path_filetype('wb'), nargs='?')
     parser.add_argument('-f', '--fill', help='Filler data in output [0xff]', type=auto_int, default=0xff)
     parser.add_argument('-m', '--meta', help='Override calculated location of metadata', type=auto_int)
     #parser.add_argument('-c', '--crc', help='Override generated CRC value', type=auto_int)
     parser.add_argument('-r', '--range', help='Range of addresses included in output', type=auto_range)
     #parser.add_argument('-l', '--len', help='Override calculated image length [bytes]', type=auto_int)
-    parser.add_argument('-n', '--dry-run', action='store_true', help='Do not produce output, only show info', default=False)
     parser.add_argument('-q', '--quiet', action='store_true', help='Do not produce diagnostic and informational output', default=False)
     parser.add_argument('--round', help='Round up end-address to fill nearest X, for example 4096 if sectors are 4kB. Ignored if end-range given', type=auto_int)
     parser.add_argument('--version', action='version', version=(parser.prog + ' ' + tool_version))
 
     #parse the user's command line arguments
+    if len(sys.argv[1:]) == 0:
+        parser.print_help()
+        # parser.print_usage() # for just the usage line
+        parser.exit()
+
     vargs = parser.parse_args()
 
+    if vargs.out is None and vargs.outbin is None:
+        print(">> Missing output file(s)\n")
+        parser.print_usage()
+        parser.exit()
+
     # Determine if normal output should be presented
-    if vargs.quiet or (vargs.hexfile[0] is sys.stdin) or (vargs.out is sys.stdout) or (vargs.outbin is sys.stdout):
+    if vargs.quiet or (vargs.hexfile and vargs.hexfile[0] is sys.stdin) or (vargs.out and vargs.out is sys.stdout) or (vargs.outbin and vargs.outbin is sys.stdout):
         oldPrint = __builtin__.print
         def myprint(*args, **kwargs):
             pass
@@ -326,7 +399,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
     #print information about the input hex files
-    print_args_info(inputFileNames, vargs.out, vargs.outbin, vargs.oadtype, vargs.imgtype)
+    print_args_info(inputFileNames, vargs.out, vargs.outbin, vargs.oadtype, vargs.imgtype, mergedHex)
 
     #Now that we have a merged hex image, lets do a bunch of arg checking
     #since mergedHex is an merge of all input hexes, it can be treated as an argument to the script
@@ -417,10 +490,9 @@ if __name__ == "__main__":
                 localCrc = crc16(crcBin)
                 #if the resident header checks out, then we will assume metaAddr==startAddr
                 #note that the script will still over-write what is currently there
-                if localCrc == hexHdr.crc and hexHdr.crcShdw == 0xFFFF \
-                    and hexHdr.imgLen <= localLen:
+                if localCrc == hexHdr.crc and hexHdr.crcShdw == 0xFFFF and hexHdr.imgLen <= localLen:
                     metaAddr = startAddr
-                    print("Resident metadata detected, using metaAddr = startAddr")
+                    print("Resident metadata detected, using metaAddr = startAddr (0x%08X)", startAddr)
                     print("Note: Resident metadata will still be overwritten")
                 else:
                     # See if the range leaves room
@@ -440,7 +512,7 @@ if __name__ == "__main__":
                             sys.exit(1)
                     else:
                         #maybe improve this comment
-                        print("Fatal Error: -- Could not find free area for metadata in --range specified to start at 0x%08X. Exiting.")
+                        print("Fatal Error: -- Could not find free area for metadata in --range specified to start at 0x%08X. Exiting." % vargs.range[0])
                         sys.exit(1)
         else:
             # User provided metadata location
@@ -470,7 +542,7 @@ if __name__ == "__main__":
             imgVer = vargs.imgVer # LSB means A/B .... TODO
 
 
-        usrId = struct.pack('B', ord('E')) * 4 # Well.. TODO.
+        usrId = vargs.usrId
         imgAddr = startAddr / 4  # In words
         imgType = imgTypes[vargs.imgtype]
         crcShdw = 0xffff
@@ -485,25 +557,42 @@ if __name__ == "__main__":
         crc = crc16(asBin[4:])
         mergedHex.puts(metaAddr, struct.pack('H', crc))
 
-        metaVector = [crc, crcShdw, imgVer, imgLen, usrId, imgAddr, imgType, META_STATUS_SUCCESS]
+        metaVector = OadHdr._make([crc, crcShdw, imgVer, imgLen, usrId, imgAddr, imgType, META_STATUS_SUCCESS])
 
         print_metadata(metaVector)
 
-    #mergedHex.puts(metaAddr, struct.pack('B', 0xff)*16)
 
-    # Output merged hex file unless both hex and bin is stdout, in which case bin wins
-    if not (vargs.out is sys.stdout and vargs.outbin is sys.stdout):
+    if vargs.out and not (vargs.out is sys.stdout and vargs.outbin is sys.stdout):
         print("Writing to:\n", vargs.out.name)
-        mergedHex.write_hex_file(vargs.out)
-        vargs.out.flush()
+        try:
+            mergedHex.write_hex_file(vargs.out)
+            vargs.out.flush()
+        except IOError as e:
+            if vargs.out is sys.stdout: pass
+            else: raise e
 
     # Output binary
     if vargs.outbin is not None:
         print("Writing to:\n", vargs.outbin.name)
-        for ch in mergedHex.tobinstr(startAddr, endAddr-1):
-            vargs.outbin.write(ch)
-        vargs.outbin.flush()
+        try:
+            vargs.outbin.write(mergedHex.tobinstr(startAddr, endAddr-1))
+            vargs.outbin.flush()
+        except IOError as e:
+            if vargs.outbin is sys.stdout: pass
+            else: raise e
+
 
     print("******************************************************************************************")
     print("Success")
     print("******************************************************************************************")
+
+    # Clean up pipes, silently ignore broken pipe
+    try:
+        sys.stdout.close()
+    except IOError:
+        pass
+
+    try:
+        sys.stderr.close()
+    except IOError:
+        pass
