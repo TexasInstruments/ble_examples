@@ -69,10 +69,10 @@
         <property name="isHybrid" value="true"/>
         <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; "/>
 
-        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_03/products/cc26xxware_2_23_03_17162" scope="project"></pathVariable>
-        <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_03/products/tidrivers_cc13xx_cc26xx_2_16_01_13/packages" scope="project"></pathVariable>
-        <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_00_31" scope="project"></pathVariable>
-        <pathVariable name="PROJECT_BUILD_BASE" path="C:/ti/simplelink/ble_sdk_2_02_00_31/examples/cc2650lp/simple_proprietary_beacon" scope="project"></pathVariable>
+        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
+        <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/tidrivers_cc13xx_cc26xx_2_20_01_10/packages" scope="project"></pathVariable>
+        <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_01_18" scope="project"></pathVariable>
+        <pathVariable name="PROJECT_BUILD_BASE" path="C:/ti/simplelink/ble_sdk_2_02_01_18/examples/cc2650lp/simple_proprietary_beacon" scope="project"></pathVariable>
 		<pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
         
 

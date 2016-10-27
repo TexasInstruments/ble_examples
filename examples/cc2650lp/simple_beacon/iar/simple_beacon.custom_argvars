@@ -4,23 +4,23 @@
   <group active="true" name="CC26xx TI-RTOS">
     <variable>
       <name>TI_BLE_SDK_BASE</name>
-      <value>C:\ti\simplelink\ble_sdk_2_02_00_31</value>
+      <value>C:\ti\simplelink\ble_sdk_2_02_01_18</value>
     </variable>
     <variable>
       <name>TI_RTOS_DRIVERS_BASE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\tidrivers_cc13xx_cc26xx_2_20_01_10\packages</value>
     </variable>
     <variable>
       <name>BIOS_BASE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\bios_6_45_02_31\packages</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\bios_6_46_01_38\packages</value>
     </variable>
     <variable>
       <name>XDCPATH</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\tidrivers_cc13xx_cc26xx_2_16_01_13\packages;C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\bios_6_45_02_31\packages;$TI_BLE_SDK_BASE$</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\tidrivers_cc13xx_cc26xx_2_20_01_10\packages;C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\bios_6_46_01_38\packages;$TI_BLE_SDK_BASE$</value>
     </variable>
     <variable>
       <name>CC26XXWARE</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_18_00_03\products\cc26xxware_2_23_03_17162</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\cc26xxware_2_24_02_17393</value>
     </variable>
     <variable>
       <name>XDCROOT</name>

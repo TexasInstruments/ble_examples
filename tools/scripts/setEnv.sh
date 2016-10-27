@@ -3,13 +3,13 @@
 # Set env vars
 TI_ROOT_DIR=C:/ti
 
-export BLE_SDK_VER=ble_sdk_2_02_00_31
-export TIRTOS_VER=tirtos_cc13xx_cc26xx_2_18_00_03
-export BIOS_VER=bios_6_45_02_31
-export TIDRIVERS_VER=tidrivers_cc13xx_cc26xx_2_16_01_13
-export CC26XXWARE_VER=cc26xxware_2_23_03_17162
-export CC13XXWARE_VER=cc13xxware_2_03_03_17162
-export UIA_VER=uia_2_00_05_50
+export BLE_SDK_VER=ble_sdk_2_02_01_18
+export TIRTOS_VER=tirtos_cc13xx_cc26xx_2_20_01_08
+export BIOS_VER=bios_6_46_01_38
+export TIDRIVERS_VER=tidrivers_cc13xx_cc26xx_2_20_01_10
+export CC26XXWARE_VER=cc26xxware_2_24_02_17393
+export CC13XXWARE_VER=cc13xxware_2_04_02_17240
+export UIA_VER=uia_2_00_06_52
 
 export BLE_SDK_PATH=${TI_ROOT_DIR}/simplelink/${BLE_SDK_VER}
 export TIRTOS_PATH=${TI_ROOT_DIR}/${TIRTOS_VER}

@@ -36,7 +36,7 @@
         <property name="isHybrid" value="true"/>
         <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; "/>
 
-        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_18_00_03/products/cc26xxware_2_23_03_17162" scope="project"></pathVariable>
+        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
         <pathVariable name="SRC_EX" path="../../../../src/util" scope="project"></pathVariable>
 
         <file path="${SRC_EX}/serial_bootloader/main.c" action="copy" targetDirectory="."></file>
