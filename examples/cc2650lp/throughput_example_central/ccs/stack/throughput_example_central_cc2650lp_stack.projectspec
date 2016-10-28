@@ -54,6 +54,7 @@
         -DCC26XX
 
         -I${CG_TOOL_ROOT}/include
+        -I${ROM}
         -I${SRC_EX}/examples/simple_central/cc26xx/stack
         -I${SRC_EX}/common/cc26xx
         -I${SRC_COMMON}/hal/src/target/_common
@@ -239,9 +240,7 @@
         <!-- Startup Folder -->
         <file path="SRC_EX/icall/stack/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="SRC_BLE_CORE/rom/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="SRC_BLE_CORE/rom/rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="ROM/rom_jt.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
         <file path="SRC_EX/common/cc26xx/icall_startup.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>

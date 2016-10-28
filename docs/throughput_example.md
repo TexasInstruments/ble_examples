@@ -120,6 +120,8 @@ Therefore, it is up to the user to decide what throughput / latency
 tradeoff is desired. Note that there is not much of a throughput
 increase after ~ 100 ms connection interval:
 
+![Connection Interval vs Throughtput Study](doc_resources/throughput_graphy.png)
+
 ### Notification Queuing
 
 The case considered here assumes that the application is able to queue
@@ -211,7 +213,7 @@ Combining the L2CAP and ATT packet overhead yields:
 
     TOTAL_PACKET_OVERHEAD = 7 bytes
 
-Method
+Running the Demo
 ======
 
 The throughput will be calculated from an extrapolation of the amount of
@@ -223,14 +225,13 @@ The test can be replicated via:
   - throughput\_example\_peripheral
   - throughput\_example\_central
 2. Compile throughput\_example\_peripheral and throughput\_example\_central projects
-  - To enable DLE set the preprocessor define: DLE_ENABLED
-  - The suggested controller payload data length can be defined by setting the define APP\_SUGGESTED\_PDU_SIZE
+  - The suggested controller payload data length can be defined by setting the define APP\_SUGGESTED\_PDU_SIZE, which to optimize throughput has been set to 251.
 3. Connect throughput\_example\_peripheral to throughput\_example\_central
-  - The peripheral project will use a hardcoded BD_ADDR of 0xAABBCCDDEEFF, the central device will auto connect to it.
+  - These projects use the Display driver to output display data over UART, see our [FAQ page](faq.md) for more information on using this feature. Follow the FAQ page instructions to start two terminal sessions to view the output of each project.
+  - The peripheral project will use a hardcoded BD_ADDR of 0xAABBCCDDEEFF, press both left and right buttons to auto connect to it.
   - Pressing KEY_LEFT on the peripheral device will initiate a data length exchange, which will enable BLE 4.2 Extended Data Length exchange. The new controller payload will be 251B.
   - Red LED binlking on the peripheral indicates that the throughput test is running
   - The central device will dynamically calculate the throughput and display on the LCD/UART.
-  - LaunchPad based projects use the Display driver to output display data over UART, see our [FAQ page](faq.md) for more information on using this feature.
 4. Once the MTU update exchange is complete, the throughput test will start
 
 Result

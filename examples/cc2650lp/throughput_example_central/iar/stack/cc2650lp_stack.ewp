@@ -329,6 +329,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
+          <state>$SRC_BLE_CORE$/rom</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
           <state>$SRC_EX$/common/cc26xx</state>
@@ -1213,16 +1214,13 @@
       <name>$SRC_EX$\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\rom\common_rom_init.c</name>
-    </file>
-    <file>
       <name>$SRC_EX$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
       <name>$SRC_EX$\examples\simple_central\cc26xx\stack\osal_icall_ble.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\rom\rom_init.c</name>
+      <name>$ROM$\rom_jt.c</name>
     </file>
   </group>
   <group>

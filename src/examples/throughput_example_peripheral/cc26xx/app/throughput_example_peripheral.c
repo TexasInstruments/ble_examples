@@ -1255,26 +1255,30 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
   if (keys & KEY_LEFT)
   {
     // Toggle PDU size, time based on KEY_LEFT
-    // Only toggle size once for now
     if(DEFAULT_PDU_SIZE == txOctets)
     {
       txOctets = DLE_MAX_PDU_SIZE;
       txTime = DLE_MAX_TX_TIME;
+    }
+    else
+    {
+      txOctets = DEFAULT_PDU_SIZE;
+      txTime = DEFAULT_TX_TIME;
+    }
 
-      uint16_t connectionHandle;
-      uint8_t gapRoleState;
-      GAPRole_GetParameter(GAPROLE_STATE, &gapRoleState);
-      GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connectionHandle);
+    uint16_t connectionHandle;
+    uint8_t gapRoleState;
+    GAPRole_GetParameter(GAPROLE_STATE, &gapRoleState);
+    GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connectionHandle);
 
-      if(GAPROLE_CONNECTED == gapRoleState)
-      {
-        HCI_LE_SetDataLenCmd(connectionHandle,
-                             txOctets,
-                             txTime );
+    if(GAPROLE_CONNECTED == gapRoleState)
+    {
+      HCI_LE_SetDataLenCmd(connectionHandle,
+                           txOctets,
+                           txTime );
 
-        // Print the results to the screen
-        Display_print1(dispHandle, 5, 0, "DLE Payload size: %d", txOctets);
-      }
+      // Print the results to the screen
+      Display_print1(dispHandle, 5, 0, "DLE Payload size: %d", txOctets);
     }
     return;
   }

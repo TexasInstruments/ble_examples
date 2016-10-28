@@ -648,6 +648,8 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
         Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
         Display_print0(dispHandle, 2, 0, "Initialized");
+        Display_print0(dispHandle, 3, 0, "Press left and right keys to connect to throughput_peripheral");
+
       }
       break;
 

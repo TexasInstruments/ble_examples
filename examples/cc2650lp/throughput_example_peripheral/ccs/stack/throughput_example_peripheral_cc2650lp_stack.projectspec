@@ -55,6 +55,7 @@
         -DCC26XX
 
         -I${CG_TOOL_ROOT}/include
+        -I${ROM}
         -I${SRC_EX}/examples/simple_peripheral/cc26xx/stack
         -I${SRC_EX}/common/cc26xx
         -I${SRC_COMMON}/hal/src/target/_common
@@ -248,9 +249,7 @@
         </file>
         <file path="SRC_EX/examples/simple_peripheral/cc26xx/stack/osal_icall_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="SRC_BLE_CORE/rom/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="SRC_BLE_CORE/rom/rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="ROM/rom_jt.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
 
         <!-- Tools Folder -->
