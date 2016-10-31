@@ -354,6 +354,7 @@
           <state>$SRC_COMMON$/services/src/saddr</state>
           <state>$CC26XXWARE$</state>
           <state>$TI_RTOS_DRIVERS_BASE$</state>
+          <state>$SRC_BLE_CORE$/rom</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1211,16 +1212,13 @@
       <name>$SRC_EX$\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\rom\common_rom_init.c</name>
-    </file>
-    <file>
       <name>$SRC_EX$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\simple_beacon\cc26xx\stack\osal_icall_ble.c</name>
+      <name>$SRC_EX$\examples\simple_peripheral\cc26xx\stack\osal_icall_ble.c</name>
     </file>
     <file>
-      <name>$SRC_BLE_CORE$\rom\rom_init.c</name>
+      <name>$ROM$\rom_jt.c</name>
     </file>
   </group>
   <group>
