@@ -38,10 +38,6 @@
       <name>TOOLS_BLE</name>
       <value>C:\ti\simplelink\ble_sdk_2_02_01_18\tools</value>
     </variable>
-    <variable>
-      <name>ROM</name>
-      <value>C:\ti\simplelink\ble_sdk_2_02_01_18\src\rom</value>
-    </variable>
   </group>
 </iarUserArgVars>
 

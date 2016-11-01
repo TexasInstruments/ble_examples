@@ -329,6 +329,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
+          <state>$SRC_BLE_CORE$/rom</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
           <state>$SRC_EX$/common/cc26xx</state>
@@ -813,7 +814,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$ROM$/ble_rom_releases/04242014/ble_rom_patch.symbols</state>
+          <state>$SRC_BLE_CORE$/rom/ble_rom_releases/04242014/ble_rom_patch.symbols</state>
           <state>$CC26XXWARE$\driverlib\bin\iar\driverlib.lib</state>
           <state>$SRC_BLE_CORE$/rom/enc_lib/cc26xx_ecc_rom_api.a</state>
         </option>
@@ -1213,16 +1214,13 @@
       <name>$SRC_BLE_CORE$\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$ROM$\common_rom_init.c</name>
-    </file>
-    <file>
       <name>$SRC_BLE_CORE$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\examples\simple_central\cc26xx\stack\osal_icall_ble.c</name>
     </file>
     <file>
-      <name>$ROM$\rom_init.c</name>
+      <name>$SRC_BLE_CORE$\rom\rom_jt.c</name>
     </file>
   </group>
   <group>
