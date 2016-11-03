@@ -167,7 +167,7 @@
         </file>
 
         <!-- Drivers/RF Folder -->
-        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
+        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RFCC26XX_singleMode.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
         </file>
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
         </file>
@@ -181,6 +181,12 @@
         </file>
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/spi/SPICC26XXDMA.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/SPI" createVirtualFolders="true">
         </file>
+        
+        <!-- Drivers/TRNG Folder -->
+        <file path="SRC_COMMON/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/SPI" createVirtualFolders="true">
+        </file>
+        <file path="SRC_COMMON/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/SPI" createVirtualFolders="true">
+        </file>	
 		
         <!-- Drivers/UDMA Folder -->
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/dma/UDMACC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/SPI" createVirtualFolders="true">

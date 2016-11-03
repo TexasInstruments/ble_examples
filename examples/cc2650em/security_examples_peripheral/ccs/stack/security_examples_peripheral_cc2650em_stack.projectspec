@@ -56,6 +56,7 @@
 
         -I${CG_TOOL_ROOT}/include        
 		-I${SRC_BLE_CORE}/inc
+        -I${SRC_BLE_CORE}/rom 
         -I${SRC_BLE_CORE}/controller/cc26xx/inc
         -I${SRC_EX}/common/cc26xx		
         -I${SRC_EX}/common/cc26xx/npi/stack		
@@ -121,9 +122,7 @@
         </file>
         <file path="../../../../../src/examples/security_examples_peripheral/cc26xx/stack/osal_icall_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="SRC_BLE_CORE/rom/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="ROM/rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="ROM/rom_jt.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
 
         <!--Include Folder -->
@@ -240,6 +239,8 @@
         <file path="SRC_EX/profiles/roles/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
         <file path="SRC_BLE_CORE/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        </file>
+        <file path="SRC_EX/host/sm_ecc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
 
         <!-- Tools Folder -->

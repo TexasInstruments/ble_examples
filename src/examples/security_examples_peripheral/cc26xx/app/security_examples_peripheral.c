@@ -415,7 +415,7 @@ static void security_examples_peripheral_init(void)
 #elif (PAIRING == PASSCODE)
   uint8_t mitm = TRUE;
   uint8_t ioCap = GAPBOND_IO_CAP_KEYBOARD_ONLY;
-  uint8_t scMode = GAPBOND_SECURE_CONNECTION_NONE;
+  uint8_t scMode = GAPBOND_SECURE_CONNECTION_ALLOW;
   GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
   GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
   GAPBondMgr_SetParameter(GAPBOND_SECURE_CONNECTION, sizeof(uint8_t), &scMode);
@@ -503,11 +503,7 @@ static void security_examples_peripheral_taskFxn(UArg a0, UArg a1)
           ICall_Stack_Event *pEvt = (ICall_Stack_Event *)pMsg;
           
           // Check for BLE stack events first
-          if (pEvt->signature == 0xffff)
-          {
-            asm("NOP");
-          }
-          else
+          if (pEvt->signature != 0xffff)
           {
             // Process inter-task message
             safeToDealloc = security_example_peripheral_processStackMsg((ICall_Hdr *)pMsg);

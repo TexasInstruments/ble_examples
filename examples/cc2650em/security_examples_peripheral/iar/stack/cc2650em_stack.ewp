@@ -331,6 +331,7 @@
           <name>CCIncludePath2</name>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
+          <state>$SRC_BLE_CORE$/rom</state>
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/common/cc26xx/npi/stack</state>
           <state>$SRC_COMMON$/hal/src/target/_common</state>
@@ -1213,6 +1214,9 @@
     <file>
       <name>$SRC_BLE_CORE$\host\gattservapp_util.c</name>
     </file>
+    <file>
+      <name>$SRC_EX$\host\sm_ecc.c</name>
+    </file>
   </group>
   <group>
     <name>Startup</name>
@@ -1220,16 +1224,13 @@
       <name>$SRC_BLE_CORE$\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$ROM$\common_rom_init.c</name>
+      <name>$ROM$\rom_jt.c</name>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\security_examples_peripheral\cc26xx\stack\osal_icall_ble.c</name>
-    </file>
-    <file>
-      <name>$ROM$\rom_init.c</name>
     </file>
   </group>
   <group>
