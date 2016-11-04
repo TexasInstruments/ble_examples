@@ -1,7 +1,8 @@
+
 /*
  * Filename: cc26xx_app_gpram.icf
  *
- * Description: linker file to create GPRAM region
+ * Description: IAR linker file to define GPRAM region
  *
  *
  * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
@@ -90,6 +91,14 @@ define symbol STACK_TOP           = RAM_END + 1;
 export symbol STACK_TOP;
 
 ////////////////////////////////////////////////////////////////////////////////
+// RAM
+//
+
+define symbol GPRAM_START           = 0x11000000;
+define symbol GPRAM_SIZE            = 8096;
+define symbol GPRAM_END             = GPRAM_START + GPRAM_SIZE;
+
+////////////////////////////////////////////////////////////////////////////////
 // Flash Interrupt Vector Table
 //
 
@@ -106,7 +115,7 @@ define region RAM                 = mem:[from RAM_START   to RAM_END];
 define region FLASH_LAST_PAGE     = mem:[from(FLASH_SIZE) - 0x1000 to FLASH_SIZE-1];
 define region FLASH               = mem:[from FLASH_START to FLASH_END] |
                                          FLASH_LAST_PAGE;
-define region GPRAM               = mem:[from 0x11000000 size 8096];                                         
+define region GPRAM               = mem:[from GPRAM_START to GPRAM_END];                                         
 
 ////////////////////////////////////////////////////////////////////////////////
 // Memory Placement
@@ -134,8 +143,10 @@ place at end of RAM { block CSTACK };
 define block RWDATA { rw };
 place in RAM { block RWDATA };
 
-define block GPDATA { rw section .gpram };
-place in GPRAM {block GPDATA};
+// GPRAM
+define block GPDATA { section .bss };
+place in GPRAM { block GPDATA };
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization

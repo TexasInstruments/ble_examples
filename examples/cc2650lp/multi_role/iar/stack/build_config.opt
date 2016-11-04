@@ -1,8 +1,8 @@
 /*
  * Filename: build_config.opt
  *
- * Description: This file is used to select the build configuration
- *              of the BLE Stack.
+ * Description: This file contains the Bluetooth Low Energy (BLE) build 
+ * config options
  *
  *
  * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
@@ -42,20 +42,20 @@
     The following is a list of all possible build defines and corresponding options
     that can be set for each define:
 
-    GATT_DB_OFF_CHIP        - Indicates that the GATT database is maintained off the chip on the 
+    GATT_DB_OFF_CHIP        - Indicates that the GATT database is maintained off the chip on the
                             Application Processor (AP).
 
     GAP_BOND_MGR            - Used to include the Bond Manager
 
     HOST_CONFIG             (BLE Host Build Configurations) Possible Options:
         PERIPHERAL_CFG      - Used to include the GAP Peripheral Role support
-        CENTRAL_CFG         - Used to include the GAP Central Role support 
-        OBSERVER_CFG        - Used to include the GAP Observer Role support 
-        BROADCASTER_CFG     - Used to include the GAP Broadcaster Role support 
+        CENTRAL_CFG         - Used to include the GAP Central Role support
+        OBSERVER_CFG        - Used to include the GAP Observer Role support
+        BROADCASTER_CFG     - Used to include the GAP Broadcaster Role support
 
     BLE_V41_FEATURES        Configure the stack to use features from the BLE 4.1 Specification
         L2CAP_COC_CFG       - Enable L2CAP Connection Oriented Channels
-        V41_CTRL_CFG        - Enable Ping, Slave Feature Exchange, Connection Parameter Request, and 
+        V41_CTRL_CFG        - Enable Ping, Slave Feature Exchange, Connection Parameter Request, and
                             Master Slave connection roles within the Controller
 
     BLE_V42_FEATURES        Configure the stack to use features from the BLE 4.2 Specification
@@ -63,9 +63,9 @@
         SECURE_CONNS_CFG    - Enable Secure Connections Pairing Procedure
         PRIVACY_1_2_CFG     - Enable Enahnced Privacy
 
-    HCI_TL_FULL             - All supported HCI commands are available via the Tranport Layer's NPI. 
+    HCI_TL_FULL             - All supported HCI commands are available via the Tranport Layer's NPI.
                             - Intended for NP solution.
-    HCI_TL_PTM              - Only those HCI commands needed for Production Test Mode are available 
+    HCI_TL_PTM              - Only those HCI commands needed for Production Test Mode are available
                             via the Transport Layer's NPI
                             - Intended for SOC solutions where, during production, accesss is temporarily
                             needed (e.g. for PHY testing using Direct Test Mode, etc.).
@@ -74,29 +74,29 @@
 
     Below is general information for using and/or changing this configuration option file:
 
-    Combo Roles:        Combo roles can be set by defining multiple roles for HOST_CONFIG. The possible 
+    Combo Roles:        Combo roles can be set by defining multiple roles for HOST_CONFIG. The possible
                         combo roles and HOST_CONFIG defines are:
                         Peirpheral + Observer   :                   PERIPHERAL_CFG+OBSERVER_CFG
                         Central + Broadcaster   :                   CENTRAL_CFG+BROADCASTER_CFG
                         Peripheral + Central    :                   PERIPHERAL_CFG+CENTRAL_CFG
                         Broadcaster + Observer  :                   BROADCASTER_CFG+OBSERVER_CFG
 
-    LibSearch Tool:     There is a pre build action for every stack project that runs a tool 
+    LibSearch Tool:     There is a pre build action for every stack project that runs a tool
                         lib_search.exe. This tool aims to automatically import the correct library
                         files into your project based on the defines in this file.
 
                         The locations of all library files and their correspond options are
                         <install dir>/ble_core/ble_[host,ctrl]_lib/<device> for stack libs
-                        and at <install dir>/ble_core/hci_tl_lib/<device> for 
+                        and at <install dir>/ble_core/hci_tl_lib/<device> for
                         HCI Transport Layer libs
 
-                        If an library is found that was built with matching options, it will be 
-                        copied into the project local directory at <App ewp dir>/../../lib/ and 
+                        If an library is found that was built with matching options, it will be
+                        copied into the project local directory at <App ewp dir>/../../lib/ and
                         subsequently linked with the stack.
 
-                        If you experience a build error with lib_search.exe, expand the build error 
-                        message by clicking Tools->Options->Messages->Show build messages:->All. 
-                        The error messages printed out by the LibSearch tool should now appear in 
+                        If you experience a build error with lib_search.exe, expand the build error
+                        message by clicking Tools->Options->Messages->Show build messages:->All.
+                        The error messages printed out by the LibSearch tool should now appear in
                         your Build Message window.
 
 */
@@ -136,3 +136,5 @@
 /* -DHCI_TL_PTM */
 /* -DHCI_TL_FULL */
 
+/* BLE Vendor Specific Features */
+/* -DBLE_VS_FEATURES=SCAN_EVT_NOTICE_CFG+SCAN_REQ_RPT_CFG */

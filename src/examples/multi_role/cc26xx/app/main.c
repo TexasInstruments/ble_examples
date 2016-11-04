@@ -1,6 +1,8 @@
 /*
  * Filename: main.c
  *
+ * Description: main entry of the BLE stack sample application.
+ *
  *
  * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
  *
@@ -46,6 +48,7 @@
 #include <ti/sysbios/BIOS.h>
 
 #include "icall.h"
+#include "hal_assert.h"
 #include "multi.h"
 #include "multi_role.h"
 
@@ -81,8 +84,8 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
  */
 
 /*******************************************************************************
-* GLOBAL VARIABLES
-*/
+ * GLOBAL VARIABLES
+ */
 
 void execHandlerHook(Hwi_ExcContext *ctx)
 {
@@ -114,49 +117,61 @@ extern Display_Handle dispHandle;
  */
 int main()
 {
-#ifdef CACHE_AS_RAM
-  // Invalidate cache
-  VIMSModeSet( VIMS_BASE, VIMS_MODE_DISABLED );
-  // Wait for disabling to be complete
-  while ( VIMSModeGet( VIMS_BASE ) != VIMS_MODE_DISABLED );  
-  // retain cache during standby
-  Power_setConstraint(PowerCC26XX_SB_VIMS_CACHE_RETAIN); 
-  Power_setConstraint(PowerCC26XX_NEED_FLASH_IN_IDLE);
-#endif //CACHE_AS_RAM
-  
+  /* Register Application callback to trap asserts raised in the Stack */
   RegisterAssertCback(AssertHandler);
-  
+
   PIN_init(BoardGpioInitTable);
-  
-#ifndef POWER_SAVING
+
+#if !defined( POWER_SAVING ) 
   /* Set constraints for Standby, powerdown and idle mode */
+  // PowerCC26XX_SB_DISALLOW may be redundant
   Power_setConstraint(PowerCC26XX_SB_DISALLOW);
   Power_setConstraint(PowerCC26XX_IDLE_PD_DISALLOW);
-#endif //POWER_SAVING
-  
+#endif // POWER_SAVING
+
   /* Initialize ICall module */
   ICall_init();
-  
+
   /* Start tasks of external images - Priority 5 */
   ICall_createRemoteTasks();
-  
+
   /* Kick off profile - Priority 3 */
   GAPRole_createTask();
-  
+
   /* Kick off application - Priority 1 */
   multi_role_createTask();
-  
+
   /* enable interrupts and start SYS/BIOS */
   BIOS_start();
-  
+
   return 0;
 }
+
 
 /*******************************************************************************
  * @fn          AssertHandler
  *
  * @brief       This is the Application's callback handler for asserts raised
- *              in the stack.
+ *              in the stack.  When EXT_HAL_ASSERT is defined in the Stack
+ *              project this function will be called when an assert is raised, 
+ *              and can be used to observe or trap a violation from expected 
+ *              behavior.       
+ *              
+ *              As an example, for Heap allocation failures the Stack will raise 
+ *              HAL_ASSERT_CAUSE_OUT_OF_MEMORY as the assertCause and 
+ *              HAL_ASSERT_SUBCAUSE_NONE as the assertSubcause.  An application
+ *              developer could trap any malloc failure on the stack by calling
+ *              HAL_ASSERT_SPINLOCK under the matching case.
+ *
+ *              An application developer is encouraged to extend this function
+ *              for use by their own application.  To do this, add hal_assert.c
+ *              to your project workspace, the path to hal_assert.h (this can 
+ *              be found on the stack side). Asserts are raised by including
+ *              hal_assert.h and using macro HAL_ASSERT(cause) to raise an 
+ *              assert with argument assertCause.  the assertSubcause may be
+ *              optionally set by macro HAL_ASSERT_SET_SUBCAUSE(subCause) prior
+ *              to asserting the cause it describes. More information is
+ *              available in hal_assert.h.
  *
  * input parameters
  *
@@ -220,7 +235,7 @@ void AssertHandler(uint8 assertCause, uint8 assertSubcause)
 /*******************************************************************************
  * @fn          smallErrorHook
  *
- * @brief       Error handled to be hooked into TI-RTOS.
+ * @brief       Error handler to be hooked into TI-RTOS.
  *
  * input parameters
  *
@@ -236,3 +251,7 @@ void smallErrorHook(Error_Block *eb)
 {
   for (;;);
 }
+
+
+/*******************************************************************************
+ */

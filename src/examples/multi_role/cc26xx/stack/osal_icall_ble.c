@@ -1,48 +1,41 @@
-/******************************************************************************
-
- @file  osal_icall_ble.c
-
- @brief This file contains function that allows user setup tasks
-
- Group: WCS, BTS
- Target Device: CC2650, CC2640, CC1350
-
- ******************************************************************************
-
- Copyright (c) 2013-2016, Texas Instruments Incorporated
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
-
- *  Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-
- *  Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
-
- *  Neither the name of Texas Instruments Incorporated nor the names of
-    its contributors may be used to endorse or promote products derived
-    from this software without specific prior written permission.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- ******************************************************************************
- Release Name: ble_sdk_2_02_00_63_beta
- Release Date: 2016-03-31 16:59:16
- *****************************************************************************/
+/*
+ * Filename: osal_icall_ble.c
+ *
+ * Description: This file contains function that allows user setup tasks
+ *
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *    Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ *
+ *    Neither the name of Texas Instruments Incorporated nor the names of
+ *    its contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 /**************************************************************************************************
  *                                            INCLUDES
@@ -152,18 +145,18 @@ void osalInitTasks( void )
 
 	  /* SM Task */
   SM_Init( taskID++ );
-
+	
   /* GATT Task */
   GATT_Init( taskID++ );
-
+ 
   /* GATT Server App Task */
   GATTServApp_Init( taskID++ );
-
+    
 #if defined ( GAP_BOND_MGR )
   /* Bond Manager Task */
   GAPBondMgr_Init( taskID++ );
 #endif
-
+  
   /* ICall BLE Dispatcher Task */
   bleDispatch_Init( taskID );
 
@@ -194,7 +187,7 @@ int stack_main( void *arg )
 {
   /* User reconfiguration of BLE Controller and Host variables */
   setBleUserConfig( (bleUserCfg_t *)arg );
-
+  
   /* Establish OSAL for a stack service that requires accompanying
    * messaging service */
   if (ICall_enrollService(ICALL_SERVICE_CLASS_BLE_MSG,
@@ -206,11 +199,9 @@ int stack_main( void *arg )
     ICall_abort();
   }
 
+  // Disable interrupts
   halIntState_t state;
   HAL_ENTER_CRITICAL_SECTION(state);
-
-  // Turn off interrupts
-  //osal_int_disable( INTS_ALL );
 
   // Initialize NV System
   osal_snv_init( );
@@ -219,7 +210,6 @@ int stack_main( void *arg )
   osal_init_system();
 
   // Allow interrupts
-  //osal_int_enable( INTS_ALL );
   HAL_EXIT_CRITICAL_SECTION(state);
 
   osal_start_system(); // No Return from here

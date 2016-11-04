@@ -1,6 +1,9 @@
 /*
  * Filename: ccfg_app_ble.c
  *
+ * Description: Customer Configuration CC26xx PG2 device family.
+ *
+ *
  * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
  *
  *

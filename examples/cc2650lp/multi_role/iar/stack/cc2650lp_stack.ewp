@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-
+<?xml version='1.0' encoding='iso-8859-1'?>
 <project>
   <fileVersion>2</fileVersion>
   <configuration>
@@ -184,17 +183,17 @@
           <state>USE_ICALL</state>
           <state>FLASH_ROM_BUILD</state>
           <state>POWER_SAVING</state>
-          <state>OSAL_SNV=2</state>
           <state>INCLUDE_AES_DECRYPT</state>
+          <state>OSAL_SNV=1</state>
           <state>xPM_DISABLE_PWRDOWN</state>
           <state>xTESTMODES</state>
           <state>xTEST_BLEBOARD</state>
           <state>OSAL_CBTIMER_NUM_TASKS=1</state>
-          <state>DEBUG</state>
-          <state>EXT_HAL_ASSERT</state>
+          <state>xDEBUG</state>
           <state>xDEBUG_GPIO</state>
           <state>xDEBUG_ENC</state>
           <state>xDEBUG_SW_TRACE</state>
+          <state>EXT_HAL_ASSERT</state>
           <state>NEAR_FUNC=</state>
           <state>DATA=</state>
           <state>CC26XXWARE</state>
@@ -238,7 +237,7 @@
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state></state>
+          <state>Pa050</state>
         </option>
         <option>
           <name>CCDiagRemark</name>
@@ -331,10 +330,11 @@
           <name>CCIncludePath2</name>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
+          <state>$SRC_BLE_CORE$/rom</state>
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/common/cc26xx/npi/stack</state>
           <state>$SRC_COMMON$/hal/src/target/_common</state>
-          <state>$SRC_EX$/examples/simple_central/cc26xx/stack</state>
+          <state>$SRC_EX$/examples/multi_role/cc26xx/stack</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
           <state>$SRC_EX$/profiles/roles</state>
@@ -815,7 +815,6 @@
           <name>IlinkAdditionalLibs</name>
           <state>$ROM$/ble_rom_releases/04242014/ble_rom_patch.symbols</state>
           <state>$CC26XXWARE$\driverlib\bin\iar\driverlib.lib</state>
-          <state>$SRC_BLE_CORE$/rom/enc_lib/cc26xx_ecc_rom_api.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1008,40 +1007,40 @@
     <group>
       <name>Common</name>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\common\hal_assert.c</name>
+        <name>$SRC_COMMON$\hal\src\common\hal_assert.c</name>
       </file>
     </group>
     <group>
       <name>Include</name>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_adc.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_adc.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_assert.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_assert.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_board.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_board.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_defs.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_defs.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_key.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_key.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_lcd.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_lcd.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_led.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_led.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_sleep.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_sleep.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_timer.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_timer.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_uart.h</name>
+        <name>$SRC_COMMON$\hal\src\inc\hal_uart.h</name>
       </file>
     </group>
     <group>
@@ -1051,34 +1050,34 @@
         <group>
           <name>_common</name>
           <file>
-            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_mcu.h</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_mcu.h</name>
           </file>
         </group>
         <group>
           <name>Config</name>
           <file>
-            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_board_cfg.h</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_board_cfg.h</name>
           </file>
         </group>
         <group>
           <name>Drivers</name>
           <file>
-            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_flash_wrapper.c</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_flash_wrapper.c</name>
           </file>
           <file>
-            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_gpio_wrapper.h</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_gpio_wrapper.h</name>
           </file>
           <file>
-            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_rtc_wrapper.c</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_rtc_wrapper.c</name>
           </file>
           <file>
-            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_rtc_wrapper.h</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_rtc_wrapper.h</name>
           </file>
           <file>
-            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_trng_wrapper.c</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_trng_wrapper.c</name>
           </file>
           <file>
-            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_trng_wrapper.h</name>
+            <name>$SRC_COMMON$\hal\src\target\_common\hal_trng_wrapper.h</name>
           </file>
         </group>
       </group>
@@ -1087,40 +1086,40 @@
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\icall\stack\ble_dispatch.c</name>
+      <name>$SRC_EX$\icall\stack\ble_dispatch.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\icall\inc\ble_dispatch.h</name>
+      <name>$SRC_EX$\icall\inc\ble_dispatch.h</name>
     </file>
   </group>
   <group>
     <name>INCLUDE</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\att.h</name>
+      <name>$SRC_BLE_CORE$\inc\att.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\gap.h</name>
+      <name>$SRC_BLE_CORE$\inc\gap.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\gatt.h</name>
+      <name>$SRC_BLE_CORE$\inc\gatt.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\gatt_uuid.h</name>
+      <name>$SRC_BLE_CORE$\inc\gatt_uuid.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\hci.h</name>
+      <name>$SRC_BLE_CORE$\inc\hci.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\l2cap.h</name>
+      <name>$SRC_BLE_CORE$\inc\l2cap.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\linkdb.h</name>
+      <name>$SRC_BLE_CORE$\inc\linkdb.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\controller\cc26xx\inc\ll.h</name>
+      <name>$SRC_BLE_CORE$\controller\cc26xx\inc\ll.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\sm.h</name>
+      <name>$SRC_BLE_CORE$\inc\sm.h</name>
     </file>
   </group>
   <group>
@@ -1132,115 +1131,115 @@
   <group>
     <name>NPI</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\npi\stack\npi.c</name>
+      <name>$SRC_EX$\common\cc26xx\npi\stack\npi.c</name>
     </file>
   </group>
   <group>
     <name>OSAL</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\comdef.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\comdef.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal.c</name>
+      <name>$SRC_COMMON$\osal\src\common\osal.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_bufmgr.c</name>
+      <name>$SRC_COMMON$\osal\src\common\osal_bufmgr.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_bufmgr.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_bufmgr.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_cbtimer.c</name>
+      <name>$SRC_COMMON$\osal\src\common\osal_cbtimer.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_cbtimer.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_cbtimer.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_clock.c</name>
+      <name>$SRC_COMMON$\osal\src\common\osal_clock.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_clock.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_clock.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_memory.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_memory.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_memory_icall.c</name>
+      <name>$SRC_COMMON$\osal\src\common\osal_memory_icall.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_pwrmgr.c</name>
+      <name>$SRC_COMMON$\osal\src\common\osal_pwrmgr.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_pwrmgr.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_pwrmgr.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_snv.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_snv.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\mcu\cc26xx\osal_snv_wrapper.c</name>
+      <name>$SRC_COMMON$\osal\src\mcu\cc26xx\osal_snv_wrapper.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_task.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_task.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_timers.c</name>
+      <name>$SRC_COMMON$\osal\src\common\osal_timers.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_timers.h</name>
+      <name>$SRC_COMMON$\osal\src\inc\osal_timers.h</name>
     </file>
   </group>
   <group>
-    <name>Profiles</name>
+    <name>PROFILES</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\gap.c</name>
+      <name>$SRC_EX$\profiles\roles\gap.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\gapbondmgr.c</name>
+      <name>$SRC_EX$\profiles\roles\gapbondmgr.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\gapbondmgr.h</name>
+      <name>$SRC_EX$\profiles\roles\gapbondmgr.h</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\host\gattservapp_util.c</name>
+      <name>$SRC_BLE_CORE$\host\gattservapp_util.c</name>
+    </file>
+    <file>
+      <name>$SRC_BLE_CORE$\host\sm_ecc.c</name>
     </file>
   </group>
   <group>
     <name>Startup</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\icall\stack\ble_user_config.c</name>
+      <name>$SRC_EX$\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\rom\common_rom_init.c</name>
+      <name>$SRC_EX$\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\icall_startup.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\multi_role\cc26xx\stack\osal_icall_ble.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\examples\simple_central\cc26xx\stack\osal_icall_ble.c</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\rom\rom_init.c</name>
+      <name>$SRC_BLE_CORE$\rom\rom_jt.c</name>
     </file>
   </group>
   <group>
     <name>Tools</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\config\build_components.opt</name>
+      <name>$SRC_EX$\config\build_components.opt</name>
     </file>
     <file>
       <name>$PROJ_DIR$\build_config.opt</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\iar\cc26xx_stack.icf</name>
+      <name>$SRC_EX$\common\cc26xx\iar\cc26xx_stack.icf</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\onboard.c</name>
+      <name>$SRC_EX$\common\cc26xx\onboard.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\onboard.h</name>
+      <name>$SRC_EX$\common\cc26xx\onboard.h</name>
     </file>
   </group>
 </project>

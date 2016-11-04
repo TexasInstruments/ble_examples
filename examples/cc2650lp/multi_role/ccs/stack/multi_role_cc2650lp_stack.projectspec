@@ -54,7 +54,7 @@
         -DCC26XX
 
         -I${CG_TOOL_ROOT}/include
-        -I${SRC_EX}/examples/simple_central/cc26xx/stack
+        -I${ROM}
         -I${SRC_EX}/common/cc26xx
         -I${SRC_COMMON}/hal/src/target/_common
         -I${SRC_COMMON}/hal/src/target/_common
@@ -83,6 +83,8 @@
         -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib
         -l${SRC_BLE_CORE}\rom\enc_lib\cc26xx_ecc_rom_api.a
         -llibc.a  -x
+        --unused_section_elimination=on
+        --xml_link_info=${ProjName}_linkInfo.xml
         --entry_point=startup_entry
         --diag_suppress=16002-D
         --diag_suppress=10247-D
@@ -93,21 +95,22 @@
         launchWizard="false"
         >
 
-
+        <!-- Project properties -->
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
         <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; "/>
 
-        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
+        <!-- Env Vars -->
         <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/tidrivers_cc13xx_cc26xx_2_20_01_10/packages" scope="project"></pathVariable>
+        <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_01_18" scope="project"></pathVariable>
         <pathVariable name="SRC_EX" path="${TI_BLE_SDK_BASE}/src" scope="project"></pathVariable>
         <pathVariable name="SRC_COMMON" path="${TI_BLE_SDK_BASE}/src/components" scope="project"></pathVariable>
         <pathVariable name="SRC_BLE_CORE" path="${TI_BLE_SDK_BASE}/src/" scope="project"></pathVariable>
         <pathVariable name="ROM" path="${TI_BLE_SDK_BASE}/src/rom" scope="project"></pathVariable>
         <pathVariable name="TOOLS_BLE" path="${TI_BLE_SDK_BASE}/tools" scope="project"></pathVariable>
-        <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_01_18" scope="project"></pathVariable>
+        <pathVariable name="CC26XXWARE" path="/C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
         <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
 
         <!-- HAL/Common Folder-->
@@ -133,7 +136,7 @@
         </file>
         <file path="SRC_COMMON/hal/src/inc/hal_timer.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true">
         </file>
-        <file path="SRC_COMMON/hal/src/inc/hal_uart.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true">
+        <file path="SRC_COMMON/hal/src/inc/hal_UART.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Include" createVirtualFolders="true">
         </file>
 
         <!-- HAL/Target Folder -->
@@ -236,17 +239,17 @@
         <file path="SRC_BLE_CORE/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
 
-        <!-- Startup Folder -->
-        <file path="SRC_EX/icall/stack/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="SRC_BLE_CORE/rom/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="SRC_BLE_CORE/rom/rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
+        <!--Startup Folder -->
         <file path="SRC_EX/common/cc26xx/icall_startup.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/examples/simple_central/cc26xx/stack/osal_icall_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="SRC_EX/icall/stack/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
+        <file path="PROJECT_IMPORT_LOC\..\..\..\..\..\src\examples\multi_role\cc26xx\stack\osal_icall_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        </file>
+        <file path="ROM/rom_jt.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        </file>
+
+
 
         <!-- Tools -->
         <file path="TI_BLE_SDK_BASE/src/config/build_components.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">

@@ -1,7 +1,8 @@
 /*
  * Filename: multi_role.c
  *
- * Description: multi role app code
+ * Description: This file contains the multi_role sample application for use
+ * with the CC2650 Bluetooth Low Energy Protocol Stack.
  *
  *
  * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
@@ -36,7 +37,7 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 /*********************************************************************
 * INCLUDES
 */
@@ -46,11 +47,10 @@
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Queue.h>
-#ifdef DEBUG
-#include <driverlib/ioc.h>
-#endif // DEBUG
 
+#include "bcomdef.h"
 #include "hci_tl.h"
+#include "linkdb.h"
 #include "gatt.h"
 #include "gapgattserver.h"
 #include "gattservapp.h"
@@ -63,12 +63,11 @@
 #include "osal_snv.h"
 #include "icall_apimsg.h"
 
-#include <ti/mw/display/Display.h>
 #include "util.h"
 #include "board_key.h"
-#include "Board.h"
+#include <ti/mw/display/Display.h>
+#include "board.h"
 
-#include "linkdb.h"
 #include "multi_role.h"
 
 #include <ti/mw/lcd/LCDDogm1286.h>
@@ -76,9 +75,6 @@
 /*********************************************************************
 * CONSTANTS
 */
-
-
-
 // Advertising interval when device is discoverable (units of 625us, 160=100ms)
 #define DEFAULT_ADVERTISING_INTERVAL          160
 
@@ -96,9 +92,6 @@
 // formed
 #define DEFAULT_ENABLE_UPDATE_REQUEST         FALSE
 
-// Connection Pause Peripheral time value (in seconds)
-#define DEFAULT_CONN_PAUSE_PERIPHERAL         6
-
 //connection parameters
 #define DEFAULT_CONN_INT                      200
 #define DEFAULT_CONN_TIMEOUT                  1000
@@ -108,7 +101,7 @@
 #define DEFAULT_SVC_DISCOVERY_DELAY           1000
 
 // Scan parameters
-#define DEFAULT_SCAN_DURATION                 7000
+#define DEFAULT_SCAN_DURATION                 4000
 #define DEFAULT_SCAN_WIND                     80
 #define DEFAULT_SCAN_INT                      80
 
@@ -133,37 +126,65 @@
 // TRUE to use white list when creating link
 #define DEFAULT_LINK_WHITE_LIST               FALSE
 
+// Type of Display to open
+#if !defined(Display_DISABLE_ALL)
+#if !defined(BOARD_DISPLAY_EXCLUDE_LCD)
+#define SBC_DISPLAY_TYPE Display_Type_LCD
+#elif !defined (BOARD_DISPLAY_EXCLUDE_UART)
+#define SBC_DISPLAY_TYPE Display_Type_UART
+#else // BOARD_DISPLAY_EXCLUDE_LCD && BOARD_DISPLAY_EXCLUDE_UART
+#define SBC_DISPLAY_TYPE 0 // Option not supported
+#endif // BOARD_DISPLAY_EXCLUDE_LCD
+#else // Display_DISABLE_ALL
+#define SBC_DISPLAY_TYPE 0 // No Display
+#endif // Display_DISABLE_ALL
+
 // Task configuration
 #define MR_TASK_PRIORITY                     1
-
 #ifndef MR_TASK_STACK_SIZE
-#define MR_TASK_STACK_SIZE                   644
+#define MR_TASK_STACK_SIZE                   944
 #endif
 
 // Internal Events for RTOS application
 #define MR_STATE_CHANGE_EVT                  0x0001
 #define MR_CHAR_CHANGE_EVT                   0x0002
 #define MR_CONN_EVT_END_EVT                  0x0004
-#define MR_START_DISCOVERY_EVT               0x0008
-#define MR_KEY_CHANGE_EVT                    0x0010
-#define MR_PAIRING_STATE_EVT                 0x0020
-#define MR_PASSCODE_NEEDED_EVT               0x0040
+#define MR_KEY_CHANGE_EVT                    0x0008
+#define MR_PAIRING_STATE_EVT                 0x0010
+#define MR_PASSCODE_NEEDED_EVT               0x0020
 
 // Discovery states
-enum
-{
+typedef enum {
   BLE_DISC_STATE_IDLE,                // Idle
   BLE_DISC_STATE_MTU,                 // Exchange ATT MTU size
   BLE_DISC_STATE_SVC,                 // Service discovery
   BLE_DISC_STATE_CHAR                 // Characteristic discovery
-};
+} discState_t;
 
-// LCD defines
-#define MAIN_MENU 0
-#define DEVICE_MENU 1
+// Key states for connections
+typedef enum {
+  SCAN,                    // Scan for devices
+  CONNECT,                 // Establish a connection to a discovered device
+  GATT_RW,                 // Perform GATT Read/Write
+  CONN_UPDATE,             // Send Connection Parameter Update
+  DISCONNECT,              // Disconnect
+  ADVERTISE,               // Turn advertising on / off
+} keyPressConnOpt_t;
 
-#define CONNECTED_DEVICES 0
-#define DISCOVERED_DEVICES 1
+// Key states for connections
+typedef enum {
+  MAIN_MENU,               // top level menu
+  DISC_MENU,               // Choose discovered device to connect to
+  CONN_MENU                // Choose connected device to perform operation on               
+} menuLevel_t;
+
+// Key option state.
+static keyPressConnOpt_t keyPressConnOpt = SCAN;
+// Menu level
+static menuLevel_t menuLevel = MAIN_MENU;
+
+// pointer to allocate the connection handle map
+static uint16_t *connHandleMap;
 
 /*********************************************************************
 * TYPEDEFS
@@ -184,9 +205,18 @@ typedef struct
   uint8 status;            //!< status of state
 } gapPairStateEvent_t;
 
+// discovery information
+typedef struct
+{
+  discState_t discState;   //discovery state
+  uint16_t svcStartHdl;    //service start handle     
+  uint16_t svcEndHdl;      //service end handle
+  uint16_t charHdl;        //characteristic handle
+} discInfo_t;
+
 /*********************************************************************
- * GLOBAL VARIABLES
- */
+* GLOBAL VARIABLES
+*/
 
 // Display Interface
 Display_Handle dispHandle = NULL;
@@ -194,8 +224,6 @@ Display_Handle dispHandle = NULL;
 /*********************************************************************
 * LOCAL VARIABLES
 */
-// array to store index to connection handle map
-uint16_t connHandleMap[MAX_NUM_BLE_CONNS];
 
 /*********************************************************************
 * LOCAL VARIABLES
@@ -207,38 +235,13 @@ static ICall_EntityID selfEntity;
 // Semaphore globally used to post events to the application thread
 static ICall_Semaphore sem;
 
-// Clock object used to signal discovery timeout
-static Clock_Struct startDiscClock;
-
 // Queue object used for app messages
 static Queue_Struct appMsg;
 static Queue_Handle appMsgQueue;
 
-// events flag for internal application events.
-static uint16_t events;
-
 // Task configuration
-#if defined(__IAR_SYSTEMS_ICC__)
-#ifdef CACHE_AS_RAM
-#pragma location = ".gpram"
-#endif //CACHE_AS_RAM
-#elif defined(__TI_COMPILER_VERSION__)
-//todo
-#endif //compiler version
 Task_Struct mrTask;
-
-#if defined(__IAR_SYSTEMS_ICC__)
-#ifdef CACHE_AS_RAM
-#pragma location = ".gpram"
-#endif //CACHE_AS_RAM
-#elif defined(__TI_COMPILER_VERSION__)
-//todo
-#endif //compiler version
 Char mrTaskStack[MR_TASK_STACK_SIZE];
-
-// LCD menu variables
-uint8_t LCDmenu = MAIN_MENU;
-uint8_t selectKey = DISCOVERED_DEVICES;
 
 static uint8_t scanRspData[] =
 {
@@ -281,24 +284,14 @@ static uint8_t advertData[] =
 };
 
 // GAP GATT Attributes
-static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple Topology";
+static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Multi Role :)";
 
 // Globals used for ATT Response retransmission
 static gattMsgEvent_t *pAttRsp = NULL;
 static uint8_t rspTxRetry = 0;
 
-// Connection handle of current connection 
-static uint16_t connHandle = GAP_CONNHANDLE_INIT;
-
-// Discovery state
-static uint8_t discState = BLE_DISC_STATE_IDLE;
-
-// Discovered service start and end handle
-static uint16_t svcStartHdl = 0;
-static uint16_t svcEndHdl = 0;
-
-// Discovered characteristic handle
-static uint16_t charHdl[MAX_NUM_BLE_CONNS] = {0};
+// Pointer to per connection discovery info
+discInfo_t *discInfo;
 
 // Maximim PDU size (default = 27 octets)
 static uint16 maxPduSize;  
@@ -306,15 +299,16 @@ static uint16 maxPduSize;
 // Scanning state
 static bool scanningStarted = FALSE;
 
-// Number of scan results and scan result index
+// Number of scan results and scan result index for menu functionality
 static uint8_t scanRes;
 static uint8_t scanIdx;
 
-// Number of connected devices
-static int8_t connIdx = -1;
+// Connected Device indices for menu functionality
+static uint16_t searchIdx = 0x00;
+static uint16_t connIdx = INVALID_CONNHANDLE;
 
 // connecting state
-static uint8_t connecting_state = 0;
+static uint8_t connectingState = 0;
 
 // Scan result list
 static gapDevRec_t devList[DEFAULT_MAX_SCAN_RES];
@@ -324,6 +318,22 @@ static uint8_t charVal = 0;
 
 // Value read/write toggle
 static bool doWrite = FALSE;
+
+// Dummy parameters to use for connection updates
+gapRole_updateConnParams_t updateParams =
+{
+  .connHandle = INVALID_CONNHANDLE,
+  .minConnInterval = 80,
+  .maxConnInterval = 150,
+  .slaveLatency = 0,
+  .timeoutMultiplier = 200
+};
+
+// connection index for mapping connection handles
+static uint16_t connIndex = INVALID_CONNHANDLE;
+
+// maximum number of connected devices
+static uint8_t maxNumBleConns = MAX_NUM_BLE_CONNS;
 
 /*********************************************************************
 * LOCAL FUNCTIONS
@@ -339,25 +349,23 @@ static void multi_role_sendAttRsp(void);
 static void multi_role_freeAttRsp(uint8_t status);
 static void multi_role_charValueChangeCB(uint8_t paramID);
 static uint8_t multi_role_enqueueMsg(uint16_t event, uint8_t *pData);
-static void multi_role_startDiscovery(void);
+static void multi_role_startDiscovery(uint16_t connHandle);
 static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg);
 static bool multi_role_findSvcUuid(uint16_t uuid, uint8_t *pData, uint8_t dataLen);
 static void multi_role_addDeviceInfo(uint8_t *pAddr, uint8_t addrType);
-static void multi_role_startDiscovery(void);
 static void multi_role_handleKeys(uint8_t keys);
 static uint8_t multi_role_eventCB(gapMultiRoleEvent_t *pEvent);
 static void multi_role_sendAttRsp(void);
 static void multi_role_freeAttRsp(uint8_t status);
 static uint16_t multi_role_mapConnHandleToIndex(uint16_t connHandle);
-void multi_role_startDiscHandler(UArg a0);
-void multi_role_keyChangeHandler(uint8 keysPressed);
+static void multi_role_keyChangeHandler(uint8 keysPressed);
 static uint8_t multi_role_addMappingEntry(uint16_t connHandle);
 static void multi_role_processPasscode(gapPasskeyNeededEvent_t *pData);
 static void multi_role_processPairState(gapPairStateEvent_t* pairingEvent);
 static void multi_role_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
-                                        uint8_t uiInputs, uint8_t uiOutputs, uint32_t numComparison);
+                                  uint8_t uiInputs, uint8_t uiOutputs, uint32_t numComparison);
 static void multi_role_pairStateCB(uint16_t connHandle, uint8_t state,
-                                         uint8_t status);
+                                   uint8_t status);
 
 /*********************************************************************
 * PROFILE CALLBACKS
@@ -421,7 +429,7 @@ void multi_role_createTask(void)
 * @return  None.
 */
 static void multi_role_init(void)
-{
+{  
   // ******************************************************************
   // N0 STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
   // ******************************************************************
@@ -432,19 +440,16 @@ static void multi_role_init(void)
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
   
-  // Setup discovery delay as a one-shot timer
-  Util_constructClock(&startDiscClock, multi_role_startDiscHandler,
-                      DEFAULT_SVC_DISCOVERY_DELAY, 0, false, 0);
-  
   //init keys and LCD
   Board_initKeys(multi_role_keyChangeHandler);
-  dispHandle = Display_open(Display_Type_LCD, NULL);
+  // Open Display.
+  dispHandle = Display_open(SBC_DISPLAY_TYPE, NULL);
   
   // Setup the GAP
   {
     /*-------------------PERIPHERAL-------------------*/
+    // set advertising interval the same for all scenarios
     uint16_t advInt = DEFAULT_ADVERTISING_INTERVAL;
-    GAP_SetParamValue(TGAP_CONN_PAUSE_PERIPHERAL, DEFAULT_CONN_PAUSE_PERIPHERAL);    
     GAP_SetParamValue(TGAP_LIM_DISC_ADV_INT_MIN, advInt);
     GAP_SetParamValue(TGAP_LIM_DISC_ADV_INT_MAX, advInt);
     GAP_SetParamValue(TGAP_GEN_DISC_ADV_INT_MIN, advInt);
@@ -452,7 +457,9 @@ static void multi_role_init(void)
     GAP_SetParamValue(TGAP_CONN_ADV_INT_MIN, advInt);
     GAP_SetParamValue(TGAP_CONN_ADV_INT_MAX, advInt);    
     /*-------------------CENTRAL-------------------*/
+    // set scan duration
     GAP_SetParamValue(TGAP_GEN_DISC_SCAN, DEFAULT_SCAN_DURATION);
+    // scan interval and window the same for all scenarios
     GAP_SetParamValue(TGAP_CONN_SCAN_INT, DEFAULT_SCAN_INT);
     GAP_SetParamValue(TGAP_CONN_SCAN_WIND, DEFAULT_SCAN_WIND);
     GAP_SetParamValue(TGAP_CONN_HIGH_SCAN_INT, DEFAULT_SCAN_INT);
@@ -463,33 +470,40 @@ static void multi_role_init(void)
     GAP_SetParamValue(TGAP_LIM_DISC_SCAN_WIND, DEFAULT_SCAN_WIND);
     GAP_SetParamValue(TGAP_CONN_EST_SCAN_INT, DEFAULT_SCAN_INT);
     GAP_SetParamValue(TGAP_CONN_EST_SCAN_WIND, DEFAULT_SCAN_WIND);
+    // set connection parameters
     GAP_SetParamValue(TGAP_CONN_EST_INT_MIN, DEFAULT_CONN_INT);
     GAP_SetParamValue(TGAP_CONN_EST_INT_MAX, DEFAULT_CONN_INT);
     GAP_SetParamValue(TGAP_CONN_EST_SUPERV_TIMEOUT, DEFAULT_CONN_TIMEOUT);
     GAP_SetParamValue(TGAP_CONN_EST_LATENCY, DEFAULT_CONN_LATENCY);
+    
+    //register to receive GAP and HCI messages
+    GAP_RegisterForMsgs(selfEntity);
   }
   
   // Setup the GAP Role Profile
   {
     /*--------PERIPHERAL-------------*/
-    // For all hardware platforms, device starts advertising upon initialization
     uint8_t initialAdvertEnable = TRUE;
-    // By setting this to zero, the device will go into the waiting state after
-    // being discoverable for 30.72 second, and will not being advertising again
-    // until the enabler is set back to TRUE
     uint16_t advertOffTime = 0;
     uint16_t desiredMinInterval = DEFAULT_DESIRED_MIN_CONN_INTERVAL;
     uint16_t desiredMaxInterval = DEFAULT_DESIRED_MAX_CONN_INTERVAL;
     uint16_t desiredSlaveLatency = DEFAULT_DESIRED_SLAVE_LATENCY;
     uint16_t desiredConnTimeout = DEFAULT_DESIRED_CONN_TIMEOUT;
     
+    // device starts advertising upon initialization
     GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t),
                          &initialAdvertEnable, NULL);
+    // By setting this to zero, the device will go into the waiting state after
+    // being discoverable for 30.72 second, and will not being advertising again
+    // until the enabler is set back to TRUE
     GAPRole_SetParameter(GAPROLE_ADVERT_OFF_TIME, sizeof(uint16_t),
                          &advertOffTime, NULL);
+    // set scan response data
     GAPRole_SetParameter(GAPROLE_SCAN_RSP_DATA, sizeof(scanRspData),
                          scanRspData, NULL);
+    // set advertising data
     GAPRole_SetParameter(GAPROLE_ADVERT_DATA, sizeof(advertData), advertData, NULL);
+    // set connection parameters
     GAPRole_SetParameter(GAPROLE_MIN_CONN_INTERVAL, sizeof(uint16_t),
                          &desiredMinInterval, NULL);
     GAPRole_SetParameter(GAPROLE_MAX_CONN_INTERVAL, sizeof(uint16_t),
@@ -500,11 +514,35 @@ static void multi_role_init(void)
                          &desiredConnTimeout, NULL);
     /*--------------CENTRAL-----------------*/
     uint8_t scanRes = DEFAULT_MAX_SCAN_RES;
+    //set the max amount of scan responses
     GAPRole_SetParameter(GAPROLE_MAX_SCAN_RES, sizeof(uint8_t), 
-                         &scanRes, NULL);        
+                         &scanRes, NULL);     
     
-    // Register with GAP for HCI/Host messages
-    GAP_RegisterForMsgs(selfEntity);
+    // Start the GAPRole and negotiate max number of connections
+    VOID GAPRole_StartDevice(&multi_role_gapRoleCBs, &maxNumBleConns);
+    
+    //allocate memory for index to connection handle map
+    if (connHandleMap = ICall_malloc(sizeof(uint16_t) * maxNumBleConns))
+    {
+      // init index to connection handle map to 0's
+      for (uint8_t i = 0; i < maxNumBleConns; i++)
+      {
+        connHandleMap[i] = INVALID_CONNHANDLE;
+      }  
+    }
+    
+    //allocate memory for per connection discovery information
+    if (discInfo = ICall_malloc(sizeof(discInfo_t) * maxNumBleConns))
+    {
+      // init index to connection handle map to 0's
+      for (uint8_t i = 0; i < maxNumBleConns; i++)
+      {
+        discInfo[i].charHdl = 0;
+        discInfo[i].discState = BLE_DISC_STATE_IDLE;
+        discInfo[i].svcEndHdl = 0;
+        discInfo[i].svcStartHdl = 0;
+      }  
+    }
   }
   
   //GATT
@@ -559,41 +597,28 @@ static void multi_role_init(void)
     uint8_t mitm = TRUE;
     uint8_t ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8_t bonding = TRUE;
-
+    
+    // set pairing mode
     GAPBondMgr_SetParameter(GAPBOND_PAIRING_MODE, sizeof(uint8_t), &pairMode);
+    // set authentication requirements
     GAPBondMgr_SetParameter(GAPBOND_MITM_PROTECTION, sizeof(uint8_t), &mitm);
+    // set i/o capabilities
     GAPBondMgr_SetParameter(GAPBOND_IO_CAPABILITIES, sizeof(uint8_t), &ioCap);
+    // set bonding requirements
     GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
-    GAPBondMgr_SetParameter(GAPBOND_BONDING_ENABLED, sizeof(uint8_t), &bonding);
+    
+    // Register and start Bond Manager
+    VOID GAPBondMgr_Register(&multi_role_BondMgrCBs);  
   }  
   
-  // Start the Device
-  VOID GAPRole_StartDevice(&multi_role_gapRoleCBs);
-  
-  // Start Bond Manager
-  VOID GAPBondMgr_Register(&multi_role_BondMgrCBs);  
-  
-  // init index to channel map
-  uint8_t i;
-  for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
-  {
-    connHandleMap[i] = INVALID_CONNHANDLE;
-  }  
-  
-#ifdef DEBUG
-  // Map RFC_GPO0 to DIO6
-  IOCPortConfigureSet(IOID_6, IOC_PORT_RFC_GPO0,
-                      IOC_IOMODE_NORMAL);
-  // Map RFC_GPO1 to DIO7
-  IOCPortConfigureSet(IOID_7, IOC_PORT_RFC_GPO1,
-                      IOC_IOMODE_NORMAL);  
-#endif //DEBUG  
+  Display_print0(dispHandle, 0, 0, "Scan ->");
+  Display_print0(dispHandle, 0, 0, "<- Next Option");      
 }
 
 /*********************************************************************
 * @fn      multi_role_taskFxn
 *
-* @brief   Application task entry point for the Simple BLE Multi.
+* @brief   Application task entry point for the multi_role.
 *
 * @param   a0, a1 - not used.
 *
@@ -658,19 +683,12 @@ static void multi_role_taskFxn(UArg a0, UArg a1)
         {
           // Process message.
           multi_role_processAppMsg(pMsg);
-
+          
           // Free the space from the message.
           ICall_free(pMsg);
         }
       }
     }
-    
-    if (events & MR_START_DISCOVERY_EVT)
-    {      
-      events &= ~MR_START_DISCOVERY_EVT;
-      
-      multi_role_startDiscovery();
-    }  
   }
 }
 
@@ -755,29 +773,31 @@ static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
     // The app is informed in case it wants to drop the connection.
     
     // Display the opcode of the message that caused the violation.
-    Display_print1(dispHandle, LCD_PAGE6, 0, "FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
+    Display_print1(dispHandle, 0, 0, "FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
   }    
   else if (pMsg->method == ATT_MTU_UPDATED_EVENT)
   {
     // MTU size updated
-    Display_print1(dispHandle, LCD_PAGE6, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
+    Display_print1(dispHandle, 0, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
   }
   
   //messages from GATT server
   if (linkDB_NumActive() > 0)
   {
+    //find index from connection handle
+    connIndex = multi_role_mapConnHandleToIndex(pMsg->connHandle);
     if ((pMsg->method == ATT_READ_RSP)   ||
         ((pMsg->method == ATT_ERROR_RSP) &&
          (pMsg->msg.errorRsp.reqOpcode == ATT_READ_REQ)))
     {
       if (pMsg->method == ATT_ERROR_RSP)
       {      
-        Display_print1(dispHandle, LCD_PAGE6, 0, "Read Error %d", pMsg->msg.errorRsp.errCode);
+        Display_print1(dispHandle, 0, 0, "Read Error %d", pMsg->msg.errorRsp.errCode);
       }
       else
       {
         // After a successful read, display the read value
-        Display_print1(dispHandle, LCD_PAGE6, 0, "Read rsp: %d", pMsg->msg.readRsp.pValue[0]);
+        Display_print1(dispHandle, 0, 0, "Read rsp: %d", pMsg->msg.readRsp.pValue[0]);
       }
       
     }
@@ -788,16 +808,16 @@ static uint8_t multi_role_processGATTMsg(gattMsgEvent_t *pMsg)
       
       if (pMsg->method == ATT_ERROR_RSP == ATT_ERROR_RSP)
       {     
-        Display_print1(dispHandle, LCD_PAGE6, 0, "Write Error %d", pMsg->msg.errorRsp.errCode);
+        Display_print1(dispHandle, 0, 0, "Write Error %d", pMsg->msg.errorRsp.errCode);
       }
       else
       {
         // After a succesful write, display the value that was written and
         // increment value
-        Display_print1(dispHandle, LCD_PAGE6, 0, "Write sent: %d", charVal++);
+        Display_print1(dispHandle, 0, 0, "Write sent: %d", charVal++);
       }
     }
-    else if (discState != BLE_DISC_STATE_IDLE)
+    else if (discInfo[connIndex].discState != BLE_DISC_STATE_IDLE)
     {
       multi_role_processGATTDiscEvent(pMsg);
     }
@@ -843,7 +863,7 @@ static void multi_role_sendAttRsp(void)
     else
     {
       // Continue retrying
-      Display_print1(dispHandle, LCD_PAGE6, 0, "Rsp send retry:", rspTxRetry);
+      Display_print1(dispHandle, 0, 0, "Rsp send retry:", rspTxRetry);
     }
   }
 }
@@ -865,14 +885,14 @@ static void multi_role_freeAttRsp(uint8_t status)
     // See if the response was sent out successfully
     if (status == SUCCESS)
     {
-      Display_print1(dispHandle, LCD_PAGE6, 0, "Rsp sent, retry: %d", rspTxRetry);
+      Display_print1(dispHandle, 0, 0, "Rsp sent, retry: %d", rspTxRetry);
     }
     else
     {
       // Free response payload
       GATT_bm_free(&pAttRsp->msg, pAttRsp->method);
       
-      Display_print1(dispHandle, LCD_PAGE6, 0, "Rsp retry failed: %d", rspTxRetry);
+      Display_print1(dispHandle, 0, 0, "Rsp retry failed: %d", rspTxRetry);
     }
     
     // Free response message
@@ -920,7 +940,7 @@ static void multi_role_processAppMsg(mrEvt_t *pMsg)
     // Free the app data
     ICall_free(pMsg->pData);
     break;
-
+    
   case MR_PASSCODE_NEEDED_EVT:
     multi_role_processPasscode((gapPasskeyNeededEvent_t*)pMsg->pData);
     // Free the app data
@@ -968,46 +988,55 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
 {
   switch (pEvent->gap.opcode)
   {
+    // GAPRole started
   case GAP_DEVICE_INIT_DONE_EVENT:  
     {
+      //store max pdu size
       maxPduSize = pEvent->initDone.dataPktLen;
       
-      Display_print0(dispHandle, LCD_PAGE0, 0, "Connected to 0");
-      Display_print0(dispHandle, LCD_PAGE1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
-      Display_print0(dispHandle, LCD_PAGE2, 0, "Initialized");
+      Display_print0(dispHandle, 0, 0, "Connected to 0");
+      Display_print0(dispHandle, 0, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
+      Display_print0(dispHandle, 0, 0, "Initialized");
       
+      //set device info characteristic
       DevInfo_SetParameter(DEVINFO_SYSTEM_ID, DEVINFO_SYSTEM_ID_LEN, pEvent->initDone.devAddr);    
     }
     break;
     
+    // advertising started
   case GAP_MAKE_DISCOVERABLE_DONE_EVENT:
     {
-      Display_print0(dispHandle, LCD_PAGE2, 0, "Advertising");
+      Display_print0(dispHandle, 0, 0, "Advertising");
     }
     break;
     
+    // advertising ended
   case GAP_END_DISCOVERABLE_DONE_EVENT:
     {
-      if (linkDB_NumActive() < MAX_NUM_BLE_CONNS)
+      // display advertising info depending on whether there are any connections
+      if (linkDB_NumActive() < maxNumBleConns)
       {
-        Display_print0(dispHandle, LCD_PAGE2, 0, "Ready to Advertise");
+        Display_print0(dispHandle, 0, 0, "Ready to Advertise");
       }
       else
       {
-        Display_print0(dispHandle, LCD_PAGE2, 0, "Can't Adv : No links");
+        Display_print0(dispHandle, 0, 0, "Can't Adv : No links");
       }
     }
     break;      
     
+    // a discovered device report
   case GAP_DEVICE_INFO_EVENT:
     {
       // if filtering device discovery results based on service UUID
       if (DEFAULT_DEV_DISC_BY_SVC_UUID == TRUE)
       {
+        //if the simpleGATTprofile was found
         if (multi_role_findSvcUuid(SIMPLEPROFILE_SERV_UUID,
                                    pEvent->deviceInfo.pEvtData,
                                    pEvent->deviceInfo.dataLen))
         {
+          //store this device
           multi_role_addDeviceInfo(pEvent->deviceInfo.addr,
                                    pEvent->deviceInfo.addrType);
         }
@@ -1015,6 +1044,7 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
     }
     break;
     
+    // end of discovery report
   case GAP_DEVICE_DISCOVERY_EVENT:
     {
       // discovery complete
@@ -1023,85 +1053,87 @@ static void multi_role_processRoleEvent(gapMultiRoleEvent_t *pEvent)
       // if not filtering device discovery results based on service UUID
       if (DEFAULT_DEV_DISC_BY_SVC_UUID == FALSE)
       {
-        // Copy results
+        // Copy all of the results
         scanRes = pEvent->discCmpl.numDevs;
         memcpy(devList, pEvent->discCmpl.pDevList,
                (sizeof(gapDevRec_t) * scanRes));
       }
       
-      Display_print1(dispHandle, LCD_PAGE3, 0, "Devices Found %d", scanRes);
-      
-      if (scanRes > 0)
-      {
-        Display_print0(dispHandle, LCD_PAGE4, 0, "<- To Select");
-      }
+      Display_print1(dispHandle, 0, 0, "Devices Found %d", scanRes);
       
       // initialize scan index to last device
       scanIdx = scanRes;
     }
     break;
     
+    // connection has been established
   case GAP_LINK_ESTABLISHED_EVENT:
     {
+      // if succesfully established
       if (pEvent->gap.hdr.status == SUCCESS)
       {
-        Display_print0(dispHandle, LCD_PAGE3, 0, "Connected!");
-        Display_print1(dispHandle, LCD_PAGE0, 0, "Connected to %d", linkDB_NumActive());
+        Display_print0(dispHandle, 0, 0, "Connected!");
+        Display_print1(dispHandle, 0, 0, "Connected to %d", linkDB_NumActive());
         
-        //update state
-        connecting_state = 0;
-        //store connection handle
-        connHandle = pEvent->linkCmpl.connectionHandle;
-        //add index-to-connHanlde mapping entry
-        multi_role_addMappingEntry(connHandle);
+        //update connecting state
+        connectingState = 0;
+        //add index-to-connHandle mapping entry
+        multi_role_addMappingEntry(pEvent->linkCmpl.connectionHandle);
         
         //turn off advertising if no available links
-        if (linkDB_NumActive() >= MAX_NUM_BLE_CONNS)
+        if (linkDB_NumActive() >= maxNumBleConns)
         {
           uint8_t advertEnabled = FALSE;
           GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &advertEnabled, NULL);
-          Display_print0(dispHandle, LCD_PAGE2, 0, "Can't adv: no links");
+          Display_print0(dispHandle, 0, 0, "Can't adv: no links");
         }
         
         // Print last connected device
-        Display_print0(dispHandle, LCD_PAGE4, 0, "");
-        Display_print0(dispHandle, LCD_PAGE5, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));
+        Display_print0(dispHandle, 0, 0, "");
+        Display_print0(dispHandle, 0, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));
         
-        // initiate service discovery
-        Util_startClock(&startDiscClock);
+        //start service discovery
+        multi_role_startDiscovery(pEvent->linkCmpl.connectionHandle);
+        
       }
+      // if the connection was not sucesfully established
       else
-      {
-        connHandle = GAP_CONNHANDLE_INIT;        
-        discState = BLE_DISC_STATE_IDLE;
-        
-        Display_print0(dispHandle, LCD_PAGE4, 0, "Connect Failed");
-        Display_print1(dispHandle, LCD_PAGE3, 0, "Reason: %d", pEvent->gap.hdr.status);
+      {  
+        Display_print0(dispHandle, 0, 0, "Connect Failed");
+        Display_print1(dispHandle, 0, 0, "Reason: %d", pEvent->gap.hdr.status);
       }
     }
     break;
     
+    // connection has been terminated
   case GAP_LINK_TERMINATED_EVENT:
     {
-      //find index
-      uint8_t index = multi_role_mapConnHandleToIndex(pEvent->linkTerminate.connectionHandle);
-      //clear screen, reset discovery info, and return to main menu
-      connHandleMap[index] = INVALID_CONNHANDLE;
-      charHdl[index] = 0;
-      Display_print1(dispHandle, LCD_PAGE0, 0, "Connected to %d", linkDB_NumActive());
-      Display_print0(dispHandle, LCD_PAGE5, 0, "Disconnected!");
-      LCDmenu = MAIN_MENU;
-      if (linkDB_NumActive() == (MAX_NUM_BLE_CONNS-1)) //now we can advertise again
-      {
-        Display_print0(dispHandle, LCD_PAGE2, 0, "Ready to Advertise");
-        Display_print0(dispHandle, LCD_PAGE3, 0, "Ready to Scan");
-      }      
+      //find index from connection handle
+      connIndex = multi_role_mapConnHandleToIndex(pEvent->linkTerminate.connectionHandle);
+      //check to prevent buffer overrun
+      if (connIndex < maxNumBleConns)
+      {      
+        //clear screen, reset discovery info, and return to main menu
+        connHandleMap[connIndex] = INVALID_CONNHANDLE;
+        discInfo[connIndex].charHdl = 0;
+        Display_print1(dispHandle, 0, 0, "Connected to %d", linkDB_NumActive());
+        Display_print0(dispHandle, 0, 0, "Disconnected!");
+        // if it is possible to advertise again
+        if (linkDB_NumActive() == (maxNumBleConns-1)) 
+        {
+          Display_print0(dispHandle, 0, 0, "Ready to Advertise");
+          Display_print0(dispHandle, 0, 0, "Ready to Scan");
+        }      
+        //reset discovery state
+        discInfo[connIndex].discState= BLE_DISC_STATE_IDLE;
+      }
     }
     break;
     
+    //a parameter update has occurred
   case GAP_LINK_PARAM_UPDATE_EVENT:
     {
-      Display_print1(dispHandle, LCD_PAGE6, 0, "Param Update %d", pEvent->linkUpdate.status);
+      Display_print1(dispHandle, 0, 0, "Param Update %d", pEvent->linkUpdate.status);
     }
     break;
     
@@ -1128,7 +1160,7 @@ static void multi_role_charValueChangeCB(uint8_t paramID)
   if ((pData = ICall_malloc(sizeof(uint8_t))))
   {    
     *pData = paramID;  
-  
+    
     // Queue the event.
     multi_role_enqueueMsg(MR_CHAR_CHANGE_EVT, pData);
   }
@@ -1148,41 +1180,27 @@ static void multi_role_processCharValueChangeEvt(uint8_t paramID)
 {
   uint8_t newValue;
   
+  //print new value depending on which characteristic was updated
   switch(paramID)
   {
   case SIMPLEPROFILE_CHAR1:
+    // get new value
     SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR1, &newValue);
     
-    Display_print1(dispHandle, LCD_PAGE4, 0, "Char 1: %d", (uint16_t)newValue);
+    Display_print1(dispHandle, 0, 0, "Char 1: %d", (uint16_t)newValue);
     break;
     
   case SIMPLEPROFILE_CHAR3:
+    // get new value
     SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR3, &newValue);
     
-    Display_print1(dispHandle, LCD_PAGE4, 0, "Char 3: %d", (uint16_t)newValue);
+    Display_print1(dispHandle, 0, 0, "Char 3: %d", (uint16_t)newValue);
     break;
     
   default:
     // should not reach here!
     break;
   }
-}
-
-/*********************************************************************
-* @fn      multi_role_startDiscHandler
-*
-* @brief   Clock handler function
-*
-* @param   a0 - ignored
-*
-* @return  none
-*/
-void multi_role_startDiscHandler(UArg a0)
-{
-  events |= MR_START_DISCOVERY_EVT;
-  
-  // Wake up the application thread when it waits for clock event
-  Semaphore_post(sem);
 }
 
 /*********************************************************************
@@ -1197,11 +1215,13 @@ void multi_role_startDiscHandler(UArg a0)
 */
 static uint8_t multi_role_enqueueMsg(uint16_t event, uint8_t *pData)
 {
+  // allocate space for the message
   mrEvt_t *pMsg = ICall_malloc(sizeof(mrEvt_t));
   
-  // Create dynamic pointer to message.
+  // if sucessfully allocated
   if (pMsg)
   {
+    // fill up message
     pMsg->event = event;
     pMsg->pData = pData;
     
@@ -1228,8 +1248,9 @@ void multi_role_keyChangeHandler(uint8 keys)
   // Allocate space for the event data.
   if ((pData = ICall_malloc(sizeof(uint8_t))))
   {    
+    // store the key data
     *pData = keys;  
-  
+    
     // Queue the event.
     multi_role_enqueueMsg(MR_KEY_CHANGE_EVT, pData);
   }
@@ -1248,259 +1269,395 @@ void multi_role_keyChangeHandler(uint8 keys)
 */
 static void multi_role_handleKeys(uint8_t keys)
 {
+  // to store information from linkDB
   linkDBInfo_t pInfo;
+  // address type
+  uint8_t addrType;
+  // address
+  uint8_t *peerAddr;  
+  // status
+  bStatus_t status;
+  // to toggle advertising
+  uint8_t adv;
+  uint8_t adv_status;
+  // to loop through available connections
+  uint8_t done = FALSE;
   
-  if (LCDmenu == MAIN_MENU)
+  // proces based on menu level (menuLevel_t)
+  switch (menuLevel)
   {
-    if (keys & KEY_LEFT)  //show discovery results
+    //top level menu
+  case MAIN_MENU:
+    //browse through menu options
+    if (keys & KEY_LEFT)
     {
-      selectKey = DISCOVERED_DEVICES;
-      
+      //advance to next main menu option, wrapping
+      keyPressConnOpt = (keyPressConnOpt == ADVERTISE) ? SCAN :
+        (keyPressConnOpt_t) (keyPressConnOpt + 1);      
+        
+        Display_print0(dispHandle, 0, 0, "<- Next Option");  
+        Display_print0(dispHandle, 0, 0, "");
+        Display_print0(dispHandle, 0, 0, "");
+        Display_print0(dispHandle, 0, 0, "");
+        
+        //current key press option
+        switch (keyPressConnOpt)
+        {
+        case SCAN:
+          Display_print0(dispHandle, 0, 0, "Scan ->");
+          break;
+          
+        case CONNECT:
+          Display_print0(dispHandle, 0, 0, "Connect ->");
+          break;      
+          
+        case GATT_RW:
+          Display_print0(dispHandle, 0, 0, "GATT Read/Write ->");
+          break;
+          
+        case CONN_UPDATE:
+          Display_print0(dispHandle, 0, 0, "Connection Update ->");
+          break;
+          
+        case DISCONNECT:
+          Display_print0(dispHandle, 0, 0, "Disconnect ->");
+          break;
+          
+        case ADVERTISE:
+          Display_print0(dispHandle, 0, 0, "Advertise ->");
+          break;      
+          
+        default:
+          break;
+        } // keyPressConnOpt   
+    } //keys & KEY_LEFT
+    //choose an option
+    else if (keys & KEY_RIGHT)
+    {
+      // process based on current key press option
+      switch (keyPressConnOpt)
+      {
+        // Start or stop discovery
+      case SCAN:        
+        //if we can connect to another device
+        if (linkDB_NumActive() < maxNumBleConns)
+        {
+          //if we're not already scanning
+          if (!scanningStarted) 
+          {
+            // set scannin started flag
+            scanningStarted = TRUE;
+            // reset number of scanned devices
+            scanRes = 0;
+            
+            Display_print0(dispHandle, 0, 0, "Discovering...");
+            Display_print0(dispHandle, 0, 0, "");
+            
+            //start scanning
+            GAPRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
+                                   DEFAULT_DISCOVERY_ACTIVE_SCAN,
+                                   DEFAULT_DISCOVERY_WHITE_LIST);      
+          }
+          // we're already scanning...so cancel
+          else 
+          {
+            Display_print0(dispHandle, 0, 0, "Discovery Cancelled");
+            // cancel scanning
+            GAPRole_CancelDiscovery();
+            // clear scanning started flag
+            scanningStarted = FALSE;
+          }
+        }
+        else // can't add more links at this time
+        {
+          Display_print0(dispHandle, 0, 0, "Can't scan:no links ");
+        }
+        break;
+        
+        //connect to a device or cancel connection request
+      case CONNECT:
+        //if at least one device has been discovered
+        if (scanRes > 0) 
+        {
+          //enter menu to browse through discovered devices
+          menuLevel = DISC_MENU;        
+          Display_print0(dispHandle, 0, 0, "-> Select");  
+          Display_print0(dispHandle, 0, 0, "<- Browse Devices");
+        }
+        // there aren't any discovered devices
+        else
+        {
+          Display_print0(dispHandle, 0, 0, "No Discovered Devices"); 
+        }
+        break;      
+        
+        // toggle advertising
+      case ADVERTISE:            
+        //get current advertising status
+        GAPRole_GetParameter(GAPROLE_ADVERT_ENABLED, &adv_status, NULL);
+        //if we're currently advertising
+        if (adv_status)
+        {
+          //turn off advertising
+          adv = FALSE;
+          GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
+        }
+        // if we're not currently advertising
+        else 
+        {
+          //turn on advertising
+          adv = TRUE;
+          GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
+        }
+        break;    
+        
+        //read / write a GATT characteristic
+      case GATT_RW:
+        //fall-through
+        //perform a connection parameter update
+      case CONN_UPDATE:
+        //fall-through
+        //disconnect from a connected device
+      case DISCONNECT:
+        if (linkDB_NumActive() > 0)
+        {
+          //enter menu to browse through connected devices
+          menuLevel = CONN_MENU;
+          
+          Display_print0(dispHandle, 0, 0, "-> Select");  
+          Display_print0(dispHandle, 0, 0, "<- Browse Devices");
+        }
+        // no connected devices
+        else  
+        {
+          Display_print0(dispHandle, 0, 0, "No Connected Devices");  
+        } 
+        break;  
+        
+      default:
+        //do nothing. shouldn't get here.
+        break;
+      }  // keyPressConnOpt
+    } // keys & KEY_RIGHT
+    break; //MAIN_MEUN
+    
+    //menu to search through discovered devices
+  case DISC_MENU:
+    //search through discovered devices
+    if (keys & KEY_LEFT)
+    { 
       // If discovery has occurred and a device was found
-      if (!scanningStarted && scanRes > 0)
+      if ((!scanningStarted) && (scanRes > 0))
       {
         // Increment index of current result (with wraparound)
         scanIdx++;
-        if (scanIdx >= scanRes)
+        if (scanIdx < scanRes )
         {
+          Display_print1(dispHandle, 0, 0, "Device %d", (scanIdx + 1));
+          Display_print0(dispHandle, 0, 0, Util_convertBdAddr2Str(devList[scanIdx].addr));                
+        }
+        else if (scanIdx == scanRes)
+        {
+          Display_print0(dispHandle, 0, 0, "Cancel");
+          Display_print0(dispHandle, 0, 0, "");
+        }
+        else // (scanIdx > scanRes)
+        {
+          //wrap back to 0
           scanIdx = 0;
-        }
-        
-        Display_print1(dispHandle, LCD_PAGE3, 0, "Device %d", (scanIdx + 1));
-        Display_print0(dispHandle, LCD_PAGE4, 0, Util_convertBdAddr2Str(devList[scanIdx].addr));
-      }
-      return;
-    }
-    
-    if (keys & KEY_UP)  //Scan for devices
-    {
-      // Start or stop discovery
-      if (linkDB_NumActive() < MAX_NUM_BLE_CONNS) //if we can connect to another device
-      {
-        if (!scanningStarted) //if we're not already scanning
-        {
-          scanningStarted = TRUE;
-          scanRes = 0;
-          
-          Display_print0(dispHandle, LCD_PAGE3, 0, "Discovering...");
-          Display_print0(dispHandle, LCD_PAGE4, 0, "");
-          Display_print0(dispHandle, LCD_PAGE6, 0, "");
-          Display_print0(dispHandle, LCD_PAGE7, 0, "");
-          
-          GAPRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
-                                 DEFAULT_DISCOVERY_ACTIVE_SCAN,
-                                 DEFAULT_DISCOVERY_WHITE_LIST);      
-        }
-        else //cancel scanning
-        {
-          Display_print0(dispHandle, LCD_PAGE3, 0, "Discovery Cancelled");
-          GAPRole_CancelDiscovery();
-          scanningStarted = FALSE;
+          Display_print1(dispHandle, 0, 0, "Device %d", (scanIdx + 1));
+          Display_print0(dispHandle, 0, 0, Util_convertBdAddr2Str(devList[scanIdx].addr));           
         }
       }
-      else // can't add more links at this time
-      {
-        Display_print0(dispHandle, LCD_PAGE3, 0, "Can't scan:no links ");
-      }
-      return;
-    }
-    
-    if (keys & KEY_RIGHT)  // turn advertising on / off
-    {
-      uint8_t adv;
-      uint8_t adv_status;
-      GAPRole_GetParameter(GAPROLE_ADVERT_ENABLED, &adv_status, NULL);
-      if (adv_status) //turn off
-      {
-        adv = FALSE;
-        GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
-      }
-      else //turn on
-      {
-        adv = TRUE;
-        GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &adv, NULL);
-      }
-      return;
-    }
-    
-    if (keys & KEY_SELECT) //connect to a discovered device
-    {
-      if (selectKey == DISCOVERED_DEVICES)    // connect to a device  
-      {
-        uint8_t addrType;
-        uint8_t *peerAddr;
-        
-        if (connecting_state == 1) // if already attempting to connect, cancel connection
-        {
-          GAPRole_TerminateConnection(0xFFFE);
-          Display_print0(dispHandle, LCD_PAGE3, 0, "Connecting stopped.");
-          connecting_state = 0;
-        }
-        else //establish new connection
-        {
-          // if there is a scan result
-          if (scanRes > 0)
-          {
-            // connect to current device in scan result
-            peerAddr = devList[scanIdx].addr;
-            addrType = devList[scanIdx].addrType;
-            
-            GAPRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
-                                  DEFAULT_LINK_WHITE_LIST,
-                                  addrType, peerAddr);
-            connecting_state = 1;
-            
-            Display_print0(dispHandle, LCD_PAGE3, 0, "Connecting");
-            Display_print0(dispHandle, LCD_PAGE4, 0, Util_convertBdAddr2Str(peerAddr));
-          }
-        }
-      }
-      else if (selectKey == CONNECTED_DEVICES) //enter the device menu
-      {
-        if (connHandleMap[connIdx] != INVALID_CONNHANDLE)    
-        {
-          linkDB_GetInfo(connHandleMap[connIdx], &pInfo);
-          LCDmenu = DEVICE_MENU;
-          Display_print0(dispHandle, LCD_PAGE3, 0, "Device Menu");
-          Display_print0(dispHandle, LCD_PAGE4, 0, Util_convertBdAddr2Str(pInfo.addr));
-          if (pInfo.connRole == GAP_PROFILE_CENTRAL)
-          {
-            Display_print0(dispHandle, LCD_PAGE5, 0, "Connected as Central");
-            Display_print0(dispHandle, LCD_PAGE6, 0, "");
-            Display_print0(dispHandle, LCD_PAGE7, 0, "");
-          }
-          else //PERIPHERAL
-          {
-            Display_print0(dispHandle, LCD_PAGE5, 0, "Connected as Periph");
-            Display_print0(dispHandle, LCD_PAGE6, 0, "");
-            Display_print0(dispHandle, LCD_PAGE7, 0, "");
-          }
-          //use this connection for all functionality
-          connHandle = connHandleMap[connIdx];
-        }
-        else // no active connection here
-        {
-          Display_print0(dispHandle, LCD_PAGE3, 0, "No Connection here.");
-        }       
-      }
-      return;
-    }
-    
-    if (keys & KEY_DOWN) //browse connected devices
-    {
-      Display_print0(dispHandle, LCD_PAGE3, 0, "Connected Device:");
-      if (++connIdx >= MAX_NUM_BLE_CONNS) //increment connIdx
-      {
-        connIdx = 0;
-      }   
-      if (connHandleMap[connIdx] != INVALID_CONNHANDLE) //if there is a connection at this index
-      {
-        linkDB_GetInfo(connHandleMap[connIdx], &pInfo);
-        Display_print0(dispHandle, LCD_PAGE4, 0, Util_convertBdAddr2Str(pInfo.addr));
-      }
+      // no devices found
       else
       {
-        Display_print0(dispHandle, LCD_PAGE4, 0, "N/A");
+        Display_print0(dispHandle, 0, 0, "No Devices Found"); 
       }
-      selectKey = CONNECTED_DEVICES;
-      return;    
-    } 
-  }
-  
-  else if (LCDmenu == DEVICE_MENU)
-  {
-    if (keys & KEY_UP) //read/whrite char
+    } //keys & KEY_LEFT
+    //choose a device to connect to
+    else if (keys & KEY_RIGHT)
     {
-      if (charHdl[connIdx] != 0)
+      // if already attempting to connect, cancel connection
+      if (connectingState == 1) 
       {
-        uint8_t status;
-        
-        // Do a read or write as long as no other read or write is in progress
-        if (doWrite)
+        //cancel connection
+        GAPRole_TerminateConnection(0xFFFE);
+        Display_print0(dispHandle, 0, 0, "Connecting stopped.");
+        //reset connecting state flag
+        connectingState = 0;
+      }
+      //establish new connection
+      else 
+      {
+        //if not cancelling 
+        if (scanIdx != scanRes) 
         {
-          // Do a write
-          attWriteReq_t req;
+          // connect to current device in scan result
+          peerAddr = devList[scanIdx].addr;
+          addrType = devList[scanIdx].addrType;
+          GAPRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
+                                DEFAULT_LINK_WHITE_LIST,
+                                addrType, peerAddr);
+          //set connecting state flag
+          connectingState = 1;
           
-          req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
-          if ( req.pValue != NULL )
+          Display_print0(dispHandle, 0, 0, "Connecting");
+          Display_print0(dispHandle, 0, 0, Util_convertBdAddr2Str(peerAddr));
+        }
+        
+        //return to main menu. this also handles the cancelling case (scanIdx == scanRes)
+        menuLevel = MAIN_MENU;
+        Display_print0(dispHandle, 0, 0, "Connect ->");
+        Display_print0(dispHandle, 0, 0, "<- Next Option");
+      }        
+    } // keys & KEY_RIGHT
+    break; //DISC_MENU
+    
+    //menu to choose connected device to perform operation on
+  case CONN_MENU:
+    //browse through connected devices
+    if (keys & KEY_LEFT) 
+    {
+      //loop to only show connected devices
+      done = FALSE;
+      while(!done)
+      {
+        //if cancelling
+        if (searchIdx == maxNumBleConns)
+        {
+          Display_print0(dispHandle, 0, 0, "Cancel");
+          Display_print0(dispHandle, 0, 0, "");
+          connIdx = INVALID_CONNHANDLE;
+          done = TRUE;
+        }        
+        // if not cancelling
+        else if (searchIdx < maxNumBleConns )
+        {
+          // if valid connection
+          if (connHandleMap[searchIdx] != INVALID_CONNHANDLE)
           {
-            req.handle = charHdl[connIdx];
-            req.len = 1;
-            req.pValue[0] = charVal;
-            req.sig = 0;
-            req.cmd = 0;
-            
-            status = GATT_WriteCharValue(connHandle, &req, selfEntity);
-            if ( status != SUCCESS )
-            {
-              GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
-            }
+            //get connection info from linkDB
+            linkDB_GetInfo(connHandleMap[searchIdx], &pInfo);
+            //store index to perform operation on
+            connIdx = searchIdx;
+            //print connected device address
+            Display_print1(dispHandle, 0, 0, "Connection %d", (searchIdx + 1));            
+            Display_print0(dispHandle, 0, 0, Util_convertBdAddr2Str(pInfo.addr));
+            //a valid device was found. stop looping.
+            done = TRUE;
           }
-        }
-        else
+        }    
+        //increment search index
+        searchIdx += ((searchIdx == maxNumBleConns) ? ( -maxNumBleConns ) : 1 ); 
+      }      
+    }
+    // perform selected operation on connected device
+    else if (keys & KEY_RIGHT) 
+    {
+      //if not cancelling and check to prevent buffer overrun
+      if ((connIdx != INVALID_CONNHANDLE) && (connIdx < maxNumBleConns))
+      {
+        //perform functionality based on key press option
+        switch (keyPressConnOpt)
         {
-          // Do a read
-          attReadReq_t req;
-          
-          req.handle = charHdl[connIdx];
-          status = GATT_ReadCharValue(connHandle, &req, selfEntity);
-        }
-        
-        if (status == SUCCESS)
-        {
-          doWrite = !doWrite;
-        }
+          //perform a GATT read / write
+        case GATT_RW:
+          // if characteristic has been discovered
+          if (discInfo[connIdx].charHdl != 0)
+          {          
+            // Do a read / write as long as no other read or write is in progress
+            if (doWrite)
+            {
+              // Do a write
+              attWriteReq_t req;
+              
+              //allocate GATT write request
+              req.pValue = GATT_bm_alloc(connHandleMap[connIdx], ATT_WRITE_REQ, 1, NULL);
+              // if sucesfully allocated
+              if ( req.pValue != NULL )
+              {
+                //fill up request
+                req.handle = discInfo[connIdx].charHdl;
+                req.len = 1;
+                req.pValue[0] = charVal;
+                req.sig = 0;
+                req.cmd = 0;
+                
+                //send GATT write to controller
+                status = GATT_WriteCharValue(connHandleMap[connIdx], &req, selfEntity);
+                //if not sucessfully sent
+                if ( status != SUCCESS )
+                {
+                  //free write request as the controller will not
+                  GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+                }
+              }
+            }
+            // Do a read
+            else
+            {
+              // create read request...place in CSTACK
+              attReadReq_t req;
+              
+              // fill up read request
+              req.handle = discInfo[connIdx].charHdl;
+              
+              //send read request. no need to free if unsuccesful since the request
+              //is only placed in CSTACK; not allocated
+              status = GATT_ReadCharValue(connHandleMap[connIdx], &req, selfEntity);
+            }
+            
+            // if succesfully queued in controller
+            if (status == SUCCESS)
+            {
+              //toggle read / write
+              doWrite = !doWrite;
+            }
+          }        
+          break;
+          //send a connection parameter update
+        case CONN_UPDATE:
+          //use dummy params statically allocated but fill in connection handle
+          updateParams.connHandle = connHandleMap[connIdx];
+          //send connection parameter update
+          status = gapRole_connUpdate( GAPROLE_NO_ACTION, &updateParams);
+          //if sucesfully sent to controller
+          if (status == SUCCESS)
+          {
+            Display_print0(dispHandle, 0, 0, "Updating");
+          }
+          //if there is already an ongoing update
+          else if (status == blePending)
+          {
+            Display_print0(dispHandle, 0, 0, "Already Updating");
+          }        
+          break;
+          //disconnect a connection
+        case DISCONNECT:
+          //disconnect
+          GAPRole_TerminateConnection(connHandleMap[connIdx]);        
+          Display_print0(dispHandle, 0, 0, "Disconnecting");        
+          break;
+        default:
+          //do nothing. shouldn't get here
+          break;
+        } //keyPressConnOpt
       }
-      return;
+      //return to main menu and reset to SCAN
+      menuLevel = MAIN_MENU;
+      keyPressConnOpt = SCAN;
+      Display_print0(dispHandle, 0, 0, "Scan ->");
+      Display_print0(dispHandle, 0, 0, "<- Next Option");  
     }
+    break;
     
-    if (keys & KEY_RIGHT) //connection update
-    {
-      gapRole_updateConnParams_t updateParams =
-      {
-        .connHandle = connHandle,
-        .minConnInterval = 80,
-        .maxConnInterval = 150,
-        .slaveLatency = 0,
-        .timeoutMultiplier = 200
-      };
-      bStatus_t status = gapRole_connUpdate( GAPROLE_NO_ACTION, &updateParams);
-      if (status == SUCCESS)
-      {
-        Display_print0(dispHandle, LCD_PAGE6, 0, "Updating");
-      }
-      else if (status == blePending)
-      {
-        Display_print0(dispHandle, LCD_PAGE6, 0, "Already Updating");
-      }
-      return;
-    }
-    
-    if (keys & KEY_SELECT)
-    {
-      GAPRole_TerminateConnection(connHandle);
-      
-      Display_print0(dispHandle, LCD_PAGE5, 0, "Disconnecting");
-      Display_print0(dispHandle, LCD_PAGE6, 0, "");
-      Display_print0(dispHandle, LCD_PAGE7, 0, "");
-      
-      return;
-    }
-    
-    if (keys & KEY_DOWN) //back to main menu
-    {
-      LCDmenu = MAIN_MENU;
-      Display_print0(dispHandle, LCD_PAGE3, 0, "Main Menu");
-      //clear screen
-      Display_print0(dispHandle, LCD_PAGE4, 0, "");
-      Display_print0(dispHandle, LCD_PAGE5, 0, "");
-      Display_print0(dispHandle, LCD_PAGE6, 0, "");
-      Display_print0(dispHandle, LCD_PAGE7, 0, "");  
-      
-      connIdx = 0;
-      return;
-    }
-  }
+  default:
+    //do nothing. shouldn't get here.
+    break;   
+  } // CONN_MENU
+  
+  return;
 }
 
 /*********************************************************************
@@ -1510,14 +1667,22 @@ static void multi_role_handleKeys(uint8_t keys)
 *
 * @return  none
 */
-static void multi_role_startDiscovery(void)
+static void multi_role_startDiscovery(uint16_t connHandle)
 {
+  //exchange MTU request
   attExchangeMTUReq_t req;
   
-  // Initialize cached handles
-  svcStartHdl = svcEndHdl = 0;
+  //map connection handle to index
+  connIndex = multi_role_mapConnHandleToIndex(connHandle);
   
-  discState = BLE_DISC_STATE_MTU;
+  //check to prevent buffer overrun
+  if (connIndex < maxNumBleConns)
+  {
+    //update discovery state of this connection
+    discInfo[connIndex].discState= BLE_DISC_STATE_MTU;
+    // Initialize cached handles
+    discInfo[connIndex].svcStartHdl = discInfo[connIndex].svcEndHdl = 0;
+  }
   
   // Discover GATT Server's Rx MTU size
   req.clientRxMTU = maxPduSize - L2CAP_HDR_SIZE;
@@ -1536,73 +1701,82 @@ static void multi_role_startDiscovery(void)
 */
 static void multi_role_processGATTDiscEvent(gattMsgEvent_t *pMsg)
 { 
-  if (pMsg->method == ATT_MTU_UPDATED_EVENT)
-  {   
-    // MTU size updated
-    Display_print1(dispHandle, LCD_PAGE4, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
-  }
-  else if (discState == BLE_DISC_STATE_MTU)
+  //map connection handle to index
+  connIndex = multi_role_mapConnHandleToIndex(pMsg->connHandle);
+  //check to prevent buffer overrun
+  if (connIndex < maxNumBleConns)
   {
-    // MTU size response received, discover simple BLE service
-    if (pMsg->method == ATT_EXCHANGE_MTU_RSP)
-    {
-      uint8_t uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SIMPLEPROFILE_SERV_UUID),
-      HI_UINT16(SIMPLEPROFILE_SERV_UUID) };        
-      discState = BLE_DISC_STATE_SVC;
-      
-      // Discovery simple BLE service
-      VOID GATT_DiscPrimaryServiceByUUID(connHandle, uuid, ATT_BT_UUID_SIZE,
-                                         selfEntity);
+    //MTU update
+    if (pMsg->method == ATT_MTU_UPDATED_EVENT)
+    {   
+      // MTU size updated
+      Display_print1(dispHandle, 0, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
     }
-  }
-  else if (discState == BLE_DISC_STATE_SVC)
-  {
-    // Service found, store handles
-    if (pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP &&
-        pMsg->msg.findByTypeValueRsp.numInfo > 0)
+    //if we've updated the MTU size
+    else if (discInfo[connIndex].discState== BLE_DISC_STATE_MTU)
     {
-      svcStartHdl = ATT_ATTR_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
-      svcEndHdl = ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
-    }
-    
-    // If procedure complete
-    if (((pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP) && 
-         (pMsg->hdr.status == bleProcedureComplete))  ||
-        (pMsg->method == ATT_ERROR_RSP))
-    {
-      if (svcStartHdl != 0)
+      // MTU size response received, discover simple BLE service
+      if (pMsg->method == ATT_EXCHANGE_MTU_RSP)
       {
-        attReadByTypeReq_t req;
+        uint8_t uuid[ATT_BT_UUID_SIZE] = { LO_UINT16(SIMPLEPROFILE_SERV_UUID),
+        HI_UINT16(SIMPLEPROFILE_SERV_UUID) };        
+        //advanec state
+        discInfo[connIndex].discState= BLE_DISC_STATE_SVC;
         
-        // Discover characteristic
-        discState = BLE_DISC_STATE_CHAR;
-        
-        req.startHandle = svcStartHdl;
-        req.endHandle = svcEndHdl;
-        req.type.len = ATT_BT_UUID_SIZE;
-        req.type.uuid[0] = LO_UINT16(SIMPLEPROFILE_CHAR1_UUID);
-        req.type.uuid[1] = HI_UINT16(SIMPLEPROFILE_CHAR1_UUID);
-        
-        VOID GATT_ReadUsingCharUUID(connHandle, &req, selfEntity);
+        // Discovery simple BLE service
+        VOID GATT_DiscPrimaryServiceByUUID(pMsg->connHandle, uuid, ATT_BT_UUID_SIZE,
+                                           selfEntity);
       }
     }
-  }
-  else if (discState == BLE_DISC_STATE_CHAR)
-  {
-    // Characteristic found, store handle
-    if ((pMsg->method == ATT_READ_BY_TYPE_RSP) && 
-        (pMsg->msg.readByTypeRsp.numPairs > 0))
+    //if we're performing service discovery
+    else if (discInfo[connIndex].discState== BLE_DISC_STATE_SVC)
     {
-      //find index to store handle
-      uint8_t connIndex = multi_role_mapConnHandleToIndex(connHandle);
-      charHdl[connIndex] = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[0],
-                                        pMsg->msg.readByTypeRsp.pDataList[1]);
+      // Service found, store handles
+      if (pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP &&
+          pMsg->msg.findByTypeValueRsp.numInfo > 0)
+      {
+        discInfo[connIndex].svcStartHdl = ATT_ATTR_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
+        discInfo[connIndex].svcEndHdl = ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
+      }
       
-      Display_print0(dispHandle, LCD_PAGE6, 0, "Simple Svc Found");
+      // If procedure complete
+      if (((pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP) && 
+           (pMsg->hdr.status == bleProcedureComplete))  ||
+          (pMsg->method == ATT_ERROR_RSP))
+      {
+        //if we've discovered the service
+        if (discInfo[connIndex].svcStartHdl != 0)
+        {
+          attReadByTypeReq_t req;
+          
+          // Discover characteristic
+          discInfo[connIndex].discState= BLE_DISC_STATE_CHAR;
+          req.startHandle = discInfo[connIndex].svcStartHdl;
+          req.endHandle = discInfo[connIndex].svcEndHdl;
+          req.type.len = ATT_BT_UUID_SIZE;
+          req.type.uuid[0] = LO_UINT16(SIMPLEPROFILE_CHAR1_UUID);
+          req.type.uuid[1] = HI_UINT16(SIMPLEPROFILE_CHAR1_UUID);
+          
+          //send characteristic discovery request
+          VOID GATT_ReadUsingCharUUID(pMsg->connHandle, &req, selfEntity);
+        }
+      }
     }
-    
-    discState = BLE_DISC_STATE_IDLE;
-  }    
+    //if we're discovering characteristics
+    else if (discInfo[connIndex].discState == BLE_DISC_STATE_CHAR)
+    {
+      // Characteristic found
+      if ((pMsg->method == ATT_READ_BY_TYPE_RSP) && 
+          (pMsg->msg.readByTypeRsp.numPairs > 0))
+      {
+        //store handle
+        discInfo[connIndex].charHdl = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[0],
+                                                   pMsg->msg.readByTypeRsp.pDataList[1]);
+        
+        Display_print0(dispHandle, 0, 0, "Simple Svc Found");
+      }
+    }    
+  }
 }
 
 /*********************************************************************
@@ -1619,6 +1793,7 @@ static bool multi_role_findSvcUuid(uint16_t uuid, uint8_t *pData,
   uint8_t adType;
   uint8_t *pEnd;
   
+  //find the end of data
   pEnd = pData + dataLen - 1;
   
   // While end of data not reached
@@ -1703,19 +1878,21 @@ static void multi_role_addDeviceInfo(uint8_t *pAddr, uint8_t addrType)
 }
 
 /*********************************************************************
- * @fn      gapRoleFindIndex
- *
- * @brief   to translate connection handle to index
- *
- * @param   connHandle (connection handle)
- *
- * @return  none
- */
+* @fn      gapRoleFindIndex
+*
+* @brief   to translate connection handle to index
+*
+* @param   connHandle (connection handle)
+*
+* @return  none
+*/
 static uint16_t multi_role_mapConnHandleToIndex(uint16_t connHandle)
 {
   uint16_t index;
-  for (index = 0; index < MAX_NUM_BLE_CONNS; index ++)
+  //loop through connection
+  for (index = 0; index < maxNumBleConns; index ++)
   {
+    //if matching connection handle found
     if (connHandleMap[index] == connHandle)
     {
       return index;
@@ -1726,14 +1903,14 @@ static uint16_t multi_role_mapConnHandleToIndex(uint16_t connHandle)
 }
 
 /************************************************************************
- * @fn      multi_role_pairStateCB
- *
- * @brief   Pairing state callback.
- *
- * @return  none
- */
+* @fn      multi_role_pairStateCB
+*
+* @brief   Pairing state callback.
+*
+* @return  none
+*/
 static void multi_role_pairStateCB(uint16_t connHandle, uint8_t state,
-                                         uint8_t status)
+                                   uint8_t status)
 {
   gapPairStateEvent_t *pData;
   
@@ -1750,14 +1927,14 @@ static void multi_role_pairStateCB(uint16_t connHandle, uint8_t state,
 }
 
 /*********************************************************************
- * @fn      multi_role_passcodeCB
- *
- * @brief   Passcode callback.
- *
- * @return  none
- */
+* @fn      multi_role_passcodeCB
+*
+* @brief   Passcode callback.
+*
+* @return  none
+*/
 static void multi_role_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
-                                        uint8_t uiInputs, uint8_t uiOutputs, uint32_t numComparison)
+                                  uint8_t uiInputs, uint8_t uiOutputs, uint32_t numComparison)
 {
   gapPasskeyNeededEvent_t *pData;
   
@@ -1776,79 +1953,88 @@ static void multi_role_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
 }
 
 /*********************************************************************
- * @fn      multi_role_processPairState
- *
- * @brief   Process the new paring state.
- *
- * @return  none
- */
+* @fn      multi_role_processPairState
+*
+* @brief   Process the new paring state.
+*
+* @return  none
+*/
 static void multi_role_processPairState(gapPairStateEvent_t* pairingEvent)
 {
+  //if we've started pairing
   if (pairingEvent->state == GAPBOND_PAIRING_STATE_STARTED)
   {
-    Display_print1(dispHandle, LCD_PAGE7, 0,"Cxn %d pairing started", pairingEvent->connectionHandle);
+    Display_print1(dispHandle, 0, 0,"Cxn %d pairing started", pairingEvent->connectionHandle);
   }
+  //if pairing is finished
   else if (pairingEvent->state == GAPBOND_PAIRING_STATE_COMPLETE)
   {
     if (pairingEvent->status == SUCCESS)
     {
-      Display_print1(dispHandle, LCD_PAGE7, 0,"Cxn %d pairing success", pairingEvent->connectionHandle);
+      Display_print1(dispHandle, 0, 0,"Cxn %d pairing success", pairingEvent->connectionHandle);
     }
     else
     {
-      Display_print2(dispHandle, LCD_PAGE7, 0, "Cxn %d pairing fail: %d", pairingEvent->connectionHandle, pairingEvent->status);
+      Display_print2(dispHandle, 0, 0, "Cxn %d pairing fail: %d", pairingEvent->connectionHandle, pairingEvent->status);
     }
   }
+  //if a bond has happened
   else if (pairingEvent->state == GAPBOND_PAIRING_STATE_BONDED)
   {
     if (pairingEvent->status == SUCCESS)
     {
-      Display_print1(dispHandle, LCD_PAGE7, 0, "Cxn %d bonding success", pairingEvent->connectionHandle);
+      Display_print1(dispHandle, 0, 0, "Cxn %d bonding success", pairingEvent->connectionHandle);
     }
   }
+  //if a bond has been saved
   else if (pairingEvent->state == GAPBOND_PAIRING_STATE_BOND_SAVED)
   {
     if (pairingEvent->status == SUCCESS)
     {
-      Display_print1(dispHandle, LCD_PAGE7, 0, "Cxn %d bond save success", pairingEvent->connectionHandle);
+      Display_print1(dispHandle, 0, 0, "Cxn %d bond save success", pairingEvent->connectionHandle);
     }
     else
     {
-      Display_print2(dispHandle, LCD_PAGE7, 0, "Cxn %d bond save failed: %d", pairingEvent->connectionHandle, pairingEvent->status);
+      Display_print2(dispHandle, 0, 0, "Cxn %d bond save failed: %d", pairingEvent->connectionHandle, pairingEvent->status);
     }
   }
 }
 
 /*********************************************************************
- * @fn      multi_role_processPasscode
- *
- * @brief   Process the Passcode request.
- *
- * @return  none
- */
+* @fn      multi_role_processPasscode
+*
+* @brief   Process the Passcode request.
+*
+* @return  none
+*/
 static void multi_role_processPasscode(gapPasskeyNeededEvent_t *pData)
 {
+  //use static passcode
   uint32_t passcode = 123456;
-  Display_print1(dispHandle, LCD_PAGE7, 0, "Passcode: %d", passcode);
+  Display_print1(dispHandle, 0, 0, "Passcode: %d", passcode);
+  //send passcode to GAPBondMgr
   GAPBondMgr_PasscodeRsp(pData->connectionHandle, SUCCESS, passcode);
 }
 
 /*********************************************************************
- * @fn      gapRoleFindIndex
- *
- * @brief   to translate connection handle to index
- *
- * @param   connHandle (connection handle)
- *
- * @return  none
- */
+* @fn      gapRoleFindIndex
+*
+* @brief   to translate connection handle to index
+*
+* @param   connHandle (connection handle)
+*
+* @return  none
+*/
 static uint8_t multi_role_addMappingEntry(uint16_t connHandle)
 {
   uint16_t index;
-  for (index = 0; index < MAX_NUM_BLE_CONNS; index ++)
+  // loop though connections
+  for (index = 0; index < maxNumBleConns; index ++)
   {
+    //if there is an open connection
     if (connHandleMap[index] == INVALID_CONNHANDLE)
     {
+      //store mapping
       connHandleMap[index] = connHandle;
       return index;
     }
@@ -1856,6 +2042,6 @@ static uint8_t multi_role_addMappingEntry(uint16_t connHandle)
   //no room if we get here
   return bleNoResources;
 }        
-        
+
 /*********************************************************************
 *********************************************************************/
