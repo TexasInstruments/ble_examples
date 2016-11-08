@@ -192,7 +192,6 @@
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>
-          <state>xCC2650DK_7ID</state>
           <state>CC26XX</state>
           <state>CC2650_LAUNCHXL</state>
           <state>AUDIO_SERVICE</state>

@@ -1,8 +1,0 @@
-s|ble_sdk_[0-9_]*\(eng\)\?|ble_sdk_2_02_01_18|g
-s|tirtos_cc13xx_cc26xx_[0-9_]*\(eng\)\?|tirtos_cc13xx_cc26xx_2_20_01_08|g
-s|bios_[0-9_]*\(eng\)\?|bios_6_46_01_38|g
-s|cc13xxware_[0-9_]*\(eng\)\?|cc13xxware_2_04_02_17240|g
-s|cc26xxware_[0-9_]*\(eng\)\?|cc26xxware_2_24_02_17393|g
-s|tidrivers_cc13xx_cc26xx_[0-9_]*\(eng\)\?|tidrivers_cc13xx_cc26xx_2_20_01_10|g
-s|uia_[0-9_]*\(eng\)\?|uia_2_00_06_52|g
-s|com.ti.rtsc.TIRTOSCC13XX_CC26XX:[0-9_\.]*\(eng\)\?|com.ti.rtsc.TIRTOSCC13XX_CC26XX:2.20.01.08|g

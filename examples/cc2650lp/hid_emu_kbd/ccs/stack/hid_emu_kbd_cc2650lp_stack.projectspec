@@ -8,6 +8,20 @@
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"
         linkerCommandFile="cc26xx_stack.cmd"
+
+        preBuildStep="
+        &quot;${TI_BLE_SDK_BASE}/tools/lib_search/lib_search.exe&quot;
+        ${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt
+        &quot;${TI_BLE_SDK_BASE}/tools/lib_search/params_split_cc2640.xml&quot;
+        ${TI_BLE_SDK_BASE}/blelib
+        &quot;${PROJECT_IMPORT_LOC}/../../iar/config/lib_linker.cmd&quot;
+        "
+
+        postBuildStep="
+        ${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out;
+        ${TI_BLE_SDK_BASE}/tools/frontier/frontier.exe ccs ${PROJECT_LOC}/${ConfigName}/${ProjName}_linkInfo.xml ${PROJECT_IMPORT_LOC}/../config/ccs_compiler_defines.bcfg ${PROJECT_IMPORT_LOC}/../config/ccs_linker_defines.cmd
+        "
+
         compilerBuildOptions="
         --cmd_file=&quot;${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt&quot;
         --cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot;
@@ -50,9 +64,7 @@
         -DDEBUG
 
         -I${CG_TOOL_ROOT}/include
-        -I${TI_BLE_SDK_BASE}/src/examples/hid_emu_kbd/cc26xx/stack
         -I${TI_BLE_SDK_BASE}/src/common/cc26xx
-        -I${TI_BLE_SDK_BASE}/src/components/hal/src/target/_common
         -I${TI_BLE_SDK_BASE}/src/components/hal/src/target/_common
         -I${TI_BLE_SDK_BASE}/src/components/hal/src/target
         -I${TI_BLE_SDK_BASE}/src/components/hal/src/target/_common/cc26xx
@@ -67,7 +79,7 @@
         -I${TI_BLE_SDK_BASE}/src/components/services/src/aes/cc26xx
         -I${TI_BLE_SDK_BASE}/src/components/npi/src
         -I${TI_BLE_SDK_BASE}/src/common/cc26xx/npi/stack
-        -I${TI_BLE_SDK_BASE}/src/inc
+        -I${TI_BLE_SDK_BASE}/src/rom
         -I${TI_BLE_SDK_BASE}/src/icall/inc
         -I${TI_BLE_SDK_BASE}/src/profiles/roles
         -I${CC26XXWARE}
@@ -87,24 +99,19 @@
         "
         description=""
         launchWizard="false"
-
-        preBuildStep="
-        &quot;${TI_BLE_SDK_BASE}/tools/lib_search/lib_search.exe&quot; ${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt
-        &quot;${TI_BLE_SDK_BASE}/tools/lib_search/params_split_cc2640.xml&quot;
-        ${TI_BLE_SDK_BASE}/blelib &quot;${PROJECT_IMPORT_LOC}/../../iar/config/lib_linker.cmd&quot;"
-        postBuildStep=
-        "${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out;${TI_BLE_SDK_BASE}/tools/frontier/frontier.exe ccs ${PROJECT_LOC}/${ConfigName}/${ProjName}_linkInfo.xml ${PROJECT_IMPORT_LOC}/../config/ccs_compiler_defines.bcfg ${PROJECT_IMPORT_LOC}/../config/ccs_linker_defines.cmd"
         >
 
+        <!-- Project properties -->
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
         <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; "/>
 
-        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
+        <!-- Env Vars -->
         <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/tidrivers_cc13xx_cc26xx_2_20_01_10/packages" scope="project"></pathVariable>
         <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_01_18" scope="project"></pathVariable>
+        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
         <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
 
 
@@ -180,13 +187,11 @@
         </file>
         <file path="TI_BLE_SDK_BASE/src/icall/stack/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="TI_BLE_SDK_BASE/src/rom/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="TI_BLE_SDK_BASE/src/rom/rom_jt.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/common/cc26xx/icall_startup.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/examples/hid_emu_kbd/cc26xx/stack/osal_icall_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/rom/rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/config/build_components.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
@@ -232,7 +237,7 @@
         </file>
         <file path="TI_BLE_SDK_BASE/src/components/hal/src/target/_common/cc26xx/mb_patch.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="HAL/Target/CC2650/_common" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../iar/config/build_config.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../iar/stack/build_config.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
         <file path="PROJECT_IMPORT_LOC/../config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>

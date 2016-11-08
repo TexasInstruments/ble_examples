@@ -36,18 +36,17 @@
         -DMAX_NUM_BLE_CONNS=1
         -Dxdc_runtime_Assert_DISABLE_ALL
         -Dxdc_runtime_Log_DISABLE_ALL
-        -DCC26XX
         -DCC2650RC
+        -DCC26XX
         -DTI_DRIVERS_PDM_INCLUDED
         -DDisplay_DISABLE_ALL
-        
+
         -I${CG_TOOL_ROOT}/include
         -I${TI_BLE_SDK_BASE}/src/controller/cc26xx/inc
         -I${TI_BLE_SDK_BASE}/src/inc
         -I${TI_BLE_SDK_BASE}/src/common/cc26xx
         -I${TI_BLE_SDK_BASE}/src/examples/hid_adv_remote/cc26xx/app
         -I${TI_BLE_SDK_BASE}/src/icall/inc
-        -I${TI_BLE_SDK_BASE}/src/inc
         -I${TI_BLE_SDK_BASE}/src/profiles/audio
         -I${TI_BLE_SDK_BASE}/src/profiles/batt/cc26xx
         -I${TI_BLE_SDK_BASE}/src/profiles/dev_info
@@ -84,16 +83,16 @@
         "
         description=""
         launchWizard="false"
-        
+
         preBuildStep=""
         postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out"
         >
 
-        
+
         <property name="type" value="rtsc"/>
         <property name="products" value="com.ti.rtsc.TIRTOSCC13XX_CC26XX:2.20.01.08"/>
         <property name="xdcToolsVersion" value="3.32.00.06"/>
-        
+
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
         <property name="buildProfile" value="release"/>
@@ -104,7 +103,7 @@
         <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/tidrivers_cc13xx_cc26xx_2_20_01_10/packages" scope="project"></pathVariable>
         <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_01_18" scope="project"></pathVariable>
         <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
-        
+
 
         <!-- Application -->
         <file path="PROJECT_IMPORT_LOC/../../../../../../src/examples/hid_adv_remote_privacy/cc26xx/app/hid_adv_remote_privacy.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
@@ -133,9 +132,13 @@
         </file>
         <file path="TI_BLE_SDK_BASE/src/components/hal/src/target/cc2650rc/PDMCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/PDM" createVirtualFolders="true">
         </file>
-        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
+        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RFCC26XX_singleMode.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
         </file>
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/components/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/components/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true">
         </file>
 
         <!-- ICall -->

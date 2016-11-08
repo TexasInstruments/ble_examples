@@ -117,7 +117,7 @@
 
 // Whether to enable automatic parameter update request when a connection is
 // formed.
-#define DEFAULT_ENABLE_UPDATE_REQUEST         TRUE
+#define DEFAULT_ENABLE_UPDATE_REQUEST         GAPROLE_LINK_PARAM_UPDATE_INITIATE_BOTH_PARAMS
 
 // Connection Pause Peripheral time value (in seconds)
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         10
@@ -196,19 +196,20 @@ Char hidEmuKbdTaskStack[HIDEMUKBD_TASK_STACK_SIZE];
 // GAP Profile - Name attribute for SCAN RSP data
 static uint8_t scanData[] =
 {
-  0x0D,                             // length of this data
+  0x0E,                             // length of this data
   GAP_ADTYPE_LOCAL_NAME_COMPLETE,   // AD Type = Complete local name
   'H',
   'I',
   'D',
   ' ',
-  'K',
-  'e',
-  'y',
-  'b',
-  'o',
+  'L',
   'a',
-  'r',
+  'u',
+  'n',
+  'c',
+  'h',
+  'p',
+  'a',
   'd'
 };
 
@@ -236,7 +237,7 @@ static uint8_t advData[] =
 };
 
 // Device name attribute value
-static CONST uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "HID Keyboard";
+static CONST uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "HID Launchpad";
 
 // HID Dev configuration
 static hidDevCfg_t hidEmuKbdCfg =
@@ -560,8 +561,8 @@ static void HidEmuKbd_keyPressHandler(uint8_t keys)
  *
  * @param   shift - true if in shift/alt.
  * @param   keys - bit field for key events. Valid entries:
- *                 KEY_BTN1
- *                 KEY_BTN2
+ *                 KEY_LEFT
+ *                 KEY_RIGHT
  *
  * @return  none
  */
@@ -633,10 +634,6 @@ static uint8_t HidEmuKbd_receiveReport(uint8_t len, uint8_t *pData)
   // Verify data length
   if (len == HID_LED_OUT_RPT_LEN)
   {
-    // Set keyfob LEDs
-    //HalLedSet(HAL_LED_1, ((*pData & LED_CAPS_LOCK) == LED_CAPS_LOCK));
-    //HalLedSet(HAL_LED_2, ((*pData & LED_NUM_LOCK) == LED_NUM_LOCK));
-
     return SUCCESS;
   }
   else

@@ -39,9 +39,6 @@
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
- ******************************************************************************
- Release Name: ble_sdk_2_02_00_31
- Release Date: 2016-06-16 18:57:29
  *****************************************************************************/
 
 /*********************************************************************
@@ -221,7 +218,9 @@ static uint8_t  gapRole_ConnectedDevAddr[B_ADDR_LEN] = {0};
 // Connection parameter update parameters.
 static gapRole_updateConnParams_t gapRole_updateConnParams =
 {
-  .paramUpdateEnable = FALSE,
+  // Default behavior is to accept the remote device's request until application
+  // changes local parameters.
+  .paramUpdateEnable = GAPROLE_LINK_PARAM_UPDATE_WAIT_REMOTE_PARAMS,
   .minConnInterval = DEFAULT_MIN_CONN_INTERVAL,
   .maxConnInterval = DEFAULT_MAX_CONN_INTERVAL,
   .slaveLatency = MIN_SLAVE_LATENCY,
@@ -497,7 +496,8 @@ bStatus_t GAPRole_SetParameter(uint16_t param, uint8_t len, void *pValue)
       break;
 
     case GAPROLE_PARAM_UPDATE_ENABLE:
-      if ((len == sizeof (uint8_t)) && (*((uint8_t*)pValue) <= TRUE))
+      if ((len == sizeof (uint8_t)) &&
+          (*((uint8_t*)pValue) < GAPROLE_LINK_PARAM_UPDATE_NUM_OPTIONS))
       {
         gapRole_updateConnParams.paramUpdateEnable = *((uint8_t*)pValue);
       }
@@ -1244,7 +1244,10 @@ static void gapRole_processGAPMsg(gapEventHdr_t *pMsg)
           gapRole_ConnectedDevAddrType = pPkt->devAddrType;
 
           // Check whether update parameter request is enabled
-          if (gapRole_updateConnParams.paramUpdateEnable == TRUE)
+          if ((gapRole_updateConnParams.paramUpdateEnable ==
+               GAPROLE_LINK_PARAM_UPDATE_INITIATE_BOTH_PARAMS) ||
+              (gapRole_updateConnParams.paramUpdateEnable ==
+               GAPROLE_LINK_PARAM_UPDATE_INITIATE_APP_PARAMS))
           {
             // Get the minimum time upon connection establishment before the
             // peripheral can start a connection update procedure.
@@ -1359,9 +1362,99 @@ static void gapRole_processGAPMsg(gapEventHdr_t *pMsg)
       }
       break;
 
+    case GAP_UPDATE_LINK_PARAM_REQ_EVENT:
+      {
+        gapUpdateLinkParamReqEvent_t *pReq;
+        gapUpdateLinkParamReqReply_t rsp;
+
+        pReq = (gapUpdateLinkParamReqEvent_t *)pMsg;
+
+        // Add in connection handle.
+        rsp.connectionHandle = pReq->req.connectionHandle;
+
+        // If application provided desired parameters, check against them.
+        // Otherwise, use what the remote has requested.
+        if (gapRole_updateConnParams.paramUpdateEnable ==
+            GAPROLE_LINK_PARAM_UPDATE_REJECT_REQUEST)
+        {
+          rsp.accepted = FALSE;
+        }
+        else
+        {
+          // Link Parameter update is accepted.  set parameter values with the
+          // the strategy requested by the application.
+          rsp.accepted = TRUE;
+
+          // If an update was scheduled, cancel it.
+          Util_stopClock(&startUpdateClock);
+
+          if ((gapRole_updateConnParams.paramUpdateEnable ==
+                 GAPROLE_LINK_PARAM_UPDATE_INITIATE_BOTH_PARAMS) ||
+                 (gapRole_updateConnParams.paramUpdateEnable ==
+                 GAPROLE_LINK_PARAM_UPDATE_WAIT_BOTH_PARAMS))
+          {
+            // Volume 3, Part C, Section 9.3.9.2, "Devices should be tolerant of
+            // connection parameters given to them by the remote device." The
+            // interpretation here is to check if the connection parameters
+            // given by the remote device are compatible with the desired values
+            // of the local device.  Where a mismatch occurs, the local device
+            // attempts to conservatively fix them.  This plays out as described
+            // below.
+
+            // Minimum Connection Interval.  the longer is used.
+            rsp.intervalMin =
+            (pReq->req.intervalMin < gapRole_updateConnParams.minConnInterval) ?
+              gapRole_updateConnParams.minConnInterval :
+              pReq->req.intervalMin;
+
+            // Maximum Connection Interval.  The longer is used.
+            rsp.intervalMax =
+            (pReq->req.intervalMax < gapRole_updateConnParams.maxConnInterval) ?
+              gapRole_updateConnParams.maxConnInterval :
+              pReq->req.intervalMax;
+
+            // Slave Latency.  The longer slave latency is used.
+            rsp.connLatency =
+               (pReq->req.connLatency < gapRole_updateConnParams.slaveLatency) ?
+                 gapRole_updateConnParams.slaveLatency :
+                 pReq->req.connLatency;
+
+            // Connection Timeout.  The longer timeout is used.
+            rsp.connTimeout =
+          (pReq->req.connTimeout < gapRole_updateConnParams.timeoutMultiplier) ?
+            gapRole_updateConnParams.timeoutMultiplier :
+            pReq->req.connTimeout;
+          }
+          else if ((gapRole_updateConnParams.paramUpdateEnable ==
+                    GAPROLE_LINK_PARAM_UPDATE_WAIT_APP_PARAMS) ||
+                   (gapRole_updateConnParams.paramUpdateEnable ==
+                    GAPROLE_LINK_PARAM_UPDATE_INITIATE_APP_PARAMS))
+          {
+            // Only use application requested values.
+            rsp.intervalMin = gapRole_updateConnParams.minConnInterval;
+            rsp.intervalMax = gapRole_updateConnParams.maxConnInterval;
+            rsp.connLatency = gapRole_updateConnParams.slaveLatency;
+            rsp.connTimeout = gapRole_updateConnParams.timeoutMultiplier;
+          }
+          else // GAPROLE_LINK_PARAM_UPDATE_WAIT_REMOTE_PARAMS
+          {
+            // Only use remote requested values.
+            rsp.intervalMin = pReq->req.intervalMin;
+            rsp.intervalMax = pReq->req.intervalMax;
+            rsp.connLatency = pReq->req.connLatency;
+            rsp.connTimeout = pReq->req.connTimeout;
+          }
+        }
+
+        // Send application's requested parameters back.
+        VOID GAP_UpdateLinkParamReqReply(&rsp);
+      }
+      break;
+
     default:
       break;
   }
+
 
   if (notify == TRUE)
   {

@@ -10,7 +10,11 @@
         linkerCommandFile="cc26xx_stack.cmd"
 
         preBuildStep="
-        &quot;${TOOLS_BLE}/lib_search/lib_search.exe&quot; ${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt &quot;${TOOLS_BLE}/lib_search/params_split_cc2640.xml&quot; ${SRC_BLE_CORE}/../blelib &quot;${PROJECT_IMPORT_LOC}/../config/lib_linker.cmd&quot;
+        &quot;${TOOLS_BLE}/lib_search/lib_search.exe&quot;
+        ${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt
+        &quot;${TOOLS_BLE}/lib_search/params_split_cc2640.xml&quot;
+        ${SRC_BLE_CORE}/../blelib
+        &quot;${PROJECT_IMPORT_LOC}/../config/lib_linker.cmd&quot;
         "
 
         postBuildStep="
@@ -59,7 +63,6 @@
         -I${SRC_EX}/examples/simple_peripheral/cc26xx/stack
         -I${SRC_EX}/common/cc26xx
         -I${SRC_COMMON}/hal/src/target/_common
-        -I${SRC_COMMON}/hal/src/target/_common
         -I${SRC_COMMON}/hal/src/target
         -I${SRC_COMMON}/hal/src/target/_common/cc26xx
         -I${SRC_COMMON}/hal/src/inc
@@ -84,7 +87,6 @@
         -l${SRC_BLE_CORE}/rom/enc_lib/cc26xx_ecc_rom_api.a
         -l${ROM}/ble_rom_releases/04242014/ble_rom_patch.symbols
         -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib
-        -l${SRC_BLE_CORE}\rom\enc_lib\cc26xx_ecc_rom_api.a
         -llibc.a  -x
         --unused_section_elimination=on
         --xml_link_info=${ProjName}_linkInfo.xml
@@ -113,7 +115,7 @@
         <pathVariable name="SRC_BLE_CORE" path="${TI_BLE_SDK_BASE}/src/" scope="project"></pathVariable>
         <pathVariable name="ROM" path="${TI_BLE_SDK_BASE}/src/rom" scope="project"></pathVariable>
         <pathVariable name="TOOLS_BLE" path="${TI_BLE_SDK_BASE}/tools" scope="project"></pathVariable>
-        <pathVariable name="CC26XXWARE" path="/C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
+        <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
         <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
 
         <!-- HAL/Common Folder -->

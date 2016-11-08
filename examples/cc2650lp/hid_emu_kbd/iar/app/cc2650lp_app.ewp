@@ -77,7 +77,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.50.3.10745</state>
+          <state>7.70.2.11707</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -127,7 +127,7 @@
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>22</version>
+          <version>24</version>
           <state>38</state>
         </option>
         <option>
@@ -144,7 +144,7 @@
         </option>
         <option>
           <name>CoreVariant</name>
-          <version>22</version>
+          <version>24</version>
           <state>38</state>
         </option>
         <option>
@@ -167,7 +167,7 @@
         </option>
         <option>
           <name>GFPUCoreSlave2</name>
-          <version>22</version>
+          <version>24</version>
           <state>38</state>
         </option>
       </data>
@@ -181,15 +181,15 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>USE_ICALL</state>
-          <state>POWER_SAVING</state>
-          <state>HEAPMGR_SIZE=0</state>
-          <state>ICALL_MAX_NUM_TASKS=4</state>
-          <state>ICALL_MAX_NUM_ENTITIES=6</state>
-          <state>xdc_runtime_Assert_DISABLE_ALL</state>
-          <state>xdc_runtime_Log_DISABLE_ALL</state>
           <state>CC2650_LAUNCHXL</state>
           <state>CC26XX</state>
+          <state>HEAPMGR_SIZE=0</state>
+          <state>ICALL_MAX_NUM_ENTITIES=6</state>
+          <state>ICALL_MAX_NUM_TASKS=4</state>
+          <state>POWER_SAVING</state>
+          <state>USE_ICALL</state>
+          <state>xdc_runtime_Assert_DISABLE_ALL</state>
+          <state>xdc_runtime_Log_DISABLE_ALL</state>
           <state>Display_DISABLE_ALL</state>
         </option>
         <option>
@@ -324,7 +324,6 @@
           <name>CCIncludePath2</name>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
-          <state>$PROJ_DIR$/../../../../../src/common/cc2650lp</state>
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
@@ -338,18 +337,19 @@
           <state>$SRC_EX$/profiles/scan_param</state>
           <state>$SRC_EX$/profiles/scan_param/cc26xx</state>
           <state>$SRC_EX$/target</state>
-          <state>$SRC_COMMON$/heapmgr</state>
           <state>$SRC_COMMON$/hal/src/inc</state>
-          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON$/hal/src/target/cc2650/rom</state>
           <state>$SRC_COMMON$/hal/src/target/_common</state>
-          <state>$SRC_COMMON$/hal/src/target</state>
+          <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
+          <state>$SRC_COMMON$/hal/src/target/cc2650lp</state>
+          <state>$SRC_COMMON$/heapmgr</state>
           <state>$SRC_COMMON$/icall/src/inc</state>
           <state>$SRC_COMMON$/osal/src/inc</state>
           <state>$SRC_COMMON$/services/src/saddr</state>
           <state>$SRC_COMMON$/services/src/sdata</state>
+          <state>$SRC_COMMON$/util/src/cc26xx</state>
           <state>$CC26XXWARE$</state>
           <state>$TI_RTOS_DRIVERS_BASE$</state>
+          <state>$TI_RTOS_DRIVERS_BASE$/ti/boards/CC2650_LAUNCHXL</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -675,7 +675,7 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>"$XDCROOT$/xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$"</prebuild>
+        <prebuild>"$XDCROOT$/xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$" --cfgArgs USE_EVENTS=1</prebuild>
         <postbuild></postbuild>
       </data>
     </settings>
@@ -814,7 +814,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$ROM$\common_rom_releases\03282014\common_rom.symbols</state>
+          <state>$SRC_BLE_CORE$\rom\common_rom_releases\03282014\common_rom.symbols</state>
           <state>$CC26XXWARE$\driverlib\bin\iar\driverlib.lib</state>
         </option>
         <option>
@@ -1006,10 +1006,10 @@
   <group>
     <name>Application</name>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_key.c</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.c</name>
     </file>
     <file>
-      <name>$SRC_EX$\common\cc26xx\board_key.h</name>
+      <name>$SRC_BLE_CORE$\common\cc26xx\board_key.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\src\examples\hid_emu_kbd\cc26xx\app\hidemukbdlp.c</name>
@@ -1050,10 +1050,43 @@
     <group>
       <name>RF</name>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.c</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RFCC26XX_singleMode.c</name>
+      </file>
+    </group>
+    <group>
+      <name>SPI</name>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\SPI.c</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\SPI.h</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\spi\SPICC26XXDMA.c</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\spi\SPICC26XXDMA.h</name>
+      </file>
+    </group>
+    <group>
+      <name>TRNG</name>
+      <file>
+        <name>$SRC_COMMON$\hal\src\target\_common\TRNGCC26XX.c</name>
+      </file>
+      <file>
+        <name>$SRC_COMMON$\hal\src\target\_common\TRNGCC26XX.h</name>
+      </file>
+    </group>
+    <group>
+      <name>UDMA</name>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\dma\UDMACC26XX.c</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\dma\UDMACC26XX.h</name>
       </file>
     </group>
   </group>
@@ -1168,7 +1201,7 @@
   <group>
     <name>Startup</name>
     <file>
-      <name>$SRC_COMMON$\hal\src\target\board.c</name>
+      <name>$SRC_BLE_CORE$\target\board.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>

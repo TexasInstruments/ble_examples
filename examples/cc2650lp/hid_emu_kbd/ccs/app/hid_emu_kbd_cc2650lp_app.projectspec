@@ -37,33 +37,31 @@
         -DCC2650_LAUNCHXL
         -DCC26XX
         -DDisplay_DISABLE_ALL
-        
+
         -I${CG_TOOL_ROOT}/include
-        -I${TI_BLE_SDK_BASE}/src/examples/hid_emu_kbd/cc26xx/app
+        -I${TI_BLE_SDK_BASE}/src/controller/cc26xx/inc
         -I${TI_BLE_SDK_BASE}/src/inc
+        -I${TI_BLE_SDK_BASE}/src/common/cc26xx
+        -I${TI_BLE_SDK_BASE}/src/examples/hid_emu_kbd/cc26xx/app
         -I${TI_BLE_SDK_BASE}/src/icall/inc
-        -I${TI_BLE_SDK_BASE}/src/profiles/roles/cc26xx
-        -I${TI_BLE_SDK_BASE}/src/profiles/roles
+        -I${TI_BLE_SDK_BASE}/src/profiles/batt/cc26xx
         -I${TI_BLE_SDK_BASE}/src/profiles/dev_info
+        -I${TI_BLE_SDK_BASE}/src/profiles/hid_dev/cc26xx
         -I${TI_BLE_SDK_BASE}/src/profiles/hid_dev_kbd/cc26xx
         -I${TI_BLE_SDK_BASE}/src/profiles/hid_dev_kbd
-        -I${TI_BLE_SDK_BASE}/src/profiles/scan_param/cc26xx
+        -I${TI_BLE_SDK_BASE}/src/profiles/roles
+        -I${TI_BLE_SDK_BASE}/src/profiles/roles/cc26xx
         -I${TI_BLE_SDK_BASE}/src/profiles/scan_param
-        -I${TI_BLE_SDK_BASE}/src/profiles/hid_dev/cc26xx
-        -I${TI_BLE_SDK_BASE}/src/profiles/batt/cc26xx
-        -I${PROJECT_IMPORT_LOC}/../../../../../src/common/cc2650lp
-        -I${TI_BLE_SDK_BASE}/src/common/cc26xx
+        -I${TI_BLE_SDK_BASE}/src/profiles/scan_param/cc26xx
         -I${TI_BLE_SDK_BASE}/src/components/heapmgr
-        -I${TI_BLE_SDK_BASE}/src/controller/cc26xx/inc
+        -I${TI_BLE_SDK_BASE}/src/components/hal/src/inc
+        -I${TI_BLE_SDK_BASE}/src/components/hal/src/target/_common/cc26xx
         -I${TI_BLE_SDK_BASE}/src/components/hal/src/target/_common
         -I${TI_BLE_SDK_BASE}/src/target
-        -I${TI_BLE_SDK_BASE}/src/components/hal/src/target/_common/cc26xx
-        -I${TI_BLE_SDK_BASE}/src/components/hal/src/inc
-        -I${TI_BLE_SDK_BASE}/src/components/osal/src/inc
-        -I${TI_BLE_SDK_BASE}/src/components/services/src/sdata
-        -I${TI_BLE_SDK_BASE}/src/components/services/src/saddr
         -I${TI_BLE_SDK_BASE}/src/components/icall/src/inc
-        -I${TI_BLE_SDK_BASE}/src/inc
+        -I${TI_BLE_SDK_BASE}/src/components/osal/src/inc
+        -I${TI_BLE_SDK_BASE}/src/components/services/src/saddr
+        -I${TI_BLE_SDK_BASE}/src/components/services/src/sdata
         -I${CC26XXWARE}
         "
 
@@ -80,16 +78,16 @@
         "
         description=""
         launchWizard="false"
-        
+
         preBuildStep=""
         postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out"
         >
 
-        
+
         <property name="type" value="rtsc"/>
         <property name="products" value="com.ti.rtsc.TIRTOSCC13XX_CC26XX:2.20.01.08"/>
         <property name="xdcToolsVersion" value="3.32.00.06"/>
-        
+
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
         <property name="buildProfile" value="release"/>
@@ -100,8 +98,13 @@
         <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/tidrivers_cc13xx_cc26xx_2_20_01_10/packages" scope="project"></pathVariable>
         <pathVariable name="TI_BLE_SDK_BASE" path="C:/ti/simplelink/ble_sdk_2_02_01_18" scope="project"></pathVariable>
         <pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
-        
 
+
+        <!-- Application -->
+        <file path="PROJECT_IMPORT_LOC/../../../../../../src/examples/hid_emu_kbd/cc26xx/app/hidemukbdlp.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        </file>
+        <file path="PROJECT_IMPORT_LOC/../../../../../../src/examples/hid_emu_kbd/cc26xx/app/hidemukbdlp.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        </file>
         <file path="TI_BLE_SDK_BASE/src/common/cc26xx/board_key.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/common/cc26xx/board_key.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
@@ -110,66 +113,8 @@
         </file>
         <file path="TI_BLE_SDK_BASE/src/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
-        <file path="TI_BLE_SDK_BASE/src/components/heapmgr/heapmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/components/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/components/icall/src/inc/icall.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/icall/inc/icall_addrs.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/components/icall/src/icall_cc2650.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/components/icall/src/icall_platform.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/icall/app/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/icall/inc/ble_user_config.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/icall/app/icall_api.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/icall/inc/icall_apimsg.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/inc/gap.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/inc/gapgattserver.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/inc/gatt.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/inc/hci.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/components/osal/src/inc/osal_snv.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/inc/gatt_profile_uuid.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/host/gatt_uuid.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/inc/gatt_uuid.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/components/hal/src/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="PROJECT_IMPORT_LOC/../../iar/config/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="PROJECT_IMPORT_LOC/../config/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
-        </file>
-        <file path="TI_BLE_SDK_BASE/src/common/cc26xx/ccs/cc26xx_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
-        </file>
-        <file path="PROJECT_IMPORT_LOC/../config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
-        </file>
-        <file path="PROJECT_IMPORT_LOC/../config/ccs_linker_defines.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
-        </file>
-        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/Display.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
-        </file>
-        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayDogm1286.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
-        </file>
-        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayDogm1286.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
-        </file>
-        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayUART.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
-        </file>
-        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayUART.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
-        </file>
+
+        <!-- Drivers -->
         <file path="TI_BLE_SDK_BASE/src/common/cc26xx/ecc/ECCROMCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/common/cc26xx/ecc/ECCROMCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true">
@@ -180,7 +125,7 @@
         </file>
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/pin/PINCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/PIN" createVirtualFolders="true">
         </file>
-        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
+        <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RFCC26XX_singleMode.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
         </file>
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
         </file>
@@ -191,6 +136,10 @@
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/spi/SPICC26XXDMA.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/SPI" createVirtualFolders="true">
         </file>
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/spi/SPICC26XXDMA.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/SPI" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/components/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/components/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true">
         </file>
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/UART.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/UART" createVirtualFolders="true">
         </file>
@@ -204,12 +153,58 @@
         </file>
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/dma/UDMACC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/UDMA" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../../../../../src/examples/hid_emu_kbd/cc26xx/app/hidemukbdlp.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+
+        <!-- ICall -->
+        <file path="TI_BLE_SDK_BASE/src/components/heapmgr/heapmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../../../../../src/examples/hid_emu_kbd/cc26xx/app/hidemukbdlp.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
+        <file path="TI_BLE_SDK_BASE/src/components/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/components/icall/src/inc/icall.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/icall/inc/icall_addrs.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/components/icall/src/icall_cc2650.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/components/icall/src/icall_platform.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
+        </file>
+
+        <!-- ICallBLE -->
+        <file path="TI_BLE_SDK_BASE/src/icall/app/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/icall/inc/ble_user_config.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/icall/app/icall_api.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/icall/inc/icall_apimsg.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true">
+        </file>
+
+        <!-- Include -->
+        <file path="TI_BLE_SDK_BASE/src/inc/gap.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/inc/gapgattserver.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/inc/gatt.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/inc/hci.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/components/osal/src/inc/osal_snv.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/profiles/roles/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true">
         </file>
+
+        <!-- Middleware -->
+        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/Display.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
+        </file>
+        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayDogm1286.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
+        </file>
+        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayDogm1286.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
+        </file>
+        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayUART.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
+        </file>
+        <file path="TI_RTOS_DRIVERS_BASE/ti/mw/display/DisplayUART.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Display" createVirtualFolders="true">
+        </file>
+
+        <!-- PROFILES -->
         <file path="TI_BLE_SDK_BASE/src/profiles/batt/cc26xx/battservice.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/profiles/batt/cc26xx/battservice.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
@@ -217,6 +212,14 @@
         <file path="TI_BLE_SDK_BASE/src/profiles/dev_info/cc26xx/devinfoservice.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/profiles/dev_info/devinfoservice.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/inc/gatt_profile_uuid.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/host/gatt_uuid.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/inc/gatt_uuid.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/profiles/hid_dev/cc26xx/hiddev.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
@@ -234,7 +237,23 @@
         </file>
         <file path="TI_BLE_SDK_BASE/src/profiles/scan_param/scanparamservice.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
+
+        <!-- Startup -->
+        <file path="TI_BLE_SDK_BASE/src/components/hal/src/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        </file>
+        <file path="PROJECT_IMPORT_LOC/../../iar/config/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        </file>
         <file path="TI_BLE_SDK_BASE/src/examples/hid_emu_kbd/cc26xx/app/main.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        </file>
+
+        <!-- TOOLS -->
+        <file path="PROJECT_IMPORT_LOC/../config/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/common/cc26xx/ccs/cc26xx_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        </file>
+        <file path="PROJECT_IMPORT_LOC/../config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        </file>
+        <file path="PROJECT_IMPORT_LOC/../config/ccs_linker_defines.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
         </project>
 </projectSpec>

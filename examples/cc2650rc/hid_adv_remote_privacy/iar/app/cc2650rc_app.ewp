@@ -77,7 +77,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.50.3.10745</state>
+          <state>7.70.2.11707</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -127,7 +127,7 @@
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>22</version>
+          <version>24</version>
           <state>38</state>
         </option>
         <option>
@@ -144,7 +144,7 @@
         </option>
         <option>
           <name>CoreVariant</name>
-          <version>22</version>
+          <version>24</version>
           <state>38</state>
         </option>
         <option>
@@ -167,7 +167,7 @@
         </option>
         <option>
           <name>GFPUCoreSlave2</name>
-          <version>22</version>
+          <version>24</version>
           <state>38</state>
         </option>
       </data>
@@ -181,15 +181,15 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>USE_ICALL</state>
-          <state>POWER_SAVING</state>
+          <state>CC2650RC</state>
+          <state>CC26XX</state>
           <state>HEAPMGR_SIZE=0</state>
-          <state>ICALL_MAX_NUM_TASKS=4</state>
           <state>ICALL_MAX_NUM_ENTITIES=7</state>
+          <state>ICALL_MAX_NUM_TASKS=4</state>
+          <state>POWER_SAVING</state>
+          <state>USE_ICALL</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>
-          <state>CC26XX</state>
-          <state>CC2650RC</state>
           <state>TI_DRIVERS_PDM_INCLUDED</state>
         </option>
         <option>
@@ -816,7 +816,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$ROM$\common_rom_releases\03282014\common_rom.symbols</state>
+          <state>$SRC_BLE_CORE$\rom\common_rom_releases\03282014\common_rom.symbols</state>
           <state>$CC26XXWARE$\driverlib\bin\iar\driverlib.lib</state>
         </option>
         <option>
@@ -1058,10 +1058,19 @@
     <group>
       <name>RF</name>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.c</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RFCC26XX_singleMode.c</name>
+      </file>
+    </group>
+    <group>
+      <name>TRNG</name>
+      <file>
+        <name>$SRC_COMMON$\hal\src\target\_common\TRNGCC26XX.c</name>
+      </file>
+      <file>
+        <name>$SRC_COMMON$\hal\src\target\_common\TRNGCC26XX.h</name>
       </file>
     </group>
   </group>
