@@ -17,7 +17,7 @@ Before running the demo, the user will need the following components:
 
 #### Firmware Requirements
 
-- [BLE-Stack v2.2.0](http://www.ti.com/ble-stack)
+- [BLE-Stack v2.2.1](http://www.ti.com/ble-stack)
 
 Serial Port Service (SPS)
 =========================
@@ -62,5 +62,6 @@ Running the demo is as simple and compiling and loading the code, then hooking u
 
 References
 ==========
- * [UART To BLE Bridge TI Design Guide](http://www.ti.com/tool/TIDC-SPPBLE-SW-RD)
+ * [UART To BLE Bridge Wiki](http://processors.wiki.ti.com/index.php/CC2640_UART_to_BLE_Bridge)
+ * [UART To BLE Bridge TI Design](http://www.ti.com/tool/TIDC-SPPBLE-SW-RD)
  * [SPS Spec Document](http://www.ti.com/lit/TIDUA63)

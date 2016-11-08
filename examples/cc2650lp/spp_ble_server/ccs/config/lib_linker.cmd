@@ -3,6 +3,6 @@
  *                step by the lib_search utility
  */
 
-"c:\ti\simplelink\ble_sdk_2_02_00_31\blelib\host\host_pxxx.a"
-"c:\ti\simplelink\ble_sdk_2_02_00_31\blelib\ctrl\cc2640\cc2640_ctrl_pxxx_ext.a"
-"c:\ti\simplelink\ble_sdk_2_02_00_31\blelib\hci_tl\cc26xx\cc26xx_hci_tl_none.a"
+"c:\ti\simplelink\ble_sdk_2_02_01_18\blelib\host\host_pxxx.a"
+"c:\ti\simplelink\ble_sdk_2_02_01_18\blelib\ctrl\cc2640\cc2640_ctrl_pxxx_ext.a"
+"c:\ti\simplelink\ble_sdk_2_02_01_18\blelib\hci_tl\cc26xx\cc26xx_hci_tl_none_v41_v42.a"

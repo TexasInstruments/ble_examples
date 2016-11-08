@@ -148,9 +148,10 @@
 #define SBP_CHAR_CHANGE_EVT                   0x0002
 #define SBP_PERIODIC_EVT                      0x0004
 #define SBP_CONN_EVT_END_EVT                  0x0008
+#define SBP_KEY_CHANGE_EVT                    0x0010
 
-#define APP_SUGGESTED_PDU_SIZE 27
-#define APP_SUGGESTED_TX_TIME 328
+#define APP_SUGGESTED_PDU_SIZE 251
+#define APP_SUGGESTED_TX_TIME 2120
 
 /*********************************************************************
  * TYPEDEFS
@@ -219,8 +220,14 @@ static uint16_t events;
 Task_Struct sbpTask;
 Char sbpTaskStack[SBP_TASK_STACK_SIZE];
 
+// Value to write
+static uint8_t charVal = 0x41;
+
 // Profile state and parameters
 static gaprole_States_t gapProfileState = GAPROLE_INIT;
+
+// Connection handle of current connection
+static uint16_t connHandle = GAP_CONNHANDLE_INIT;
 
 // GAP - SCAN RSP data (max size = 31 bytes)
 static uint8_t scanRspData[] =
@@ -308,7 +315,7 @@ static PIN_Config SPPBLEAppPinTable[] =
 
 static void SPPBLEServer_init( void );
 static void SPPBLEServer_taskFxn(UArg a0, UArg a1);
-
+static void SPPBLEServer_handleKeys(uint8_t shift, uint8_t keys);
 static uint8_t SPPBLEServer_processStackMsg(ICall_Hdr *pMsg);
 static uint8_t SPPBLEServer_processGATTMsg(gattMsgEvent_t *pMsg);
 static void SPPBLEServer_processAppMsg(sbpEvt_t *pMsg);
@@ -331,6 +338,7 @@ void SPPBLEServer_processOadWriteCB(uint8_t event, uint16_t connHandle,
                                            uint8_t *pData);
 #endif //FEATURE_OAD
 char* convInt32ToText(int32 value);
+void SPPBLEServer_keyChangeHandler(uint8 keys);
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -476,6 +484,8 @@ static void SPPBLEServer_init(void)
   Util_constructClock(&periodicClock, SPPBLEServer_clockHandler,
                       SBP_PERIODIC_EVT_PERIOD, 0, false, SBP_PERIODIC_EVT);
   
+  Board_initKeys(SPPBLEServer_keyChangeHandler);
+    
 //  dispHandle = Display_open(Display_Type_UART, NULL);
 
   // Setup the GAP
@@ -592,14 +602,9 @@ static void SPPBLEServer_init(void)
 
   //Register to receive UART messages
   SDITask_registerIncomingRXEventAppCB(SPPBLEServer_enqueueUARTMsg); //ZH
-  
-  HCI_LE_ReadMaxDataLenCmd();
 
-  //This API is documented in hci.h
-  //HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
-
-  //unsigned char hello[] = "Hello from SPP BLE Server! With Data Length Extension support!\n\r";
-  //DEBUG(hello);
+  unsigned char hello[] = "Hello from SPP BLE Server! With Data Length Extension support!\n\r";
+  DEBUG((uint8_t*)hello);
   
 #if defined FEATURE_OAD
 #if defined (HAL_IMAGE_A)
@@ -676,7 +681,7 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
       }
 
       
-                  // If RTOS queue is not empty, process app message.
+      // If RTOS queue is not empty, process app message.
       if (!Queue_empty(appUARTMsgQueue))
       {
         //Get the message at the front of the queue but still keep it in the queue 
@@ -709,8 +714,6 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
                 {
                   //Display_print1(dispHandle, 5, 0, "FC Violated: %d", pMsg->msg.flowCtrlEvt.opcode);
                   Display_print1(dispHandle, 4, 0, " %d", retVal);
-                  //LCD_WRITE_STRING_VALUE("Data length:", pMsg->length, 10, LCD_PAGE5);
-                  //LCD_WRITE_STRING(pMsg->data, LCD_PAGE6);
                 }
                 else
                 {
@@ -832,6 +835,7 @@ static uint8_t SPPBLEServer_processStackMsg(ICall_Hdr *pMsg)
   return (safeToDealloc);
 }
 
+
 /*********************************************************************
  * @fn      SPPBLEServer_processGATTMsg
  *
@@ -872,6 +876,8 @@ static uint8_t SPPBLEServer_processGATTMsg(gattMsgEvent_t *pMsg)
   {
     // MTU size updated
     Display_print1(dispHandle, 5, 0, "MTU Size: $d", pMsg->msg.mtuEvt.MTU);
+    DEBUG("MTU Updated: "); 
+    DEBUG((uint8_t*)convInt32ToText((int)pMsg->msg.mtuEvt.MTU)); DEBUG_NEWLINE();
   }
 
   // Free message payload. Needed only for ATT Protocol messages
@@ -972,7 +978,11 @@ static void SPPBLEServer_processAppMsg(sbpEvt_t *pMsg)
       SPPBLEServer_processStateChangeEvt((gaprole_States_t)pMsg->
                                                 hdr.state);
       break;
-
+      
+    case SBP_KEY_CHANGE_EVT:
+      SPPBLEServer_handleKeys(0, pMsg->hdr.state);
+      break;
+      
     case SBP_CHAR_CHANGE_EVT:
       SPPBLEServer_processCharValueChangeEvt(pMsg->hdr.state);
       break;
@@ -1045,6 +1055,7 @@ static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
 
     case GAPROLE_ADVERTISING:
       Display_print0(dispHandle, 2, 0, "Advertising");
+      DEBUG("Advertising..."); DEBUG_NEWLINE();
       break;
 
 #ifdef PLUS_BROADCASTER
@@ -1083,7 +1094,9 @@ static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
         Util_startClock(&periodicClock);
         
         numActive = linkDB_NumActive();
-
+ 
+        connHandle = numActive - 1;
+        
         // Use numActive to determine the connection handle of the last
         // connection
         if ( linkDB_GetInfo( numActive - 1, &linkInfo ) == SUCCESS )
@@ -1098,6 +1111,7 @@ static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
           GAPRole_GetParameter(GAPROLE_CONN_BD_ADDR, peerAddress);
 
           Display_print0(dispHandle, 2, 0, "Connected");
+          DEBUG("CONNECTED..."); DEBUG_NEWLINE();
           Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddress));
         }
 
@@ -1332,6 +1346,81 @@ static void SPPBLEServer_enqueueMsg(uint8_t event, uint8_t state)
     // Enqueue the message.
     Util_enqueueMsg(appMsgQueue, sem, (uint8*)pMsg);
   }
+}
+
+/*********************************************************************
+ * @fn      SPPBLEServer_handleKeys
+ *
+ * @brief   Handles all key events for this device.
+ *
+ * @param   shift - true if in shift/alt.
+ * @param   keys - bit field for key events. Valid entries:
+ *                 HAL_KEY_SW_2
+ *                 HAL_KEY_SW_1
+ *
+ * @return  none
+ */
+static void SPPBLEServer_handleKeys(uint8_t shift, uint8_t keys)
+{
+  (void)shift;  // Intentionally unreferenced parameter
+  
+  
+  // Set Packet Length in a Connection 
+  if (keys & KEY_RIGHT)
+  {
+    //SPPBLEServer_toggleLed(Board_GLED, Board_LED_TOGGLE);
+    
+    if (gapProfileState == GAPROLE_CONNECTED )
+    {    
+
+      //Request max supported size
+      uint16_t requestedPDUSize = APP_SUGGESTED_PDU_SIZE;
+      uint16_t requestedTxTime = APP_SUGGESTED_TX_TIME;
+   
+      //This API is documented in hci.h
+      if(SUCCESS != HCI_LE_SetDataLenCmd(connHandle, requestedPDUSize, requestedTxTime))
+      {
+        DEBUG("Data length update failed");
+      }
+
+    }
+    return;
+  }
+
+  if (keys & KEY_LEFT)
+  {
+    //SPPBLEServer_toggleLed(Board_RLED, Board_LED_TOGGLE);
+    
+    // Start or stop discovery
+    if (gapProfileState == GAPROLE_CONNECTED)
+    {
+      uint8_t status;
+      
+      //Send the notification
+      status = SerialPortService_SetParameter(SERIALPORTSERVICE_CHAR_DATA, 1, &charVal); 
+   
+      if(status == SUCCESS){
+        charVal++;
+      }
+    }
+
+    return;
+  }
+
+}
+
+/*********************************************************************
+ * @fn      SPPBLEServer_keyChangeHandler
+ *
+ * @brief   Key event handler function
+ *
+ * @param   a0 - ignored
+ *
+ * @return  none
+ */
+void SPPBLEServer_keyChangeHandler(uint8 keys)
+{
+  SPPBLEServer_enqueueMsg(SBP_KEY_CHANGE_EVT, keys);
 }
 
 /*******************************************************************************

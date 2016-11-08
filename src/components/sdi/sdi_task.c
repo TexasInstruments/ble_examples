@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file  sdi_task.c
+ * Filename: sdi_task.c
 
  SDI is a TI RTOS Application Thread that provides a common serial data interface
  framework
@@ -86,6 +86,8 @@
 //! \brief Task priority for SDI RTOS task
 #define SDITASK_PRIORITY 2
 
+//! \brief Max bytes received from UART send to App
+#define MAX_UART_LENGTH 128
 
 // ****************************************************************************
 // typedefs
@@ -245,7 +247,6 @@ static void SDITask_process(void)
             // The Transport Layer has received some bytes
             if(postedEvents & SDITASK_TRANSPORT_RX_EVENT)
             {
-#define MAX_UART_LENGTH 128
                 length = SDIRxBuf_GetRxBufLen();
 
                 if(length > MAX_UART_LENGTH)

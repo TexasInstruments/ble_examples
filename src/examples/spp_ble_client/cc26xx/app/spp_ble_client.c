@@ -195,8 +195,8 @@ enum
   BLE_DISC_STATE_CHAR                 // Characteristic discovery
 };
 
-#define APP_SUGGESTED_PDU_SIZE 27
-#define APP_SUGGESTED_TX_TIME 328
+#define APP_SUGGESTED_PDU_SIZE 251
+#define APP_SUGGESTED_TX_TIME 2120
 
 /*********************************************************************
  * TYPEDEFS
@@ -378,6 +378,7 @@ static uint8_t SPPBLEClient_enqueueMsg(uint8_t event, uint8_t status,
 void SPPBLEClient_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len);
 static void SPPBLEClient_genericHandler(UArg arg);
 static void SPPBLEClient_autoConnect(void);
+char* convInt32ToText(int32 value);
 /*********************************************************************
  * PROFILE CALLBACKS
  */
@@ -577,11 +578,8 @@ static void SPPBLEClient_init(void)
   // Register for GATT local events and ATT Responses pending for transmission
   GATT_RegisterForMsgs(selfEntity);
 
-  //This API is documented in hci.h
-  //HCI_LE_WriteSuggestedDefaultDataLenCmd(APP_SUGGESTED_PDU_SIZE , APP_SUGGESTED_TX_TIME);
-  
-  //unsigned char hello[] = "Hello from SPP BLE Client! With Data Length Extension support!\n\r";
-  //DEBUG(hello);
+  unsigned char hello[] = "Hello from SPP BLE Client! With Data Length Extension support!\n\r";
+  DEBUG(hello);
   
   Display_print0(dispHandle, 0, 0, "BLE Central");
   
@@ -666,8 +664,6 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
             {
               GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
               DEBUG("FAIL FROM CLIENT");
-              //LCD_WRITE_STRING_VALUE("ReasonFail:", retVal, 10, LCD_PAGE6);
-              //LCD_WRITE_STRING_VALUE("Data length:", req.len, 10, LCD_PAGE7);
             }else
             {
               //Remove from the queue
@@ -884,7 +880,6 @@ static void SPPBLEClient_processRoleEvent(gapCentralRoleEvent_t *pEvent)
       {
         maxPduSize = pEvent->initDone.dataPktLen;
 
- 
         Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
         Display_print0(dispHandle, 2, 0, "Initialized");
         
@@ -1019,10 +1014,9 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
     
     if (state == BLE_STATE_CONNECTED )
     {    
-
       //Request max supported size
-      uint16_t requestedPDUSize = 251;
-      uint16_t requestedTxTime = 2120;
+      uint16_t requestedPDUSize = APP_SUGGESTED_PDU_SIZE;
+      uint16_t requestedTxTime = APP_SUGGESTED_TX_TIME;
    
       //This API is documented in hci.h
       if(SUCCESS != HCI_LE_SetDataLenCmd(connHandle, requestedPDUSize, requestedTxTime))
@@ -1078,7 +1072,7 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
         {
           req.handle = charDataHdl;
           req.len = 1;
-          req.pValue[0] = charVal;
+          req.pValue[0] = charVal++;
           req.sig = 0;
           req.cmd = 1;
 
@@ -1135,10 +1129,6 @@ void SPPBLEClient_autoConnect(void)
                                  DEFAULT_LINK_WHITE_LIST,
                                  addrType, peerAddr);
 
-//    LCD_WRITE_STRING("Connecting", LCD_PAGE2);
-//    LCD_WRITE_STRING(Util_convertBdAddr2Str(peerAddr), LCD_PAGE3);
-//    LCD_WRITE_STRING("", LCD_PAGE4);
-  
 }
 
 /*********************************************************************
@@ -1239,6 +1229,21 @@ static void SPPBLEClient_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
 {
   switch (pMsg->cmdOpcode)
   {
+  case HCI_LE_SET_DATA_LENGTH:
+    //DEBUG("HCI_LE_SET_DATA_LENGTH");
+    HCI_LE_ReadMaxDataLenCmd();
+    break;
+  case HCI_LE_READ_MAX_DATA_LENGTH:
+    DEBUG("Max TX bytes: ");
+    DEBUG(convInt32ToText((int)pMsg->pReturnParam[1] + (pMsg->pReturnParam[2]<<8))); DEBUG_NEWLINE();
+    DEBUG("Max TX time: ");
+    DEBUG(convInt32ToText((int)pMsg->pReturnParam[3] + (pMsg->pReturnParam[4]<<8))); DEBUG_NEWLINE();    
+    DEBUG("Max RX bytes: ");
+    DEBUG(convInt32ToText((int)pMsg->pReturnParam[5] + (pMsg->pReturnParam[6]<<8))); DEBUG_NEWLINE();    
+    DEBUG("Max RX time: ");
+    DEBUG(convInt32ToText((int)pMsg->pReturnParam[7] + (pMsg->pReturnParam[8]<<8))); DEBUG_NEWLINE();
+    break;
+    
 //    case HCI_READ_RSSI:
 //      {
 //        int8 rssi = (int8)pMsg->pReturnParam[3];
@@ -1534,9 +1539,9 @@ static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     {
       uint8_t uuid[ATT_UUID_SIZE] = { TI_BASE_UUID_128(SERIALPORTSERVICE_SERV_UUID) };
       
-      // Just in case we're using the default MTU size (23 octets)
-      //LCD_WRITE_STRING_VALUE("MTU Size:", ATT_MTU_SIZE, 10, LCD_PAGE4);
-        
+      DEBUG("Server receive MTU: "); 
+      DEBUG((char*)convInt32ToText((int)pMsg->msg.exchangeMTURsp.serverRxMTU)); DEBUG_NEWLINE();
+      
       discState = BLE_DISC_STATE_SVC;
       
       DEBUG("Discovering services...");
@@ -1606,7 +1611,6 @@ static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
             // CCCD found
             DEBUG("CCCD for Data Char Found..."); DEBUG_NEWLINE();
             charCCCDHdl = ATT_PAIR_HANDLE(pMsg->msg.findInfoRsp.pInfo, i);
-            //LCD_WRITE_STRING_VALUE("CCCD Handle:", charCCCDHdl, 10, LCD_PAGE6);
             break;
           }
         }
@@ -1618,7 +1622,6 @@ static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
             // CCCD found
             DEBUG("Data Char Found..."); //DEBUG_NEWLINE();
             charDataHdl = ATT_PAIR_HANDLE(pMsg->msg.findInfoRsp.pInfo, i);
-            //LCD_WRITE_STRING_VALUE("Data Char Hdl: ", charDataHdl, 10, LCD_PAGE7);
             break;
           }
         }
@@ -1936,5 +1939,47 @@ static uint8_t SPPBLEClient_enqueueMsg(uint8_t event, uint8_t state,
   return FALSE;
 }
 
+/*******************************************************************************
+* @fn          convInt32ToText
+*
+* @brief       Converts 32 bit int to text
+*
+* @param       int32 value
+*
+* @return      char* - pointer to text buffer which is a file scope allocated array
+*/
+char* convInt32ToText(int32 value) {
+    static char pValueToTextBuffer[12];
+    char *pLast;
+    char *pFirst;
+    char last;
+    uint8 negative;
+
+    pLast = pValueToTextBuffer;
+
+    // Record the sign of the value
+    negative = (value < 0);
+    value = ABS(value);
+
+    // Print the value in the reverse order
+    do {
+        *(pLast++) = '0' + (uint8)(value % 10);
+        value /= 10;
+    } while (value);
+
+    // Add the '-' when the number is negative, and terminate the string
+    if (negative) *(pLast++) = '-';
+    *(pLast--) = 0x00;
+
+    // Now reverse the string
+    pFirst = pValueToTextBuffer;
+    while (pLast > pFirst) {
+        last = *pLast;
+        *(pLast--) = *pFirst;
+        *(pFirst++) = last;
+    }
+
+    return pValueToTextBuffer;
+}
 /*********************************************************************
 *********************************************************************/
