@@ -1235,22 +1235,6 @@
     <name>TOOLS</name>
     <file>
       <name>$PROJ_DIR$\..\config\app_ble.cfg</name>
-      <configuration>
-        <name>FlashROM</name>
-        <settings>
-          <name>CUSTOM</name>
-          <data>
-            <extensions>.cfg</extensions>
-            <cmdline>"$XDCROOT$/bin/stderr"</cmdline>
-            <hasPrio>0</hasPrio>
-            <outputs>
-              <file>
-                <name>$PROJ_DIR$\configPkg\package.mak</name>
-              </file>
-            </outputs>
-          </data>
-        </settings>
-      </configuration>
     </file>
     <file>
       <name>$SRC_BLE_CORE$\common\cc26xx\iar\cc26xx_app.icf</name>
