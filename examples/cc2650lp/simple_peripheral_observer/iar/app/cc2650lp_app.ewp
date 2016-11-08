@@ -1025,6 +1025,24 @@
       <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\util.h</name>
     </file>
   </group>
+      <group>
+      <name>RF</name>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RFCC26XX_singleMode.c</name>
+      </file>
+      <file>
+        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
+      </file>
+    </group>
+    <group>
+      <name>TRNG</name>
+      <file>
+        <name>$SRC_COMMON$\hal\src\target\_common\TRNGCC26XX.c</name>
+      </file>
+      <file>
+        <name>$SRC_COMMON$\hal\src\target\_common\TRNGCC26XX.h</name>
+      </file>
+    </group>
   <group>
     <name>ICall</name>
     <file>

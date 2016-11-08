@@ -37,10 +37,10 @@
         -DUSE_ICALL
         -DFLASH_ROM_BUILD
         -DPOWER_SAVING
-        -DINCLUDE_AES_DECRYPT		
+        -DINCLUDE_AES_DECRYPT
         -DOSAL_SNV=1
         -DxPM_DISABLE_PWRDOWN
-        -DxTESTMODES		
+        -DxTESTMODES
         -DxTESTBLEBOARD
         -DOSAL_CBTIMER_NUM_TASKS=1
         -DxDEBUG
@@ -54,18 +54,19 @@
         -DCC26XX
         -Dccs
 
-        -I${CG_TOOL_ROOT}/include        
+        -I${CG_TOOL_ROOT}/include
+        -I${ROM}
 		-I${SRC_BLE_CORE}/inc
         -I${SRC_BLE_CORE}/controller/cc26xx/inc
-        -I${SRC_EX}/common/cc26xx		
-        -I${SRC_EX}/common/cc26xx/npi/stack		
+        -I${SRC_EX}/common/cc26xx
+        -I${SRC_EX}/common/cc26xx/npi/stack
         -I${SRC_EX}/examples/simple_peripheral/cc26xx/stack
         -I${SRC_EX}/inc
         -I${SRC_EX}/icall/inc
         -I${SRC_EX}/profiles/roles
         -I${SRC_COMMON}/hal/src/inc
 		-I${SRC_COMMON}/hal/src/target
-        -I${SRC_COMMON}/hal/src/target/_common		
+        -I${SRC_COMMON}/hal/src/target/_common
         -I${SRC_COMMON}/hal/src/target/_common/cc26xx
         -I${SRC_COMMON}/icall/src/inc
         -I${SRC_COMMON}/npi/src
@@ -121,9 +122,7 @@
         </file>
         <file path="SRC_EX/examples/simple_peripheral/cc26xx/stack/osal_icall_ble.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
-        <file path="SRC_BLE_CORE/rom/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
-        </file>
-        <file path="ROM/rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
+        <file path="ROM/rom_jt.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
 
         <!--Include Folder -->
