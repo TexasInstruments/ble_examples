@@ -35,6 +35,20 @@ sedFile()
         $workFile
 }
 
+printVersions()
+{
+
+    echo "/*****************************"
+    echo " *       VERSIONS USED       *"
+    echo " ****************************/"
+    echo "BLE SDK:          ${BLE_SDK_VER}"
+    echo "TI-RTOS:          ${TIRTOS_VER}"
+    echo "TI-DRIVERS:       ${TIDRIVERS_VER}"
+    echo "CC26XXWARE:       ${CC26XXWARE_VER}"
+    echo "CC13XXWARE:       ${CC13XXWARE_VER}"
+    echo "UIA:              ${UIA_VER}"
+}
+
 #
 #  ======== main ========
 #  Main function
@@ -49,6 +63,8 @@ main()
 
     files=$(find ../../ -name *.projectspec)
     for fil in $files; do sedFile $fil ; done
+
+    printVersions
 }
 
 main

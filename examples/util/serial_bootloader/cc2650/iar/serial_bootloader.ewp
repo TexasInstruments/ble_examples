@@ -317,7 +317,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$/../../../../src/util/serial_bootloader</state>
+          <state>$PROJ_DIR$/../../../../../src/util/serial_bootloader</state>
           <state>$CC26XXWARE$</state>
         </option>
         <option>
@@ -733,7 +733,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$/../../../../src/util/serial_bootloader/bl_flash.icf</state>
+          <state>$PROJ_DIR$/../../../../../src/util/serial_bootloader/bl_flash.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1929,37 +1929,37 @@
     </settings>
   </configuration>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\autobaud.c</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\autobaud.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\bl_flash.icf</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\bl_flash.icf</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\blcmds.h</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\blcmds.h</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\boot_loader.c</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\boot_loader.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\boot_loader.h</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\boot_loader.h</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\ccfg.c</name>
+    <name>$CC26XXWARE$\startup_files\ccfg.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\main.c</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\main.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\packet_handler.c</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\packet_handler.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\ssp_handler.c</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\ssp_handler.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\startup_iar.c</name>
+    <name>$CC26XXWARE$\startup_files\startup_iar.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\..\..\..\..\src\util\serial_bootloader\uart_handler.c</name>
+    <name>$PROJ_DIR$\..\..\..\..\..\src\util\serial_bootloader\uart_handler.c</name>
   </file>
 </project>
 
