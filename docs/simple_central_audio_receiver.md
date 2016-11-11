@@ -29,7 +29,7 @@ Streaming Voice over BLE
 
 For more information about the technical details of TI's Voice Over BLE Solution please see:
  - [Voice Streaming on CC2650](http://processors.wiki.ti.com/index.php/CC2650RC_Getting_Started_with_Development#Voice_Streaming_on_the_CC2650RC)
- - [Voice Over Remote Control](http://www.ti.com/lit/an/swra506/swra506.pdf)
+ - [Voice Over BLE](http://processors.wiki.ti.com/index.php/BLESDK-2.2.x-CC2650RC_Developers_Guide#Voice_Over_BLE)
 
 _Note: The above links also apply to sensortag\_audio projects as well. They employ the same firmware components (PDM driver, audio\_profile, etc) as the Remote Control solutions, but deploy on a different dev board._
 
@@ -128,4 +128,4 @@ References
  * [CC2650 Remote Control User's Guide](http://processors.wiki.ti.com/index.php/CC2650RC_UG)
  * [CC2650 Remote Control Developer's Guide](http://processors.wiki.ti.com/index.php/CC2650RC_Getting_Started_with_Development#Getting_started_with_Development)
  * [CC2650 SensorTag User's Guide](http://processors.wiki.ti.com/index.php/CC2650_SensorTag_User%27s_Guide)
- * [Voice Over Remote Control](http://www.ti.com/lit/an/swra506/swra506.pdf)
+ * [Voice Over BLE](http://processors.wiki.ti.com/index.php/BLESDK-2.2.x-CC2650RC_Developers_Guide#Voice_Over_BLE)
