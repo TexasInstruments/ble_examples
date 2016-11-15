@@ -168,6 +168,12 @@
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RF.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">
         </file>
 
+        <!-- Drivers/TRNG Folder -->
+        <file path="SRC_COMMON/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true">
+        </file>
+        <file path="SRC_COMMON/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true">
+        </file>
+
         <!-- Drivers/SPI Folder -->
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/SPI.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/SPI" createVirtualFolders="true">
         </file>
