@@ -132,11 +132,11 @@ uint8 audioConfigEnable = 0;
 
 // Minimum connection interval (units of 1.25ms) if automatic parameter update
 // request is enabled
-#define DEFAULT_UPDATE_MIN_CONN_INTERVAL      400
+#define DEFAULT_UPDATE_MIN_CONN_INTERVAL      8
 
 // Maximum connection interval (units of 1.25ms) if automatic parameter update
 // request is enabled
-#define DEFAULT_UPDATE_MAX_CONN_INTERVAL      800
+#define DEFAULT_UPDATE_MAX_CONN_INTERVAL      8
 
 // Slave latency to use if automatic parameter update request is enabled
 #define DEFAULT_UPDATE_SLAVE_LATENCY          0
@@ -179,7 +179,7 @@ uint8 audioConfigEnable = 0;
 #endif
 
 #define APP_MIN_CONN_INTERVAL                 8      // 10ms, need short connection interval in order to reach the needed throughput for audio streaming
-#define APP_MAX_CONN_INTERVAL                 16     // 20ms
+#define APP_MAX_CONN_INTERVAL                 8
 
 #define APP_SLAVE_LATENCY                     0      // Initially 0 for fast connection. 49 slave latency (500ms effective interval)
 #define APP_CONN_TIMEOUT                      500    // 1.6s supervision timeout
