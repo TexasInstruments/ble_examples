@@ -59,7 +59,7 @@ extern "C"
 // ****************************************************************************
 // defines
 // ****************************************************************************
-#define DEBUG(x) SDITask_sendToUART(x, strlen(x));
+#define DEBUG(x) SDITask_sendToUART(x, strlen((const char*)x));
 #define DEBUG_NEWLINE() DEBUG("\n\r")
 // ****************************************************************************
 // typedefs

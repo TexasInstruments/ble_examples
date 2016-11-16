@@ -578,7 +578,7 @@ static void SPPBLEClient_init(void)
   // Register for GATT local events and ATT Responses pending for transmission
   GATT_RegisterForMsgs(selfEntity);
 
-  unsigned char hello[] = "Hello from SPP BLE Client! With Data Length Extension support!\n\r";
+  uint8_t hello[] = "Hello from SPP BLE Client! With Data Length Extension support!\n\r";
   DEBUG(hello);
   
   Display_print0(dispHandle, 0, 0, "BLE Central");
@@ -1235,13 +1235,13 @@ static void SPPBLEClient_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
     break;
   case HCI_LE_READ_MAX_DATA_LENGTH:
     DEBUG("Max TX bytes: ");
-    DEBUG(convInt32ToText((int)pMsg->pReturnParam[1] + (pMsg->pReturnParam[2]<<8))); DEBUG_NEWLINE();
+    DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[1] + (pMsg->pReturnParam[2]<<8))); DEBUG_NEWLINE();
     DEBUG("Max TX time: ");
-    DEBUG(convInt32ToText((int)pMsg->pReturnParam[3] + (pMsg->pReturnParam[4]<<8))); DEBUG_NEWLINE();    
+    DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[3] + (pMsg->pReturnParam[4]<<8))); DEBUG_NEWLINE();    
     DEBUG("Max RX bytes: ");
-    DEBUG(convInt32ToText((int)pMsg->pReturnParam[5] + (pMsg->pReturnParam[6]<<8))); DEBUG_NEWLINE();    
+    DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[5] + (pMsg->pReturnParam[6]<<8))); DEBUG_NEWLINE();    
     DEBUG("Max RX time: ");
-    DEBUG(convInt32ToText((int)pMsg->pReturnParam[7] + (pMsg->pReturnParam[8]<<8))); DEBUG_NEWLINE();
+    DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[7] + (pMsg->pReturnParam[8]<<8))); DEBUG_NEWLINE();
     break;
     
 //    case HCI_READ_RSSI:
@@ -1540,7 +1540,7 @@ static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       uint8_t uuid[ATT_UUID_SIZE] = { TI_BASE_UUID_128(SERIALPORTSERVICE_SERV_UUID) };
       
       DEBUG("Server receive MTU: "); 
-      DEBUG((char*)convInt32ToText((int)pMsg->msg.exchangeMTURsp.serverRxMTU)); DEBUG_NEWLINE();
+      DEBUG((uint8_t*)convInt32ToText((int)pMsg->msg.exchangeMTURsp.serverRxMTU)); DEBUG_NEWLINE();
       
       discState = BLE_DISC_STATE_SVC;
       

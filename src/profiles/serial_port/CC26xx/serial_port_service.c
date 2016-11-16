@@ -890,7 +890,7 @@ static bStatus_t SerialPortService_WriteAttrCB( uint16 connHandle, gattAttribute
           
 #ifdef SDI_USE_UART          
           //Send Data to UART 
-          SDITask_sendToUART(pCurValue, len); 
+          SDITask_sendToUART(pCurValue, len);
 #else         
           SNP_replyToHost_send(0x55, 0xFF, NULL, len, pCurValue);
 #endif

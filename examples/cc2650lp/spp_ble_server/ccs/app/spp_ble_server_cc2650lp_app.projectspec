@@ -48,14 +48,14 @@
         -DxBOARD_DISPLAY_EXCLUDE_UART
         -DxBOARD_DISPLAY_EXCLUDE_LCD
 		-DGAPperipheralROLE_NUM_RSSI_LINKS=1
-        -DICALL_MAX_NUM_TASKS=4		
+        -DICALL_MAX_NUM_TASKS=4
         -DICALL_MAX_NUM_ENTITIES=6
         -Dxdc_runtime_Assert_DISABLE_ALL
         -Dxdc_runtime_Log_DISABLE_ALL
         -DCC2650_LAUNCHXL
 		-DCC26XXWARE
         -DCC26XX
-		
+
 		-I${CG_TOOL_ROOT}/include
 		-I${SRC_BLE_CORE}/inc
 		-I${SRC_BLE_CORE}/controller/cc26xx/inc
@@ -66,7 +66,7 @@
 		-I${SRC_EX}/profiles/roles/
 		-I${SRC_EX}/profiles/roles/cc26xx
 		-I${PROJECT_IMPORT_LOC}/../../../../../src/profiles/serial_port
-		-I${PROJECT_IMPORT_LOC}/../../../../../src/profiles/serial_port/cc26xx		
+		-I${PROJECT_IMPORT_LOC}/../../../../../src/profiles/serial_port/cc26xx
 		-I${PROJECT_IMPORT_LOC}/../../../../../src/examples/spp_ble_server/cc26xx/app
 		-I${SRC_EX}/target
 		-I${SRC_COMMON}/hal/src/inc
@@ -129,7 +129,7 @@
         <file path="PROJECT_IMPORT_LOC/../../../../../src/examples/spp_ble_server/cc26xx/app/spp_ble_server.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
         <file path="PROJECT_IMPORT_LOC/../../../../../src/examples/spp_ble_server/cc26xx/app/spp_ble_server.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
-        </file>		
+        </file>
         <file path="SRC_BLE_CORE/common/cc26xx/util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
         <file path="SRC_BLE_CORE/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
@@ -146,7 +146,7 @@
         </file>
         <file path="SRC_COMMON/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true">
         </file>
-		
+
         <!-- ICall Folder -->
         <file path="SRC_COMMON/heapmgr/heapmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true">
         </file>
@@ -201,24 +201,24 @@
         <file path="SRC_EX/profiles/roles/cc26xx/peripheral.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
         </file>
         <file path="SRC_EX/profiles/roles/cc26xx/peripheral.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
-        </file>		
+        </file>
         <file path="PROJECT_IMPORT_LOC/../../../../../src/profiles/serial_port/cc26xx/serial_port_service.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
         </file>
         <file path="PROJECT_IMPORT_LOC/../../../../../src/profiles/serial_port/serial_port_service.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Profiles" createVirtualFolders="true">
-        </file>			
+        </file>
 
         <!-- Profiles Folder -->
         <file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/sdi_rxbuf.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>		
+        </file>
         <file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/sdi_task.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>			
+        </file>
 		<file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/inc/sdi_task.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>	
+        </file>
 		<file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/sdi_tl.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>	
+        </file>
 		<file path="PROJECT_IMPORT_LOC/../../../../../src/components/sdi/sdi_tl_uart.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SDI" createVirtualFolders="true">
-        </file>			
-		
+        </file>
+
         <!-- Startup Folder -->
         <file path="SRC_BLE_CORE/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>

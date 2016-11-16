@@ -603,8 +603,8 @@ static void SPPBLEServer_init(void)
   //Register to receive UART messages
   SDITask_registerIncomingRXEventAppCB(SPPBLEServer_enqueueUARTMsg); //ZH
 
-  unsigned char hello[] = "Hello from SPP BLE Server! With Data Length Extension support!\n\r";
-  DEBUG((uint8_t*)hello);
+  uint8_t hello[] = "Hello from SPP BLE Server! With Data Length Extension support!\n\r";
+  DEBUG(hello);
   
 #if defined FEATURE_OAD
 #if defined (HAL_IMAGE_A)
