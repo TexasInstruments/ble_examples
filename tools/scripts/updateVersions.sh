@@ -64,6 +64,9 @@ main()
     files=$(find ../../ -name *.projectspec)
     for fil in $files; do sedFile $fil ; done
 
+    files=$(find ../../ -name *.md)
+    for fil in $files; do sedFile $fil ; done
+
     printVersions
 }
 

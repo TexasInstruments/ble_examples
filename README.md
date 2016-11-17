@@ -26,7 +26,7 @@ This repository can be cloned/download anywhere on your computer. There is a dep
 
 By default the BLE SDK will install to:
 
-        C:\ti\simplelink\ble_sdk_2_02_00_31
+        C:\ti\simplelink\ble_sdk_2_02_01_18
 
 If the BLE SDK must be installed to a different location, then the examples in this repo will need to have the following environment variable updated
 
@@ -34,15 +34,15 @@ If the BLE SDK must be installed to a different location, then the examples in t
 
 Follow your IDE specific instructions for changing environment variables or simply do a global search and replace within the ble\_examples folder. See the [FAQ page](docs/faq.md) for more details.
 
-By default, TI\_BLE\_SDK\_BASE points to C:\ti\simplelink\ble\_sdk\_2\_02\_00\_31. If you installed the SDK there, no change is required.
+By default, TI\_BLE\_SDK\_BASE points to `C:\ti\simplelink\ble_sdk_2_02_01_18\`. If you installed the SDK there, no change is required.
 
 Required Tools
 ==============
 
 Similar to the BLE-Stack SDK, the examples in this repository support the IAR and CCS toolchains. Please pay careful attention to versions of these tools, the supported version are listed below. Using a non supported version is untested and may result in unexpected behavior.
 
- - IAR for ARM v7.50.3
- - CCS v6.1.3 with TI ARM Compiler v5.6.7
+ - IAR for ARM v7.70.2
+ - CCS v6.2.0 with TI ARM Compiler v5.2.6
 
 For more information on toolchain setup, please refer to our [FAQ page](docs/faq.md).
 

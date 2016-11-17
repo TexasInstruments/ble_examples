@@ -70,7 +70,7 @@ The Bootloader can be entered by connecting IOID_12 with GND.
 
 Programming the bootloader
 --------------------------
-Import either `examples/util/serial_bootloader/ccs/serial_bootloader.projectspec` into CCS or open `examples/util/serial_bootloader/iar/serial_bootloader.eww` with IAR version 7.50.3 or higher.
+Import either `examples/util/serial_bootloader/ccs/serial_bootloader.projectspec` into CCS or open `examples/util/serial_bootloader/iar/serial_bootloader.eww` with IAR version 7.70.2 or higher.
 
 Build the project and flash onto device.
 
@@ -106,8 +106,8 @@ Linker files
 In order for the application to start at a given location, the linker file used to link the application must specify this.
 
 For reference see these linker files for OAD:
-* CCS: `ble_sdk_2_02_00_31/src/common/cc26xx/ccs/cc26xx_app_oad.cmd`
-* IAR: `ble_sdk_2_02_00_31/src/common/cc26xx/iar/cc26xx_app_oad.icf`
+* CCS: `ble_sdk_2_02_01_18/src/common/cc26xx/ccs/cc26xx_app_oad.cmd`
+* IAR: `ble_sdk_2_02_01_18/src/common/cc26xx/iar/cc26xx_app_oad.icf`
 
 The pertinent parts are, for CCS:
 
