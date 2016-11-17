@@ -95,7 +95,7 @@ After building the firmware required for the voice streamer and receiver, you ar
  Idle...
  ```
 6. Start Discovery on the central device by pressing the left key on the LaunchPad. Scanning is indicated by blinking green LED on the LaunchPad.
- * The Central device will scan the peripheral's advertisement data for either the TI_COMPANY_ID (SensorTag) or the HID_SERV_UUID (HID Advanced Remote).
+ * The Central device will scan the peripheral's advertisement data for either the TI\_COMPANY\_ID (SensorTag) or the HID\_SERV\_UUID (HID Advanced Remote).
  * After finding devices that list these services their advertisement payloads it will scan for the following device names:
  ```c
   static uint8 remoteNameST[] =
@@ -122,6 +122,21 @@ After building the firmware required for the voice streamer and receiver, you ar
 
 9. The Python script will read the voice frames from the CC2650 and decode them into `.wav` files. These files can be played back on the PC.
 * The files are saved in the format: `pdm_test_%Y-%m-%d_%H-%M-%S_adpcm` where Y, m, d, H, M, S are used to store the time stamp when the file was saved.
+
+10. The demo is written such that once a sensortag or remote control is disovered the audio_receiver project will pair and bond to it. Scanning/connecting to other devices is not allowed while bonded. (i.e. left button is disabled). In order to "forget the devices" you should:
+ * Power off your audio streaming device (sensortag or remote control). Wait for link to be terminated. Red LED will turn on.
+ * Press the right key to erase the bonds from the audio_receiver project. Green LED will blink 1x while red LED stays on.
+ * The bonds are now erased, you can discover and connect to another device.
+
+Demo LED states
+===============
+
+The following states of the device can be described by the red and green LEDs on the LaunchPad.
+* Idle + bonds forgotten: Red LED is on, solid
+* Scanning for devices: Green LED is flashing
+* Device connected + bond saved: Green LED is on, solid
+* Device connected and bonded + streaming voice: Red LED blinks on both LP and STK or Remote.
+* Bonds forgotten: Green LED blinks 1x while red LED is on.
 
 References
 ==========

@@ -990,13 +990,6 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
         Util_startClock(&scanningToggleClock);
       }
     }
-    else if (state == BLE_STATE_CONNECTED )
-    {
-      state = BLE_STATE_DISCONNECTING;
-      VOID GAPCentralRole_TerminateLink( connHandle );
-      PIN_setOutputValue( ledPinHandle, Board_GLED, 0);
-    }
-
     return;
   }
 
@@ -1013,6 +1006,15 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
 
       VOID GAPBondMgr_SetParameter( GAPBOND_ERASE_ALLBONDS, 0, NULL );
       Display_print0(dispHandle, 5, 0, "Erase Bond info ");
+
+      // Turn on green LED
+      PIN_setOutputValue( ledPinHandle, Board_GLED, 1);
+
+      // Wait half a second
+      Task_sleep(50000);
+
+      // Turn off green LED
+      PIN_setOutputValue( ledPinHandle, Board_GLED, 0);
     }
 
     return;

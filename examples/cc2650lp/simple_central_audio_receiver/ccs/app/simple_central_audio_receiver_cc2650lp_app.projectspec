@@ -73,7 +73,6 @@
         -I${SRC_COMMON}/services/src/saddr
         -I${SRC_COMMON}/services/src/sdata
         -I${CC26XXWARE}
-        -I${TI_RTOS_DRIVERS_BASE}
         "
         linkerBuildOptions="
         -l${PROJECT_IMPORT_LOC}/../config/ccs_linker_defines.cmd
