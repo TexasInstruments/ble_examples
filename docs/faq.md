@@ -38,7 +38,7 @@ Frequently Asked Questions
 
     **CCS**
 
-    1. Please refer to section 2.6.3 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393). Version 6.1.3 is supported.
+    1. Please refer to section 2.6.3 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393). Version 6.2.0 is supported.
      - Note that if your CCS install doesn't include TI ARM Compiler v5.2.6, refer to section 2.6.3.2 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393)
 
 4. Q: I am using a LaunchPad device, how can I view display data?
