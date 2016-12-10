@@ -145,7 +145,7 @@
 #define DEFAULT_DISCOVERY_MODE                DEVDISC_MODE_ALL
 
 // TRUE to use active scan
-#define DEFAULT_DISCOVERY_ACTIVE_SCAN         FALSE
+#define DEFAULT_DISCOVERY_ACTIVE_SCAN         TRUE
 
 // TRUE to use white list during discovery
 #define DEFAULT_DISCOVERY_WHITE_LIST          FALSE
@@ -233,17 +233,8 @@ Char sbpTaskStack[SBP_TASK_STACK_SIZE];
 static uint8_t scanRspData[] =
 {
   // complete name
-  0x14,   // length of this data
+  0x13,   // length of this data
   GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-  'S',
-  'i',
-  'm',
-  'p',
-  'l',
-  'e',
-  'B',
-  'L',
-  'E',
   'P',
   'e',
   'r',
@@ -254,7 +245,14 @@ static uint8_t scanRspData[] =
   'r',
   'a',
   'l',
-
+  'O',
+  'b',
+  's',
+  'e',
+  'r',
+  'v',
+  'e',
+  'r',
   // connection interval range
   0x05,   // length of this data
   GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
@@ -299,7 +297,7 @@ static uint8_t advertData[] =
 };
 
 // GAP GATT Attributes
-static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE Peripheral";
+static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Peripheral Observer";
 
 // Globals used for ATT Response retransmission
 static gattMsgEvent_t *pAttRsp = NULL;
@@ -309,6 +307,8 @@ static uint8_t rspTxRetry = 0;
 static bool scanningStarted = FALSE;
 static uint8_t deviceInfoCnt = 0;
 #endif
+
+const char *AdvTypeStrings[] = {"Connectable undirected","Connectable directed", "Scannable undirected", "Non-connectable undirected", "Scan response"};
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -716,7 +716,39 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
   }
 }
 
-#ifdef PLUS_OBSERVER
+/*********************************************************************
+ * @fn      Util_convertBytes2Str
+ *
+ * @brief   Convert bytes to string. Used to print advertising data. 
+ *         
+ *
+ * @param   pData - data
+ *
+ * @return  Adv/Scan data as a string
+ */
+char *Util_convertBytes2Str(uint8_t *pData, uint8_t length)
+{
+  uint8_t     charCnt;
+  char        hex[] = "0123456789ABCDEF";
+  static char str[(3*31)+1];
+  char        *pStr = str;
+
+  //*pStr++ = '0';
+  //*pStr++ = 'x';
+
+  for (charCnt = 0; charCnt < length; charCnt++)
+  {
+    *pStr++ = hex[*pData >> 4];
+    *pStr++ = hex[*pData++ & 0x0F];
+    *pStr++ = ':';
+  }
+  pStr = NULL;
+
+  return str;
+}
+
+
+#ifdef PLUS_OBSERVER        
 /*********************************************************************
  * @fn      SimpleBLECentral_processRoleEvent
  *
@@ -733,14 +765,19 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeripheralObserverRo
 
     case GAP_DEVICE_INFO_EVENT:
       {
-        uint8 addr[B_ADDR_LEN];
-        deviceInfoCnt++;
-        //Display_print0(dispHandle, 0, 0, "GAP_DEVICE_INFO_EVENT");
-
-        //Display device address. TODO: could also display address type, payload content(pEvent->deviceInfo.pEvtData), etc.
-        memcpy(addr, pEvent->deviceInfo.addr, B_ADDR_LEN);
-        Display_print2(dispHandle, 6, 0, "Device info %u. %s", deviceInfoCnt, Util_convertBdAddr2Str(addr));
-
+        //Print scan response data otherwise advertising data
+        if(pEvent->deviceInfo.eventType == GAP_ADRPT_SCAN_RSP)
+        {         
+          Display_print1(dispHandle, 4, 0, "Scan Response Addr: %s", Util_convertBdAddr2Str(pEvent->deviceInfo.addr));
+          Display_print1(dispHandle, 5, 0, "Scan Response Data: %s", Util_convertBytes2Str(pEvent->deviceInfo.pEvtData, pEvent->deviceInfo.dataLen));
+        }
+        else
+        {
+          deviceInfoCnt++;
+          Display_print2(dispHandle, 6, 0, "Advertising Addr: %s Advertising Type: %s", Util_convertBdAddr2Str(pEvent->deviceInfo.addr), AdvTypeStrings[pEvent->deviceInfo.eventType]);
+          Display_print1(dispHandle, 7, 0, "Advertising Data: %s", Util_convertBytes2Str(pEvent->deviceInfo.pEvtData, pEvent->deviceInfo.dataLen));
+        }
+        
         ICall_free(pEvent->deviceInfo.pEvtData);
         ICall_free(pEvent);
       }
@@ -1093,6 +1130,8 @@ static void SimpleBLEPeripheral_ObserverStateChangeCB(gapPeripheralObserverRoleE
         memcpy(pDevInfoMsg, pEvent, sizeof(gapDeviceInfoEvent_t));
 
         pDevInfoMsg->pEvtData = ICall_malloc(pEvent->deviceInfo.dataLen);
+        memcpy(pDevInfoMsg->pEvtData, pEvent->deviceInfo.pEvtData, pEvent->deviceInfo.dataLen);
+        
         pMsg->pData = (uint8 *)pDevInfoMsg;
       }
       break;
@@ -1105,6 +1144,8 @@ static void SimpleBLEPeripheral_ObserverStateChangeCB(gapPeripheralObserverRoleE
         memcpy(pDevDiscMsg, pEvent, sizeof(gapDevDiscEvent_t));
 
         pDevDiscMsg->pDevList = ICall_malloc((pEvent->discCmpl.numDevs)*sizeof(gapDevRec_t));
+        memcpy(pDevDiscMsg->pDevList, pEvent->discCmpl.pDevList, sizeof((pEvent->discCmpl.numDevs)*sizeof(gapDevRec_t)));
+        
         pMsg->pData = (uint8 *)pDevDiscMsg;
       }
       break;
