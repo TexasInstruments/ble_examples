@@ -24,14 +24,14 @@ sedFile()
     workFile=$1
     echo "Updating $(basename $workFile) ..."
     sed -i \
-        -e "s|ble_sdk_[0-9_]*\(eng\)\?|${BLE_SDK_VER}|g" \
-        -e "s|tirtos_cc13xx_cc26xx_[0-9_]*\(eng\)\?|${TIRTOS_VER}|g" \
-        -e "s|bios_[0-9_]*\(eng\)\?|${BIOS_VER}|g" \
-        -e "s|cc13xxware_[0-9_]*\(eng\)\?|${CC13XXWARE_VER}|g" \
-        -e "s|cc26xxware_[0-9_]*\(eng\)\?|${CC26XXWARE_VER}|g" \
-        -e "s|tidrivers_cc13xx_cc26xx_[0-9_]*\(eng\)\?|${TIDRIVERS_VER}|g" \
-        -e "s|uia_[0-9_]*\(eng\)\?|${UIA_VER}|g" \
-        -e "s|com.ti.rtsc.TIRTOSCC13XX_CC26XX:[0-9_\.]*\(eng\)\?|com.ti.rtsc.TIRTOSCC13XX_CC26XX:${TIRTOS_VER_DOT}|g" \
+        -e "s|simplelink_cc2640r2_sdk[0-9_]*\(eng\)\?|${BLE_SDK_VER}|g" \
+#        -e "s|tirtos_cc13xx_cc26xx_[0-9_]*\(eng\)\?|${TIRTOS_VER}|g" \
+#        -e "s|bios_[0-9_]*\(eng\)\?|${BIOS_VER}|g" \
+#        -e "s|cc13xxware_[0-9_]*\(eng\)\?|${CC13XXWARE_VER}|g" \
+#        -e "s|cc26xxware_[0-9_]*\(eng\)\?|${CC26XXWARE_VER}|g" \
+#        -e "s|tidrivers_cc13xx_cc26xx_[0-9_]*\(eng\)\?|${TIDRIVERS_VER}|g" \
+#        -e "s|uia_[0-9_]*\(eng\)\?|${UIA_VER}|g" \
+#        -e "s|com.ti.rtsc.TIRTOSCC13XX_CC26XX:[0-9_\.]*\(eng\)\?|com.ti.rtsc.TIRTOSCC13XX_CC26XX:${TIRTOS_VER_DOT}|g" \
         $workFile
 }
 

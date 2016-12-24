@@ -3,7 +3,7 @@
 # Set env vars
 TI_ROOT_DIR=C:/ti
 
-export BLE_SDK_VER=ble_sdk_2_02_01_18
+export BLE_SDK_VER=simplelink_cc2640r2_sdk_1_00_00_11_eng
 export TIRTOS_VER=tirtos_cc13xx_cc26xx_2_20_01_08
 export BIOS_VER=bios_6_46_01_38
 export TIDRIVERS_VER=tidrivers_cc13xx_cc26xx_2_20_01_10

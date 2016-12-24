@@ -1,21 +1,21 @@
 Frequently Asked Questions
 ==========================
 
-1. Q: What if I installed the TI BLE SDK to a non default location (i.e. not `C:\ti\simplelink\ble_sdk_2_02_01_18`)
+1. Q: What if I installed the TI BLE SDK to a non default location (i.e. not `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx`)
  - A : All projects reference files from the BLE stack using environment variables, you can change this in your IDE's project files
 
     **IAR**
 
-    1. Navigate to a project within the repo (i.e. multi\_role -- examples/cc2650lp/multi_role/iar) and open the `.custom_argvars` file
-    2. Replace any references to `C:\ti\simplelink\ble_sdk_2_02_01_18\` with your custom install location
+    1. Navigate to a project within the repo (i.e. project\_zero -- examples/cc2650lp/multi_role/iar) and open the `.custom_argvars` file
+    2. Replace any references to `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx\` with your custom install location
     3. Rinse and repeat for all project files
 
     **CCS**
 
-    1. Navigate to a project within the repo (i.e. multi\_role -- examples/cc2650lp/multi_role/ccs)
-    2. Open the `.projectspec` file for the stack (inside the /stack folder) and change the path from `C:\ti\simplelink\ble_sdk_2_02_01_18\` to your custom path as below
+    1. Navigate to a project within the repo (i.e. multi\_role -- examples/rtos/CC2640R2_LAUNCHXL/blestack/cc2640r2_project_zero/tirtos/ccs)
+    2. Open the `.projectspec` file for the stack and change the path from `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx`` to your custom path as below
     ```xml
-    <pathVariable name="TI_BLE_SDK_BASE" path="c:/ti/simplelink/ble_sdk_2_02_01_18" scope="project"></pathVariable>
+    <pathVariable name="TI_BLE_SDK_BASE" path="`C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx`" scope="project"></pathVariable>
     ```
     3. Navigate to your project's app folder and repeat step 2.
     4. Rinse and repeat for all project files
@@ -34,15 +34,14 @@ Frequently Asked Questions
 
     **IAR**
 
-    1. Please refer to section 2.6.2 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393). Version 7.50.03 is supported.
+    1. Please refer to Developing IAR section of the TI BLE Software Developer's Guide. Version 7.80.1 is supported.
 
     **CCS**
 
-    1. Please refer to section 2.6.3 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393). Version 6.2.0 is supported.
-     - Note that if your CCS install doesn't include TI ARM Compiler v5.2.6, refer to section 2.6.3.2 of the [Software Developer's Guide](http://ti.com/lit/pdf/swru393)
+    1. Please refer to the Developing with CCS section of the TI BLE Software Developer's Guide. Version 7.0.0 is supported.
 
 4. Q: I am using a LaunchPad device, how can I view display data?
- - A: LaunchPad projects that use the display driver are already setup to do so, for more information about the driver please see the Display.h header file within the TI-RTOS install `C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\tidrivers_cc13xx_cc26xx_2_20_01_10\packages\ti\mw\display`. <br> To setup your PC to receive this data please follow the steps below:
+ - A: LaunchPad projects that use the display driver are already setup to do so, for more information about the driver please see the Display.h header file within the TI-RTOS install `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx\source\ti\display`. <br> To setup your PC to receive this data please follow the steps below:
 
     1. Install PuTTY or another serial terminal emulator
     2. If not done, connect the LaunchPad to the computer using the micro USB cable.
