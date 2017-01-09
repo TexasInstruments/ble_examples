@@ -1144,7 +1144,7 @@ static void SimpleBLEPeripheral_ObserverStateChangeCB(gapPeripheralObserverRoleE
         memcpy(pDevDiscMsg, pEvent, sizeof(gapDevDiscEvent_t));
 
         pDevDiscMsg->pDevList = ICall_malloc((pEvent->discCmpl.numDevs)*sizeof(gapDevRec_t));
-        memcpy(pDevDiscMsg->pDevList, pEvent->discCmpl.pDevList, sizeof((pEvent->discCmpl.numDevs)*sizeof(gapDevRec_t)));
+        memcpy(pDevDiscMsg->pDevList, pEvent->discCmpl.pDevList, (pEvent->discCmpl.numDevs)*sizeof(gapDevRec_t));
         
         pMsg->pData = (uint8 *)pDevDiscMsg;
       }
