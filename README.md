@@ -1,13 +1,13 @@
-Extra examples for TI BLE-Stack SDK
-===================================
+Extra examples for TI BLE-Stack 2.2.x SDK
+=========================================
 
-This repository contains additional sample applications and components for the Texas Instruments *Bluetooth&reg;* Low Energy software development kit. All Github sample apps are compatible with  the latest BLE-Stack SDK.
+This repository contains additional sample applications and components for the Texas Instruments *Bluetooth&reg;* Low Energy software development kit. All Github sample apps are compatible with BLE-Stack 2.2.x. 
 
 To use the examples and tools in this repository, please [download and install the SDK](http://www.ti.com/ble-stack) first, and if necessary [buy an evaluation kit](https://store.ti.com/Search.aspx?k=CC2650).
 
 For other hardware and software resources, [please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions please refer to the [FAQ page](docs/faq.md).
 
-**Note:** Not all additional sample projects are migrated to GitHub - please refer to the Examples List below.
+**Note:** Not all additional sample projects are migrated to GitHub. Additionally all examples on this page are targeted for the **`CC2650R1`** device - please refer to the Examples List below.
 
 Installation
 ============
@@ -54,6 +54,8 @@ The [FAQ page](docs/faq.md) will try to address some of the common questions rel
 Examples List
 =============
 
+**Note: All of the sample applications below run on CC2650R1 based devopment kits. These examples will not work on CC2640R2 devices. For R2 examples, please ble_examples-3.0.**
+
 The following examples are currently supported:
 
 ### beacon\_rfdriver
@@ -85,6 +87,11 @@ The following examples are currently supported:
 &nbsp;&nbsp;&nbsp;&nbsp;Demonstrate an implementation of a beacon that uses iBeacon technology
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_beacon.md) | [project files ](examples/cc2650lp/simple_beacon) | [src](src/examples/simple_beacon)
+
+### simple\_central\_lp
+&nbsp;&nbsp;&nbsp;&nbsp;SimpleBLECentral for CC2650 LaunchPad
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_lp.md) | [Launchpad project files](examples/cc2650lp/simple_central) | [src](src/examples/simple_central)
 
 ### simple\_central\_audio\_receiver
 &nbsp;&nbsp;&nbsp;&nbsp;Receive and decode a voice stream over BLE using CC2650 central device and SensorTag or <br>

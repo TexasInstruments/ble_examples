@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<iarUserArgVars>
+  <group active="true" name="CC26xx TI-RTOS">
+    <variable>
+      <name>TI_RTOS_DRIVERS_BASE</name>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\tidrivers_cc13xx_cc26xx_2_20_01_10\packages</value>
+    </variable>
+    <variable>
+      <name>BIOS_BASE</name>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\bios_6_46_01_38\packages</value>
+    </variable>
+    <variable>
+      <name>XDCPATH</name>
+      <value>$PROJ_DIR$\..\..\..\..\..\src\components\display_eng;C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\tidrivers_cc13xx_cc26xx_2_20_01_10\packages;C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\bios_6_46_01_38\packages;C:\ti\simplelink\ble_sdk_2_02_01_18</value>
+    </variable>
+    <variable>
+      <name>CC26XXWARE</name>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\cc26xxware_2_24_02_17393</value>
+    </variable>
+    <variable>
+      <name>XDCROOT</name>
+      <value>C:\ti\xdctools_3_32_00_06_core</value>
+    </variable>
+    <variable>
+      <name>SRC_EX</name>
+      <value>C:\ti\simplelink\ble_sdk_2_02_01_18\src</value>
+    </variable>
+    <variable>
+      <name>SRC_BLE_CORE</name>
+      <value>C:\ti\simplelink\ble_sdk_2_02_01_18\src</value>
+    </variable>
+    <variable>
+      <name>SRC_COMMON</name>
+      <value>C:\ti\simplelink\ble_sdk_2_02_01_18\src\components</value>
+    </variable>
+    <variable>
+      <name>TOOLS_BLE</name>
+      <value>C:\ti\simplelink\ble_sdk_2_02_01_18\tools</value>
+    </variable>
+    <variable>
+      <name>ROM</name>
+      <value>C:\ti\simplelink\ble_sdk_2_02_01_18\src\rom</value>
+    </variable>
+  </group>
+</iarUserArgVars>
+
+
