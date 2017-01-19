@@ -5,7 +5,7 @@
  * data over BLE at a high throughput.
  *
  *
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -365,8 +365,8 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent);
 static void SimpleBLECentral_startDiscovery(void);
 static bool SimpleBLECentral_findSvcUuid(uint16_t uuid, uint8_t *pData,
                                          uint8_t dataLen);
-static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType)
-;static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status);
+static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType);
+static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status);
 static void SimpleBLECentral_processPasscode(uint16_t connectionHandle,
                                              uint8_t uiOutputs);
 
@@ -864,10 +864,11 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
 
-          // If service discovery not performed initiate service discovery
-          if (charHdl == 0)
+          if (FALSE == serviceDiscComplete)
           {
-            Util_startClock(&startDiscClock);
+              // Begin Service Discovery of AUDIO Service to find out report handles
+              serviceToDiscover = AUDIO_SERV_UUID;
+              SimpleBLECentral_DiscoverService( connHandle, serviceToDiscover );
           }
 
           Display_print0(dispHandle, 2, 0, "Connected");
@@ -1246,9 +1247,12 @@ static void SimpleBLECentral_processPairState(uint8_t state, uint8_t status)
       // Enter a GAP Bond manager Paired state
       Display_print0(dispHandle, 2, 0, "Pairing success");
 
-      // Begin Service Discovery of AUDIO Service to find out report handles
-      serviceToDiscover = AUDIO_SERV_UUID;
-      SimpleBLECentral_DiscoverService( connHandle, serviceToDiscover );
+      if (FALSE == serviceDiscComplete)
+      {
+          // Begin Service Discovery of AUDIO Service to find out report handles
+          serviceToDiscover = AUDIO_SERV_UUID;
+          SimpleBLECentral_DiscoverService( connHandle, serviceToDiscover );
+      }
     }
     else
     {
