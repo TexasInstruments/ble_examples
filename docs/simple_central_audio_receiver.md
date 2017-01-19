@@ -73,6 +73,19 @@ Before running the demo, the user will need the following components:
 Running the Demo
 ================
 
+#### A Note for SensorTag Users
+
+  * In order for the `sensortag_audio` project to run standalone (without a debugger attached), a BIM project must be loaded.
+   * BIM can be loaded using the project in `\examples\util\bim_extflash`, be sure to use the `FlashOnly_ST` configuration.
+
+  * Additionally the `sensortag_audio` project for CCS will need to have a target configration added to the app project.
+    * The target config can be added to the app project by copying the `CC2650F128.ccxml` file from the /targetConfigs folder of the stack project to into the app project.
+
+  * `sensortag_audio` for CCS in BLE 2.2.1 does not have pairing and bonding enabled by default. You may see "pairing failed" on the screen. This is safe to ignore, the
+  demo will proceed correctly.
+
+#### Voice Streaming on the CC2650
+
 After building the firmware required for the voice streamer and receiver, you are ready to demo the voice capabilites of the CC2650.
 
 1. Connect the audio\_receiver (CC2650 LaunchPad) device to your PC. Use windows device manager to note the COM port, it is the User/UART port (COM4 in picture below)
@@ -83,6 +96,9 @@ After building the firmware required for the voice streamer and receiver, you ar
     ```Python
     ser = Serial("COM38", 400000, timeout=0.1)
     ```
+
+  * The python script requires pyserial and other dependencies to be installed please see the [FAQ](faq.md) for more info.
+
 3. Run `audio_frame_serial_print.py`
 4. Power up the voice streaming device.
  * The SensorTag will advertise out of the box, this is indicated by the green blinking LED.
