@@ -307,9 +307,6 @@ static uint8_t state = BLE_STATE_IDLE;
 static uint16_t svcStartHdl = 0;
 static uint16_t svcEndHdl = 0;
 
-// Discovered characteristic handle
-static uint16_t charHdl = 0;
-
 // Maximum PDU size (default = 27 octets)
 static uint16 maxPduSize;
 
@@ -898,7 +895,6 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
         state = BLE_STATE_IDLE;
         connHandle = GAP_CONNHANDLE_INIT;
-        charHdl = 0;
 
         Display_print0(dispHandle, 2, 0, "Disconnected");
         Display_print1(dispHandle, 3, 0, "Reason: %d", pEvent->linkTerminate.reason);
@@ -1368,7 +1364,7 @@ static void SimpleBLECentral_startDiscovery(void)
   attExchangeMTUReq_t req;
 
   // Initialize cached handles
-  svcStartHdl = svcEndHdl = charHdl = 0;
+  svcStartHdl = svcEndHdl = 0;
 
   // Discover GATT Server's Rx MTU size
   req.clientRxMTU = maxPduSize - L2CAP_HDR_SIZE;
