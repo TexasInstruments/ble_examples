@@ -2,7 +2,7 @@ Purpose / Scope
 ===============
 
 This page will document how to demonstrate an end to end BLE voice solution using two CC2650 devices.
-Emphasis will be placed on the central device which is reponsible for recieving and decoding the voice stream.
+Emphasis will be placed on the central device which is reponsible for receiving and decoding the voice stream.
 
 TI's voice system supports streaming voice data from the Pulse Density Modulation (PDM) microphone on the CC2650 SensorTag and HID Advanced Remote kits.
 Voice data is transferred over BLE using the TI audio\_profile which is a Voice Over GATT Profile (VoGP) design.
