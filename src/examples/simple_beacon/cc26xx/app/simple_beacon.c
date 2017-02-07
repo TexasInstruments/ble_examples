@@ -413,7 +413,7 @@ static void SimpleBeacon_init(void)
 
   // Setup the GAP Peripheral Role Profile
   {
-	    uint8_t initialAdvertEnable = TRUE;
+	    uint8_t initialAdvertEnable = FALSE;
 	    uint8_t initialNonConnAdvEnable = TRUE;
 
     // By setting this to zero, the device will go into the waiting state after
