@@ -16,6 +16,10 @@
         <wantNonLocal>1</wantNonLocal>
         <debug>1</debug>
         <option>
+          <name>OCImagesPath2</name>
+          <state></state>
+        </option>
+        <option>
           <name>CInput</name>
           <state>1</state>
         </option>
@@ -57,11 +61,11 @@
         </option>
         <option>
           <name>CExtraOptionsCheck</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CExtraOptions</name>
-          <state></state>
+          <state>--drv_communication=USB:#select</state>
         </option>
         <option>
           <name>CFpuProcessor</name>
@@ -81,7 +85,7 @@
         </option>
         <option>
           <name>OCProductVersion</name>
-          <state>6.50.5.4846</state>
+          <state>7.30.1.7765</state>
         </option>
         <option>
           <name>OCDynDriverList</name>
@@ -121,15 +125,11 @@
         </option>
         <option>
           <name>OCImagesPath1</name>
-          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\simple_central_audio_receiver_cc2650lp_stack.out</state>
+          <state>$PROJ_DIR$\..\stack\FlashROM\Exe\simple_peripheral_audio_transmitter_cc2650lp_stack.out</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck2</name>
-          <state>1</state>
-        </option>
-        <option>
-          <name>OCImagesPath2</name>
-          <state></state>
+          <state>0</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck3</name>
@@ -149,7 +149,7 @@
         </option>
         <option>
           <name>OCImagesOffset2</name>
-          <state>0</state>
+          <state></state>
         </option>
         <option>
           <name>OCImagesOffset3</name>
@@ -669,7 +669,7 @@
         </option>
         <option>
           <name>RDICatchUndef</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>RDICatchSWI</name>
@@ -677,11 +677,11 @@
         </option>
         <option>
           <name>RDICatchData</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>RDICatchPrefetch</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>RDICatchIRQ</name>
@@ -697,31 +697,31 @@
         </option>
         <option>
           <name>CatchMMERR</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CatchNOCPERR</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CatchCHKERR</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CatchSTATERR</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CatchBUSERR</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CatchINTERR</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CatchHARDERR</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CatchDummy</name>
@@ -761,7 +761,7 @@
         </option>
         <option>
           <name>IjetPreferETB</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IjetTraceSettingsList</name>
@@ -1311,7 +1311,7 @@
         <debug>1</debug>
         <option>
           <name>CThirdPartyDriverDll</name>
-          <state>Browse to your third-party driver</state>
+          <state>###Uninitialized###</state>
         </option>
         <option>
           <name>CThirdPartyLogFileCheck</name>
@@ -1415,11 +1415,11 @@
         </option>
         <option>
           <name>TIPackageOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>TIPackage</name>
-          <state>C:\ti\ccs_base</state>
+          <state>C:\ti\ccsv6\ccs_base</state>
         </option>
         <option>
           <name>BoardFile</name>
@@ -1536,7 +1536,7 @@
         </option>
         <option>
           <name>CCXds100UsbSerialNoSelect</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCXds100JtagSpeedList</name>

@@ -94,10 +94,16 @@ The following examples are currently supported:
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_lp.md) | [Launchpad project files](examples/cc2650lp/simple_central) | [src](src/examples/simple_central)
 
 ### simple\_central\_audio\_receiver
-&nbsp;&nbsp;&nbsp;&nbsp;Receive and decode a voice stream over BLE using CC2650 central device and SensorTag or <br>
-&nbsp;&nbsp;&nbsp;&nbsp;HID Advanced Remote peripheral device
+&nbsp;&nbsp;&nbsp;&nbsp;Receive and decode a voice stream over BLE using CC2650 central device and SensorTag, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;HID Advanced Remote or CC2650 LaunchPad with CC3200AUDBOOST peripheral device 
 
 &nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_central_audio_receiver.md) | [project files](examples/cc2650lp/simple_central_audio_receiver) | [src](src/examples/simple_central_audio_receiver)
+
+### simple\_peripheral\_audio\_transmitter
+&nbsp;&nbsp;&nbsp;&nbsp;Encode and transmit an audio stream over BLE using CC2650 peripheral device on LaunchPad with CC3200AUDBOOST <br> 
+&nbsp;&nbsp;&nbsp;&nbsp;booster pack
+
+&nbsp;&nbsp;&nbsp;&nbsp;[docs](docs/simple_peripheral_audio_transmitter.md) | [project files](examples/cc2650lp/simple_peripheral_audio_transmitter) | [src](src/examples/simple_peripheral_audio_transmitter)
 
 ### simple\_eddystone
 &nbsp;&nbsp;&nbsp;&nbsp;Demonstrate an implementation of a beacon that uses the Eddystone beacon format

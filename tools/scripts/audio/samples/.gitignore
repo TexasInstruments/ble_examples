@@ -1,0 +1,5 @@
+# Ignore everything in this directory. 
+# This folder is required by the audio scripts. The output from the scripts are saved here, but should never be committed.
+*
+# Except this file
+!.gitignore

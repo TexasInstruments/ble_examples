@@ -16,7 +16,7 @@
     </variable>
     <variable>
       <name>XDCPATH</name>
-      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\tidrivers_cc13xx_cc26xx_2_20_01_10\packages;C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\bios_6_46_01_38\packages;C:\ti\simplelink\ble_sdk_2_02_01_18</value>
+      <value>C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\tidrivers_cc13xx_cc26xx_2_20_01_10\packages;C:\ti\tirtos_cc13xx_cc26xx_2_20_01_08\products\bios_6_46_01_38\packages;$TI_BLE_SDK_BASE$</value>
     </variable>
     <variable>
       <name>CC26XXWARE</name>

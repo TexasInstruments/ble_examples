@@ -77,7 +77,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>7.70.2.11707</state>
+          <state>7.80.3.12143</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -93,7 +93,7 @@
         </option>
         <option>
           <name>GenLowLevelInterface</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GEndianModeBE</name>
@@ -182,22 +182,24 @@
         <option>
           <name>CCDefines</name>
           <state>USE_ICALL</state>
+          <state>FLASH_ROM_BUILD</state>
           <state>POWER_SAVING</state>
-          <state>HEAPMGR_METRICS</state>
-          <state>AUDIO_RECEIVER</state>
-          <state>STREAM_TO_AUDBOOST</state>
-          <state>xSTREAM_TO_PC</state>
-          <state>HEAPMGR_SIZE=0</state>
-          <state>xDisplay_DISABLE_ALL</state>
-          <state>xBOARD_DISPLAY_EXCLUDE_UART</state>
-          <state>BOARD_DISPLAY_EXCLUDE_LCD</state>
-          <state>GAPCENTRALROLE_NUM_RSSI_LINKS=1</state>
-          <state>ICALL_MAX_NUM_TASKS=3</state>
-          <state>ICALL_MAX_NUM_ENTITIES=6</state>
-          <state>xdc_runtime_Assert_DISABLE_ALL</state>
-          <state>xdc_runtime_Log_DISABLE_ALL</state>
+          <state>GATT_NO_CLIENT</state>
+          <state>OSAL_SNV=1</state>
+          <state>INCLUDE_AES_DECRYPT</state>
+          <state>xPM_DISABLE_PWRDOWN</state>
+          <state>xTESTMODES</state>
+          <state>xTEST_BLEBOARD</state>
+          <state>OSAL_CBTIMER_NUM_TASKS=1</state>
+          <state>xDEBUG</state>
+          <state>EXT_HAL_ASSERT</state>
+          <state>xDEBUG_GPIO</state>
+          <state>xDEBUG_ENC</state>
+          <state>xDEBUG_SW_TRACE</state>
+          <state>NEAR_FUNC=</state>
+          <state>DATA=</state>
+          <state>CC26XXWARE</state>
           <state>CC26XX</state>
-          <state>CC2650_LAUNCHXL</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -237,7 +239,7 @@
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state>Pa050</state>
+          <state></state>
         </option>
         <option>
           <name>CCDiagRemark</name>
@@ -278,10 +280,9 @@
         </option>
         <option>
           <name>IExtraOptions</name>
+          <state>--aeabi</state>
           <state>-f $SRC_EX$/config/build_components.opt</state>
-          <state>-f $PROJ_DIR$\..\stack\build_config.opt</state>
-          <state>-f $PROJ_DIR$\..\config\configPkg\compiler.opt.defs</state>
-          <state>-f $PROJ_DIR$\..\config\iar_boundary.bdef</state>
+          <state>-f $PROJ_DIR$/build_config.opt</state>
         </option>
         <option>
           <name>CCLangConformance</name>
@@ -329,30 +330,29 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$/../../../../../src/util/audio_codec</state>
-          <state>$PROJ_DIR$/../../../../util/mSBClibrary/include</state>
-          <state>$PROJ_DIR$/../../../../../src/boards/CC2650_LAUNCHXL</state>
-          <state>$SRC_BLE_CORE$/examples/simple_central/cc26xx/app</state>
+          <state>$SRC_BLE_CORE$/rom</state>
+          <state>$SRC_BLE_CORE$/controller/cc26xx/cm0_patch</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
           <state>$SRC_EX$/common/cc26xx</state>
+          <state>$SRC_EX$/common/cc26xx/npi/stack</state>
+          <state>$SRC_COMMON$/hal/src/target/_common</state>
+          <state>$SRC_EX$/examples/simple_peripheral/cc26xx/stack</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
           <state>$SRC_EX$/profiles/roles</state>
-          <state>$SRC_EX$/profiles/roles/cc26xx</state>
-          <state>$SRC_EX$/profiles/simple_profile</state>
-          <state>$SRC_EX$/profiles/audio</state>
           <state>$SRC_COMMON$/hal/src/inc</state>
-          <state>$SRC_COMMON$/hal/src/target/_common</state>
           <state>$SRC_COMMON$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON$/hal/src/target/cc2650/rom</state>
-          <state>$SRC_COMMON$/heapmgr</state>
+          <state>$SRC_COMMON$/hal/src/target/_common</state>
+          <state>$SRC_COMMON$/hal/src/target</state>
           <state>$SRC_COMMON$/icall/src/inc</state>
+          <state>$SRC_COMMON$/npi/src</state>
           <state>$SRC_COMMON$/osal/src/inc</state>
+          <state>$SRC_COMMON$/services/src/aes/cc26xx</state>
+          <state>$SRC_COMMON$/services/src/nv</state>
+          <state>$SRC_COMMON$/services/src/nv/cc26xx</state>
           <state>$SRC_COMMON$/services/src/saddr</state>
-          <state>$SRC_COMMON$/services/src/sdata</state>
           <state>$CC26XXWARE$</state>
-          <state>$TI_RTOS_DRIVERS_BASE$</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -648,7 +648,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>simple_central_audio_receiver_cc2650lp_app.hex</state>
+          <state>simple_peripheral_audio_transmitter_cc2650lp_stack.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -678,8 +678,8 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>"$XDCROOT$/xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$"</prebuild>
-        <postbuild></postbuild>
+        <prebuild>"$TOOLS_BLE$/lib_search/lib_search.exe" $PROJ_DIR$/build_config.opt "$TOOLS_BLE$/lib_search/params_split_cc2640.xml" $SRC_BLE_CORE$/../blelib  $PROJ_DIR$/../config/lib_linker.cmd</prebuild>
+        <postbuild>"$TOOLS_BLE$/frontier/frontier.exe" iar "$PROJ_DIR$/$CONFIG_NAME$/List/simple_peripheral_audio_transmitter_cc2650lp_stack.map" "$PROJ_DIR$/../config/iar_boundary.bdef" "$PROJ_DIR$/../config/iar_boundary.xcl"</postbuild>
       </data>
     </settings>
     <settings>
@@ -703,7 +703,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>simple_central_audio_receiver_cc2650lp_app.out</state>
+          <state>simple_peripheral_audio_transmitter_cc2650lp_stack.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -735,7 +735,8 @@
         </option>
         <option>
           <name>IlinkConfigDefines</name>
-          <state></state>
+          <state>FLASH_ROM_BUILD=1</state>
+          <state>CC2650=1</state>
         </option>
         <option>
           <name>IlinkMapFile</name>
@@ -767,7 +768,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$SRC_EX$/common/cc26xx/iar/cc26xx_app.icf</state>
+          <state>$SRC_EX$/common/cc26xx/iar/cc26xx_stack.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -803,9 +804,7 @@
         </option>
         <option>
           <name>IlinkExtraOptions</name>
-          <state>--keep __vector_table</state>
-          <state>-f $PROJ_DIR$\..\config\configPkg\linker.cmd</state>
-          <state>-f $PROJ_DIR$\..\config\iar_boundary.xcl</state>
+          <state>-f $PROJ_DIR$/../config/lib_linker.cmd</state>
         </option>
         <option>
           <name>IlinkLowLevelInterfaceSlave</name>
@@ -817,12 +816,13 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$SRC_BLE_CORE$\rom\common_rom_releases\03282014\common_rom.symbols</state>
+          <state>$ROM$/ble_rom_releases/04242014/ble_rom_patch.symbols</state>
           <state>$CC26XXWARE$\driverlib\bin\iar\driverlib.lib</state>
+          <state>$SRC_BLE_CORE$/rom/enc_lib/cc26xx_ecc_rom_api.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkProgramEntryLabelSelect</name>
@@ -830,7 +830,7 @@
         </option>
         <option>
           <name>IlinkProgramEntryLabel</name>
-          <state>__iar_program_start</state>
+          <state>startup_entry</state>
         </option>
         <option>
           <name>DoFill</name>
@@ -1007,268 +1007,237 @@
     </settings>
   </configuration>
   <group>
-    <name>Application</name>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\board_key.c</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\board_key.h</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\examples\simple_central\cc26xx\app\simple_central.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\examples\simple_central_audio_receiver\cc26xx\app\simple_central_audio_receiver.c</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\util.c</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\util.h</name>
-    </file>
-  </group>
-  <group>
-    <name>Drivers</name>
+    <name>HAL</name>
     <group>
-      <name>Audio Codec</name>
+      <name>Common</name>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\src\util\audio_codec\audiocodec.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\src\util\audio_codec\audiocodec.h</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pdm\Codec1.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pdm\Codec1.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\src\util\audio_codec\I2SCC26XX.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\src\util\audio_codec\I2SCC26XX.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\..\src\util\audio_codec\ti3254.h</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\common\hal_assert.c</name>
       </file>
     </group>
     <group>
-      <name>Display</name>
+      <name>Include</name>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\Display.c</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_adc.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\Display.h</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_assert.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\DisplayDogm1286.c</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_board.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\DisplayDogm1286.h</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_defs.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\DisplayUart.c</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_key.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\mw\display\DisplayUart.h</name>
-      </file>
-    </group>
-    <group>
-      <name>ECC</name>
-      <file>
-        <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\ecc\ECCROMCC26XX.c</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_lcd.h</name>
       </file>
       <file>
-        <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\ecc\ECCROMCC26XX.h</name>
-      </file>
-    </group>
-    <group>
-      <name>I2C</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\I2C.c</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_led.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\I2C.h</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_sleep.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\i2c\I2CCC26XX.c</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_timer.h</name>
       </file>
       <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\i2c\I2CCC26XX.h</name>
+        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\inc\hal_uart.h</name>
       </file>
     </group>
     <group>
-      <name>PIN</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\PIN.h</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\pin\PINCC26XX.h</name>
-      </file>
+      <name>Target</name>
+      <group>
+        <name>CC2650</name>
+        <group>
+          <name>_common</name>
+          <file>
+            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_mcu.h</name>
+          </file>
+        </group>
+        <group>
+          <name>Config</name>
+          <file>
+            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_board_cfg.h</name>
+          </file>
+        </group>
+        <group>
+          <name>Drivers</name>
+          <file>
+            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_flash_wrapper.c</name>
+          </file>
+          <file>
+            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_rtc_wrapper.h</name>
+          </file>
+          <file>
+            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_trng_wrapper.c</name>
+          </file>
+          <file>
+            <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\hal_trng_wrapper.h</name>
+          </file>
+        </group>
+      </group>
     </group>
-    <group>
-      <name>RF</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RF.h</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\rf\RFCC26XX_singleMode.c</name>
-      </file>
-    </group>
-    <group>
-      <name>SBC</name>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\util\mSBClibrary\bin\cc2650_mSBCdecode_library.a</name>
-      </file>
-    </group>
-    <group>
-      <name>SPI</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\SPI.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\SPI.h</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\spi\SPICC26XXDMA.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\spi\SPICC26XXDMA.h</name>
-      </file>
-    </group>
-    <group>
-      <name>TRNG</name>
-      <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\TRNGCC26XX.c</name>
-      </file>
-      <file>
-        <name>$TI_BLE_SDK_BASE$\src\components\hal\src\target\_common\TRNGCC26XX.h</name>
-      </file>
-    </group>
-    <group>
-      <name>UDMA</name>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\dma\UDMACC26XX.c</name>
-      </file>
-      <file>
-        <name>$TI_RTOS_DRIVERS_BASE$\ti\drivers\dma\UDMACC26XX.h</name>
-      </file>
-    </group>
-  </group>
-  <group>
-    <name>ICall</name>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\heapmgr\heapmgr.h</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\icall\src\icall.c</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\icall\src\inc\icall.h</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\icall\inc\icall_addrs.h</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\icall\src\icall_cc2650.c</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\components\icall\src\icall_platform.h</name>
-    </file>
   </group>
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\icall\app\ble_user_config.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\icall\stack\ble_dispatch.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\icall\inc\ble_user_config.h</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\icall\app\icall_api.c</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\icall\inc\icall_apimsg.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\icall\inc\ble_dispatch.h</name>
     </file>
   </group>
   <group>
-    <name>Include</name>
+    <name>INCLUDE</name>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\inc\att.h</name>
+    </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\src\inc\gap.h</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\gapbondmgr.h</name>
-    </file>
-    <file>
-      <name>$TI_BLE_SDK_BASE$\src\inc\gapgattserver.h</name>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\src\inc\gatt.h</name>
     </file>
     <file>
+      <name>$TI_BLE_SDK_BASE$\src\inc\gatt_uuid.h</name>
+    </file>
+    <file>
       <name>$TI_BLE_SDK_BASE$\src\inc\hci.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\inc\l2cap.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\inc\linkdb.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\controller\cc26xx\inc\ll.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\inc\sm.h</name>
+    </file>
+  </group>
+  <group>
+    <name>LIB</name>
+    <file>
+      <name>$PROJ_DIR$\..\config\lib_linker.cmd</name>
+    </file>
+  </group>
+  <group>
+    <name>NPI</name>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\npi\stack\npi.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\npi\stack\npi.h</name>
+    </file>
+  </group>
+  <group>
+    <name>OSAL</name>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\comdef.h</name>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal.c</name>
     </file>
     <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_bufmgr.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_bufmgr.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_cbtimer.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_cbtimer.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_clock.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_clock.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_memory.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_memory_icall.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_pwrmgr.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_pwrmgr.h</name>
+    </file>
+    <file>
       <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_snv.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\mcu\cc26xx\osal_snv_wrapper.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_task.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\common\osal_timers.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\components\osal\src\inc\osal_timers.h</name>
     </file>
   </group>
   <group>
     <name>Profiles</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\cc26xx\central.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\gap.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\cc26xx\central.h</name>
+      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\gapbondmgr.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\profiles\roles\gapbondmgr.h</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\host\gattservapp_util.c</name>
     </file>
   </group>
   <group>
     <name>Startup</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\src\boards\CC2650_LAUNCHXL\CC2650_LAUNCHXL.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\examples\cc2650em\simple_central\iar\config\ccfg_app_ble.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\examples\simple_central\cc26xx\app\main.c</name>
+      <name>$TI_BLE_SDK_BASE$\src\examples\simple_peripheral\cc26xx\stack\osal_icall_ble.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\rom\rom_jt.c</name>
     </file>
   </group>
   <group>
     <name>Tools</name>
     <file>
-      <name>$PROJ_DIR$\..\config\app_ble.cfg</name>
-      <configuration>
-        <name>FlashROM</name>
-        <settings>
-          <name>CUSTOM</name>
-          <data>
-            <extensions>.cfg</extensions>
-            <cmdline>"$XDCROOT$/bin/stderr"</cmdline>
-            <hasPrio>0</hasPrio>
-            <outputs>
-              <file>
-                <name>$PROJ_DIR$\..\config\configPkg\package.mak</name>
-              </file>
-            </outputs>
-          </data>
-        </settings>
-      </configuration>
+      <name>$TI_BLE_SDK_BASE$\src\config\build_components.opt</name>
     </file>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\iar\cc26xx_app.icf</name>
+      <name>$PROJ_DIR$\build_config.opt</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\config\iar_boundary.bdef</name>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\iar\cc26xx_stack.icf</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\config\iar_boundary.xcl</name>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\onboard.c</name>
+    </file>
+    <file>
+      <name>$TI_BLE_SDK_BASE$\src\common\cc26xx\onboard.h</name>
     </file>
   </group>
 </project>

@@ -3,10 +3,11 @@
  * Filename: audio_frame_serial_print.py
  *
  * Description: This tool is used to decode audio frames from the
- * CC2650ARC and the CC2650STK development kits. These frames will saved
- * to a wav file for playback
+ * CC2650ARC, the CC2650STK development kits and the CC2650 LaunchPad with 
+ * CC3200AUDBOOST booster pack. These frames will saved to a wav file for 
+ * playback. This script expects audio compressed in ADPCM format.
  *
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2017 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -115,13 +116,14 @@ def decode_adpcm(_buf):
         decoded.append(pack('h', tic1_DecodeSingle(b & 0xF)))
         decoded.append(pack('h', tic1_DecodeSingle(b >> 4)))
 
+
 def save_wav():
     global decoded
 
     filename = time.strftime("pdm_test_%Y-%m-%d_%H-%M-%S_adpcm")
 
     print "saving file"
-    w = wave.open(filename + ".wav", "w")
+    w = wave.open("samples/" + filename + ".wav", "w")
     w.setnchannels(1)
     w.setframerate(16000)
     w.setsampwidth(2)
@@ -138,6 +140,7 @@ def save_wav():
 indata = ''
 inbuffer = ''
 frameNum = 1
+bufLen = 100
 
 lastByteTime = 0
 
@@ -145,10 +148,12 @@ prevSeqNum = 0
 missedFrames = 0
 try:
     ser = None
-    ser = Serial("COM38", 400000, timeout=0.1)
+    ser = Serial("COM91", 460800, timeout=0.1)
+    readSoFar = 0
 
     while True:
-        indata = ser.read()
+        indata = ser.read(bufLen - readSoFar)
+        readSoFar = len(indata)
         if not indata and len(decoded):
             if time.time() - lastByteTime > 2:
                 #save wav file
@@ -156,45 +161,37 @@ try:
         elif indata:
             inbuffer += indata
 
-            if len(inbuffer) == 20:
-                if frameNum == 1:
+            if len(inbuffer) == bufLen:
+##              if frameNum == 1:
+                seqNum, SI_received, PV_received = struct.unpack('BBh', inbuffer[0:4])
+                seqNum = (seqNum >> 3)
+                print "Frame sequence number: %d" % seqNum
 
-                   seqNum, SI_received, PV_received = struct.unpack('BBh', inbuffer[0:4])
-                   seqNum = (seqNum >> 3)
-                   print "Frame sequence number: %d" % seqNum
+                print "HDR_1 local: %d, HDR_1 received: %d" % (SI_Dec, SI_received)
+                print "HDR_2 local: %d, HDR_2 received: %d" % (PV_Dec, PV_received)
 
-                   print "HDR_1 local: %d, HDR_1 received: %d" % (SI_Dec, SI_received)
-                   print "HDR_2 local: %d, HDR_2 received: %d" % (PV_Dec, PV_received)
+                #always use received PV and SI 
+##                PV_Dec = PV_received
+##                SI_Dec = SI_received
 
-                   #always use received PV and SI 
-                   PV_Dec = PV_received
-                   SI_Dec = SI_received
-
-                   if seqNum > prevSeqNum:
-                       missedFrames = (seqNum - prevSeqNum -1)
-                   else:
-                       missedFrames = ((seqNum + 32) - prevSeqNum - 1)
-
-                   prevSeqNum = seqNum
-
-                   if missedFrames > 0:
-                        print "######################### MISSED #########################"
-                        print missedFrames
-                        print "##########################################################"
-
-                   decode_adpcm(inbuffer[4:])
+                if seqNum > prevSeqNum:
+                    missedFrames = (seqNum - prevSeqNum -1)
                 else:
-                   decode_adpcm(inbuffer[0:])
+                    missedFrames = ((seqNum + 32) - prevSeqNum - 1)
 
-                #empty inbuffer
+                prevSeqNum = seqNum
+
+                if missedFrames > 0:
+                    print "######################### MISSED #########################"
+                    print missedFrames
+                    print "##########################################################"
+
+                decode_adpcm(inbuffer[4:])
                 inbuffer = ''
+                readSoFar = 0
 
-                frameNum += 1
-                if frameNum > 5:
-                    frameNum = 1
-
-            lastByteTime = time.time()
-
+                lastByteTime = time.time()
+                
 except SerialException as e:
     print "Serial port error"
     print e
