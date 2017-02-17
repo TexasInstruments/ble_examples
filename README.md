@@ -1,7 +1,7 @@
 Extra examples for TI BLE-Stack SDK
 ===================================
 
-This repository contains additional sample applications and components for the Texas Instruments *Bluetooth&reg;* Low Energy software development kit. 
+This repository contains additional sample applications and components for the Texas Instruments *Bluetooth&reg;* Low Energy software development kit.
 
 To use the examples and tools in this repository, please [download and install the SDK](http://www.ti.com/ble-stack) first, and if necessary [buy an evaluation kit](http://www.ti.com/tool/launchxl-cc2640r2).
 
@@ -45,6 +45,24 @@ Similar to the BLE-Stack SDK, the examples in this repository support the IAR an
  - CCS v7.0.0 with TI ARM Compiler v16.09
 
 For more information on toolchain setup, please refer to our [FAQ page](docs/faq.md).
+
+Board Files
+===========
+
+This patch contains three sets of board files one for each package type:
+
+    /CC2640R2DK_4XS/
+    /CC2640R2DK_5XD/
+    /CC2640R2DK_7ID/
+
+These are generic board files supporting all QFN packages of CC2640R2F device.
+They have been tested to run on the BLE 3.0 Stack which can be downloaded from
+the wiki: http://www.ti.com/tool/download/SIMPLELINK-CC2640R2-SDK.
+
+Follow these steps to easily add these board files to any project:
+1. Exclude existing "board.c" under Startup folder in the project
+2. Copy and paste the respective board files in this patch to the Startup folder
+3. Modify the board files based on your custom board
 
 FAQ
 ===
