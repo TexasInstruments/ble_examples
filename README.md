@@ -49,11 +49,11 @@ For more information on toolchain setup, please refer to our [FAQ page](docs/faq
 Board Files
 ===========
 
-This patch contains three sets of board files one for each package type:
+This repo contains three sets of board files one for each package type:
 
-    /CC2640R2DK_4XS/
-    /CC2640R2DK_5XD/
-    /CC2640R2DK_7ID/
+    source/ti/blestack/boards/CC2640R2DK_4XS/
+    source/ti/blestack/boards/CC2640R2DK_5XD/
+    source/ti/blestack/boards/CC2640R2DK_7ID/
 
 These are generic board files supporting all QFN packages of CC2640R2F device.
 They have been tested to run on the BLE 3.0 Stack which can be downloaded from
