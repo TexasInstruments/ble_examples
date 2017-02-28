@@ -93,7 +93,7 @@
         >
         
         <!-- Project properties -->
-        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK;com.ti.rtsc.XDCtools:3.32.1.22_core"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.00.00;com.ti.rtsc.XDCtools:3.32.1.22_core"/>
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2640R2F"/>
         <property name="buildProfile" value="release"/>

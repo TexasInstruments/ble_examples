@@ -102,7 +102,7 @@
         >
 	
 	<property name="type" value="rtsc"/>
-        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.00.00"/>
         <property name="xdcToolsVersion" value="3.32.01.22"/>
 
         <property name="target" value="ti.targets.arm.elf.M3"/>
