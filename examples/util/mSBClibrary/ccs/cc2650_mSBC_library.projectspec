@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<projectSpec>
+			
+    <project
+        name="cc2650_mSBC_library"
+        device="CC2650F128"
+        connection="common/targetdb/connections/TIXDS110_Connection.xml"
+        toolChain="TI"
+
+        outputType="staticLibrary"
+		
+		artifactName="${SBC_BIN}/${ConfigName}"
+					
+        preBuildStep=""
+        postBuildStep=""
+
+        description=""
+        launchWizard="false">
+		
+	<pathVariable name="PROJECT_IMPORT_LOC" path="." scope="project"></pathVariable>
+	<pathVariable name="SBC_BIN" path="../bin" scope="project"></pathVariable>
+	<pathVariable name="SBC_SRC" path="../../../../src/util/sbc/" scope="project"></pathVariable>
+
+        <!-- Project properties -->
+
+        <property name="products" value="com.ti.rtsc.TIRTOSCC13XX_CC26XX:2.20.01.08"/>
+
+        <property name="target" value="ti.targets.arm.elf.M3"/>
+        <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
+        <property name="buildProfile" value="release"/>
+        <property name="isHybrid" value="true"/>
+        <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; "/>
+
+        <configuration
+            name="cc2650_mSBCencode_library"
+
+			compilerBuildOptions="-mv7M3 -O4 --opt_for_speed=5 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off 
+			
+			-DAUDIO_TRANSMITTER 
+			
+			-I${PROJECT_IMPORT_LOC}/../../../../src/util/sbc/"
+        >
+        </configuration>
+
+        <configuration
+            name="cc2650_mSBCdecode_library"
+			compilerBuildOptions="-mv7M3 -O4 --opt_for_speed=5 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off 
+			
+			-DAUDIO_RECEIVER 
+			
+			-I${PROJECT_IMPORT_LOC}/../../../../src/util/sbc/"
+			
+			artifactName="cc2650_mSBCdecode_library"
+        >
+        </configuration>
+
+        <!-- SBC Folder -->
+        <file path="${SBC_SRC}/sbc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SBC" createVirtualFolders="true" applicableConfigurations="cc2650_mSBCencode_library,cc2650_mSBCdecode_library">
+        </file>
+
+        <file path="${SBC_SRC}/sbc_primitives.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="SBC" createVirtualFolders="true" applicableConfigurations="cc2650_mSBCencode_library,cc2650_mSBCdecode_library">
+
+        </file>
+        </project>
+</projectSpec>

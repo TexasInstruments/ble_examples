@@ -55,8 +55,8 @@
 #include "linkdb.h"
 #include "gapgattserver.h"
 #include "gattservapp.h"
-#include "devinfoservice.h"
-#include "simple_gatt_profile.h"
+//#include "devinfoservice.h"
+//#include "simple_gatt_profile.h"
 
 #if defined(FEATURE_OAD) || defined(IMAGE_INVALIDATE)
 #include "oad_target.h"
@@ -290,8 +290,8 @@ static uint8_t advertData[] =
   HI_UINT16(OAD_SERVICE_UUID),
 #endif //FEATURE_OAD
 #ifndef FEATURE_OAD_ONCHIP
-  LO_UINT16(SIMPLEPROFILE_SERV_UUID),
-  HI_UINT16(SIMPLEPROFILE_SERV_UUID)
+  LO_UINT16(AUDIO_SERV_UUID),
+  HI_UINT16(AUDIO_SERV_UUID)
 #endif //FEATURE_OAD_ONCHIP
 };
 
@@ -305,10 +305,15 @@ static uint8_t rspTxRetry = 0;
 #define INPUT_OPTION      AUDIO_CODEC_MIC_LINE_IN //AUDIO_CODEC_MIC_ONBOARD
 #define BLEAUDIO_BUFSIZE_ADPCM            96
 #define BLEAUDIO_HDRSIZE_ADPCM            4
-#define BLEAUDIO_NOTSIZE                  20
-#define BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM  5
 
+#ifdef DLE_ENABLED // Data Length Extension Enable
+#define BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM  1
+#define BLEAUDIO_NUM_NOT_PER_FRAME_MSBC   1
+
+#else
+#define BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM  5
 #define BLEAUDIO_NUM_NOT_PER_FRAME_MSBC   3
+#endif
 
 #define ADPCM_SAMPLES_PER_FRAME   (BLEAUDIO_BUFSIZE_ADPCM * 2)
 #define MSBC_SAMPLES_PER_FRAME    120
@@ -334,19 +339,7 @@ const unsigned char msbc_data[] =
 };
 //int16_t pcmSamples[MSBC_SAMPLES_PER_FRAME * I2SCC26XX_QUEUE_SIZE] = {0};
 int16_t *pcmSamples;
-#ifdef __IAR_SYSTEMS_ICC__
-#pragma default_variable_attributes = @ "AUX_RAM_SECTION"
-/* ----------- CCS Compiler ----------- */
-#elif defined __TI_COMPILER_VERSION || defined __TI_COMPILER_VERSION__
-#pragma DATA_SECTION(i2sContMgtBuffer, ".aux_ram")
-#pragma DATA_SECTION(audio_encoded, ".aux_ram")
-#pragma DATA_SECTION(sbc, ".aux_ram")
-#pragma DATA_SECTION(written, ".aux_ram")
-#pragma DATA_SECTION(streamVariables, ".aux_ram")
-/* ----------- Unrecognized Compiler ----------- */
-#else
-#error "ERROR: Unknown compiler."
-#endif
+
 uint8_t i2sContMgtBuffer[I2S_BLOCK_OVERHEAD_IN_BYTES * I2SCC26XX_QUEUE_SIZE] = {0};
 uint8_t audio_encoded[100] = {0};
 sbc_t sbc = {0};
@@ -362,9 +355,6 @@ struct {
   int16_t pv;
   uint8_t activeLED;
 } streamVariables = {STREAM_STATE_IDLE, STREAM_STATE_IDLE, 0, 0, 0, 0, 0, 0, 0};
-#ifdef __IAR_SYSTEMS_ICC__
-#pragma default_variable_attributes =
-#endif //__IAR_SYSTEMS_ICC__
 
 static void I2SCC26XX_i2sCallbackFxn(I2SCC26XX_Handle handle, I2SCC26XX_StreamNotification *notification);
 static I2SCC26XX_Handle i2sHandle = NULL;
@@ -397,16 +387,13 @@ static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg);
 static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg);
 static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg);
 static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState);
-static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID);
 static void SimpleBLEPeripheral_clockHandler(UArg arg);
 
 static void SimpleBLEPeripheral_sendAttRsp(void);
 static void SimpleBLEPeripheral_freeAttRsp(uint8_t status);
 
 static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState);
-#ifndef FEATURE_OAD_ONCHIP
-static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID);
-#endif //!FEATURE_OAD_ONCHIP
+
 static void SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state);
 
 #ifdef FEATURE_OAD
@@ -444,14 +431,6 @@ static gapBondCBs_t simpleBLEPeripheral_BondMgrCBs =
   NULL, // Passcode callback (not used by application)
   NULL  // Pairing / Bonding state Callback (not used by application)
 };
-
-// Simple GATT Profile Callbacks
-#ifndef FEATURE_OAD_ONCHIP
-static simpleProfileCBs_t SimpleBLEPeripheral_simpleProfileCBs =
-{
-  SimpleBLEPeripheral_charValueChangeCB // Characteristic value change callback
-};
-#endif //!FEATURE_OAD_ONCHIP
 
 #ifdef FEATURE_OAD
 static oadTargetCBs_t simpleBLEPeripheral_oadCBs =
@@ -515,6 +494,10 @@ static void SimpleBLEPeripheral_init(void)
   RCOSC_enableCalibration();
 #endif // USE_RCOSC
 
+#if defined (DLE_ENABLED)  
+  HCI_LE_WriteSuggestedDefaultDataLenCmd(DLE_MAX_PDU_SIZE , DLE_MAX_TX_TIME);
+#endif
+  
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
@@ -609,11 +592,6 @@ static void SimpleBLEPeripheral_init(void)
    // Initialize GATT attributes
   GGS_AddService(GATT_ALL_SERVICES);           // GAP
   GATTServApp_AddService(GATT_ALL_SERVICES);   // GATT attributes
-  DevInfo_AddService();                        // Device Information Service
-
-#ifndef FEATURE_OAD_ONCHIP
-  SimpleProfile_AddService(GATT_ALL_SERVICES); // Simple GATT Profile
-#endif //!FEATURE_OAD_ONCHIP
 
 #ifdef FEATURE_OAD
   VOID OAD_addService();                 // OAD Profile
@@ -627,31 +605,6 @@ static void SimpleBLEPeripheral_init(void)
 
   // Add Audio Service
   Audio_AddService();
-
-#ifndef FEATURE_OAD_ONCHIP
-  // Setup the SimpleProfile Characteristic Values
-  {
-    uint8_t charValue1 = 1;
-    uint8_t charValue2 = 2;
-    uint8_t charValue3 = 3;
-    uint8_t charValue4 = 4;
-    uint8_t charValue5[SIMPLEPROFILE_CHAR5_LEN] = { 1, 2, 3, 4, 5 };
-
-    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR1, sizeof(uint8_t),
-                               &charValue1);
-    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR2, sizeof(uint8_t),
-                               &charValue2);
-    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR3, sizeof(uint8_t),
-                               &charValue3);
-    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR4, sizeof(uint8_t),
-                               &charValue4);
-    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR5, SIMPLEPROFILE_CHAR5_LEN,
-                               charValue5);
-  }
-
-  // Register callback with SimpleGATTprofile
-  SimpleProfile_RegisterAppCBs(&SimpleBLEPeripheral_simpleProfileCBs);
-#endif //!FEATURE_OAD_ONCHIP
 
   // Start the Device
   VOID GAPRole_StartDevice(&SimpleBLEPeripheral_gapRoleCBs);
@@ -668,13 +621,17 @@ static void SimpleBLEPeripheral_init(void)
   HCI_LE_ReadMaxDataLenCmd();
 
 #if defined FEATURE_OAD
-#if defined (HAL_IMAGE_A)
-  Display_print0(dispHandle, 0, 0, "Audio Tx Peripheral A");
+	#if defined (HAL_IMAGE_A)
+	  Display_print0(dispHandle, 0, 0, "Audio Tx Peripheral A");
+	#else
+	  Display_print0(dispHandle, 0, 0, "Audio Tx Peripheral B");
+	#endif // HAL_IMAGE_A
 #else
-  Display_print0(dispHandle, 0, 0, "Audio Tx Peripheral B");
-#endif // HAL_IMAGE_A
-#else
-  Display_print0(dispHandle, 0, 0, "Audio Tx Peripheral");
+	#if defined (DLE_ENABLED)
+	  Display_print0(dispHandle, 0, 0, "Audio Tx Peripheral with DLE");
+	#else
+	  Display_print0(dispHandle, 0, 0, "Audio Tx Peripheral");
+	#endif
 #endif // FEATURE_OAD
 
   // Open pin structure for use
@@ -970,7 +927,7 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
   else if (pMsg->method == ATT_MTU_UPDATED_EVENT)
   {
     // MTU size updated
-    Display_print1(dispHandle, 5, 0, "MTU Size: $d", pMsg->msg.mtuEvt.MTU);
+    Display_print1(dispHandle, 5, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
   }
 
   // Free message payload. Needed only for ATT Protocol messages
@@ -1072,10 +1029,6 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
                                                 hdr.state);
       break;
 
-    case SBP_CHAR_CHANGE_EVT:
-      SimpleBLEPeripheral_processCharValueChangeEvt(pMsg->hdr.state);
-      break;
-
     case SBP_KEY_CHANGE_EVT:
       SimpleBLEPeripheral_handleKeys(0, pMsg->hdr.state);
       break;
@@ -1120,25 +1073,8 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
     case GAPROLE_STARTED:
       {
         uint8_t ownAddress[B_ADDR_LEN];
-        uint8_t systemId[DEVINFO_SYSTEM_ID_LEN];
 
         GAPRole_GetParameter(GAPROLE_BD_ADDR, ownAddress);
-
-        // use 6 bytes of device address for 8 bytes of system ID value
-        systemId[0] = ownAddress[0];
-        systemId[1] = ownAddress[1];
-        systemId[2] = ownAddress[2];
-
-        // set middle bytes to zero
-        systemId[4] = 0x00;
-        systemId[3] = 0x00;
-
-        // shift three bytes up
-        systemId[7] = ownAddress[5];
-        systemId[6] = ownAddress[4];
-        systemId[5] = ownAddress[3];
-
-        DevInfo_SetParameter(DEVINFO_SYSTEM_ID, DEVINFO_SYSTEM_ID_LEN, systemId);
 
         // Display device address
         Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(ownAddress));
@@ -1250,59 +1186,6 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
 
   // Update the state
   //gapProfileState = newState;
-}
-
-#ifndef FEATURE_OAD_ONCHIP
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_charValueChangeCB
- *
- * @brief   Callback from Simple Profile indicating a characteristic
- *          value change.
- *
- * @param   paramID - parameter ID of the value that was changed.
- *
- * @return  None.
- */
-static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID)
-{
-  SimpleBLEPeripheral_enqueueMsg(SBP_CHAR_CHANGE_EVT, paramID);
-}
-#endif //!FEATURE_OAD_ONCHIP
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_processCharValueChangeEvt
- *
- * @brief   Process a pending Simple Profile characteristic value change
- *          event.
- *
- * @param   paramID - parameter ID of the value that was changed.
- *
- * @return  None.
- */
-static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
-{
-#ifndef FEATURE_OAD_ONCHIP
-  uint8_t newValue;
-
-  switch(paramID)
-  {
-    case SIMPLEPROFILE_CHAR1:
-      SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR1, &newValue);
-
-      Display_print1(dispHandle, 4, 0, "Char 1: %d", (uint16_t)newValue);
-      break;
-
-    case SIMPLEPROFILE_CHAR3:
-      SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR3, &newValue);
-
-      Display_print1(dispHandle, 4, 0, "Char 3: %d", (uint16_t)newValue);
-      break;
-
-    default:
-      // should not reach here!
-      break;
-  }
-#endif //!FEATURE_OAD_ONCHIP
 }
 
 

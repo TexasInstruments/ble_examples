@@ -225,6 +225,9 @@ uint8 audioConfigEnable = 0;
 
 #define BLE_AUDIO_RX_BUF_SIZE                 BLE_AUDIO_U16_COMPRESSION_RATE*BLEAUDIO_NOTSIZE
 
+#define DLE_MAX_PDU_SIZE 251
+#define DLE_MAX_TX_TIME 2120
+
 // Application states
 enum
 {
@@ -376,8 +379,6 @@ static uint16 audioStartCCCHandle         = GATT_INVALID_HANDLE;
 static uint16 audioDataCharValueHandle    = GATT_INVALID_HANDLE;
 static uint16 audioDataCCCHandle         = GATT_INVALID_HANDLE;
 
-// CCC's of the notifications
-static uint16 keyCCCHandle           = GATT_INVALID_HANDLE;
 static uint8 serviceDiscComplete = FALSE;
 
 /*********************************************************************
@@ -438,10 +439,15 @@ PIN_Config ledPinTable[] = {
 
 #define BLEAUDIO_BUFSIZE_ADPCM            96
 #define BLEAUDIO_HDRSIZE_ADPCM            4
-#define BLEAUDIO_NOTSIZE                  20
-#define BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM  5
 
+#ifdef DLE_ENABLED // Data Length Extension Enable
+#define BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM  1
+#define BLEAUDIO_NUM_NOT_PER_FRAME_MSBC   1
+
+#else
+#define BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM  5
 #define BLEAUDIO_NUM_NOT_PER_FRAME_MSBC   3
+#endif
 
 #define ADPCM_SAMPLES_PER_FRAME   (BLEAUDIO_BUFSIZE_ADPCM * 2)
 #define MSBC_SAMPLES_PER_FRAME    120
@@ -459,20 +465,20 @@ const unsigned char msbc_data[] =
 	0xe0
 };
 
-#ifdef __IAR_SYSTEMS_ICC__
-#pragma default_variable_attributes = @ "AUX_RAM_SECTION"
-/* ----------- CCS Compiler ----------- */
-#elif defined __TI_COMPILER_VERSION || defined __TI_COMPILER_VERSION__
-#pragma DATA_SECTION(i2sContMgtBuffer, ".aux_ram")
-#pragma DATA_SECTION(audio_encoded, ".aux_ram")
-#pragma DATA_SECTION(sbc, ".aux_ram")
-#pragma DATA_SECTION(written, ".aux_ram")
-#pragma DATA_SECTION(streamVariables, ".aux_ram")
-/* ----------- Unrecognized Compiler ----------- */
-#else
-#error "ERROR: Unknown compiler."
-#endif
-
+//#ifdef __IAR_SYSTEMS_ICC__
+//#pragma default_variable_attributes = @ "AUX_RAM_SECTION"
+///* ----------- CCS Compiler ----------- */
+//#elif defined __TI_COMPILER_VERSION || defined __TI_COMPILER_VERSION__
+//#pragma DATA_SECTION(i2sContMgtBuffer, ".aux_ram")
+//#pragma DATA_SECTION(audio_encoded, ".aux_ram")
+//#pragma DATA_SECTION(sbc, ".aux_ram")
+//#pragma DATA_SECTION(written, ".aux_ram")
+//#pragma DATA_SECTION(streamVariables, ".aux_ram")
+///* ----------- Unrecognized Compiler ----------- */
+//#else
+//#error "ERROR: Unknown compiler."
+//#endif
+//
 #ifdef STREAM_TO_AUDBOOST
 uint8_t i2sContMgtBuffer[I2S_BLOCK_OVERHEAD_IN_BYTES * I2SCC26XX_QUEUE_SIZE] = {0};
 #endif //STREAM_TO_AUDBOOST
@@ -490,9 +496,9 @@ struct {
   uint8_t i2sOpened;
 #endif //STREAM_TO_AUDBOOST
 } streamVariables = {0};
-#ifdef __IAR_SYSTEMS_ICC__
-#pragma default_variable_attributes =
-#endif //__IAR_SYSTEMS_ICC__
+//#ifdef __IAR_SYSTEMS_ICC__
+//#pragma default_variable_attributes =
+//#endif //__IAR_SYSTEMS_ICC__
 
 #ifdef STREAM_TO_AUDBOOST
 static void I2SCC26XX_i2sCallbackFxn(I2SCC26XX_Handle handle, I2SCC26XX_StreamNotification *notification);
@@ -581,6 +587,10 @@ static void SimpleBLECentral_init(void)
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &sem);
 
+#if defined (DLE_ENABLED)  
+  HCI_LE_WriteSuggestedDefaultDataLenCmd(DLE_MAX_PDU_SIZE , DLE_MAX_TX_TIME);
+#endif
+  
   // Open all pins
   ledPinHandle = PIN_open(&allPinState, ledPinTable);
 
@@ -684,8 +694,11 @@ static void SimpleBLECentral_init(void)
 
   // Register for GATT local events and ATT Responses pending for transmission
   GATT_RegisterForMsgs(selfEntity);
-
+#if defined (DLE_ENABLED)
+  Display_print0(dispHandle, 0, 0, "Audio Central with DLE");
+#else
   Display_print0(dispHandle, 0, 0, "Audio Central");
+#endif
 
 #ifdef STREAM_TO_AUDBOOST
   /* Then initialize I2S driver */
@@ -956,7 +969,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
               (SimpleBLECentral_findSvcUuid( HID_SERV_UUID,
                                             pEvent->deviceInfo.pEvtData,
                                             pEvent->deviceInfo.dataLen)) ||
-              (SimpleBLECentral_findSvcUuid( SIMPLEPROFILE_SERV_UUID,
+              (SimpleBLECentral_findSvcUuid( AUDIO_SERV_UUID,
                                             pEvent->deviceInfo.pEvtData,
                                             pEvent->deviceInfo.dataLen)) )
           {
@@ -964,14 +977,13 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
                                            pEvent->deviceInfo.addrType);
             addrType = pEvent->deviceInfo.addrType;
             osal_memcpy( remoteAddr, pEvent->deviceInfo.addr, B_ADDR_LEN );
-            peerDeviceFound = TRUE;
           }
         }
-        if ( ( peerDeviceFound == TRUE ) &&
-            ( pEvent->deviceInfo.eventType == GAP_ADRPT_SCAN_RSP ) &&
+        if (( pEvent->deviceInfo.eventType == GAP_ADRPT_SCAN_RSP ) &&
               SimpleBLECentral_FindHIDRemote( pEvent->deviceInfo.pEvtData,
                                   pEvent->deviceInfo.dataLen ) )
         {
+          peerDeviceFound = TRUE;
           // End device discovery
           VOID GAPCentralRole_CancelDiscovery();
         }
@@ -1018,12 +1030,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
 
-          if (FALSE == serviceDiscComplete)
-          {
-              // Begin Service Discovery of AUDIO Service to find out report handles
-              serviceToDiscover = AUDIO_SERV_UUID;
-              SimpleBLECentral_DiscoverService( connHandle, serviceToDiscover );
-          }
+          Util_startClock(&startDiscClock);
 
           Display_print0(dispHandle, 2, 0, "Connected");
           Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));
@@ -1069,9 +1076,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
         // Invalidate service discovery variables.
         serviceDiscComplete    = FALSE;
-        keyCharHandle          = GATT_INVALID_HANDLE;
 
-        keyCCCHandle           = GATT_INVALID_HANDLE;
         serviceToDiscover      = GATT_INVALID_HANDLE;
 
         audioStartCharValueHandle  = GATT_INVALID_HANDLE;
@@ -1508,12 +1513,10 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
             && pMsg->msg.errorRsp.handle == 0x0001)
             //0x0001 is the start attribute handle of 0xfff0, AUDIO_SERV_UUID
       {
-
-          if ( (enableCCCDs == TRUE) && (keyCharHandle != GATT_INVALID_HANDLE))
+          if ( (enableCCCDs == TRUE) && (audioStartCharValueHandle != GATT_INVALID_HANDLE))
           {
-            keyCCCHandle = keyCharHandle + 1;
-            // Begin configuring the characteristics for notifications
-            SimpleBLECentral_EnableNotification( connHandle, keyCCCHandle );
+              audioStartCCCHandle = audioStartCharValueHandle + 1 ;
+              SimpleBLECentral_EnableNotification( connHandle, audioStartCCCHandle );
           }
       }
       break;
@@ -1572,9 +1575,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
           else if (audioDataCCCHandle == GATT_INVALID_HANDLE) {
             handle = audioDataCCCHandle = audioDataCharValueHandle + 1;
           }
-          else if (keyCCCHandle == GATT_INVALID_HANDLE ) {
-            handle = keyCCCHandle = keyCharHandle + 1;
-          }
           else {
             serviceDiscComplete = TRUE;
             break;
@@ -1602,6 +1602,13 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 
       }
       break;
+
+      // Service Change indication
+      case ATT_EXCHANGE_MTU_RSP:
+      {
+        Display_print1(dispHandle, 10, 0, "server Rx MTU size : %d", pMsg->msg.exchangeMTURsp.serverRxMTU);
+      }
+        break;
 
     default:
       // Unknown event

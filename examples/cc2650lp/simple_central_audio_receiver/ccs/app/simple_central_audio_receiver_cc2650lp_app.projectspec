@@ -7,7 +7,7 @@
         cgtVersion="5.2.6"
         connection="TIXDS110_Connection.xml"
         toolChain="TI"
-        linkerCommandFile="cc26xx_app_auxram.cmd"
+        linkerCommandFile="cc26xx_app.cmd"
 
         preBuildStep=""
         postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out">
@@ -57,10 +57,13 @@
 			-DxCC2650DK_7ID
 			-DCC26XX
 			-DCC2650_LAUNCHXL
+			-DMAX_PDU_SIZE=107
+			-DxDLE_ENABLED
 
 			-I${PROJECT_IMPORT_LOC}/../../../../../src/util/audio_codec
 			-I${PROJECT_IMPORT_LOC}/../../../../util/mSBClibrary/include
 			-I${PROJECT_IMPORT_LOC}/../../../../../src/boards/CC2650_LAUNCHXL
+			-I${PROJECT_IMPORT_LOC}/../../../../../src/profiles/audio
 			-I${SRC_BLE_CORE}/examples/simple_central/cc26xx/app
 			-I${SRC_BLE_CORE}/controller/cc26xx/inc
 			-I${SRC_BLE_CORE}/inc
@@ -70,7 +73,6 @@
 			-I${SRC_EX}/profiles/roles
 			-I${SRC_EX}/profiles/roles/cc26xx
 			-I${SRC_EX}/profiles/simple_profile
-			-I${SRC_EX}/profiles/audio
 			-I${SRC_EX}/target
 			-I${SRC_COMMON}/hal/src/inc
 			-I${SRC_COMMON}/hal/src/target/_common
@@ -85,7 +87,7 @@
 			"
 			linkerBuildOptions="
 			-l${PROJECT_IMPORT_LOC}/../config/ccs_linker_defines.cmd
-			-l${PROJECT_IMPORT_LOC}/../../../../../src/common/cc26xx/ccs/cc26xx_app_auxram.cmd
+            -l${SRC_EX}/common/cc26xx/ccs/cc26xx_app.cmd
 			--library=&quot;libc.a&quot;
 			--library=${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib
 			--library=${SRC_BLE_CORE}/rom/common_rom_releases/03282014/common_rom.symbols
@@ -280,9 +282,9 @@
         </file>
         <file path="SRC_EX/profiles/roles/cc26xx/central.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/profiles/audio/audio_profile.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../../../../src/profiles/audio/audio_profile.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
-        <file path="SRC_EX/profiles/audio/audio_profile.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        <file path="PROJECT_IMPORT_LOC/../../../../../src/profiles/audio/audio_profile.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
 
         <!-- Startup Folder  -->
@@ -296,7 +298,7 @@
         <!-- Tools Folder -->
         <file path="PROJECT_IMPORT_LOC/../config/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_IMPORT_LOC/../../../../../src/common/cc26xx/ccs/cc26xx_app_auxram.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
+        <file path="SRC_EX/common/cc26xx/ccs/cc26xx_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>
         <file path="PROJECT_IMPORT_LOC/../config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">
         </file>

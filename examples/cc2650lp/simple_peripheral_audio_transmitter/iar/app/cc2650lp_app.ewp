@@ -192,9 +192,11 @@
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
-          <state>xdc_runtime_Log_DISABLE_ALL</state>
+          <state>xxdc_runtime_Log_DISABLE_ALL</state>
           <state>CC2650_LAUNCHXL</state>
           <state>CC26XX</state>
+          <state>MAX_PDU_SIZE=107</state>
+          <state>xDLE_ENABLED</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -329,13 +331,13 @@
           <state>$PROJ_DIR$/../../../../../src/util/audio_codec</state>
           <state>$PROJ_DIR$/../../../../util/mSBClibrary/include</state>
           <state>$PROJ_DIR$/../../../../../src/boards/CC2650_LAUNCHXL</state>
+          <state>$PROJ_DIR$/../../../../../src/profiles/audio</state>
           <state>$SRC_EX$/examples/simple_peripheral/cc26xx/app</state>
           <state>$SRC_BLE_CORE$/controller/cc26xx/inc</state>
           <state>$SRC_BLE_CORE$/inc</state>
           <state>$SRC_EX$/common/cc26xx</state>
           <state>$SRC_EX$/icall/inc</state>
           <state>$SRC_EX$/inc</state>
-          <state>$SRC_EX$/profiles/audio</state>
           <state>$SRC_EX$/profiles/dev_info</state>
           <state>$SRC_EX$/profiles/roles</state>
           <state>$SRC_EX$/profiles/roles/cc26xx</state>
@@ -960,7 +962,7 @@
         </option>
         <option>
           <name>CrcAlgorithm</name>
-          <version>1</version>
+          <version>0</version>
           <state>1</state>
         </option>
         <option>
@@ -1203,13 +1205,22 @@
   <group>
     <name>Profiles</name>
     <file>
-      <name>$TI_BLE_SDK_BASE$\src\profiles\audio\audio_profile.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\audio\audio_profile.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\src\profiles\audio\audio_profile.h</name>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\src\profiles\dev_info\cc26xx\devinfoservice.c</name>
+      <excluded>
+        <configuration>FlashROM</configuration>
+      </excluded>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\src\profiles\dev_info\devinfoservice.h</name>
+      <excluded>
+        <configuration>FlashROM</configuration>
+      </excluded>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\src\inc\gatt_profile_uuid.h</name>
@@ -1231,9 +1242,15 @@
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\src\profiles\simple_profile\cc26xx\simple_gatt_profile.c</name>
+      <excluded>
+        <configuration>FlashROM</configuration>
+      </excluded>
     </file>
     <file>
       <name>$TI_BLE_SDK_BASE$\src\profiles\simple_profile\simple_gatt_profile.h</name>
+      <excluded>
+        <configuration>FlashROM</configuration>
+      </excluded>
     </file>
   </group>
   <group>

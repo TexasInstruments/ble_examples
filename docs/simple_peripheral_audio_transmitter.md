@@ -21,6 +21,7 @@ The peripheral project was modified as follows:
  - Change scan response data to 'SimpleBLEAudioTx' and device name to 'Simple BLE AudioTx'
  - Transmit audio stream using the TI VoGP audio\_profile
  - Switch between ADPCM and mSBC compression
+ - [Optional] Stream audio data with IMA-ADPCM mechanism using Data Length Extension feature
 
 Streaming Voice over BLE
 ========================
@@ -129,6 +130,34 @@ be sure that an audio source (i.e. line out from a PC is connected to the LINE_I
  * Power off your audio transmitting device. Wait for link to be terminated. Red LED will turn on.
  * Press the right key to erase the bonds from the audio\_receiver project. Green LED will blink 1x while red LED stays on.
  * The bonds are now erased, you can discover and connect to another device.
+
+Optional demo : Stream audio data with IMA-ADPCM mechanism using Data Length Extension feature
+------------
+
+The Data Length Extension feature for this stack projet is enabled by adding -DBLE_V42_FEATURES=EXT_DATA_LEN_CFG into build_config.opt file
+The needed modification for the application project is wrapped around in the DLE_ENABLED predefine symbol.
+The MAX_PDU_SIZE has been modified to be 107.
+
+To enable the application to send 100 bytes audio data in one frame, you simply need to enable DLE_ENABLED in the predefine symbol.
+
+_Note: Data Length Extension feature only supports ADPCM format for now_
+
+Once Data Length Extension feature is enabled, the attached serial port will log:
+ * Audio Central with DLE
+  ```
+  Discovering...
+  Pairing started
+  Connected
+  <PEER_BD_ADDR>
+  Pairing success
+  Bond Saved
+  ```
+ * Audio Tx Peripheral with DLE
+  ```
+  Connected
+  <PEER_BD_ADDR>
+  ```
+
 
 Demo LED states
 ===============

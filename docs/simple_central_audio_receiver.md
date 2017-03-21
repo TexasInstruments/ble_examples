@@ -23,6 +23,7 @@ The central project was slightly modified to:
  - Automatically connect to CC2650 SensorTag, CC2650RC or CC2650 LaunchPad with CC3200AUDBOOST based on advertisement data
  - Receive voice stream using the TI VoGP audio\_profile
  - Decode the voice stream and output to headphone/line out on CC3200AUDBOOST. Connect this to headphones, or speaker
+ - [Optional] Stream audio data with IMA-ADPCM mechanism using Data Length Extension feature
  - [Optional] Send the voice stream to the PC over UART for post processing (Python script included)
 
 Streaming Voice over BLE
@@ -161,7 +162,34 @@ After building the firmware required for the voice transmitter and receiver, you
  * Press the right key to erase the bonds from the audio\_receiver project. Green LED will blink 1x while red LED stays on.
  * The bonds are now erased, you can discover and connect to another device.
 
-Optional demo
+Optional demo : Stream audio data with IMA-ADPCM mechanism using Data Length Extension feature
+------------
+
+The Data Length Extension feature for this stack projet is enabled by adding -DBLE_V42_FEATURES=EXT_DATA_LEN_CFG into build_config.opt file
+The needed modification for the application project is wrapped around in the DLE_ENABLED predefine symbol.
+The MAX_PDU_SIZE has been modified to be 107.
+
+To enable the application to send 100 bytes audio data in one frame, you simply need to enable DLE_ENABLED in the predefine symbol.
+
+_Note: Data Length Extension feature only supports ADPCM format for now_
+
+Once Data Length Extension feature is enabled, the attached serial port will log:
+ * Audio Central with DLE
+  ```
+  Discovering...
+  Pairing started
+  Connected
+  <PEER_BD_ADDR>
+  Pairing success
+  Bond Saved
+  ```
+ * Audio Tx Peripheral with DLE
+  ```
+  Connected
+  <PEER_BD_ADDR>
+  ```
+
+Optional demo : Send the voice stream to the PC over UART for post processing (Python script included)
 ------------
 
 It is possible to send the stream to a PC. In this case there will be no logging via UART, for logging please mount LCD on top of CC3200AUDBOOST. To enable this one must rebuild the `simple_central_audio_reciever` project with the following modifications in Project-->C/C++ Compiler-->Preprocessor-->Defined symbols:
@@ -261,7 +289,7 @@ The following states of the device can be described by the red and green LEDs on
 Useful tip
 ==========
 
-To make more RAM available to HEAP some variables are placed in AUX_RAM. This ram is available when the Sensor Controller is not in use. The following code in `simple_central_audio_receiver.c` shows this placement:
+To make more RAM available to HEAP some variables can be placed in AUX_RAM. This ram is available when the Sensor Controller is not in use. The following code shows this placement:
 
 IAR:
 ```

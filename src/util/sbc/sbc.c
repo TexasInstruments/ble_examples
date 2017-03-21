@@ -1074,17 +1074,14 @@ struct sbc_priv {
 
 #ifdef SBC_CC26XX
 #ifdef __IAR_SYSTEMS_ICC__
-#pragma default_variable_attributes = @ "AUX_RAM_SECTION"
 /* ----------- CCS Compiler ----------- */
 #elif defined __TI_COMPILER_VERSION || defined __TI_COMPILER_VERSION__
-#pragma DATA_SECTION(sbc_mem, ".aux_ram")
 /* ----------- Unrecognized Compiler ----------- */
 #else
 #error "ERROR: Unknown compiler."
 #endif
 uint8_t sbc_mem[sizeof(struct sbc_priv) + SBC_ALIGN_MASK] = {0};
 #ifdef __IAR_SYSTEMS_ICC__
-#pragma default_variable_attributes =
 #endif //__IAR_SYSTEMS_ICC__
 #endif //SBC_CC26XX
 
