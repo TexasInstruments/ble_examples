@@ -465,20 +465,6 @@ const unsigned char msbc_data[] =
 	0xe0
 };
 
-//#ifdef __IAR_SYSTEMS_ICC__
-//#pragma default_variable_attributes = @ "AUX_RAM_SECTION"
-///* ----------- CCS Compiler ----------- */
-//#elif defined __TI_COMPILER_VERSION || defined __TI_COMPILER_VERSION__
-//#pragma DATA_SECTION(i2sContMgtBuffer, ".aux_ram")
-//#pragma DATA_SECTION(audio_encoded, ".aux_ram")
-//#pragma DATA_SECTION(sbc, ".aux_ram")
-//#pragma DATA_SECTION(written, ".aux_ram")
-//#pragma DATA_SECTION(streamVariables, ".aux_ram")
-///* ----------- Unrecognized Compiler ----------- */
-//#else
-//#error "ERROR: Unknown compiler."
-//#endif
-//
 #ifdef STREAM_TO_AUDBOOST
 uint8_t i2sContMgtBuffer[I2S_BLOCK_OVERHEAD_IN_BYTES * I2SCC26XX_QUEUE_SIZE] = {0};
 #endif //STREAM_TO_AUDBOOST
@@ -496,9 +482,6 @@ struct {
   uint8_t i2sOpened;
 #endif //STREAM_TO_AUDBOOST
 } streamVariables = {0};
-//#ifdef __IAR_SYSTEMS_ICC__
-//#pragma default_variable_attributes =
-//#endif //__IAR_SYSTEMS_ICC__
 
 #ifdef STREAM_TO_AUDBOOST
 static void I2SCC26XX_i2sCallbackFxn(I2SCC26XX_Handle handle, I2SCC26XX_StreamNotification *notification);
@@ -1329,6 +1312,11 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               }
               PIN_setOutputValue( ledPinHandle, Board_DIO26_ANALOG, 0);
               UART_write(uartHandle, audio_decoded, streamVariables.samplesPerFrame * sizeof(int16_t));
+              PIN_setOutputValue( ledPinHandle, Board_DIO26_ANALOG, 1);
+            }
+            else {
+              audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
+            }
 #else //!UART_DUMP_UNCOMPRESSED
               if (streamVariables.streamType == BLE_AUDIO_CMD_START_MSBC) {
                 UART_write(uartHandle, audio_encoded, MSBC_ENCODED_SIZE);
@@ -1337,11 +1325,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
                 UART_write(uartHandle, audio_encoded, BLEAUDIO_BUFSIZE_ADPCM + BLEAUDIO_HDRSIZE_ADPCM);
               }
 #endif //UART_DUMP_UNCOMPRESSED
-              PIN_setOutputValue( ledPinHandle, Board_DIO26_ANALOG, 1);
-            }
-            else {
-              audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
-            }
 #endif //STREAM_TO_AUDBOOST
             frameReady = FALSE;
           }
@@ -1364,10 +1347,12 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
             }
           }
 #else //STREAM_TO_PC
+#ifdef UART_DUMP_UNCOMPRESSED
           if (!audio_decoded) {
               audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
               Display_print0(dispHandle, 5, 0, "Failed to allocate mem for decoding");
           }
+#endif //UART_DUMP_UNCOMPRESSED
 #endif //STREAM_TO_AUDBOOST
           PIN_setOutputValue( ledPinHandle, Board_DIO28_ANALOG, 1);
       }
@@ -1397,7 +1382,9 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               streamVariables.i2sOpened = TRUE;
             }
 #else //STREAM_TO_PC
+#ifdef UART_DUMP_UNCOMPRESSED
             audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
+#endif //UART_DUMP_UNCOMPRESSED
 #endif //STREAM_TO_AUDBOOST
             Display_print0(dispHandle, 5, 0, "ADPCM Stream");
           }
@@ -1424,7 +1411,9 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               Display_print0(dispHandle, 5, 0, "Failed to allocate mem for I2S driver on start");
             }
 #else //STREAM_TO_PC
+#ifdef UART_DUMP_UNCOMPRESSED
             audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
+#endif //UART_DUMP_UNCOMPRESSED
 #endif //STREAM_TO_AUDBOOST
             // Initialize encoder
             sbc_init_msbc(&sbc, 0);
@@ -1465,9 +1454,11 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               }
             }
 #else //STREAM_TO_PC
+#ifdef UART_DUMP_UNCOMPRESSED
             if (audio_decoded) {
               ICall_free(audio_decoded);
             }
+#endif //UART_DUMP_UNCOMPRESSED
             if (streamVariables.streamType == BLE_AUDIO_CMD_START_MSBC)
             {
               sbc_finish(&sbc);

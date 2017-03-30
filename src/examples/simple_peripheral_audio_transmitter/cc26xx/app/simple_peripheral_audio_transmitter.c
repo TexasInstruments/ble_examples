@@ -179,6 +179,8 @@
 #define BLE_AUDIO_CMD_START_MSBC              0x05
 #define BLE_AUDIO_CMD_NONE                    0xFF
 
+#define RAS_DATA_TIC1_CMD                     0x01
+
 /*********************************************************************
  * TYPEDEFS
  */
@@ -302,7 +304,7 @@ static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE AudioTx";
 static gattMsgEvent_t *pAttRsp = NULL;
 static uint8_t rspTxRetry = 0;
 
-#define INPUT_OPTION      AUDIO_CODEC_MIC_LINE_IN //AUDIO_CODEC_MIC_ONBOARD
+#define INPUT_OPTION      AUDIO_CODEC_MIC_ONBOARD
 #define BLEAUDIO_BUFSIZE_ADPCM            96
 #define BLEAUDIO_HDRSIZE_ADPCM            4
 
@@ -494,10 +496,10 @@ static void SimpleBLEPeripheral_init(void)
   RCOSC_enableCalibration();
 #endif // USE_RCOSC
 
-#if defined (DLE_ENABLED)  
+#if defined (DLE_ENABLED)
   HCI_LE_WriteSuggestedDefaultDataLenCmd(DLE_MAX_PDU_SIZE , DLE_MAX_TX_TIME);
 #endif
-  
+
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
@@ -761,7 +763,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
             audio_encoded[1] = seqNum++;
           }
           else {
-            audio_encoded[0] = seqNum++;
+          audio_encoded[0] = (((seqNum++ % 32) << 3) | RAS_DATA_TIC1_CMD);
             // Send previous PV and SI
             audio_encoded[1] = streamVariables.si;
             audio_encoded[2] = LO_UINT16(streamVariables.pv);

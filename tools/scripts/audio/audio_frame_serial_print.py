@@ -3,8 +3,8 @@
  * Filename: audio_frame_serial_print.py
  *
  * Description: This tool is used to decode audio frames from the
- * CC2650ARC, the CC2650STK development kits and the CC2650 LaunchPad with 
- * CC3200AUDBOOST booster pack. These frames will saved to a wav file for 
+ * CC2650ARC, the CC2650STK development kits and the CC2650 LaunchPad with
+ * CC3200AUDBOOST booster pack. These frames will saved to a wav file for
  * playback. This script expects audio compressed in ADPCM format.
  *
  * Copyright (C) 2016-2017 Texas Instruments Incorporated - http://www.ti.com/
@@ -48,6 +48,8 @@ from serial import SerialException
 from time import time
 import time
 import winsound
+import os
+import sys
 
 tic1_stepsize_Lut = [
   7,    8,    9,   10,   11,   12,   13,   14, 16,   17,   19,   21,   23,   25,   28,   31,
@@ -65,6 +67,9 @@ tic1_IndexLut = [
 
 SI_Dec = 0
 PV_Dec = 0
+
+def get_script_path():
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 def tic1_DecodeSingle(nibble):
     global SI_Dec
@@ -123,7 +128,7 @@ def save_wav():
     filename = time.strftime("pdm_test_%Y-%m-%d_%H-%M-%S_adpcm")
 
     print "saving file"
-    w = wave.open("samples/" + filename + ".wav", "w")
+    w = wave.open(get_script_path() + "/samples/" + filename + ".wav", "w")
     w.setnchannels(1)
     w.setframerate(16000)
     w.setsampwidth(2)
@@ -148,7 +153,7 @@ prevSeqNum = 0
 missedFrames = 0
 try:
     ser = None
-    ser = Serial("COM91", 460800, timeout=0.1)
+    ser = Serial("COM137", 460800, timeout=0.1)
     readSoFar = 0
 
     while True:
@@ -162,17 +167,12 @@ try:
             inbuffer += indata
 
             if len(inbuffer) == bufLen:
-##              if frameNum == 1:
                 seqNum, SI_received, PV_received = struct.unpack('BBh', inbuffer[0:4])
                 seqNum = (seqNum >> 3)
                 print "Frame sequence number: %d" % seqNum
 
                 print "HDR_1 local: %d, HDR_1 received: %d" % (SI_Dec, SI_received)
                 print "HDR_2 local: %d, HDR_2 received: %d" % (PV_Dec, PV_received)
-
-                #always use received PV and SI 
-##                PV_Dec = PV_received
-##                SI_Dec = SI_received
 
                 if seqNum > prevSeqNum:
                     missedFrames = (seqNum - prevSeqNum -1)
@@ -191,7 +191,7 @@ try:
                 readSoFar = 0
 
                 lastByteTime = time.time()
-                
+
 except SerialException as e:
     print "Serial port error"
     print e
