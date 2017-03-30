@@ -570,10 +570,10 @@ static void SimpleBLECentral_init(void)
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &sem);
 
-#if defined (DLE_ENABLED)  
+#if defined (DLE_ENABLED)
   HCI_LE_WriteSuggestedDefaultDataLenCmd(DLE_MAX_PDU_SIZE , DLE_MAX_TX_TIME);
 #endif
-  
+
   // Open all pins
   ledPinHandle = PIN_open(&allPinState, ledPinTable);
 
@@ -1012,6 +1012,15 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         {
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
+
+          if (FALSE == serviceDiscComplete)
+          {
+            // Begin Service Discovery of AUDIO Service to find out report handles
+            serviceToDiscover = AUDIO_SERV_UUID;
+            SimpleBLECentral_DiscoverService( connHandle, serviceToDiscover );
+            serviceDiscComplete = FALSE;
+            audioConfigEnable =0; //This will re-trig an audio configuration if needed
+          }
 
           Util_startClock(&startDiscClock);
 
