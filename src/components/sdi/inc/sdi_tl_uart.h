@@ -62,7 +62,7 @@ extern "C"
 #define SDI_UART_INT_ENABLE TRUE
 
 #if !defined(SDI_UART_BR)
-#define SDI_UART_BR 921600 //115200
+#define SDI_UART_BR 115200
 #endif // !SDI_UART_BR
 
 // UART ISR Buffer define
