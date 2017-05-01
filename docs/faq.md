@@ -1,65 +1,99 @@
-Frequently Asked Questions
-==========================
+## Frequently Asked Questions
 
-1. Q: What if I installed the TI BLE SDK to a non default location (i.e. not `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx`)
- - A : All projects reference files from the BLE stack using environment variables, you can change this in your IDE's project files
+* [What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. ``C:\ti\simplelink_cc2640r2_sdk_M_mm_pp_bb``)?](#default)
+* [Why am I getting an error when I am trying to run a Python script from the /tools folder?](#python)
+* [How can I setup my toolchain for use with the ble\_examples repo?](#toolchain)
+* [I am using a LaunchPad device, how can I view display data?](#display)
+---
 
-    **IAR**
+### <a name="default"></a>What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. ``C:\ti\simplelink_cc2640r2_sdk_M_mm_pp_bb``)?
 
-    1. Navigate to a project within the repo (i.e. project\_zero -- examples/cc2650lp/multi_role/iar) and open the `.custom_argvars` file
-    2. Replace any references to `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx\` with your custom install location
-    3. Rinse and repeat for all project files
+All projects reference files from the BLE stack using environment variables, you
+can change this in your IDE's project files.
 
-    **CCS**
+**CCS**
 
-    1. Navigate to a project within the repo (i.e. multi\_role -- examples/rtos/CC2640R2_LAUNCHXL/blestack/cc2640r2_project_zero/tirtos/ccs)
-    2. Open the `.projectspec` file for the stack and change the path from `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx`` to your custom path as below
-    ```xml
-    <pathVariable name="TI_BLE_SDK_BASE" path="`C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx`" scope="project"></pathVariable>
-    ```
-    3. Navigate to your project's app folder and repeat step 2.
-    4. Rinse and repeat for all project files
+No changes to the project is necessary. You just need to ensure that Code
+Composer Studio was able to discover the SimpleLink CC2640R2 SDK in the
+available *RTSC Products* tab. See the [BLE5-Stack User's Guide][BLE5-Stack] or
+the [BLE Software Developer's Guide][BLE-Stack] for more details.
 
-2. Q: I get an error when I am trying to run a Python script from the /tools folder
- - A: Likely your Python environment is not installed correctly. Please check the following debug steps
-    1. All scripts in the tools folder use Python 2.7, ensure that you have this version installed to `C:\Python27`
-    2. Python scripts can be invoked using `python <script_name>.py` this requires adding Python to your environment variables
-      - Add C:\Python27 and C:\Python27\Scripts to the `PATH` variable within your Windows environment vars, see [windows env vars](https://www.java.com/en/download/help/path.xml) for more info.
-    3. If you can run the script successfully but get a runtime error, you likely don't have the necessary python modules installed.
-      - Python modules can be found by looking at the `import` statements at the top of the `.py` file. You can install Python modules using the Python package manager, pip.
-      - Install Pip by following [these steps](http://stackoverflow.com/questions/4750806/how-do-i-install-pip-on-windows). The section "Python 2 ≤ 2.7.8 and Python 3 ≤ 3.3" will be most helpful.
+**IAR**
 
-3. Q: How can I setup my toolchain for use with the ble\_examples repo?
- - A: Please check the steps below
+1. Navigate to the sample project directory within the repo and open the
+   `.custom_argvars` file.
+1. Update the value of ``SIMPLELINK_CORE_SDK_INSTALL_DIR`` to point to your
+   custom installation directory where you installed the SimpleLink CC2640R2 SDK.
 
-    **IAR**
+---
 
-    1. Please refer to Developing IAR section of the TI BLE Software Developer's Guide. Version 7.80.1 is supported.
+### <a name="python"></a>Why am I getting an error when I am trying to run a Python script from the /tools folder?
 
-    **CCS**
+Likely your Python environment is not installed correctly. Please check the
+following debug steps:
 
-    1. Please refer to the Developing with CCS section of the TI BLE Software Developer's Guide. Version 7.0.0 is supported.
+1. All scripts in the tools folder use Python 2.7, ensure that you have this
+   version installed to `C:\Python27`
+1. Python scripts can be invoked using `python <script_name>.py` this requires
+   adding Python to your environment variables.
+   * Add ``C:\Python27`` to the `PATH` variable within your Windows environment
+     variables, see
+     [windows env vars](https://www.java.com/en/download/help/path.xml) for more
+     info.
+1. If you can run the script successfully but get a runtime error, you likely
+   don't have the necessary python modules installed.
+  * Python modules can be found by looking at the `import` statements at the top
+    of the `.py` file. You can install Python modules using the Python package
+    manager, pip.
+  - Install Pip by following
+    [these steps](http://stackoverflow.com/questions/4750806/how-do-i-install-pip-on-windows).
+    The section "Python 2 ≤ 2.7.8 and Python 3 ≤ 3.3" will be most helpful.
 
-4. Q: I am using a LaunchPad device, how can I view display data?
- - A: LaunchPad projects that use the display driver are already setup to do so, for more information about the driver please see the Display.h header file within the TI-RTOS install `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx\source\ti\display`. <br> To setup your PC to receive this data please follow the steps below:
+---
 
-    1. Install PuTTY or another serial terminal emulator
-    2. If not done, connect the LaunchPad to the computer using the micro USB cable.
-    3. The Windows Device Manager (Start &rarr; Run &rarr; `mmc devmgmt.msc` &rarr; Ok) should show you the following devices connected:
-       ![Device Manager](doc_resources/dev_mgr_xds110.png)
+### <a name="toolchain"></a>How can I setup my toolchain for use with the ble\_examples repo?
 
-    4. Note the COM port number of the `XDS110 Class Application/User UART` listed.
-    5. Configure putty as a serial console with 115200 8N1.
-    6. Fill in the Serial Line field with the COM port from above.
-    7. When configured correctly, the program should look as below:
+**CCS**
+
+For BLE5-Stack examples, see the *Developing in CCS* section in the
+[BLE5-Stack User's Guide][BLE5-Stack]
+for BLE-Stack examples, see the *Developing with CCS* section of the
+[BLE Software Developer's Guide][BLE-Stack].
+
+**IAR**
+
+For BLE5-Stack examples, see the *Developing in IAR* section in the
+[BLE5-Stack User's Guide][BLE5-Stack]
+for BLE-Stack examples, see the *Developing with IAR* section of the
+[BLE Software Developer's Guide][BLE-Stack].
+
+---
+
+### <a name="display"></a>I am using a LaunchPad device, how can I view display data?
+LaunchPad projects are already set up to use the tidriver Display. For more
+information about the Display driver please see the Display.h driver
+documentation in the Simplelink CC2640R2 SDK (`docs/tidrivers/tidriversAPI.html`)
+
+To setup your PC to receive this data please follow the steps below:
+
+1. Install PuTTY or another serial terminal emulator
+1. Use the Windows Device Manager (Start &rarr; Run &rarr; `mmc devmgmt.msc`
+    &rarr; Ok) to determine which COM port you should connect to:
+    
+    ![Device Manager](resources/dev_mgr_xds110.png)
+    * Note the COM port number of the `XDS110 Class Application/User UART` listed.
+1. Configure putty as a serial console with 115200 8N1.
+1. Fill in the Serial Line field with the COM port from above.
+1. When configured correctly, the program should look as below:
 
 
-    | Main Screen                                      | Serial Screen                                        |
-    |:-----------------------------------------------:|:----------------------------------------------------:|
-    |  ![Putty Main](doc_resources/putty_main_scrn.png)  |   ![Putty serial](doc_resources/putty_serial_scrn.png) |
+| Main Screen                                   | Serial Screen                         |
+|:---------------------------------------------:|:-------------------------------------:|
+| ![Putty Main](resources/putty_main_scrn.png)  | ![Putty serial](resources/putty_serial_scrn.png) |
 
+**You may need to unplug/replug your LaunchPad and restart PuTTY if you do not see any output.**
 
-    **You may need to unplug/replug your launchpad and restart PuTTY if you do not see any output.**
+---
 
-
-
+[BLE5-Stack]: (http://software-dl.ti.com/lprf/ble5stack-docs-latest/html)
+[BLE-Stack]:  (http://software-dl.ti.com/lprf/sdg-latest/html)

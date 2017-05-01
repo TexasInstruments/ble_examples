@@ -1,92 +1,101 @@
-Extra examples for TI BLE-Stack SDK
-===================================
+Extra examples and demos for **TI SimpleLink CC2640R2 SDK**
+===========================================================
 
-This repository contains additional sample applications and components for the Texas Instruments *Bluetooth&reg;* Low Energy software development kit.
+This repository contains additional *Bluetooth&reg;* 5 and *Bluetooth&reg;* 4.2
+Low Energy sample applications for Texas Instruments' SimpleLink CC2640R2 SDK.
 
-To use the examples and tools in this repository, please [download and install the SDK](http://www.ti.com/ble-stack) first, and if necessary [buy an evaluation kit](http://www.ti.com/tool/launchxl-cc2640r2).
+To use the examples and tools in this repository, please download and install
+the [SimpleLink CC2640R2 SDK](http://www.ti.com/ble-stack) first, and if
+necessary [buy an evaluation kit](http://www.ti.com/tool/launchxl-cc2640r2).
 
-For other hardware and software resources, [please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions please refer to the [FAQ page](docs/faq.md).
-
-**Note:** Not all additional sample projects are migrated to GitHub - please refer to the Examples List below.
+For other hardware and software resources,
+[please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions
+please refer to the [FAQ page](docs/faq.md).
 
 Installation
 ============
 
-This repository can be cloned and tracked using Git. For instructions on how to clone a repository from Github please refer to this guide: [Clone from Github](https://help.github.com/articles/cloning-a-repository/)
+This repository can be cloned and tracked using Git. For instructions on how to
+clone a repository from Github please refer to this guide:
+[Clone from Github](https://help.github.com/articles/cloning-a-repository/)
 
-For users who are unfamiliar with Git, there is the option of downloading the contents of the repository as a zip file. See instructions below.
+For users who are unfamiliar with Git, there is the option of downloading the
+contents of the repository as a zip file. See instructions below.
 
-    - Click the green "Clone or download" button
-    - Select "Download ZIP" option
-    - Zip folder will appear in your Downloads folder
+1. Click the green "Clone or download" button
+1. Select "Download ZIP" option
+1. Zip folder will appear in your Downloads folder
 
-&nbsp;&nbsp;&nbsp;&nbsp;![Download Github zip](docs/doc_resources/download_zip_github.png)
+This repository can be cloned/download anywhere on your computer. There is a
+dependency between this repository and the SimpleLink CC2640R2 SDK install
+location.
 
-This repository can be cloned/download anywhere on your computer. There is a dependency between this repository and the BLE SDK install location.
+By default the SimpleLink CC2640R2 SDK will install to:
 
-By default the BLE SDK will install to:
+    C:\ti\simplelink_cc2640r2_sdk_M_mm_pp_bb
 
-        C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx
-
-If the BLE SDK must be installed to a different location, then the examples in this repo will need to have the following environment variable updated
-
-        TI_BLE_SDK_BASE
-
-Follow your IDE specific instructions for changing environment variables or simply do a global search and replace within the ble\_examples folder. See the [FAQ page](docs/faq.md) for more details.
-
-By default, TI\_BLE\_SDK\_BASE points to `C:\ti\simplelink_cc2640r2_sdk_1_00_00_xx`. If you installed the SDK to the default location, no change is required.
+If the Simplelink CC2640R2 SDK must be installed to a different location, then
+see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
+environment variables.
 
 Required Tools
 ==============
 
-Similar to the BLE-Stack SDK, the examples in this repository support the IAR and CCS toolchains. Please pay careful attention to versions of these tools, the supported version are listed below. Using a non supported version is untested and may result in unexpected behavior.
+Similar to the Simplelink CC2640R2 SDK, the examples in this repository support
+the CCS and IAR toolchains. Please pay careful attention to versions of these
+tools, the supported version are listed below. Using a non supported version is
+untested and may result in unexpected behavior.
 
- - IAR for ARM v7.80.1
- - CCS v7.0.0 with TI ARM Compiler v16.09
+* CCS v7.1.0 with TI ARM Compiler v16.09
+* IAR for ARM v7.80.3
 
-For more information on toolchain setup, please refer to our [FAQ page](docs/faq.md).
-
-Board Files
-===========
-
-This repo contains three sets of board files one for each package type:
-
-    source/ti/blestack/boards/CC2640R2DK_4XS/
-    source/ti/blestack/boards/CC2640R2DK_5XD/
-    source/ti/blestack/boards/CC2640R2DK_7ID/
-
-These are generic board files supporting all QFN packages of CC2640R2F device.
-They have been tested to run on the BLE 3.0 Stack which can be downloaded from
-the wiki: http://www.ti.com/tool/download/SIMPLELINK-CC2640R2-SDK.
-
-Follow these steps to easily add these board files to any project:
-1. Exclude existing "board.c" under Startup folder in the project
-2. Copy and paste the respective board files in this patch to the Startup folder
-3. Modify the board files based on your custom board
+For more information on toolchain setup, please refer to our
+[FAQ page](docs/faq.md).
 
 FAQ
 ===
 
-The [FAQ page](docs/faq.md) will try to address some of the common questions related to the ble_examples repo.
+The [FAQ page](docs/faq.md) will try to address some of the common questions
+related to the ble_examples repo.
 
-Examples List
-=============
+Examples / Demo List
+====================
 
-The following examples are currently supported:
+### Bluetooth 5 Throughput Demo
 
-### project_zero
-&nbsp;&nbsp;&nbsp;&nbsp;Quickly connect to smartphone to toggle LEDs, receive
-button press notifications, and display messages over UART.
-&nbsp;&nbsp;&nbsp;&nbsp;
+This 2 part demo where a throughput\_central and throughput\_peripheral connect
+with one another, demonstrating the BLE5-Stack's 1 Mbps, 2 Mbps, 1+2 Mbps,
+and Coded PHYs.
 
-[docs](docs/project_zero.md) | [project files](examples/rtos/CC2640R2_LAUNCHXL/blestack/cc2640r2_project_zero/tirtos/ccs) | [src](examples/rtos/CC2640R2_LAUNCHXL/blestack/cc2640r2_project_zero/src)
+* throughput\_central
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/throughput_central.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/tirtos/iar)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/src)
+* throughput\_peripheral
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/throughput_peripheral.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/iar)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/src)
 
 References
 ==========
 
-The following reference pages may be helpful during general BLE development. New users of the CC26xx platform and BLE are encouraged to read the TI BLE Software Developer's Guide (located in the docs/blestack directory of your SDK install ) and complete the [SimpleLink Academy](http://software-dl.ti.com/lprf/simplelink_academy/overview.html) training.
+The following reference pages may be helpful during general Bluetooth Low
+Energy development. New users of the Simplelink CC2640R2 platform and Bluetooth
+5 development are encouraged to read the
+[BLE5-Stack User's Guide][BLE5-Stack].
+Users developing Bluetooth 4.2 applications are encouraged to read the
+[BLE Software Developer's Guide][BLE-Stack].
+
+As an additional resource, users are encouraged to complete the
+[SimpleLink Academy](http://software-dl.ti.com/lprf/simplelink_academy/overview.html)
+training.
 
 Other resources can be found below:
 
 * [BLE wiki](http://www.ti.com/ble-wiki)
 * [BLE E2E Page](www.ti.com/ble-forum)
+
+[BLE5-Stack]: (http://software-dl.ti.com/lprf/ble5stack-docs-latest/html)
+[BLE-Stack]:  (http://software-dl.ti.com/lprf/sdg-latest/html)
