@@ -39,10 +39,12 @@ By default, TI\_BLE\_SDK\_BASE points to `C:\ti\simplelink\ble_sdk_2_02_01_18\`.
 Required Tools
 ==============
 
-Similar to the BLE-Stack SDK, the examples in this repository support the IAR and CCS toolchains. Please pay careful attention to versions of these tools, the supported version are listed below. Using a non supported version is untested and may result in unexpected behavior.
+Similar to the BLE-Stack SDK, the examples in this repository support the IAR and CCS toolchains. Please pay careful attention to versions of these tools, the supported version are listed below. **Using a non supported version is untested and may result in unexpected behavior.**
 
  - IAR for ARM v7.70.2
  - CCS v6.2.0 with TI ARM Compiler v5.2.6
+ 
+TI ARM Compiler is no longer installed by default in CCS v6.2.0. For instructions on installing TI ARM Compiler v5.2.6, please refer to the [Installing a Specific TI ARM Compiler](http://software-dl.ti.com/lprf/sdg-latest/html/cc2640/platform.html#installing-a-specific-ti-arm-compiler) of the TI BLE Software Developer's Guide.
 
 For more information on toolchain setup, please refer to our [FAQ page](docs/faq.md).
 
