@@ -22,7 +22,8 @@ sedFile()
     echo "Updating $(basename $workFile) ..."
     sed -i \
         -e "s|simplelink_cc2640r2_sdk[0-9_]*\(eng\)\?|${SIMPLELINK_SDK_VER}|g" \
-        -e "s|(name=\"xdcToolsVersion\".value=\")[0-9_]*\(eng\)\?(\")|\1${XDCTOOLS_VER_DOT}\s|g" \
+        -e "s|\(SDK\s\+\)[0-9\.]\+|\1${SIMPLELINK_SDK_VER_DOT}|g" \
+        -e "s|\(name=\"xdcToolsVersion\".value=\"\)[0-9_]*\(eng\)\?(\")|\1${XDCTOOLS_VER_DOT}\s|g" \
         -e "s|com.ti.SIMPLELINK_CC2640R2_SDK:[0-9_\.]*\(eng\)\?|com.ti.SIMPLELINK_CC2640R2_SDK:${SIMPLELINK_SDK_VER_DOT}|g" \
         $workFile
 }

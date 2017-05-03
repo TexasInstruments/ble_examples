@@ -1,8 +1,10 @@
-Extra examples and demos for **TI SimpleLink CC2640R2 SDK**
-===========================================================
+# Introduction
 
-This repository contains additional *Bluetooth&reg;* 5 and *Bluetooth&reg;* 4.2
-Low Energy sample applications for Texas Instruments' SimpleLink CC2640R2 SDK.
+These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.35.00.33**
+
+This repository contains experimental *Bluetooth&reg;* 5 and *Bluetooth&reg;*
+4.2 Low Energy sample applications for Texas Instruments' SimpleLink CC2640R2
+SDK. These examples have not been validated as production-ready.
 
 To use the examples and tools in this repository, please download and install
 the [SimpleLink CC2640R2 SDK](http://www.ti.com/ble-stack) first, and if
@@ -12,8 +14,13 @@ For other hardware and software resources,
 [please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions
 please refer to the [FAQ page](docs/faq.md).
 
-Installation
-============
+## Change Log
+
+### 1.35.00.00
+Initial offering of Simplelink CC2640R2 SDK examples.
+* BLE5-Stack: Throughput Demo (Central/Peripheral)
+
+## Installation
 
 This repository can be cloned and tracked using Git. For instructions on how to
 clone a repository from Github please refer to this guide:
@@ -38,8 +45,7 @@ If the Simplelink CC2640R2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
 environment variables.
 
-Required Tools
-==============
+## Required Tools
 
 Similar to the Simplelink CC2640R2 SDK, the examples in this repository support
 the CCS and IAR toolchains. Please pay careful attention to versions of these
@@ -52,14 +58,12 @@ untested and may result in unexpected behavior.
 For more information on toolchain setup, please refer to our
 [FAQ page](docs/faq.md).
 
-FAQ
-===
+## FAQ
 
 The [FAQ page](docs/faq.md) will try to address some of the common questions
 related to the ble_examples repo.
 
-Examples / Demo List
-====================
+## Examples / Demo List
 
 ### Bluetooth 5 Throughput Demo
 
@@ -76,8 +80,7 @@ and Coded PHYs.
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/iar)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/src)
 
-References
-==========
+## References
 
 The following reference pages may be helpful during general Bluetooth Low
 Energy development. New users of the Simplelink CC2640R2 platform and Bluetooth

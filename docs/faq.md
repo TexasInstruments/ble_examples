@@ -1,12 +1,12 @@
 ## Frequently Asked Questions
 
-* [What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. ``C:\ti\simplelink_cc2640r2_sdk_1_35_00_33M_mm_pp_bb``)?](#default)
+* [What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. Not at ``C:\ti\simplelink_cc2640r2_sdk_1_35_00_33``)?](#default)
 * [Why am I getting an error when I am trying to run a Python script from the /tools folder?](#python)
 * [How can I setup my toolchain for use with the ble\_examples repo?](#toolchain)
 * [I am using a LaunchPad device, how can I view display data?](#display)
 ---
 
-### <a name="default"></a>What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. ``C:\ti\simplelink_cc2640r2_sdk_1_35_00_33M_mm_pp_bb``)?
+### <a name="default"></a>What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. Not at ``C:\ti\simplelink_cc2640r2_sdk_1_35_00_33``)?
 
 All projects reference files from the BLE stack using environment variables, you
 can change this in your IDE's project files.
@@ -79,7 +79,7 @@ To setup your PC to receive this data please follow the steps below:
 1. Install PuTTY or another serial terminal emulator
 1. Use the Windows Device Manager (Start &rarr; Run &rarr; `mmc devmgmt.msc`
     &rarr; Ok) to determine which COM port you should connect to:
-    
+
     ![Device Manager](resources/dev_mgr_xds110.png)
     * Note the COM port number of the `XDS110 Class Application/User UART` listed.
 1. Configure putty as a serial console with 115200 8N1.
