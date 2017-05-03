@@ -68,13 +68,11 @@ with one another, demonstrating the BLE5-Stack's 1 Mbps, 2 Mbps, 1+2 Mbps,
 and Coded PHYs.
 
 * throughput\_central
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/throughput_central.md)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/tirtos/iar)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/src)
 * throughput\_peripheral
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/throughput_peripheral.md)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/iar)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/src)
 
