@@ -1,12 +1,12 @@
 ## Frequently Asked Questions
 
-* [What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. ``C:\ti\simplelink_cc2640r2_sdk_M_mm_pp_bb``)?](#default)
+* [What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. ``C:\ti\simplelink_cc2640r2_sdk_1_35_00_33M_mm_pp_bb``)?](#default)
 * [Why am I getting an error when I am trying to run a Python script from the /tools folder?](#python)
 * [How can I setup my toolchain for use with the ble\_examples repo?](#toolchain)
 * [I am using a LaunchPad device, how can I view display data?](#display)
 ---
 
-### <a name="default"></a>What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. ``C:\ti\simplelink_cc2640r2_sdk_M_mm_pp_bb``)?
+### <a name="default"></a>What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. ``C:\ti\simplelink_cc2640r2_sdk_1_35_00_33M_mm_pp_bb``)?
 
 All projects reference files from the BLE stack using environment variables, you
 can change this in your IDE's project files.

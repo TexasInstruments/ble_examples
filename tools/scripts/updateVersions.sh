@@ -2,17 +2,14 @@
 
 source ./setEnv.sh
 
-: ${BLE_SDK_VER:?We need a BLE SDK version}
-: ${TIRTOS_VER:?We need a TI-RTOS version}
-: ${BIOS_VER:?We need a BIOS version}
-: ${TIDRIVERS_VER:?We need a TI Drivers version}
-: ${CC26XXWARE_VER:?We need a CC26XXWare version}
-: ${CC13XXWARE_VER:?We need a CC26XXWare version}
-: ${UIA_VER:?We need a UIA version}
+: ${SIMPLELINK_SDK_VER:?We need a Simplelink SDK version}
+: ${XDCTOOLS_VER:?We need a XDCTools version}
 
 re='([0-9])_([0-9]{2})_([0-9]{2})_([0-9]{2})([_a-z]*)'
-[[ ${TIRTOS_VER} =~ ${re} ]]
-TIRTOS_VER_DOT=${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}.${BASH_REMATCH[4]}${BASH_REMATCH[5]}
+[[ ${SIMPLELINK_SDK_VER} =~ ${re} ]]
+SIMPLELINK_SDK_VER_DOT=${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}.${BASH_REMATCH[4]}${BASH_REMATCH[5]}
+[[ ${XDCTOOLS_VER} =~ ${re} ]]
+XDCTOOLS_VER_DOT=${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}.${BASH_REMATCH[4]}${BASH_REMATCH[5]}
 
 #
 #  ======== sedFile ========
@@ -24,14 +21,9 @@ sedFile()
     workFile=$1
     echo "Updating $(basename $workFile) ..."
     sed -i \
-        -e "s|simplelink_cc2640r2_sdk[0-9_]*\(eng\)\?|${BLE_SDK_VER}|g" \
-#        -e "s|tirtos_cc13xx_cc26xx_[0-9_]*\(eng\)\?|${TIRTOS_VER}|g" \
-#        -e "s|bios_[0-9_]*\(eng\)\?|${BIOS_VER}|g" \
-#        -e "s|cc13xxware_[0-9_]*\(eng\)\?|${CC13XXWARE_VER}|g" \
-#        -e "s|cc26xxware_[0-9_]*\(eng\)\?|${CC26XXWARE_VER}|g" \
-#        -e "s|tidrivers_cc13xx_cc26xx_[0-9_]*\(eng\)\?|${TIDRIVERS_VER}|g" \
-#        -e "s|uia_[0-9_]*\(eng\)\?|${UIA_VER}|g" \
-#        -e "s|com.ti.rtsc.TIRTOSCC13XX_CC26XX:[0-9_\.]*\(eng\)\?|com.ti.rtsc.TIRTOSCC13XX_CC26XX:${TIRTOS_VER_DOT}|g" \
+        -e "s|simplelink_cc2640r2_sdk[0-9_]*\(eng\)\?|${SIMPLELINK_SDK_VER}|g" \
+        -e "s|(name=\"xdcToolsVersion\".value=\")[0-9_]*\(eng\)\?(\")|\1${XDCTOOLS_VER_DOT}\s|g" \
+        -e "s|com.ti.SIMPLELINK_CC2640R2_SDK:[0-9_\.]*\(eng\)\?|com.ti.SIMPLELINK_CC2640R2_SDK:${SIMPLELINK_SDK_VER_DOT}|g" \
         $workFile
 }
 
@@ -41,12 +33,7 @@ printVersions()
     echo "/*****************************"
     echo " *       VERSIONS USED       *"
     echo " ****************************/"
-    echo "BLE SDK:          ${BLE_SDK_VER}"
-    echo "TI-RTOS:          ${TIRTOS_VER}"
-    echo "TI-DRIVERS:       ${TIDRIVERS_VER}"
-    echo "CC26XXWARE:       ${CC26XXWARE_VER}"
-    echo "CC13XXWARE:       ${CC13XXWARE_VER}"
-    echo "UIA:              ${UIA_VER}"
+    echo "SIMPLELINK SDK: ${SIMPLELINK_SDK_VER}"
 }
 
 #

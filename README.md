@@ -32,7 +32,7 @@ location.
 
 By default the SimpleLink CC2640R2 SDK will install to:
 
-    C:\ti\simplelink_cc2640r2_sdk_M_mm_pp_bb
+    C:\ti\simplelink_cc2640r2_sdk_1_35_00_33
 
 If the Simplelink CC2640R2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
