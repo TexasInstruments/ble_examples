@@ -16,6 +16,9 @@ please refer to the [FAQ page](docs/faq.md).
 
 ## Change Log
 
+### 1.35.00.01
+* BLE5-Stack: Added Long Range Demo (Central/Peripheral)
+
 ### 1.35.00.00
 Initial offering of Simplelink CC2640R2 SDK examples.
 * BLE5-Stack: Throughput Demo (Central/Peripheral)
@@ -79,6 +82,21 @@ and Coded PHYs.
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/iar)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/src)
+
+### Bluetooth 5 Long Range Demo
+
+This is a 2 part demo where a longrange\_central and longrange\_peripheral
+connect with one another, demonstrating the BLE5-Stack's long range capabilities
+using the Coded PHY (S8).
+
+* longrange\_central
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_central/readme.md)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_central/tirtos/iar)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_central/src)
+* longrange\_peripheral
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/readme.md)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/tirtos/iar)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/src)
 
 ## References
 

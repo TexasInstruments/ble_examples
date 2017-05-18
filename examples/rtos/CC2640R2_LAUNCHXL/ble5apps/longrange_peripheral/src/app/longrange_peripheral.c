@@ -63,7 +63,8 @@
 #include "icall_ble_api.h"
 
 #include "devinfoservice.h"
-#include "throughput_service.h"
+#include "profiles/throughput/throughput_service.h"
+#include "profiles/temperature/temperature_service.h"
 
 #include "peripheral.h"
 
@@ -71,9 +72,13 @@
 
 #include "board_key.h"
 
-#include "throughput_peripheral_menu.h"
+#include "longrange_peripheral_menu.h"
 
-#include "throughput_peripheral.h"
+#include "longrange_peripheral.h"
+
+#undef DEVICE_FAMILY_PATH
+#define DEVICE_FAMILY_PATH(x) <ti/devices/DEVICE_FAMILY/x>
+#include DEVICE_FAMILY_PATH(driverlib/aon_batmon.h)
 
 /*********************************************************************
  * CONSTANTS
@@ -88,7 +93,7 @@
 
 // Minimum connection interval (units of 1.25ms, 80=100ms) if automatic
 // parameter update request is enabled
-#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     80
+#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     8
 
 // Maximum connection interval (units of 1.25ms, 800=1000ms) if automatic
 // parameter update request is enabled
@@ -109,7 +114,8 @@
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         6
 
 // How often to perform periodic event (in msec)
-#define SBP_PERIODIC_EVT_PERIOD               5000
+#define SBP_PERIODIC_EVT_PERIOD               1000
+#define SBP_PERIODIC_LED_PERIOD               500
 
 // Application specific event ID for HCI Connection Event End Events
 #define SBP_HCI_CONN_EVT_END_EVT              0x0001
@@ -141,18 +147,19 @@
 // Internal Events for RTOS application
 #define SBP_ICALL_EVT                         ICALL_MSG_EVENT_ID // Event_Id_31
 #define SBP_QUEUE_EVT                         UTIL_QUEUE_EVENT_ID // Event_Id_30
-#define SBP_PERIODIC_EVT                      Event_Id_00
-#define SBP_THROUGHPUT_EVT                    Event_Id_01
+#define SBP_PERIODIC_EVT                      Event_Id_01
 #define SBP_PDU_CHANGE_EVT                    Event_Id_02
 #define SBP_PHY_CHANGE_EVT                    Event_Id_03
-
+#define SBP_TEMP_CHANGE_EVT                   Event_Id_04
+#define SBP_LED_CHANGE_EVT                    Event_Id_05
 
 #define SBP_ALL_EVENTS                        (SBP_ICALL_EVT        | \
                                                SBP_QUEUE_EVT        | \
-                                               SBP_THROUGHPUT_EVT   | \
                                                SBP_PDU_CHANGE_EVT   | \
                                                SBP_PHY_CHANGE_EVT   | \
-                                               SBP_PERIODIC_EVT)
+                                               SBP_PERIODIC_EVT     | \
+                                               SBP_TEMP_CHANGE_EVT  | \
+                                               SBP_LED_CHANGE_EVT)
 
 // Row numbers
 #define SBP_ROW_RESULT        TBM_ROW_APP
@@ -199,10 +206,11 @@ static ICall_EntityID selfEntity;
 
 // Event globally used to post local events and pend on system and
 // local events.
-static ICall_SyncHandle syncEvent;
+ICall_SyncHandle syncEvent;
 
 // Clock instances for internal periodic events.
-static Clock_Struct periodicClock;
+Clock_Struct periodicClock;
+Clock_Struct periodicLED;
 
 // Queue object used for app messages
 static Queue_Struct appMsg;
@@ -213,7 +221,7 @@ Task_Struct sbpTask;
 Char sbpTaskStack[SBP_TASK_STACK_SIZE];
 
 // Profile state and parameters
-//static gaprole_States_t gapProfileState = GAPROLE_INIT;
+static gaprole_States_t state = GAPROLE_INIT;
 
 // GAP - SCAN RSP data (max size = 31 bytes)
 static uint8_t scanRspData[] =
@@ -221,16 +229,16 @@ static uint8_t scanRspData[] =
   // complete name
   0x12,   // length of this data
   GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-  'T',
-  'h',
-  'r',
+  'L',
   'o',
-  'u',
+  'n',
   'g',
-  'h',
-  'p',
-  'u',
-  't',
+  ' ',
+  'R',
+  'a',
+  'n',
+  'g',
+  'e',
   ' ',
   'P',
   'e',
@@ -256,7 +264,12 @@ static uint8_t advertData[] =
   0x03,   // length of this data
   GAP_ADTYPE_16BIT_MORE,      // some of the UUID's, but not all
   LO_UINT16(THROUGHPUT_SERVICE_SERV_UUID),
-  HI_UINT16(THROUGHPUT_SERVICE_SERV_UUID)
+  HI_UINT16(THROUGHPUT_SERVICE_SERV_UUID),
+
+  0x03,   // length of this data
+  GAP_ADTYPE_16BIT_MORE,      // some of the UUID's, but not all
+  LO_UINT16(TEMPERATURE_SERVICE_SERV_UUID),
+  HI_UINT16(TEMPERATURE_SERVICE_SERV_UUID)
 };
 
 // GAP GATT Attributes
@@ -266,12 +279,6 @@ static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple Throughput";
 static gattMsgEvent_t *pAttRsp = NULL;
 static uint8_t rspTxRetry = 0;
 
-// Flag to Toggle Throughput Demo
-static bool throughputOn = false;
-
-// Message counter for Throughput Demo
-static uint32 msg_counter = 1;
-
 // Strings for PHY
 static uint8_t* phyName[] = {
   "1 Mbps", "2 Mbps",
@@ -280,6 +287,19 @@ static uint8_t* phyName[] = {
 
 // PHY Options
 static uint16_t phyOptions = HCI_PHY_OPT_NONE;
+
+// PIN config
+
+// Global pin resources
+PIN_State  pin;
+PIN_Handle appPins;
+static PIN_Config pinTable[] =
+{
+    Board_RLED       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
+    Board_GLED       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
+
+    PIN_TERMINATE
+};
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -294,6 +314,7 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg);
 static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState);
 static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID);
 static void SimpleBLEPeripheral_performPeriodicTask(void);
+static void SimpleBLEPeripheral_performLEDTask(void);
 static void SimpleBLEPeripheral_clockHandler(UArg arg);
 
 static void SimpleBLEPeripheral_sendAttRsp(void);
@@ -301,14 +322,12 @@ static void SimpleBLEPeripheral_freeAttRsp(uint8_t status);
 
 static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState);
 static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID);
+static void SimpleBLEPeripheral_temperatureValueChangeCB(uint8_t paramID);
 static void SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state);
-
-static void SBP_throughputOn(void);
-static void SBP_throughputOff(void);
 
 void SimpleBLEPeripheral_keyChangeHandler(uint8 keys);
 static void SimpleBLEPeripheral_handleKeys(uint8_t keys);
-static void SimpleBLEPeripheral_blastData();
+static void SimpleBLEPeripheral_handleTempEvent(uint8_t paramID);
 
 /*********************************************************************
  * EXTERN FUNCTIONS
@@ -329,6 +348,12 @@ static gapRolesCBs_t SimpleBLEPeripheral_gapRoleCBs =
 static Throughput_ServiceCBs_t SimpleBLEPeripheral_throughputProfileCBs =
 {
   SimpleBLEPeripheral_charValueChangeCB // Characteristic value change callback
+};
+
+// Temperature GATT Profile Callbacks
+static Temperature_ServiceCBs_t SimpleBLEPeripheral_temperatureProfileCBs =
+{
+  SimpleBLEPeripheral_temperatureValueChangeCB // Characteristic value change callback
 };
 
 /*********************************************************************
@@ -378,12 +403,20 @@ static void SimpleBLEPeripheral_init(void)
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &syncEvent);
 
+  appPins = PIN_open(&pin, pinTable);
+  PIN_setOutputValue(appPins, Board_RLED, Board_LED_ON);
+
+  AONBatMonEnable();
+
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
   // Create one-shot clocks for internal periodic events.
   Util_constructClock(&periodicClock, SimpleBLEPeripheral_clockHandler,
                       SBP_PERIODIC_EVT_PERIOD, 0, false, SBP_PERIODIC_EVT);
+  // Create one-shot clocks for internal periodic events.
+  Util_constructClock(&periodicLED, SimpleBLEPeripheral_clockHandler,
+                      SBP_PERIODIC_LED_PERIOD, 0, false, SBP_LED_CHANGE_EVT);
 
   dispHandle = Display_open(SBP_DISPLAY_TYPE, NULL);
 
@@ -463,7 +496,13 @@ static void SimpleBLEPeripheral_init(void)
   Throughput_Service_RegisterAppCBs(&SimpleBLEPeripheral_throughputProfileCBs);
 
   // Initialize the GATT attributes
-  Throughput_Service_AddService();      // Throughput Service
+  Throughput_Service_AddService();
+
+  // Register callbacks with Temperature Profile
+  Temperature_Service_RegisterAppCBs(&SimpleBLEPeripheral_temperatureProfileCBs);
+
+  // Initialize the GATT attributes
+  Temperature_Service_AddService();
 
   // Register with GAP for HCI/Host messages
   GAP_RegisterForMsgs(selfEntity);
@@ -483,6 +522,9 @@ static void SimpleBLEPeripheral_init(void)
 
   // By Default Allow Central to support any and all PHYs
   HCI_LE_SetDefaultPhyCmd(LL_PHY_USE_ANY_PHY, LL_PHY_1_MBPS | LL_PHY_2_MBPS| HCI_PHY_CODED, LL_PHY_1_MBPS | LL_PHY_2_MBPS| HCI_PHY_CODED);
+
+  HCI_EXT_SetTxPowerCmd(HCI_EXT_TX_POWER_5_DBM);
+  HCI_EXT_SetRxGainCmd(HCI_EXT_RX_GAIN_HIGH);
 
   // Start the Device
   VOID GAPRole_StartDevice(&SimpleBLEPeripheral_gapRoleCBs);
@@ -575,10 +617,12 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
         SimpleBLEPeripheral_performPeriodicTask();
       }
 
-      if (events & SBP_THROUGHPUT_EVT)
+      if (events & SBP_LED_CHANGE_EVT)
       {
-        // Begin Throughput Demo in App Task
-        SimpleBLEPeripheral_blastData();
+        Util_startClock(&periodicLED);
+
+        // Perform periodic application task
+        SimpleBLEPeripheral_performLEDTask();
       }
 
       if (events & SBP_PDU_CHANGE_EVT)
@@ -697,16 +741,14 @@ static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg)
                           index = 2;
                         else if (phyOptions == HCI_PHY_OPT_S8)
                           index = 3;
+
+                        Util_startClock(&periodicLED);
                       }
                       break;
                   }
                   Display_print1(dispHandle, SBP_ROW_STATUS_3, 0, "Current PHY: %s",
                                  phyName[index]);
-
                 }
-
-                // Start Throughput
-                SBP_throughputOn();
               }
 
               if (pPUC->BLEEventCode == HCI_BLE_DATA_LENGTH_CHANGE_EVENT)
@@ -714,9 +756,6 @@ static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg)
                 // TX PDU Size Updated
                 hciEvt_BLEDataLengthChange_t *dleEvt = (hciEvt_BLEDataLengthChange_t *)pMsg;
                 Display_print1(dispHandle, SBP_ROW_STATUS_2, 0, "PDU Size: %dB", dleEvt->maxTxOctets);
-
-                // Start Throughput
-                SBP_throughputOn();
               }
             }
             break;
@@ -884,6 +923,10 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
       SimpleBLEPeripheral_handleKeys(pMsg->hdr.state);
       break;
 
+    case SBP_TEMP_CHANGE_EVT:
+      SimpleBLEPeripheral_handleTempEvent(pMsg->hdr.state);
+      break;
+
     default:
       // Do nothing.
       break;
@@ -915,6 +958,8 @@ static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState)
  */
 static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
 {
+  state = newState;
+
   switch ( newState )
   {
     case GAPROLE_STARTED:
@@ -957,6 +1002,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
         uint8_t numActive = 0;
 
         Util_startClock(&periodicClock);
+        //Util_startClock(&periodicLED);
 
         numActive = linkDB_NumActive();
 
@@ -986,6 +1032,10 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
       break;
 
     case GAPROLE_WAITING:
+      // Throughput as well, if enabled
+      Util_stopClock(&periodicLED);
+      SimpleBLEPeripheral_performLEDTask();
+
       Util_stopClock(&periodicClock);
       SimpleBLEPeripheral_freeAttRsp(bleNotConnected);
 
@@ -1019,9 +1069,6 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
       Display_clearLines(dispHandle, SBP_ROW_RESULT, SBP_ROW_STATUS_2);
       break;
   }
-
-  // Update the state
-  //gapProfileState = newState;
 }
 
 /*********************************************************************
@@ -1052,6 +1099,21 @@ static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID)
 }
 
 /*********************************************************************
+ * @fn      SimpleBLEPeripheral_temperatureValueChangeCB
+ *
+ * @brief   Callback from Simple Profile indicating a characteristic
+ *          value change.
+ *
+ * @param   paramID - parameter ID of the value that was changed.
+ *
+ * @return  None.
+ */
+static void SimpleBLEPeripheral_temperatureValueChangeCB(uint8_t paramID)
+{
+  SimpleBLEPeripheral_enqueueMsg(SBP_TEMP_CHANGE_EVT, paramID);
+}
+
+/*********************************************************************
  * @fn      SimpleBLEPeripheral_processCharValueChangeEvt
  *
  * @brief   Process a pending Simple Profile characteristic value change
@@ -1066,30 +1128,17 @@ static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
   switch(paramID)
   {
     case THROUGHPUT_SERVICE_UPDATE_PDU:
-      // Here we'll take the new value and do an HCI command to update the TX PDU
-      // based on the size given.
-
-      // Turn off Throughput - to allow application to process PDU change
-      SBP_throughputOff();
-
       // Inform Application to update PDU
       Event_post(syncEvent, SBP_PDU_CHANGE_EVT);
-
       break;
 
     case THROUGHPUT_SERVICE_UPDATE_PHY:
-
-      // Toggle Throughput - to allow application to process PDU change
-      SBP_throughputOff();
-
       // Inform Application to update PDU
       Event_post(syncEvent, SBP_PHY_CHANGE_EVT);
-
       break;
 
     case THROUGHPUT_SERVICE_TOGGLE_THROUGHPUT:
       // Toggle Throughput
-      SimpleBLEPeripheral_doThroughputDemo(0);
       break;
 
     default:
@@ -1113,18 +1162,55 @@ static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
  */
 static void SimpleBLEPeripheral_performPeriodicTask(void)
 {
-//  uint8_t valueToCopy;
-//
-//  // Call to retrieve the value of the third characteristic in the profile
-//  if (SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR3, &valueToCopy) == SUCCESS)
-//  {
-//    // Call to set that value of the fourth characteristic in the profile.
-//    // Note that if notifications of the fourth characteristic have been
-//    // enabled by a GATT client device, then a notification will be sent
-//    // every time this function is called.
-//    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR4, sizeof(uint8_t),
-//                               &valueToCopy);
-//  }
+  Temperature_Service_Data temperatureStruct;
+  uint16_t temperature;
+
+  // Call to retrieve the value of the third characteristic in the profile
+  if (Temperature_Service_GetParameter(TEMPERATURE_SERVICE_DATA,
+                                       &temperatureStruct) == SUCCESS)
+  {
+    /* Use this if you want the temperature to just be a counter */
+    //temperature = BUILD_UINT16(temperatureStruct.objectLowByte,
+                               //temperatureStruct.objectHighByte) + 1;
+
+    temperature = AONBatMonTemperatureGetDegC();
+
+    temperatureStruct.objectLowByte  = LO_UINT16(temperature);
+    temperatureStruct.objectHighByte = HI_UINT16(temperature);
+
+    Temperature_Service_SetParameter(TEMPERATURE_SERVICE_DATA,
+                                     TEMPERATURE_SERVICE_DATA_LEN,
+                                     &temperatureStruct);
+  }
+}
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_performLEDTask
+ *
+ * @brief   Perform a periodic application task. This function gets called
+ *          every five seconds (SBP_PERIODIC_LED_PERIOD). In this example,
+ *          the value of the third characteristic in the SimpleGATTProfile
+ *          service is retrieved from the profile, and then copied into the
+ *          value of the the fourth characteristic.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+static void SimpleBLEPeripheral_performLEDTask(void)
+{
+  static uint32_t ledPin;
+
+  if (state == GAPROLE_CONNECTED) {
+    ledPin = (ledPin) ? 0 : 1;
+    PIN_setOutputValue(appPins, Board_RLED, 0);
+  }
+  else {
+    ledPin = 0;
+    PIN_setOutputValue(appPins, Board_RLED, 1);
+  }
+
+  PIN_setOutputValue(appPins, Board_GLED, ledPin);
 }
 
 /*********************************************************************
@@ -1212,6 +1298,37 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t keys)
   }
 }
 
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_handleTempEvent
+ *
+ * @brief   Handles all key events for this device.
+ *
+ * @param   keys - bit field for key events. Valid entries:
+ *                 KEY_LEFT
+ *                 KEY_RIGHT
+ *
+ * @return  none
+ */
+static void SimpleBLEPeripheral_handleTempEvent(uint8_t paramID)
+{
+  Display_printf(dispHandle, (TBM_ROW_APP + 6), 0, "TEMP_CHANGE_EVENT: %x", paramID);
+
+  switch(paramID)
+  {
+    case TEMPERATURE_SERVICE_CONFIG:
+      Display_printf(dispHandle, (TBM_ROW_APP + 6), 0, "TEMPERATURE_SERVICE_CONFIG: %x", paramID);
+      break;
+
+    case TEMPERATURE_SERVICE_PERIOD:
+      Display_printf(dispHandle, (TBM_ROW_APP + 6), 0, "TEMPERATURE_SERVICE_PERIOD: %x", paramID);
+      break;
+
+    default:
+      break;
+  }
+}
+
 /*********************************************************************
  * @fn      SimpleBLEPeripheral_doSetPhy
  *
@@ -1240,9 +1357,6 @@ bool SimpleBLEPeripheral_doSetPhy(uint8 index)
     HCI_PHY_OPT_NONE, HCI_PHY_OPT_NONE,
     HCI_PHY_OPT_S2, HCI_PHY_OPT_S8,
   };
-
-  // Turn off Throughput while operation is in progress
-  SBP_throughputOff();
 
   // Assign phyOptions
   phyOptions = options[index];
@@ -1290,9 +1404,6 @@ bool SimpleBLEPeripheral_doSetDLEPDU(uint8 index)
     break;
   }
 
-  // Turn off Throughput while operation is in progress
-  SBP_throughputOff();
-
   // Get GAP Params
   GAPRole_GetParameter(GAPROLE_STATE, &gapRoleState);
 
@@ -1321,130 +1432,6 @@ bool SimpleBLEPeripheral_doSetDLEPDU(uint8 index)
   Display_clearLine(dispHandle, SBP_ROW_STATUS_1);
 
   return true;
-}
-
-static void SBP_throughputOn(void)
-{
-  // Turn on Throughput Demo & signal application
-  throughputOn = true;
-
-  Display_print0(dispHandle, SBP_ROW_RESULT, 0, "Throughput ON");
-
-  Event_post(syncEvent, SBP_THROUGHPUT_EVT);
-}
-
-static void SBP_throughputOff(void)
-{
-  // Turn off Throughput Demo
-  throughputOn = false;
-
-  Display_print0(dispHandle, SBP_ROW_RESULT, 0, "Throughput OFF");
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_doThroughputDemo
- *
- * @brief   Set PDU preference.
- *
- * @param   index - 0, 1
- *
- * @return  always true
- */
-bool SimpleBLEPeripheral_doThroughputDemo(uint8 index)
-{
-
-  // ignore unused error
-  (void) index;
-
-  if(throughputOn)
-  {
-    // Turn off Throughput Demo
-    throughputOn = false;
-
-    Display_print0(dispHandle, SBP_ROW_RESULT, 0, "Throughput OFF");
-  }
-  else
-  {
-    // Turn on Throughput Demo & signal application
-    throughputOn = true;
-
-    Display_print0(dispHandle, SBP_ROW_RESULT, 0, "Throughput ON");
-
-    Event_post(syncEvent, SBP_THROUGHPUT_EVT);
-  }
-
-  return true;
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_blastData
- *
- * @brief   Sends ATT notifications in a tight while loop to demo
- *          throughput
- *
- * @param   none
- *
- * @return  none
- */
-static void SimpleBLEPeripheral_blastData()
-{
-  // Subtract the total packet overhead of ATT and L2CAP layer from notification payload
-  uint16_t len = MAX_PDU_SIZE-TOTAL_PACKET_OVERHEAD;
-  attHandleValueNoti_t noti;
-  bStatus_t status;
-  noti.handle = 0x1E;
-  noti.len = len;
-
-  // Store hte connection handle for future reference
-  uint16_t connectionHandle;
-  GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connectionHandle);
-
-  while(throughputOn)
-  {
-    // If RTOS queue is not empty, process app message.
-    // We need to process the app message here in the case of a keypress
-    while (!Queue_empty(appMsgQueue))
-    {
-      sbpEvt_t *pMsg = (sbpEvt_t *)Util_dequeueMsg(appMsgQueue);
-      if (pMsg)
-      {
-        // Process message.
-        SimpleBLEPeripheral_processAppMsg(pMsg);
-
-        // Free the space from the message.
-        ICall_free(pMsg);
-      }
-    }
-
-    noti.pValue = (uint8 *)GATT_bm_alloc( connectionHandle, ATT_HANDLE_VALUE_NOTI, GATT_MAX_MTU, &len );
-
-    if ( noti.pValue != NULL ) //if allocated
-    {
-
-      // Place index
-      noti.pValue[0] = (msg_counter >> 24) & 0xFF;
-      noti.pValue[1] = (msg_counter >> 16) & 0xFF;
-      noti.pValue[2] = (msg_counter >> 8) & 0xFF;
-      noti.pValue[3] = msg_counter & 0xFF;
-
-      // Attempt to send the notification w/ no authentication
-      status = GATT_Notification( connectionHandle, &noti, 0);
-      if ( status != SUCCESS ) //if noti not sent
-      {
-        GATT_bm_free( (gattMsg_t *)&noti, ATT_HANDLE_VALUE_NOTI );
-      }
-      else
-      {
-        // Notification is successfully sent, increment counters
-        msg_counter++;
-      }
-    }
-    else
-    {
-      // bleNoResources was returned
-      asm(" NOP ");
-    }
-  }
 }
 
 /*********************************************************************
