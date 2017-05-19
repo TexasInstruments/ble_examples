@@ -364,6 +364,14 @@ static uint16_t phyOptions = HCI_PHY_OPT_NONE;
 
 static throughputProfileHdl_t* throughputHandles = NULL;
 
+// Global Variables for GUI Composer
+uint16_t currentPeerTxPDUSize = 0;
+uint8_t currentPHY1M = 1;
+uint8_t currentPHY2M = 0;
+uint32_t instantRate = 0;
+uint32_t averageRate = 0;
+uint8_t currentMTUSize = 0;
+
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -545,7 +553,13 @@ static void SimpleBLECentral_init(void)
   
   // By Default Allow Central to support any and all PHYs
   HCI_LE_SetDefaultPhyCmd(LL_PHY_USE_ANY_PHY, LL_PHY_1_MBPS | LL_PHY_2_MBPS| HCI_PHY_CODED, LL_PHY_1_MBPS | LL_PHY_2_MBPS| HCI_PHY_CODED);
-  
+
+  // Set the Transmit Power of the Device to +5dBm
+  HCI_EXT_SetTxPowerCmd(HCI_EXT_TX_POWER_5_DBM);
+
+  // Set the RX Gain to be highest
+  HCI_EXT_SetRxGainCmd(HCI_EXT_RX_GAIN_HIGH);
+
   // Display Default MTU Size (updated during MTU exchange)
   Display_print1(dispHandle, SBC_ROW_MTU, 0, "MTU Size: %dB", ATT_MTU_SIZE);
 }
@@ -646,8 +660,10 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
         // Display Throughput      
         Display_print3(dispHandle, SBC_ROW_AVG_THROUGHPUT, 0, "Average Rate (kb/s): %d.%d over %d Samples",
                    (bitsReceived/1000),(bitsReceived % 1000), CB_SIZE);
+
+        averageRate = (bitsReceived/1000);
       }
-      
+
       // Toggle Throughput Event
       // Peripheral Supports Throughput - so throughput should
       // begin to be measured
@@ -787,7 +803,15 @@ static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg)
                     // update phyIndex accordingly and display the value
                     phyIndex = temp;
                   }
-                   
+
+                  currentPHY1M = 0;
+                  currentPHY2M = 0;
+
+                  if(phyIndex == 0)
+                    currentPHY1M = 1;
+                  if(phyIndex == 1)
+                    currentPHY2M = 1;
+
                   // Tell the use which PHY we're now using
                   Display_print1(dispHandle, SBC_ROW_PHY, 0, "Current PHY: %s", phyName[phyIndex]);
                   
@@ -797,6 +821,9 @@ static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg)
               {
                 hciEvt_BLEDataLengthChange_t *dleEvt = (hciEvt_BLEDataLengthChange_t *)pMsg;
                 Display_print1(dispHandle, SBC_ROW_PDU, 0, "Device RX PDU Size: %dB", dleEvt->maxRxOctets);
+
+				// GUI Composer
+                currentPeerTxPDUSize = dleEvt->maxRxOctets;
               }
             }
             break;
@@ -982,6 +1009,9 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         // Display Throughput
         Display_print2(dispHandle, SBC_ROW_INST_THROUGHPUT, 0, "Instant Rate (kb/s): %d.%d",
                       (bitsReceived/1000),(bitsReceived % 1000));
+
+        // GUI Composer
+        instantRate = (bitsReceived/1000);
       }
       break;
       
@@ -1262,6 +1292,9 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       // MTU size updated
       Display_print0(dispHandle, SBC_ROW_RESULT, 0, "MTU Exchanged");
       Display_print1(dispHandle, SBC_ROW_MTU, 0, "MTU Size: %dB", pMsg->msg.mtuEvt.MTU);
+
+	  // GUI Composer
+      currentMTUSize = pMsg->msg.mtuEvt.MTU;
     }
     else if (discState != BLE_DISC_STATE_IDLE)
     {
@@ -2081,7 +2114,7 @@ bool SimpleBLECentral_doToggleRSSI(uint8 index)
   else
   {
     SimpleBLECentral_CancelRssi(connHandle);
-    Display_print0(dispHandle, SBC_ROW_RSSI, 0, "RSSI Cancelled");
+    Display_print0(dispHandle, SBC_ROW_RSSI, 0, "RSSI Canceled");
   }
 
   return true;

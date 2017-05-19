@@ -108,9 +108,6 @@
 // Connection Pause Peripheral time value (in seconds)
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         6
 
-// How often to perform periodic event (in msec)
-#define SBP_PERIODIC_EVT_PERIOD               5000
-
 // Application specific event ID for HCI Connection Event End Events
 #define SBP_HCI_CONN_EVT_END_EVT              0x0001
 
@@ -141,18 +138,16 @@
 // Internal Events for RTOS application
 #define SBP_ICALL_EVT                         ICALL_MSG_EVENT_ID // Event_Id_31
 #define SBP_QUEUE_EVT                         UTIL_QUEUE_EVENT_ID // Event_Id_30
-#define SBP_PERIODIC_EVT                      Event_Id_00
-#define SBP_THROUGHPUT_EVT                    Event_Id_01
-#define SBP_PDU_CHANGE_EVT                    Event_Id_02
-#define SBP_PHY_CHANGE_EVT                    Event_Id_03
+#define SBP_THROUGHPUT_EVT                    Event_Id_00
+#define SBP_PDU_CHANGE_EVT                    Event_Id_01
+#define SBP_PHY_CHANGE_EVT                    Event_Id_02
 
 
 #define SBP_ALL_EVENTS                        (SBP_ICALL_EVT        | \
                                                SBP_QUEUE_EVT        | \
                                                SBP_THROUGHPUT_EVT   | \
                                                SBP_PDU_CHANGE_EVT   | \
-                                               SBP_PHY_CHANGE_EVT   | \
-                                               SBP_PERIODIC_EVT)
+                                               SBP_PHY_CHANGE_EVT)
 
 // Row numbers
 #define SBP_ROW_RESULT        TBM_ROW_APP
@@ -200,9 +195,6 @@ static ICall_EntityID selfEntity;
 // Event globally used to post local events and pend on system and
 // local events.
 static ICall_SyncHandle syncEvent;
-
-// Clock instances for internal periodic events.
-static Clock_Struct periodicClock;
 
 // Queue object used for app messages
 static Queue_Struct appMsg;
@@ -293,8 +285,6 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg);
 static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg);
 static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState);
 static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID);
-static void SimpleBLEPeripheral_performPeriodicTask(void);
-static void SimpleBLEPeripheral_clockHandler(UArg arg);
 
 static void SimpleBLEPeripheral_sendAttRsp(void);
 static void SimpleBLEPeripheral_freeAttRsp(uint8_t status);
@@ -381,10 +371,6 @@ static void SimpleBLEPeripheral_init(void)
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
-  // Create one-shot clocks for internal periodic events.
-  Util_constructClock(&periodicClock, SimpleBLEPeripheral_clockHandler,
-                      SBP_PERIODIC_EVT_PERIOD, 0, false, SBP_PERIODIC_EVT);
-
   dispHandle = Display_open(SBP_DISPLAY_TYPE, NULL);
 
   // Setup the GAP
@@ -459,13 +445,15 @@ static void SimpleBLEPeripheral_init(void)
                                &phy_supported);
   }
 
-  // Register callbacks with Throughput Profile
-  Throughput_Service_RegisterAppCBs(&SimpleBLEPeripheral_throughputProfileCBs);
-
   // Initialize the GATT attributes
   Throughput_Service_AddService();      // Throughput Service
 
-  // Register with GAP for HCI/Host messages
+  // Register callbacks with Throughput Profile
+  Throughput_Service_RegisterAppCBs(&SimpleBLEPeripheral_throughputProfileCBs);
+
+  // Register with GAP for HCI/Host messages. This is needed to receive HCI
+  // events. For more information, see the section in the User's Guide:
+  // http://software-dl.ti.com/lprf/ble5stack-docs-latest/docs/ble5stack/ble_user_guide/html/ble-stack/hci.html
   GAP_RegisterForMsgs(selfEntity);
 
   // Register for GATT local events and ATT Responses pending for transmission
@@ -483,6 +471,12 @@ static void SimpleBLEPeripheral_init(void)
 
   // By Default Allow Central to support any and all PHYs
   HCI_LE_SetDefaultPhyCmd(LL_PHY_USE_ANY_PHY, LL_PHY_1_MBPS | LL_PHY_2_MBPS| HCI_PHY_CODED, LL_PHY_1_MBPS | LL_PHY_2_MBPS| HCI_PHY_CODED);
+
+  // Set the Transmit Power of the Device to +5dBm
+  HCI_EXT_SetTxPowerCmd(HCI_EXT_TX_POWER_5_DBM);
+
+  // Set the RX Gain to be highest
+  HCI_EXT_SetRxGainCmd(HCI_EXT_RX_GAIN_HIGH);
 
   // Start the Device
   VOID GAPRole_StartDevice(&SimpleBLEPeripheral_gapRoleCBs);
@@ -565,14 +559,6 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
             ICall_free(pMsg);
           }
         }
-      }
-
-      if (events & SBP_PERIODIC_EVT)
-      {
-        Util_startClock(&periodicClock);
-
-        // Perform periodic application task
-        SimpleBLEPeripheral_performPeriodicTask();
       }
 
       if (events & SBP_THROUGHPUT_EVT)
@@ -956,8 +942,6 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
         linkDBInfo_t linkInfo;
         uint8_t numActive = 0;
 
-        Util_startClock(&periodicClock);
-
         numActive = linkDB_NumActive();
 
         // Use numActive to determine the connection handle of the last
@@ -986,7 +970,6 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
       break;
 
     case GAPROLE_WAITING:
-      Util_stopClock(&periodicClock);
       SimpleBLEPeripheral_freeAttRsp(bleNotConnected);
 
       Display_print0(dispHandle, SBP_ROW_ROLESTATE, 0, "Disconnected");
@@ -1063,13 +1046,12 @@ static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID)
  */
 static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
 {
+
   switch(paramID)
   {
     case THROUGHPUT_SERVICE_UPDATE_PDU:
-      // Here we'll take the new value and do an HCI command to update the TX PDU
-      // based on the size given.
 
-      // Turn off Throughput - to allow application to process PDU change
+      // Turn off Throughput - to allow application to process profile value change
       SBP_throughputOff();
 
       // Inform Application to update PDU
@@ -1079,7 +1061,7 @@ static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
 
     case THROUGHPUT_SERVICE_UPDATE_PHY:
 
-      // Toggle Throughput - to allow application to process PDU change
+      // Turn off Throughput - to allow application to process profile value change
       SBP_throughputOff();
 
       // Inform Application to update PDU
@@ -1088,58 +1070,16 @@ static void SimpleBLEPeripheral_processCharValueChangeEvt(uint8_t paramID)
       break;
 
     case THROUGHPUT_SERVICE_TOGGLE_THROUGHPUT:
-      // Toggle Throughput
+
+      // Turn on Throughput - Turns on Throughput
       SimpleBLEPeripheral_doThroughputDemo(0);
+
       break;
 
     default:
       // should not reach here!
       break;
   }
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_performPeriodicTask
- *
- * @brief   Perform a periodic application task. This function gets called
- *          every five seconds (SBP_PERIODIC_EVT_PERIOD). In this example,
- *          the value of the third characteristic in the SimpleGATTProfile
- *          service is retrieved from the profile, and then copied into the
- *          value of the the fourth characteristic.
- *
- * @param   None.
- *
- * @return  None.
- */
-static void SimpleBLEPeripheral_performPeriodicTask(void)
-{
-//  uint8_t valueToCopy;
-//
-//  // Call to retrieve the value of the third characteristic in the profile
-//  if (SimpleProfile_GetParameter(SIMPLEPROFILE_CHAR3, &valueToCopy) == SUCCESS)
-//  {
-//    // Call to set that value of the fourth characteristic in the profile.
-//    // Note that if notifications of the fourth characteristic have been
-//    // enabled by a GATT client device, then a notification will be sent
-//    // every time this function is called.
-//    SimpleProfile_SetParameter(SIMPLEPROFILE_CHAR4, sizeof(uint8_t),
-//                               &valueToCopy);
-//  }
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_clockHandler
- *
- * @brief   Handler function for clock timeouts.
- *
- * @param   arg - event type
- *
- * @return  None.
- */
-static void SimpleBLEPeripheral_clockHandler(UArg arg)
-{
-  // Wake up the application.
-  Event_post(syncEvent, arg);
 }
 
 /*********************************************************************

@@ -341,7 +341,7 @@
           <state>$SRC_BLE_DIR$/inc</state>
           <state>$SRC_BLE_DIR$/common/cc26xx</state>
           <state>$EXAMPLE_ROOT$/src/app</state>
-          <state>$EXAMPLE_ROOT$/src/app/profiles/throughput</state>
+          <state>$SRC_LOCAL_DIR$/profiles/throughput</state>
           <state>$SRC_BLE_DIR$/icall/inc</state>
           <state>$SRC_BLE_DIR$/inc</state>
           <state>$SRC_BLE_DIR$/profiles/roles</state>
@@ -1145,7 +1145,7 @@
       <name>$SRC_BLE_DIR$\profiles\roles\cc26xx\central.h</name>
     </file>
     <file>
-      <name>$EXAMPLE_ROOT$\src\app\profiles\throughput\throughput_service.h</name>
+      <name>$SRC_LOCAL_DIR$\profiles\throughput\throughput_service.h</name>
     </file>
   </group>
   <group>
