@@ -87,7 +87,7 @@
 #define SDITASK_PRIORITY 2
 
 //! \brief Max bytes received from UART send to App
-#define MAX_UART_LENGTH 128
+#define DEFAULT_APP_DATA_LENGTH 20
 
 // ****************************************************************************
 // typedefs
@@ -144,6 +144,7 @@ ICall_EntityID sdiAppEntityID = 0;
 //!        rerouting of messages to application.
 //!
 static sdiIncomingEventCBack_t incomingRXEventAppCBFunc = NULL;
+static uint16 maxAppDataSize = DEFAULT_APP_DATA_LENGTH;
 
 //*****************************************************************************
 // function prototypes
@@ -169,6 +170,15 @@ static void SDITask_MRDYEventCB(int size);
 //!
 static void SDITask_ProcessTXQ(void);
 
+// -----------------------------------------------------------------------------
+//! \brief      Initialization for the SDI Thread
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+void SDITask_setAppDataSize(uint16 mtuSize)
+{
+  maxAppDataSize = mtuSize - 3; //subtract GATT Notification overhead: 1 byte opcode, 2 bytes conn. handle
+}
 
 // -----------------------------------------------------------------------------
 //! \brief      Initialization for the SDI Thread
@@ -249,9 +259,9 @@ static void SDITask_process(void)
             {
                 length = SDIRxBuf_GetRxBufLen();
 
-                if(length > MAX_UART_LENGTH)
+                if(length > maxAppDataSize)
                 {
-                  lengthRead = MAX_UART_LENGTH;
+                  lengthRead = (maxAppDataSize & 0xFF);
                 }else
                 {
                   lengthRead = (length & 0xFF);
@@ -269,8 +279,8 @@ static void SDITask_process(void)
                 {
                   incomingRXEventAppCBFunc( UART_DATA_EVT , buf, lengthRead);
                 }
-                
-                if(length > MAX_UART_LENGTH)
+
+                if(length > maxAppDataSize)
                 {
                     // Additional bytes to collect, preserve the flag and repost
                     // to the semaphore

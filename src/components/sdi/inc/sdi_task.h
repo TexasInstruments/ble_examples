@@ -115,6 +115,15 @@ extern void SDITask_registerIncomingRXEventAppCB(sdiIncomingEventCBack_t appRxCB
 // -----------------------------------------------------------------------------
 extern void SDITask_sendToUART(uint8_t *pMsg, uint16_t length);
 
+// -----------------------------------------------------------------------------
+//! \brief      API for application task to set packet data size to send over the air.
+//!
+//! \param[in]  mtuSize    GATT MTU size.
+//!
+//! \return     void
+// -----------------------------------------------------------------------------
+extern void SDITask_setAppDataSize(uint16_t mtuSize);
+
 #ifdef __cplusplus
 {
 #endif // extern "C"

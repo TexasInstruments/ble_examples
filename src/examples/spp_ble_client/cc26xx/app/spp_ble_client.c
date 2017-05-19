@@ -219,7 +219,7 @@ typedef struct
 // App event passed from profiles.
 typedef struct
 {
-  uint8_t data[SERIALPORTSERVICE_DATA_LEN];  // New data
+  uint8_t *pData;  // New data
   uint8_t length; // New status
 } sbcUARTEvt_t;
 
@@ -322,6 +322,9 @@ static bool procedureInProgress = FALSE;
 
 // Maximum PDU size (default = 27 octets)
 static uint16 maxPduSize;
+
+// Maximum MTU size (default = 23 octets)
+static uint16 currentMTUSize;
 
 // Pins that are actively used by the application
 static PIN_Config SPPBLEAppPinTable[] =
@@ -644,26 +647,26 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
           // Process message.
           bStatus_t retVal = FAILURE;
 
-          // Do a write
-          attWriteReq_t req;
-          
-          //Allocate data bytes to send over the air
-          req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, pMsg->length, NULL);
-          
-          if ( (req.pValue != NULL) && charDataHdl)
-          {
-            req.handle = charDataHdl; //handle for Value of Data characteristic found during service discovery   
-            req.len = pMsg->length;
-            memcpy(req.pValue, pMsg->data, pMsg->length);
-            req.sig = FALSE;
-            req.cmd = TRUE;
+            // Do a write
+            attWriteReq_t req;
+
+            //Allocate data bytes to send over the air
+            req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, pMsg->length, NULL);
+
+            if ( (req.pValue != NULL) && charDataHdl)
+            {
+              req.handle = charDataHdl; //handle for Value of Data characteristic found during service discovery
+              req.len = pMsg->length;
+              memcpy(req.pValue, pMsg->pData, pMsg->length);
+              req.sig = FALSE;
+              req.cmd = TRUE;
 
             retVal = GATT_WriteNoRsp(connHandle, &req);
             
             if ( retVal != SUCCESS )
             {
               GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
-              DEBUG("FAIL FROM CLIENT");
+                DEBUG("FAIL FROM CLIENT: "); DEBUG((uint8_t*)convInt32ToText((int)retVal)); DEBUG_NEWLINE();
             }else
             {
               //Remove from the queue
@@ -672,6 +675,7 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
               //Toggle LED to indicate data received from UART terminal and sent over the air
               //SPPBLEClient_toggleLed(Board_GLED, Board_LED_TOGGLE);
                   
+                ICall_freeMsg(pMsg->pData);
               // Free the space from the message.
               ICall_free(pMsg);
               
@@ -1203,6 +1207,11 @@ static void SPPBLEClient_processGATTMsg(gattMsgEvent_t *pMsg)
     }
     else if (pMsg->method == ATT_MTU_UPDATED_EVENT)
     {
+      currentMTUSize = pMsg->msg.mtuEvt.MTU;
+      SDITask_setAppDataSize(currentMTUSize);
+
+      DEBUG("MTU Size: "); DEBUG((uint8_t*)convInt32ToText((int)currentMTUSize)); DEBUG_NEWLINE();
+
       // MTU size updated
       Display_print1(dispHandle, 4, 0, "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
     }
@@ -1538,14 +1547,11 @@ static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     if (pMsg->method == ATT_EXCHANGE_MTU_RSP)
     {
       uint8_t uuid[ATT_UUID_SIZE] = { TI_BASE_UUID_128(SERIALPORTSERVICE_SERV_UUID) };
-      
-      DEBUG("Server receive MTU: "); 
-      DEBUG((uint8_t*)convInt32ToText((int)pMsg->msg.exchangeMTURsp.serverRxMTU)); DEBUG_NEWLINE();
-      
+
       discState = BLE_DISC_STATE_SVC;
-      
-      DEBUG("Discovering services...");
-      
+
+      DEBUG("Discovering services..."); DEBUG_NEWLINE();
+
       // Discovery simple BLE service
       VOID GATT_DiscPrimaryServiceByUUID(connHandle, uuid, ATT_UUID_SIZE,
                                          selfEntity);
@@ -1900,7 +1906,13 @@ void SPPBLEClient_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
     // Create dynamic pointer to message.
     if (pMsg = ICall_malloc(sizeof(sbcUARTEvt_t)))
     {
-      memcpy(pMsg->data , data, len);
+
+      pMsg->pData = (uint8 *)ICall_allocMsg(len);
+      if(pMsg->pData)
+      {
+        //payload
+        memcpy(pMsg->pData , data, len);
+      }
       pMsg->length = len;
       
       // Enqueue the message.

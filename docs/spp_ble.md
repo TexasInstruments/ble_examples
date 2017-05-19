@@ -51,7 +51,7 @@ Running the demo is as simple and compiling and loading the code, then hooking u
  - You can use the terminal to send data from your PC to the LaunchPad, and also display the info sent from one device to another.
  - You will need to open two instances of the terminal program to, one to communicate with each board.
  - Follow the steps from our [FAQ](faq.md) to connect to the LaunchPad boards
- - **Please note that the SPP project uses a baud rate of 921600 not 115200**
+ - **Please note that the SPP project uses the default baud rate of 115200**
 
 2. Power the boards inividually and verify they are initialized
  - The client will blink the green LED twice at initialzation. It will also display `Auto connecting...` on the terminal

@@ -173,9 +173,9 @@ typedef struct
 typedef struct
 {
   uint8_t event;  // Type of event
-  uint8_t data[SERIALPORTSERVICE_DATA_LEN];  // New data
+  uint8_t *pData;  // New data
   uint8_t length; // New status
-} sbpUARTEvt_t; //size = 22 bytes
+} sbpUARTEvt_t;
 /*********************************************************************
  * GLOBAL VARIABLES
  */
@@ -186,6 +186,9 @@ typedef struct
 // Global pin resources
 PIN_State pinGpioState;
 PIN_Handle hGpioPin;
+
+uint16 currentMTUSize;
+
 /*********************************************************************
  * LOCAL VARIABLES
  */
@@ -304,7 +307,7 @@ static uint8_t rspTxRetry = 0;
 static PIN_Config SPPBLEAppPinTable[] =
 {
     Board_RLED       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
-    Board_LED2       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
+    Board_GLED       | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,     /* LED initially off             */
 
     PIN_TERMINATE
 };
@@ -708,7 +711,7 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
               case SBP_UART_DATA_EVT:
               {
                 //Send the notification
-                retVal = SerialPortService_SetParameter(SERIALPORTSERVICE_CHAR_DATA, pMsg->length, pMsg->data); 
+                retVal = SerialPortService_SetParameter(SERIALPORTSERVICE_CHAR_DATA, pMsg->length, pMsg->pData);
 
                 if(retVal != SUCCESS)
                 {
@@ -724,8 +727,10 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
                   Util_dequeueMsg(appUARTMsgQueue);
                   
                   //Toggle LED to indicate data received from UART terminal and sent over the air
-                  //SPPBLEServer_toggleLed(Board_LED2, Board_LED_TOGGLE);
-                    
+                  //SPPBLEServer_toggleLed(Board_GLED, Board_LED_TOGGLE);
+
+                  //Deallocate data payload being transmitted.
+                  ICall_freeMsg(pMsg->pData);
                   // Free the space from the message.
                   ICall_free(pMsg);
                 }
@@ -875,9 +880,10 @@ static uint8_t SPPBLEServer_processGATTMsg(gattMsgEvent_t *pMsg)
   else if (pMsg->method == ATT_MTU_UPDATED_EVENT)
   {
     // MTU size updated
-    Display_print1(dispHandle, 5, 0, "MTU Size: $d", pMsg->msg.mtuEvt.MTU);
-    DEBUG("MTU Updated: "); 
-    DEBUG((uint8_t*)convInt32ToText((int)pMsg->msg.mtuEvt.MTU)); DEBUG_NEWLINE();
+    currentMTUSize = pMsg->msg.mtuEvt.MTU;
+    SDITask_setAppDataSize(currentMTUSize);
+    Display_print1(dispHandle, 5, 0, "MTU Size: %d", currentMTUSize);
+    DEBUG("MTU Size: "); DEBUG((uint8_t*)convInt32ToText((int)currentMTUSize)); DEBUG_NEWLINE();
   }
 
   // Free message payload. Needed only for ATT Protocol messages
@@ -1103,6 +1109,7 @@ static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
         {
           Display_print1(dispHandle, 2, 0, "Num Conns: %d", (uint16_t)numActive);
           Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(linkInfo.addr));
+          DEBUG("CONNECTED..."); DEBUG_NEWLINE();
         }
         else
         {
@@ -1151,6 +1158,7 @@ static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
 
       Display_print0(dispHandle, 2, 0, "Disconnected");
 
+      DEBUG("DISCONNECTED..."); DEBUG_NEWLINE();
       // Clear remaining lines
       //Display_clearLines(dispHandle, 3, 5);
       break;
@@ -1159,7 +1167,7 @@ static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
       SPPBLEServer_freeAttRsp(bleNotConnected);
 
       Display_print0(dispHandle, 2, 0, "Timed Out");
-
+      DEBUG("DISCONNECTED AFTER TIMEOUT..."); DEBUG_NEWLINE();
       // Clear remaining lines
       //Display_clearLines(dispHandle, 3, 5);
 
@@ -1314,7 +1322,12 @@ void SPPBLEServer_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
     { 
       
       pMsg->event = event;
-      memcpy(pMsg->data , data, len);
+      pMsg->pData = (uint8 *)ICall_allocMsg(len);
+      if(pMsg->pData)
+      {
+        //payload
+        memcpy(pMsg->pData , data, len);
+      }
       pMsg->length = len;
 
       // Enqueue the message.
