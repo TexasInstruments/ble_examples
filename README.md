@@ -70,9 +70,9 @@ related to the ble_examples repo.
 
 ### Bluetooth 5 Throughput Demo
 
-This 2 part demo where a throughput\_central and throughput\_peripheral connect
-with one another, demonstrating the BLE5-Stack's 1 Mbps, 2 Mbps, 1+2 Mbps,
-and Coded PHYs.
+This is a 2 part demo where a throughput\_central and throughput\_peripheral
+connect with one another, demonstrating the BLE5-Stack's 1 Mbps, 2 Mbps, 1+2
+Mbps, and Coded PHYs.
 
 * throughput\_central
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/readme.md)
@@ -92,11 +92,14 @@ using the Coded PHY (S8).
 * longrange\_central
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_central/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_central/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_central/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_central/src)
 * longrange\_peripheral
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/src)
+
 
 ## References
 
