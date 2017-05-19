@@ -185,6 +185,8 @@
         </file>
         <file path="TI_BLE_SDK_BASE/src/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
+        <file path="TI_BLE_SDK_BASE/src/host/sm_ecc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        </file>
         <file path="TI_BLE_SDK_BASE/src/icall/stack/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/rom/rom_jt.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">

@@ -8,7 +8,8 @@
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"
         linkerCommandFile=""
-        compilerBuildOptions="--cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot; --cmd_file=&quot;${WORKSPACE_LOC}/simple_proprietary_beacon_cc2650lp_stack/TOOLS/build_config.opt&quot; --cmd_file=&quot;${WORKSPACE_LOC}/simple_proprietary_beacon_cc2650lp_stack/TOOLS/ccs_compiler_defines.bcfg&quot;  -mv7M3 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_warning=255 --diag_wrap=off
+        compilerBuildOptions="--cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot; --cmd_file=&quot;${WORKSPACE_LOC}/simple_proprietary_beacon_cc2650lp_stack/TOOLS/build_config.opt&quot; --cmd_file=&quot;${WORKSPACE_LOC}/simple_proprietary_beacon_cc2650lp_stack/TOOLS/ccs_compiler_defines.bcfg&quot;  
+	-mv7M3 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_warning=255 --diag_wrap=off
         -DUSE_ICALL
         -DPOWER_SAVING
         -DSBP_TASK_STACK_SIZE=700

@@ -8,7 +8,7 @@
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"
         linkerCommandFile=""
-        compilerBuildOptions="--cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot; --cmd_file=&quot;${PROJECT_ROOT}/TOOLS/build_config.opt&quot;  -mv7M3 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_warning=255 --diag_wrap=off
+        compilerBuildOptions="--cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot; --cmd_file=&quot;${PROJECT_ROOT}/TOOLS/build_config.opt&quot;  -mv7M3 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_warning=255 --diag_wrap=off
         -DUSE_ICALL
         -DOSAL_SNV=1
         -DFLASH_ROM_BUILD
@@ -52,13 +52,14 @@
         -I${CC26XXWARE}
         -I${SRC_BLE_CORE}/rom
         "
-        linkerBuildOptions="-l${}libc.a -l${PROJECT_LOC}/TOOLS/lib_linker.cmd -l${TI_BLE_SDK_BASE}/src/rom/enc_lib/cc26xx_ecc_rom_api.a -l${TI_BLE_SDK_BASE}/src/rom/ble_rom_releases/04242014/ble_rom_patch.symbols -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib -l${PROJECT_IMPORT_LOC}/../../ccs/config/ccs_linker_defines.cmd  -l${TI_BLE_SDK_BASE}/src/common/cc26xx/ccs/cc26xx_stack.cmd  -x --entry_point=startup_entry  --diag_suppress=16002-D --diag_suppress=16004-D --diag_suppress=10247-D --diag_suppress=10325-D --diag_suppress=10229-D"
+        linkerBuildOptions="-l${PROJECT_LOC}/TOOLS/lib_linker.cmd -l${TI_BLE_SDK_BASE}/src/rom/enc_lib/cc26xx_ecc_rom_api.a -l${TI_BLE_SDK_BASE}/src/rom/ble_rom_releases/04242014/ble_rom_patch.symbols -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib -l${PROJECT_ROOT}/TOOLS/ccs_linker_defines.cmd  
+	-l${TI_BLE_SDK_BASE}/src/common/cc26xx/ccs/cc26xx_stack.cmd  -x --entry_point=startup_entry  --diag_suppress=16002-D --diag_suppress=16004-D --diag_suppress=10247-D --diag_suppress=10325-D --diag_suppress=10229-D"
         description=""
         launchWizard="false"
         
         
         preBuildStep="&quot;${TI_BLE_SDK_BASE}/tools/lib_search/lib_search.exe&quot; ${PROJECT_ROOT}/TOOLS/build_config.opt &quot;${TI_BLE_SDK_BASE}/tools/lib_search/params_split_cc2640.xml&quot; ${TI_BLE_SDK_BASE}/blelib &quot;${PROJECT_ROOT}/TOOLS/lib_linker.cmd&quot;"
-        postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out;${TI_BLE_SDK_BASE}/tools/frontier/frontier.exe ccs ${PROJECT_LOC}/${ConfigName}/${ProjName}_linkInfo.xml ${PROJECT_IMPORT_LOC}/../config/ccs_compiler_defines.bcfg ${PROJECT_IMPORT_LOC}/../config/ccs_linker_defines.cmd"
+        postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out;${TI_BLE_SDK_BASE}/tools/frontier/frontier.exe ccs ${PROJECT_LOC}/${ConfigName}/${ProjName}_linkInfo.xml ${PROJECT_ROOT}/TOOLS/ccs_compiler_defines.bcfg ${PROJECT_ROOT}/TOOLS/ccs_linker_defines.cmd"
         >
 
         
@@ -148,6 +149,8 @@
         <file path="TI_BLE_SDK_BASE/src/profiles/roles/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/host/sm_ecc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
         <file path="TI_BLE_SDK_BASE/src/icall/stack/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true">
         </file>

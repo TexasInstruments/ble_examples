@@ -240,6 +240,8 @@
         </file>
         <file path="SRC_BLE_CORE/host/gattservapp_util.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
         </file>
+        <file path="TI_BLE_SDK_BASE/src/host/sm_ecc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="PROFILES" createVirtualFolders="true">
+        </file>
 
         <!-- Tools Folder -->
         <file path="SRC_EX/common/cc26xx/ccs/cc26xx_stack.cmd" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true">

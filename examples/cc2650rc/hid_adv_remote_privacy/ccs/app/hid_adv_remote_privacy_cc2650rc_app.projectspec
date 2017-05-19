@@ -7,7 +7,7 @@
         cgtVersion="5.2.6"
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"
-        linkerCommandFile="cc26xx_app.cmd"
+        linkerCommandFile=""
         compilerBuildOptions="
         --cmd_file=${TI_BLE_SDK_BASE}/src/config/build_components.opt
         --cmd_file=${PROJECT_IMPORT_LOC}/../../iar/stack/build_config.opt
@@ -18,6 +18,7 @@
         -me
         -g
         -O4
+        --opt_for_speed=0
         --c99
         --gcc
         --gen_func_subsections=on
@@ -75,6 +76,7 @@
         -l${PROJECT_IMPORT_LOC}/../config/ccs_linker_defines.cmd
         -l${TI_BLE_SDK_BASE}/src/common/cc26xx/ccs/cc26xx_app.cmd
         -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib
+	-l${TI_BLE_SDK_BASE}/src/rom/common_rom_releases/03282014/common_rom.symbols 
         --diag_suppress=16002-D
         --diag_suppress=10247-D
         --diag_suppress=10325-D
@@ -97,7 +99,8 @@
         <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
         <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
-        <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; --xdcpath &quot;${TI_BLE_SDK_BASE} &quot;"/>
+        <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; 
+	--xdcpath &quot;${TI_BLE_SDK_BASE} &quot;"/>
 
         <pathVariable name="CC26XXWARE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/cc26xxware_2_24_02_17393" scope="project"></pathVariable>
         <pathVariable name="TI_RTOS_DRIVERS_BASE" path="C:/ti/tirtos_cc13xx_cc26xx_2_20_01_08/products/tidrivers_cc13xx_cc26xx_2_20_01_10/packages" scope="project"></pathVariable>

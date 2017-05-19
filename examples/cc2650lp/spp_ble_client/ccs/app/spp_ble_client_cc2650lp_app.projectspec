@@ -135,6 +135,12 @@
         </file>
         <file path="SRC_BLE_CORE/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Application" createVirtualFolders="true">
         </file>
+        
+        <!-- Drivers/ECC Folder -->
+        <file path="TI_BLE_SDK_BASE/src/common/cc26xx/ecc/ECCROMCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true">
+        </file>
+        <file path="TI_BLE_SDK_BASE/src/common/cc26xx/ecc/ECCROMCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true">
+        </file>
 
         <!-- Drivers/RF Folder -->
         <file path="TI_RTOS_DRIVERS_BASE/ti/drivers/rf/RFCC26XX_singleMode.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true">

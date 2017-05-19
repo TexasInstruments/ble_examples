@@ -8,7 +8,8 @@
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"
         linkerCommandFile=""
-        compilerBuildOptions="--cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot; --cmd_file=&quot;${WORKSPACE_LOC}/simple_eddystone_cc2650lp_stack/TOOLS/build_config.opt&quot; --cmd_file=&quot;${WORKSPACE_LOC}/simple_eddystone_cc2650lp_stack/TOOLS/ccs_compiler_defines.bcfg&quot;  -mv7M3 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_warning=255 --diag_wrap=off
+        compilerBuildOptions="--cmd_file=&quot;${TI_BLE_SDK_BASE}/src/config/build_components.opt&quot; --cmd_file=&quot;${WORKSPACE_LOC}/simple_eddystone_cc2650lp_stack/TOOLS/build_config.opt&quot; --cmd_file=&quot;${WORKSPACE_LOC}/simple_eddystone_cc2650lp_stack/TOOLS/ccs_compiler_defines.bcfg&quot;
+        -mv7M3 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_warning=255 --diag_wrap=off
         -DUSE_ICALL
         -DPOWER_SAVING
         -DSBP_TASK_STACK_SIZE=700
@@ -51,7 +52,7 @@
         -I${TI_BLE_SDK_BASE}/src/inc
         -I${CC26XXWARE}
         "
-        linkerBuildOptions="-l${}libc.a -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib -l${TI_BLE_SDK_BASE}/src/rom/common_rom_releases/03282014/common_rom.symbols -l${PROJECT_IMPORT_LOC}/../../ccs/config/ccs_linker_defines.cmd 
+        linkerBuildOptions="-l${}libc.a -l${CC26XXWARE}/driverlib/bin/ccs/driverlib.lib -l${TI_BLE_SDK_BASE}/src/rom/common_rom_releases/03282014/common_rom.symbols -l${PROJECT_ROOT}/../simple_eddystone_cc2650lp_stack/TOOLS/ccs_linker_defines.cmd 
 		-l${TI_BLE_SDK_BASE}/src/common/cc26xx/ccs/cc26xx_app.cmd  -x  --diag_suppress=16002-D --diag_suppress=16004-D --diag_suppress=10247-D --diag_suppress=10325-D --diag_suppress=10229-D"
         description=""
         launchWizard="false"
