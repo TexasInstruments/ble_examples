@@ -1388,6 +1388,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               i2sParams.pvContBuffer           = (void *) audio_decoded;
               i2sParams.ui32conBufTotalSize    = sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE);
               I2SCC26XX_open(i2sHandle, &i2sParams);
+              Display_print0(dispHandle, 5, 0, "Opened I2S driver");
               streamVariables.i2sOpened = TRUE;
             }
 #else //STREAM_TO_PC
@@ -1449,6 +1450,9 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               {
                 sbc_finish(&sbc);
               }
+            }
+            if (streamVariables.i2sOpened == TRUE)
+            {
               I2SCC26XX_close(i2sHandle);
               streamVariables.i2sOpened = FALSE;
               Display_print0(dispHandle, 5, 0, "Closed I2S driver");
