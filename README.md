@@ -2,12 +2,16 @@
 
 These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.35.00.33**
 
-This repository contains experimental *Bluetooth&reg;* 5 and *Bluetooth&reg;*
-4.2 Low Energy sample applications for Texas Instruments' SimpleLink CC2640R2
-SDK. These examples have not been validated as production-ready.
+This repository contains **experimental** *Bluetooth&reg;* 5 and
+*Bluetooth&reg;* 4.2 Low Energy sample applications for Texas Instruments'
+SimpleLink CC2640R2 SDK. These examples have not been validated as
+production-ready.
+
+**Do not** use GitHub's bug tracking feature for support. For inquiries, see the
+[Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
 
 To use the examples and tools in this repository, please download and install
-the [SimpleLink CC2640R2 SDK](http://www.ti.com/ble-stack) first, and if
+the [SimpleLink CC2640R2 SDK](http://www.ti.com/ble-stack) **first**, and if
 necessary [buy an evaluation kit](http://www.ti.com/tool/launchxl-cc2640r2).
 
 For other hardware and software resources,
@@ -16,8 +20,10 @@ please refer to the [FAQ page](docs/faq.md).
 
 ## Change Log
 
-### 1.35.00.01
+### 1.35.01.01
 * BLE5-Stack: Added Long Range Demo (Central/Peripheral)
+* BLE5-Stack: Added CCS projectis for Throughput Demo
+* BLE5-Stack: Throughput Demo improvements
 
 ### 1.35.00.00
 Initial offering of Simplelink CC2640R2 SDK examples.
@@ -77,10 +83,12 @@ Mbps, and Coded PHYs.
 * throughput\_central
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/src)
 * throughput\_peripheral
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/src)
 
 ### Bluetooth 5 Long Range Demo
