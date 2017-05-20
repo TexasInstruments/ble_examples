@@ -22,7 +22,7 @@ please refer to the [FAQ page](docs/faq.md).
 
 ### 1.35.01.01
 * BLE5-Stack: Added Long Range Demo (Central/Peripheral)
-* BLE5-Stack: Added CCS projectis for Throughput Demo
+* BLE5-Stack: Added CCS projects for Throughput Demo
 * BLE5-Stack: Throughput Demo improvements
 
 ### 1.35.00.00
