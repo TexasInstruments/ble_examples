@@ -127,5 +127,5 @@ Other resources can be found below:
 * [BLE wiki](http://www.ti.com/ble-wiki)
 * [BLE E2E Page](www.ti.com/ble-forum)
 
-[BLE5-Stack]: (http://software-dl.ti.com/lprf/ble5stack-docs-latest/html)
+[BLE5-Stack]: (http://software-dl.ti.com/lprf/ble5stack-docs-latest/docs/ble5stack/ble_user_guide/html/cc2640/index.html)
 [BLE-Stack]:  (http://software-dl.ti.com/lprf/sdg-latest/html)
