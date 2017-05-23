@@ -13,7 +13,7 @@
 /* Menu: Main
      3 submenus, no actions, no upper */
 MENU_OBJ(sbcMenuMain, NULL, 3, NULL)
-  MENU_ITEM_SUBMENU(&sbcMenuScanandConnect)  
+  MENU_ITEM_SUBMENU(&sbcMenuScanandConnect)
   MENU_ITEM_ACTION("Toggle RSSI Readings", SimpleBLECentral_doToggleRSSI)
   MENU_ITEM_ACTION("Disconnect", SimpleBLECentral_doDisconnect)
 MENU_OBJ_END

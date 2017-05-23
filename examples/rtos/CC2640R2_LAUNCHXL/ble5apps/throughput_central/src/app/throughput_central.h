@@ -9,7 +9,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2013-2017, Texas Instruments Incorporated
  All rights reserved.
 

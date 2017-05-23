@@ -9,7 +9,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2013-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -59,7 +59,7 @@ extern "C"
 #if !defined(Display_DISABLE_ALL)
 #include <menu/two_btn_menu.h>
 #endif  // !Display_DISABLE_ALL
-  
+
 /*********************************************************************
 *  EXTERNAL VARIABLES
 */

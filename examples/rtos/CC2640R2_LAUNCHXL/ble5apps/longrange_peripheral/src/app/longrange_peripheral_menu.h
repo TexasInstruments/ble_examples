@@ -8,7 +8,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2016-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -54,7 +54,7 @@ extern "C"
 
 // Includes
 #include <menu/two_btn_menu.h>
-  
+
 /*
  * Menus Declarations
  */

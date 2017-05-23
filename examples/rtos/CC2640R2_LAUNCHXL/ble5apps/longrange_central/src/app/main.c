@@ -8,7 +8,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2013-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -66,7 +66,7 @@
 #include "ble_user_config.h"
 
 // BLE user defined configuration
-icall_userCfg_t user0Cfg = BLE_USER_CFG;   
+icall_userCfg_t user0Cfg = BLE_USER_CFG;
 
 #include <ti/display/Display.h>
 
@@ -135,7 +135,7 @@ int main()
   user0Cfg.appServiceInfo->timerTickPeriod = Clock_tickPeriod;
   user0Cfg.appServiceInfo->timerMaxMillisecond  = ICall_getMaxMSecs();
 #endif  /* ICALL_JT */
-  
+
   /* Initialize ICall module */
   ICall_init();
 

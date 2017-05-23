@@ -9,7 +9,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2013-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -316,7 +316,7 @@ static uint16 maxPduSize;
 static readRssi_t readRssi[MAX_NUM_BLE_CONNS];
 
 // Search String for Throughput Periphereal
-static const char searchStr[] = { 
+static const char searchStr[] = {
   0x12,   // length of this data
   GAP_ADTYPE_LOCAL_NAME_COMPLETE,
   'T',
@@ -484,7 +484,7 @@ static void SimpleBLECentral_init(void)
   // Setup throughput clock to run every second
   Util_constructClock(&speedClock, SimpleBLECentral_speedHandler,
                       1000, 1000, false, NULL);
-  
+
   // Set up a PHY Clock for transitions between Coded PHYs
   Util_constructClock(&startPHYClock, SimpleBLECentral_PHYHandler,
                       0, 0, false, 0);
@@ -537,20 +537,20 @@ static void SimpleBLECentral_init(void)
   /*
    * TBM stuff
   */
-  
+
   // Set the title of the main menu
   TBM_SET_TITLE(&sbcMenuMain, "Texas Instruments Bluetooth 5 Demo");
-  
+
   // Initialize Two-Button Menu module
-  // Enable Scanning and connecting only 
+  // Enable Scanning and connecting only
   tbm_setItemStatus(&sbcMenuMain, TBM_ITEM_0, TBM_ITEM_1 | TBM_ITEM_2 | TBM_ITEM_3 | TBM_ITEM_4);
   // Only Allow Scanning
   tbm_setItemStatus(&sbcMenuScanandConnect, TBM_ITEM_ALL, TBM_ITEM_0 | TBM_ITEM_1);
   tbm_initTwoBtnMenu(dispHandle, &sbcMenuMain, 4, NULL);
-  
+
   // Get Current Data Length
   HCI_LE_ReadMaxDataLenCmd();
-  
+
   // By Default Allow Central to support any and all PHYs
   HCI_LE_SetDefaultPhyCmd(LL_PHY_USE_ANY_PHY, LL_PHY_1_MBPS | LL_PHY_2_MBPS| HCI_PHY_CODED, LL_PHY_1_MBPS | LL_PHY_2_MBPS| HCI_PHY_CODED);
 
@@ -629,7 +629,7 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
       {
         SimpleBLECentral_startDiscovery();
       }
-      
+
       // Speed AVG Measure Event
       if (events & SBC_MEASURE_AVG_SPEED_EVT)
       {
@@ -656,8 +656,8 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
         }
         // Convert to bits
         bitsReceived = 8*bitsReceived;
-        
-        // Display Throughput      
+
+        // Display Throughput
         Display_print3(dispHandle, SBC_ROW_AVG_THROUGHPUT, 0, "Average Rate (kb/s): %d.%d over %d Samples",
                    (bitsReceived/1000),(bitsReceived % 1000), CB_SIZE);
 
@@ -672,7 +672,7 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
         // Variables Needed for Write
         attWriteReq_t writeReq;
         uint8_t temp = 1;
-        
+
         // Populate the Request Structure
         writeReq.cmd = 0;
         writeReq.handle = throughputHandles[THROUGHPUT_SERVICE_TOGGLE_THROUGHPUT].charHdl;
@@ -680,30 +680,30 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
         writeReq.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, THROUGHPUT_SERVICE_TOGGLE_THROUGHPUT_LEN, NULL);
         memcpy(writeReq.pValue, &temp, THROUGHPUT_SERVICE_TOGGLE_THROUGHPUT_LEN);
         writeReq.sig = 0;
-        
+
         // Perform a GATT Write + Check Status
         uint8_t status;
-        
+
         status = GATT_WriteCharValue(connHandle, &writeReq, selfEntity);
-        
+
         if( status != SUCCESS )
         {
           // We didn't successfully send this command to the stack!
           // Let's attempt to retransmit again and free the pValue pointer
-          
+
           GATT_bm_free((gattMsg_t *)&writeReq, ATT_WRITE_REQ);
-          
+
           Event_post(syncEvent, SBC_TOGGLE_THROUGHPUT_EVT);
         }
         else
         {
           // Transmitting to the stack was successful
           // The peripheral should being doing throughput soon
-          
+
           // Force the initial PDU size to be 27
           // Note: All connections are formed on 1M PHY
           SimpleBLECentral_doSetDLEPDU(0);
-          
+
           // Enable Throughput Data Collection
           Util_startClock(&speedClock);
         }
@@ -758,11 +758,11 @@ static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg)
                   Display_print0(dispHandle, SBC_ROW_RESULT, 0, "PHY Change failure");
                 }
                 else
-                { 
+                {
                   // Inform User that the PHY was Updated, and which PHY is
                   // the PHY being used for the connection
                   Display_print0(dispHandle, SBC_ROW_RESULT, 0, "PHY Update Complete");
-                  
+
                   // Figure out which PHY is being used
                   uint8_t temp = 0;
                   switch(pPUC->txPhy)
@@ -770,16 +770,16 @@ static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg)
                     case HCI_PHY_1_MBPS:
                       temp = 0;
                       break;
-                      
+
                     case HCI_PHY_2_MBPS:
                       temp = 1;
                       break;
-                    
+
                     case HCI_PHY_CODED:
                       temp = 4;
                       break;
                   }
-                  
+
                   // If PhyConfirm is false, that means we initated the change
                   // if that is the case, then we can use detailed information
                   // for coded PHY - use phyIndex instead
@@ -787,8 +787,8 @@ static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg)
                   {
                     // This means that the phyIndex was assigned by us.
                     // Confirm the value
-                    
-                    // Critial Section so our Timer's SWI can't read the value while 
+
+                    // Critial Section so our Timer's SWI can't read the value while
                     // we're writing to it.
                     UInt key = Hwi_disable();
                     {
@@ -814,7 +814,7 @@ static void SimpleBLECentral_processStackMsg(ICall_Hdr *pMsg)
 
                   // Tell the use which PHY we're now using
                   Display_print1(dispHandle, SBC_ROW_PHY, 0, "Current PHY: %s", phyName[phyIndex]);
-                  
+
                 }
               }
               if(pPUC->BLEEventCode == HCI_BLE_DATA_LENGTH_CHANGE_EVENT)
@@ -879,18 +879,18 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         }
       }
       break;
-      
+
     case SBC_PDU_UPDATE_EVT:
       {
         // When Changing PDU Size, throughput is momentaryly stopped on the peripehral
         // side for the application to process the change.
         // During this time the throughput not reflect the correct value
-        
+
         // Attempt to send PDU update via GATT Write
         // Variables Needed for GATT Write
         attWriteReq_t writeReq;
         uint8_t pduSize = (uint8_t) *(pMsg->pData); // Cast down to uint8_t
-        
+
         // Populate the Request Structure
         writeReq.cmd = 0;
         writeReq.handle = throughputHandles[THROUGHPUT_SERVICE_UPDATE_PDU].charHdl;
@@ -898,19 +898,19 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         writeReq.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, THROUGHPUT_SERVICE_UPDATE_PHY_LEN, NULL);
         memcpy(writeReq.pValue, &pduSize, THROUGHPUT_SERVICE_UPDATE_PHY_LEN);
         writeReq.sig = 0;
-        
+
         // Perform a GATT Write + Check Status
         uint8_t status;
-        
+
         status = GATT_WriteCharValue(connHandle, &writeReq, selfEntity);
-        
+
         if( status != SUCCESS )
         {
           // We didn't successfully send this command to the stack!
           // Let's attempt to retransmit again and free the pValue pointer
-          
+
           GATT_bm_free((gattMsg_t *)&writeReq, ATT_WRITE_REQ);
-          
+
           // Requeue the Message - don't free the memory for PDU size yet
           SimpleBLECentral_enqueueMsg(SBC_PDU_UPDATE_EVT, SUCCESS, pMsg->pData);
         }
@@ -918,10 +918,10 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         {
           // Transmitting to the stack was successful
           // The peripheral should being doing throughput soon
-          
+
           // Inform user that a Request was sent to update peer's PDU Size
           Display_print1(dispHandle, SBC_ROW_RESULT, 0, "Requested Peer Change TX PDU Size to %dB", pduSize);
-          
+
           // Free the Allocated Memory
           if(pMsg->pData)
           {
@@ -935,12 +935,12 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         // When Changing PHY, throughput is stopped on the peripehral
         // side for the application to process the change.
         // During this time the throughput not reflect the correct value
-        
+
         // Attempt to send PHY update via GATT Write
         // Variables Needed for GATT Write
         attWriteReq_t writeReq;
-        
-        // Critial Section so our Timer's SWI can't read the value while 
+
+        // Critial Section so our Timer's SWI can't read the value while
         // we're writing to it.
         UInt key = Hwi_disable();
         {
@@ -952,7 +952,7 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
           phyConfirm = false;
         }
         Hwi_restore(key);
-        
+
         // Populate the Request Structure
         writeReq.cmd = 0;
         writeReq.handle = throughputHandles[THROUGHPUT_SERVICE_UPDATE_PHY].charHdl;
@@ -960,19 +960,19 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         writeReq.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, THROUGHPUT_SERVICE_UPDATE_PHY_LEN, NULL);
         memcpy(writeReq.pValue, &phyIndex, THROUGHPUT_SERVICE_UPDATE_PHY_LEN);
         writeReq.sig = 0;
-        
+
         // Perform a GATT Write + Check Status
         uint8_t status;
-        
+
         status = GATT_WriteCharValue(connHandle, &writeReq, selfEntity);
-        
+
         if( status != SUCCESS )
         {
           // We didn't successfully send this command to the stack!
           // Let's attempt to retransmit again and free the pValue pointer
-          
+
           GATT_bm_free((gattMsg_t *)&writeReq, ATT_WRITE_REQ);
-          
+
           // Requeue the Message - don't free the memory for PHY change yet
           SimpleBLECentral_enqueueMsg(SBC_PHY_UPDATE_EVT, SUCCESS, pMsg->pData);
         }
@@ -980,13 +980,13 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         {
           // Transmitting to the stack was successful
           // The peripheral should being doing throughput soon
-          
+
           // Inform user that a Request was sent to update peer's PHY Size
           Display_print1(dispHandle, SBC_ROW_RESULT, 0, "Requested Peer Change PHY to %s", phyName[phyIndex]);
-          
+
           // Note if we're already using coded PHY, switching between S2 and S8
           // won't produce a PHY change event.
-          
+
           // Free the Allocated Memory
           if(pMsg->pData)
           {
@@ -995,17 +995,17 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         }
         break;
       }
-      
+
     case SBC_MEASURE_INST_SPEED_EVT:
       {
         uint32_t* temp = (uint32_t*)(pMsg->pData);
-        
+
         // Note at this point, Bytes have been recorded
         uint32_t bitsReceived = *temp;
-        
+
         // Convert Bytes to bits
         bitsReceived = 8*bitsReceived;
-        
+
         // Display Throughput
         Display_print2(dispHandle, SBC_ROW_INST_THROUGHPUT, 0, "Instant Rate (kb/s): %d.%d",
                       (bitsReceived/1000),(bitsReceived % 1000));
@@ -1014,7 +1014,7 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
         instantRate = (bitsReceived/1000);
       }
       break;
-      
+
     default:
       // Do nothing.
       break;
@@ -1037,7 +1037,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
     case GAP_DEVICE_INIT_DONE_EVENT:
       {
         maxPduSize = pEvent->initDone.dataPktLen;
-        
+
         Display_print1(dispHandle, SBC_ROW_BDADDR, 0, "This Device's BDADDR : %s", Util_convertBdAddr2Str(pEvent->initDone.devAddr));
         Display_print0(dispHandle, SBC_ROW_ROLESTATE, 0, "Device GAP Role: Central");
       }
@@ -1045,10 +1045,10 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
     case GAP_DEVICE_INFO_EVENT:
       {
-        /*  
+        /*
          *  Device Filtering can be done here for UUID or advertisement
          *  Data if desired.
-         * 
+         *
          *  We populate the devList with both the scan response data and
          *  advertisement data of each device discovered
          */
@@ -1061,10 +1061,10 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
       break;
 
     case GAP_DEVICE_DISCOVERY_EVENT:
-      { 
+      {
         // Initialize scan index.
         scanIdx = -1;
-        
+
         /*
          * Note that pEvent->discCmpl contains a list of device records (NOT scan response data)
          * Scan Response Data is contained in the GAP_DEVICE_INFO_EVENT during Scanning
@@ -1072,14 +1072,14 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
          * If you don't care about device response data, you could just use
          * the data from the GAP_DEVICE_DISCOVERY_EVENT as your scan results list
          * as shown in the commented code below
-         * 
+         *
          * If we're not filtering on UUID then we should have gotten ALL of the
          * possible devices scanned in our device list.
          */
         //scanRes = pEvent->discCmpl.numDevs;
         //memcpy(devList, pEvent->discCmpl.pDevList,
         //       (sizeof(gapDevRec_t) * scanRes));
-        
+
         // Verify that we got the right number of results
         if( scanRes != pEvent->discCmpl.numDevs )
         {
@@ -1094,7 +1094,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         {
           // Re enable all Menu Functions
           tbm_setItemStatus(&sbcMenuScanandConnect, TBM_ITEM_ALL, TBM_ITEM_NONE);
-          
+
           // Display the first scan Result
           SBC_NextDevice();
         }
@@ -1112,24 +1112,24 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         {
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
-          
+
           // Go to Main Menu
           tbm_goTo(&sbcMenuMain);
-          
+
           // Disable Scan Connect Menu, enable everything else
           tbm_setItemStatus(&sbcMenuMain, TBM_ITEM_ALL, TBM_ITEM_0);
-          
+
           // Forget about the Scan Results
           SBC_ClearDeviceList();
-          
+
           // If service discovery not performed initiate service discovery
           Util_startClock(&startDiscClock);
-          
+
           // Update Display
           Display_print1(dispHandle, SBC_ROW_PEER_DEVICE, 0, "Peer Device : %s", Util_convertBdAddr2Str(pEvent->linkCmpl.devAddr));
           Display_print0(dispHandle, SBC_ROW_RESULT, 0, "Connected, Exchanging MTU");
           Display_print0(dispHandle, SBC_ROW_PHY, 0, "PHY: 1 Mbps");
-          
+
           // Start RSSI collection
           SimpleBLECentral_StartRssi(connHandle, DEFAULT_RSSI_PERIOD);
         }
@@ -1140,7 +1140,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           discState = BLE_DISC_STATE_IDLE;
 
           // TODO: Remember scan Results and re enable menu
-          
+
           Display_print1(dispHandle, SBC_ROW_RESULT, 0, "Reason: %d", pEvent->gap.hdr.status);
         }
       }
@@ -1155,10 +1155,10 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
         // Cancel RSSI reads
         SimpleBLECentral_CancelRssi(pEvent->linkTerminate.connectionHandle);
-        
+
         // Throughput as well, if enabled
         Util_stopClock(&speedClock);
-        
+
         Display_print1(dispHandle, SBC_ROW_RESULT, 0, "Reason: %d", pEvent->linkTerminate.reason);
         Display_clearLine(dispHandle, SBC_ROW_PEER_DEVICE);
         Display_clearLine(dispHandle, SBC_ROW_PHY);
@@ -1168,10 +1168,10 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
         // Go to Main Menu
         tbm_goTo(&sbcMenuMain);
-        
+
         // Enable Scan Connect Menu, Disable everything else
         tbm_setItemStatus(&sbcMenuMain, TBM_ITEM_0, TBM_ITEM_1 | TBM_ITEM_2 | TBM_ITEM_3 | TBM_ITEM_4);
-        
+
         // No Results, reenable scanning only
         tbm_setItemStatus(&sbcMenuScanandConnect, TBM_ITEM_ALL, TBM_ITEM_0 | TBM_ITEM_1);
       }
@@ -1279,7 +1279,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
     }
     else if (pMsg->method == ATT_HANDLE_VALUE_NOTI)
     {
-      // Critial Section so our Timer's SWI can't read the value while 
+      // Critial Section so our Timer's SWI can't read the value while
       // we're writing to it.
       UInt key = Hwi_disable();
       {
@@ -1329,7 +1329,7 @@ static void SimpleBLECentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
 
   case HCI_LE_READ_MAX_DATA_LENGTH:
     {
-      
+
       // Define a structure for the returned parameter structure
       // Parameters expected to be returned can be found in the Core Specification
       typedef struct{
@@ -1339,19 +1339,19 @@ static void SimpleBLECentral_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
         uint8_t maxRxBytes[2];
         uint8_t maxRxTime[2];
       } HCI_Read_Max_Data_Length_Event_t;
-        
+
       HCI_Read_Max_Data_Length_Event_t* temp = (HCI_Read_Max_Data_Length_Event_t*) pMsg->pReturnParam;
-      
+
       // All returned values will be byte reversed - unreverse them for accurate values
       // Here we only care about the RX Bytes, and update the screen with them
       uint16_t ourRxPDUsize = 0;
       ourRxPDUsize = BUILD_UINT16(temp->maxRxBytes[0], temp->maxRxBytes[1]);
-      
+
       // Update User what the current PDU size for Recieving is
       Display_print1(dispHandle, SBC_ROW_PDU, 0, "Device RX PDU Size: %dB", ourRxPDUsize);
     }
       break;
-      
+
     default:
       break;
   }
@@ -1542,7 +1542,7 @@ static void SimpleBLECentral_startDiscovery(void)
 
   // Initialize cached handles
   svcStartHdl = svcEndHdl = 0;
-  
+
   // Free up memory for Characteristic handles
   if( throughputHandles )
   {
@@ -1551,7 +1551,7 @@ static void SimpleBLECentral_startDiscovery(void)
 
   // Prep the State Machine for MTU Exchange
   discState = BLE_DISC_STATE_MTU;
-  
+
   // Discover GATT Server's Rx MTU size
   req.clientRxMTU = maxPduSize - L2CAP_HDR_SIZE;
 
@@ -1576,7 +1576,7 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     {
       // Use the Discovery State Machine to get service start stop handles
       discState = BLE_DISC_STATE_SVC;
-      
+
       // UUID of Service to be Discovered
       uint8_t uuid[ATT_UUID_SIZE] =     { TI_BASE_UUID_128(THROUGHPUT_SERVICE_SERV_UUID) };
       // Prep the State Machine for Service Discovery
@@ -1608,8 +1608,8 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
         // At this point svcStartHdl and svcEndHdl are valid
         // A write can be performed if needed to a particular UUID
         // Defined in the profile's header file
-        // Further discovery is needed to determine characteristic value handles   
-        
+        // Further discovery is needed to determine characteristic value handles
+
         // Set Statemachine to parse ATT_READ_BY_TYPE_RSP
         discState = BLE_DISC_STATE_CHAR;
 
@@ -1626,7 +1626,7 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     {
       // Allocate space for the handle UUID pairs
       throughputHandles = ICall_malloc(sizeof(throughputProfileHdl_t) * pMsg->msg.readByTypeRsp.numPairs);
-      
+
       // Note there are 16 bytes in a 128bit UUID + 2 bytes for the Handle
       // 18 bytes of information need to be copied
       // the remaining 3 bytes indiated in the length field is due to
@@ -1637,34 +1637,34 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
         // Due to the difference between the structure and the data given, apply some logic to
         // extract out the correct information (ie, ignore the 3 byte header)
         throughputProfileHdl_t* temp = (throughputProfileHdl_t*)((pMsg->msg.readByTypeRsp.pDataList + 3) + (pMsg->msg.readByTypeRsp.len * i));
-        
+
         throughputHandles[i].charHdl = temp->charHdl;
         memcpy(throughputHandles[i].addr, temp->addr, ATT_UUID_SIZE);
       }
       // Now verify that the UUIDs are in the order the indexes are
       // We'll skip this step, as the way we implemented the profile on
       // the peripheral always responds with PDU first then PHY characteristics
-      
+
       // This means we can index throughputHandles like throughputHandles[THROUGHPUT_SERVICE_UPDATE_PDU]
-      
+
       // Inform user that the Throughput Service is found, and ready to use
       Display_print0(dispHandle, SBC_ROW_RESULT, 0, "Throughput Service Found, Starting Throughput");
-      
+
       // Inform Application to Toggle Throughput
-      Event_post(syncEvent, SBC_TOGGLE_THROUGHPUT_EVT); 
+      Event_post(syncEvent, SBC_TOGGLE_THROUGHPUT_EVT);
     }
     discState = BLE_DISC_STATE_IDLE;
   }
 }
 
 /*
- * Local Function to quickly check the device list 
+ * Local Function to quickly check the device list
  * For a particualr Address
  */
 bool checkDevList(uint8_t* addr, uint8_t* index)
 {
     int i = 0;
-    
+
     for(i = 0; i < scanRes; i++)
     {
       if(memcmp(devList[i].addr, addr, B_ADDR_LEN) == 0)
@@ -1673,7 +1673,7 @@ bool checkDevList(uint8_t* addr, uint8_t* index)
         return true;
       }
     }
-    
+
     return false;
 }
 
@@ -1693,7 +1693,7 @@ static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType, uin
   {
     // Check our device list to ensure we haven't saw this device before
     uint8_t index = 0;
-    
+
     if(checkDevList(pAddr, &index) == false)
     {
       // Create new entry for Device, it's not in our list
@@ -1702,17 +1702,17 @@ static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType, uin
 
       // Assign the index
       index = scanRes;
-      
+
       // Increment scan result count
       scanRes++;
     }
-    
+
     // Create a copy of the data provided
     // Grab Memory from ICall HEAP
     uint8_t* temp = (uint8_t*)ICall_malloc(dataLen);
     // Copy the Data
     memcpy(temp, data, dataLen);
-    
+
     // Check which type of data we have and assign it (@ref GAP_Adv_Report_Types)
     switch(dataType)
     {
@@ -1720,19 +1720,19 @@ static void SimpleBLECentral_addDeviceInfo(uint8_t *pAddr, uint8_t addrType, uin
     case GAP_ADRPT_ADV_NONCONN_IND:
     case GAP_ADRPT_ADV_DIRECT_IND:
     case GAP_ADRPT_ADV_SCAN_IND:
-      
+
       // Any Type of Advertisement Data
       devList[index].advertLen = dataLen;
       devList[index].advertData = temp;
-      
+
       break;
-      
+
     case GAP_ADRPT_SCAN_RSP:
-      
+
       // Scan Response Data
       devList[index].scanLen = dataLen;
       devList[index].scanRsp = temp;
-      
+
       break;
     }
   }
@@ -1847,13 +1847,13 @@ void SimpleBLECentral_speedHandler(UArg a0)
 {
   // Place Bytes Recieved into Circular Buffer
   bytesRecvd_cb[bytesRecvd_cb_index] = bytesRecvd;
-  
+
   // Update Instantanous Throughput
   SimpleBLECentral_enqueueMsg(SBC_MEASURE_INST_SPEED_EVT, SUCCESS, (void*)&bytesRecvd_cb[bytesRecvd_cb_index]);
-  
+
   // Update Average Throughput
   Event_post(syncEvent, SBC_MEASURE_AVG_SPEED_EVT);
-  
+
   // Calculate next Index + Update Rolling Average
   bytesRecvd_cb_index++;
   bytesRecvd = 0; // Reset the count
@@ -1861,7 +1861,7 @@ void SimpleBLECentral_speedHandler(UArg a0)
   {
     // Wrap the index back to the head
     bytesRecvd_cb_index = 0;
-    
+
     // Indicate that the buffer is now filled
     cbBufferFilled = true;
   }
@@ -1907,7 +1907,7 @@ bool SimpleBLECentral_doSetDLEPDU(uint8 index)
   // Vars to keep track of active packet length settings
   uint16_t* txOctets = ICall_malloc(sizeof(uint16_t));
   uint16_t txTime = 0;
-  
+
   switch (index)
   {
     case 0:
@@ -1923,13 +1923,13 @@ bool SimpleBLECentral_doSetDLEPDU(uint8 index)
   // ONLY RX PDU of Peripheral can be modified from central
   // In other words, using the commands below which adjust this devices TX PDU,
   // the peer device will adjust it's RX PDU size to allow reception.
-  
+
   if( throughputHandles )
   {
     // Here we'll utilize the throughput profile to have the peer device
     // change it's TX PDU size in order to send more data and increase throughput
     // or decrease TX PDU size to reduce throughput
-    
+
     // Inform the Application to perform a GATT write with
     // the selected size
     SimpleBLECentral_enqueueMsg(SBC_PDU_UPDATE_EVT, SUCCESS, (void*) txOctets);
@@ -1938,16 +1938,16 @@ bool SimpleBLECentral_doSetDLEPDU(uint8 index)
   {
     // DLE HCI command to adjust PDU size for current connection
     HCI_LE_SetDataLenCmd(connHandle, *txOctets, txTime);
-   
+
     // write suggested default for future connections
     HCI_LE_WriteSuggestedDefaultDataLenCmd(*txOctets, txTime);
-    
+
     ICall_free(txOctets);
   }
 
   // Go to Main Menu
   tbm_goTo(&sbcMenuMain);
-   
+
   return true;
 }
 
@@ -1965,7 +1965,7 @@ bool SimpleBLECentral_doSetPhy(uint8 index)
   static uint8_t phy[] = {
     HCI_PHY_1_MBPS, HCI_PHY_2_MBPS, HCI_PHY_CODED, HCI_PHY_CODED
   };
-  
+
   // Swtich to determine PHY options (needed for coded S2 and S8 mode)
   switch(index)
   {
@@ -1980,7 +1980,7 @@ bool SimpleBLECentral_doSetPhy(uint8 index)
     phyOptions = HCI_PHY_OPT_S8;
     break;
   }
-  
+
   // Generate index to send over to peripheral
   uint8_t* data = ICall_malloc(sizeof(uint8_t));
   switch(phy[index])
@@ -1988,11 +1988,11 @@ bool SimpleBLECentral_doSetPhy(uint8 index)
     case HCI_PHY_1_MBPS:
       *data = 0;
       break;
-      
+
     case HCI_PHY_2_MBPS:
       *data = 1;
       break;
-    
+
     case HCI_PHY_CODED:
       {
         if(phyOptions == HCI_PHY_OPT_S2)
@@ -2002,10 +2002,10 @@ bool SimpleBLECentral_doSetPhy(uint8 index)
       }
       break;
   }
-  
+
   if( throughputHandles )
   {
-  
+
     // Check if we're already using coded PHY - switch over to 1M
     // between in order to keep stability
     if(phyIndex != *data && *data >= 2 && phyIndex >= 2)
@@ -2013,10 +2013,10 @@ bool SimpleBLECentral_doSetPhy(uint8 index)
       uint8_t* phy1M = ICall_malloc(sizeof(uint8_t));
       *phy1M = 0;
       SimpleBLECentral_enqueueMsg(SBC_PHY_UPDATE_EVT, SUCCESS, phy1M);
-      
+
       // Start A Timer to trigger a Coded PHY change
       Util_restartClock(&startPHYClock, CODED_PHY_CHANGE_DELAY);
-      
+
       // Assign the requested PHY to the payload of the PHY handler
       phyClock_phyIndex = data;
     }
@@ -2026,19 +2026,19 @@ bool SimpleBLECentral_doSetPhy(uint8 index)
       // the selected size - this will tell the peripehral to change PHY
       SimpleBLECentral_enqueueMsg(SBC_PHY_UPDATE_EVT, SUCCESS, data);
     }
-  
+
   }
   else
   {
     // Set this device's Phy Preference on the current connection.
     HCI_LE_SetPhyCmd(connHandle, LL_PHY_USE_PHY_PARAM, phy[index], phy[index], phyOptions);
-    
+
     // Set this device's PHY Perference on future connections by using:
     HCI_LE_SetDefaultPhyCmd(LL_PHY_USE_PHY_PARAM, phy[index], phy[index]);
-    
+
     ICall_free(data);
   }
-  
+
   // Go to Main Menu
   tbm_goTo(&sbcMenuMain);
 
@@ -2061,27 +2061,27 @@ bool SimpleBLECentral_doScanAndConnect(uint8 index)
     case 0:
       // SELECT NEXT DEVICE ON SCAN LIST
       SBC_NextDevice();
-      
+
       break;
-    
+
     case 1:
       // CONNECT TO SELECTED DEVICE
       SBC_ConnectToDevice();
-      
+
       break;
 
     case 2:
       // SCAN FOR DEVICES
-      
+
       // Disable Scanning until completed
       tbm_setItemStatus(&sbcMenuScanandConnect, TBM_ITEM_NONE, TBM_ITEM_ALL);
-      
+
       // Indicate to the user that Scanning Has Started
       Display_print0(dispHandle, SBC_ROW_RESULT, 0, "Scanning...");
 
       // Clear the Device List
       SBC_ClearDeviceList();
-      
+
       // Command to tell GAPRole to start scanning
       GAPCentralRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
                                     DEFAULT_DISCOVERY_ACTIVE_SCAN,
@@ -2105,7 +2105,7 @@ bool SimpleBLECentral_doToggleRSSI(uint8 index)
 {
   // Ignored
   (void)index;
-  
+
   if (SimpleBLECentral_RssiFind(connHandle) == NULL)
   {
     Display_print0(dispHandle, SBC_ROW_RSSI, 0, "RSSI Starting");
@@ -2133,7 +2133,7 @@ bool SimpleBLECentral_doDisconnect(uint8 index)
 {
   // Ignored
   (void)index;
-  
+
   GAPCentralRole_TerminateLink(connHandle);
 
   return true;
@@ -2147,9 +2147,9 @@ bool SimpleBLECentral_doDisconnect(uint8 index)
  * @return  void
  */
 void SBC_ClearDeviceList(){
-  
+
   int i = 0;
-  
+
   //Go through Device List and Clear out the ICALL Heap Allocs
   for(i = 0; i < scanRes; i++){
       if(devList[i].advertData != NULL)
@@ -2157,19 +2157,19 @@ void SBC_ClearDeviceList(){
         ICall_free(devList[i].advertData);
         devList[i].advertLen = 0;
       }
-    
+
       if(devList[i].scanRsp != NULL)
       {
         ICall_free(devList[i].scanRsp);
         devList[i].scanLen = 0;
       }
   }
-  
+
   // Clear the Device Display
   Display_clearLine(dispHandle, SBC_ROW_STATUS_2);
   Display_clearLine(dispHandle, SBC_ROW_STATUS_3);
   Display_clearLine(dispHandle, SBC_ROW_STATUS_4);
-  
+
   // Reset Scan Res indicating No Valid Scan data on Device List
   scanRes = 0;
   scanIdx = -1;
@@ -2189,7 +2189,7 @@ void SBC_NextDevice(){
   // Print the Device pointed to by the Index
   Display_print1(dispHandle, SBC_ROW_STATUS_2, 0, "Scanned Device %d", (scanIdx+1));
   Display_print0(dispHandle, SBC_ROW_STATUS_3, 0, Util_convertBdAddr2Str(devList[scanIdx].addr));
-  
+
   // Is next device a throughput Peripheral?
   if(memcmp(searchStr, devList[scanIdx].scanRsp, sizeof(searchStr)) == 0)
   {
