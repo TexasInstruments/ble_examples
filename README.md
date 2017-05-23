@@ -20,6 +20,10 @@ please refer to the [FAQ page](docs/faq.md).
 
 ## Change Log
 
+### 1.35.02.02
+* BLE5-Stack: Added Serial Port Profile (SPP) Server/Client
+* BLE-Stack:  Added Serial Port Profile (SPP) Server/Client
+
 ### 1.35.01.01
 * BLE5-Stack: Added Long Range Demo (Central/Peripheral)
 * BLE5-Stack: Added CCS projects for Throughput Demo
@@ -108,7 +112,7 @@ using the Coded PHY (S8).
     * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/longrange_peripheral/src)
 
-### Serial Port Profile (SPP) BLE Examples 
+### Serial Port Profile (SPP) BLE Examples
 
 This is a 2 part example where a spp\_ble\_client and spp\_ble\_server connect
 with one another and exchange data over UART.
@@ -118,10 +122,12 @@ The demo supports Bluetooth 5 demonstrating the BLE5-Stack's new high speed 2Mbp
 * spp\_ble\_client
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/spp_ble_client/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/spp_ble_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/spp_ble_client/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/spp_ble_client/src)
 * spp\_ble\_server
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/spp_ble_server/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/spp_ble_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/spp_ble_server/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/spp_ble_server/src)
 
 The example also supports Bluetooth 4.2 demonstrating the BLE-Stack's Data Length
@@ -130,10 +136,12 @@ Extension with OAD support:
 * spp\_ble\_client
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/src)
 * spp\_ble\_server
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/readme.md)
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/src)
 
 ## References
