@@ -18,6 +18,9 @@ For other hardware and software resources,
 [please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions
 please refer to the [FAQ page](docs/faq.md).
 
+For extra examples for **TI BLE-Stack 2.2.x SDK**, see
+[Branch: ble_examples-2.2](https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2).
+
 ## Change Log
 
 ### 1.35.02.02
