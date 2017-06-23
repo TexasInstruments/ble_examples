@@ -25,7 +25,7 @@
 
         <!-- Project properties -->
         <property name="type" value="rtsc"/>
-        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.35.00.33"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.40.00.00"/>
         <property name="xdcToolsVersion" value="3.50.01.12"/>
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2640R2F"/>

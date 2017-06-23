@@ -1,6 +1,6 @@
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.35.00.33**
+These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.40.00.00**
 
 This repository contains **experimental** *Bluetooth&reg;* 5 and
 *Bluetooth&reg;* 4.2 Low Energy sample applications for Texas Instruments'
@@ -23,18 +23,14 @@ For extra examples for **TI BLE-Stack 2.2.x SDK**, see
 
 ## Change Log
 
-### 1.35.02.02
-* BLE5-Stack: Added Serial Port Profile (SPP) Server/Client
-* BLE-Stack:  Added Serial Port Profile (SPP) Server/Client
-
-### 1.35.01.01
-* BLE5-Stack: Added Long Range Demo (Central/Peripheral)
-* BLE5-Stack: Added CCS projects for Throughput Demo
-* BLE5-Stack: Throughput Demo improvements
-
-### 1.35.00.00
-Initial offering of Simplelink CC2640R2 SDK examples.
+### 1.40.00.00
+Initial offering of Simplelink CC2640R2 SDK 1.40.00.00 examples.
 * BLE5-Stack: Throughput Demo (Central/Peripheral)
+* BLE5-Stack: Long Range Demo (Central/Peripheral)
+* BLE5-Stack: Serial Port Profile (SPP) Server/Client
+* BLE-Stack:  Serial Port Profile (SPP) Server/Client
+* Tools:      voice.py script for Voice-over-HOGP
+
 
 ## Installation
 
@@ -55,7 +51,7 @@ location.
 
 By default the SimpleLink CC2640R2 SDK will install to:
 
-    C:\ti\simplelink_cc2640r2_sdk_1_35_00_33
+    C:\ti\simplelink_cc2640r2_sdk_1_40_00_00
 
 If the Simplelink CC2640R2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
@@ -68,8 +64,8 @@ the CCS and IAR toolchains. Please pay careful attention to versions of these
 tools, the supported version are listed below. Using a non supported version is
 untested and may result in unexpected behavior.
 
-* CCS v7.1.0 with TI ARM Compiler v16.09
-* IAR for ARM v7.80.3
+* CCS v7.2.0 with TI ARM Compiler v16.09
+* IAR for ARM v8.11.2
 
 For more information on toolchain setup, please refer to our
 [FAQ page](docs/faq.md).
