@@ -14,7 +14,7 @@ This list contains the changes from the standard Simple Peripheral example:
 - Added Support for a custom profile called Temperature Profile
    - Based on the [Sensor Tag's Temperature profile](http://processors.wiki.ti.com/index.php/CC2650_SensorTag_User's_Guide#IR_Temperature_Sensors)
 
-The Long Range Peripheral is intended to be a head-less device that can used
+The Long Range Peripheral is intended to be a head-less device that can be used
 with a USB-powered battery pack to evaluate range capabilities. All the control
 functions are handled by the Long Range Central device. Once connected, the
 Central instructs the Peripheral to negotiate the use of the Coded PHY at which
