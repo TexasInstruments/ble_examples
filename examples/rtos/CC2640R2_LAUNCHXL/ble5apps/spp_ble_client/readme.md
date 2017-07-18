@@ -14,7 +14,7 @@ Prerequisites
 
 Before running the demo, the user will need the following components:
 
-- 2x [CC2650R2 LaunchPad](http://www.ti.com/tool/launchxl-cc2640r2)
+- 2x [CC2640R2 LaunchPad](http://www.ti.com/tool/launchxl-cc2640r2)
 - 2x Micro USB cable
 
 #### Firmware Requirements
