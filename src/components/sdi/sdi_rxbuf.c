@@ -115,9 +115,19 @@ uint16 SDIRxBuf_Read(uint16 len)
 //!
 //! \return     uint16 -
 // -----------------------------------------------------------------------------
-uint16 SDIRxBuf_GetRxBufLen(void)
+uint16 SDIRxBuf_GetRxBufCount(void)
 {
     return ((RxBufTail - RxBufHead) + SDI_TL_BUF_SIZE) % SDI_TL_BUF_SIZE;
+}
+
+// -----------------------------------------------------------------------------
+//! \brief      Returns number of bytes that are available in RxBuf
+//!
+//! \return     uint16 -
+// -----------------------------------------------------------------------------
+uint16 SDIRxBuf_GetRxBufAvail(void)
+{
+    return (SDI_TL_BUF_SIZE - SDIRxBuf_GetRxBufCount());
 }
 
 // -----------------------------------------------------------------------------
@@ -127,7 +137,7 @@ uint16 SDIRxBuf_GetRxBufLen(void)
 // -----------------------------------------------------------------------------
 uint16 SDIRxBuf_ReadFromRxBuf(uint8_t *buf, uint16 len)
 {
-	uint16_t idx;
+    uint16_t idx;
     for (idx = 0; idx < len; idx++)
     {
         *buf++ = RxBuf[RxBufHead];

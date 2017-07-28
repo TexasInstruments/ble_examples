@@ -41,7 +41,7 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 //******************************************************************************
 #ifndef SDIRXBUF_H
 #define SDIRXBUF_H
@@ -88,7 +88,14 @@ uint16 SDIRxBuf_Read(uint16);
 //!
 //! \return     uint16 -
 // -----------------------------------------------------------------------------
-uint16 SDIRxBuf_GetRxBufLen();
+uint16 SDIRxBuf_GetRxBufCount();
+
+// -----------------------------------------------------------------------------
+//! \brief      Returns number of bytes that are available in RxBuf
+//!
+//! \return     uint16 -
+// -----------------------------------------------------------------------------
+uint16 SDIRxBuf_GetRxBufAvail();
 
 // -----------------------------------------------------------------------------
 //! \brief      SDIRxBuf_ReadFromRxBuf

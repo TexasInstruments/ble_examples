@@ -71,7 +71,7 @@
 #ifdef USE_RCOSC
 #include "rcosc_calibration.h"
 #endif //USE_RCOSC
-   
+
 //#include <ti/mw/display/Display.h>
 #include "board_key.h"
 
@@ -79,7 +79,7 @@
 
 #include "serial_port_service.h"
 #include "spp_ble_server.h"
-#include "inc/sdi_task.h" 
+#include "inc/sdi_task.h"
 #include "inc/sdi_tl_uart.h"
 
 
@@ -157,7 +157,7 @@
  * TYPEDEFS
  */
 // RTOS queue for profile/app messages.
-typedef struct _queueRec_ 
+typedef struct _queueRec_
 {
   Queue_Elem _elem;          // queue element
   uint8_t *pData;            // pointer to app data
@@ -208,7 +208,7 @@ static Queue_Handle appMsgQueue;
 
 // Queue object used for UART messages
 static Queue_Struct appUARTMsg;
-static Queue_Handle appUARTMsgQueue; 
+static Queue_Handle appUARTMsgQueue;
 
 #if defined(FEATURE_OAD)
 // Event data from OAD profile.
@@ -252,7 +252,7 @@ static uint8_t scanRspData[] =
   'V',
   'E',
   'R',
-  
+
   // connection interval range
   0x05,   // length of this data
   GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
@@ -416,9 +416,9 @@ void SPPBLEServer_blinkLed(uint8_t led, uint8_t nBlinks)
 
   for (i=0; i<nBlinks; i++)
   {
-    PIN_setOutputValue(hGpioPin, led, Board_LED_ON);
+    PIN_setOutputValue(hGpioPin, led, 1);
     delay_ms(BLINK_DURATION);
-    PIN_setOutputValue(hGpioPin, led, Board_LED_OFF);
+    PIN_setOutputValue(hGpioPin, led, 0);
     delay_ms(BLINK_DURATION);
   }
 }
@@ -435,16 +435,16 @@ void SPPBLEServer_blinkLed(uint8_t led, uint8_t nBlinks)
 void SPPBLEServer_toggleLed(uint8_t led, uint8_t state)
 {
     uint8_t nextLEDstate = 0;
-  
+
     if(state == Board_LED_TOGGLE)
     {
       nextLEDstate = !(PIN_getOutputValue(led));
     }
     else
-    { 
+    {
       nextLEDstate = state;
     }
-                    
+
     PIN_setOutputValue(hGpioPin, led, nextLEDstate);
 }
 
@@ -468,14 +468,14 @@ static void SPPBLEServer_init(void)
   // Register the current thread as an ICall dispatcher application
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &sem);
-    
+
   // Hard code the BD Address till CC2650 board gets its own IEEE address
   uint8 bdAddress[B_ADDR_LEN] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05 };
   HCI_EXT_SetBDADDRCmd(bdAddress);
-  
+
   // Handling of LED
   hGpioPin = PIN_open(&pinGpioState, SPPBLEAppPinTable);
-  
+
 #ifdef USE_RCOSC
   RCOSC_enableCalibration();
 #endif // USE_RCOSC
@@ -486,9 +486,9 @@ static void SPPBLEServer_init(void)
   // Create one-shot clocks for internal periodic events.
   Util_constructClock(&periodicClock, SPPBLEServer_clockHandler,
                       SBP_PERIODIC_EVT_PERIOD, 0, false, SBP_PERIODIC_EVT);
-  
+
   Board_initKeys(SPPBLEServer_keyChangeHandler);
-    
+
 //  dispHandle = Display_open(Display_Type_UART, NULL);
 
   // Setup the GAP
@@ -604,11 +604,11 @@ static void SPPBLEServer_init(void)
   GATT_RegisterForMsgs(selfEntity);
 
   //Register to receive UART messages
-  SDITask_registerIncomingRXEventAppCB(SPPBLEServer_enqueueUARTMsg); //ZH
+  SDITask_registerIncomingRXEventAppCB(SPPBLEServer_enqueueUARTMsg);
 
   uint8_t hello[] = "Hello from SPP BLE Server! With Data Length Extension support!\n\r";
   DEBUG(hello);
-  
+
 #if defined FEATURE_OAD
 #if defined (HAL_IMAGE_A)
   Display_print0(dispHandle, 0, 0, "BLE Peripheral A");
@@ -618,9 +618,9 @@ static void SPPBLEServer_init(void)
 #else
   Display_print0(dispHandle, 0, 0, "SPP BLE Server");
 #endif // FEATURE_OAD
-  
+
   SPPBLEServer_blinkLed(Board_RLED, 1);
-  
+
 }
 
 /*********************************************************************
@@ -683,31 +683,20 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
         }
       }
 
-      
+
       // If RTOS queue is not empty, process app message.
       if (!Queue_empty(appUARTMsgQueue))
       {
-        //Get the message at the front of the queue but still keep it in the queue 
+        //Get the message at the front of the queue but still keep it in the queue
         queueRec_t *pRec = Queue_head(appUARTMsgQueue);
         sbpUARTEvt_t *pMsg = (sbpUARTEvt_t *)pRec->pData;
-          
+
         if (pMsg && ((gapProfileState == GAPROLE_CONNECTED) || (gapProfileState == GAPROLE_CONNECTED_ADV)))
         {
             bStatus_t retVal = FAILURE;
 
             switch(pMsg->event)
             {
-//              case SBP_UART_ERROR_EVT:
-//              {
-//                SerialPortService_AddStatusErrorCount((UART_Status)pMsg->data);
-//                //Remove from queue
-//                Util_dequeueMsg(appUARTMsgQueue);
-//                // Free the space from the message.
-//                ICall_free(pMsg);
-//                
-//                break;
-//              }
-              
               case SBP_UART_DATA_EVT:
               {
                 //Send the notification
@@ -721,11 +710,11 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
                 else
                 {
                   //Increment TX status counter
-                  SerialPortService_AddStatusTXBytes(pMsg->length);      
-                  
+                  SerialPortService_AddStatusTXBytes(pMsg->length);
+
                   //Remove from queue
                   Util_dequeueMsg(appUARTMsgQueue);
-                  
+
                   //Toggle LED to indicate data received from UART terminal and sent over the air
                   //SPPBLEServer_toggleLed(Board_GLED, Board_LED_TOGGLE);
 
@@ -734,7 +723,7 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
                   // Free the space from the message.
                   ICall_free(pMsg);
                 }
-                
+
                   if(!Queue_empty(appUARTMsgQueue))
                   {
                     // Wake up the application to flush out any remaining UART data in the queue.
@@ -747,8 +736,8 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
           }
         }
       }
-      
-      
+
+
       // If RTOS queue is not empty, process app message.
       while (!Queue_empty(appMsgQueue))
       {
@@ -763,7 +752,7 @@ static void SPPBLEServer_taskFxn(UArg a0, UArg a1)
         }
       }
     }
-    
+
     if (events & SBP_PERIODIC_EVT)
     {
       events &= ~SBP_PERIODIC_EVT;
@@ -984,11 +973,11 @@ static void SPPBLEServer_processAppMsg(sbpEvt_t *pMsg)
       SPPBLEServer_processStateChangeEvt((gaprole_States_t)pMsg->
                                                 hdr.state);
       break;
-      
+
     case SBP_KEY_CHANGE_EVT:
       SPPBLEServer_handleKeys(0, pMsg->hdr.state);
       break;
-      
+
     case SBP_CHAR_CHANGE_EVT:
       SPPBLEServer_processCharValueChangeEvt(pMsg->hdr.state);
       break;
@@ -1098,11 +1087,11 @@ static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
         uint8_t numActive = 0;
 
         Util_startClock(&periodicClock);
-        
+
         numActive = linkDB_NumActive();
- 
+
         connHandle = numActive - 1;
-        
+
         // Use numActive to determine the connection handle of the last
         // connection
         if ( linkDB_GetInfo( numActive - 1, &linkInfo ) == SUCCESS )
@@ -1123,7 +1112,7 @@ static void SPPBLEServer_processStateChangeEvt(gaprole_States_t newState)
         }
 
         SPPBLEServer_toggleLed(Board_GLED, Board_LED_TOGGLE);
-        
+
         #ifdef PLUS_BROADCASTER
           // Only turn advertising on for this state when we first connect
           // otherwise, when we go from connected_advertising back to this state
@@ -1220,7 +1209,7 @@ static void SPPBLEServer_charValueChangeCB(uint8_t paramID)
 static void SPPBLEServer_processCharValueChangeEvt(uint8_t paramID)
 {
 
-  
+
 }
 
 /*********************************************************************
@@ -1319,8 +1308,8 @@ void SPPBLEServer_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
   {
     // Create dynamic pointer to message.
     if (pMsg = ICall_malloc(sizeof(sbpUARTEvt_t)))
-    { 
-      
+    {
+
       pMsg->event = event;
       pMsg->pData = (uint8 *)ICall_allocMsg(len);
       if(pMsg->pData)
@@ -1376,20 +1365,20 @@ static void SPPBLEServer_enqueueMsg(uint8_t event, uint8_t state)
 static void SPPBLEServer_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
-  
-  
-  // Set Packet Length in a Connection 
+
+
+  // Set Packet Length in a Connection
   if (keys & KEY_RIGHT)
   {
     //SPPBLEServer_toggleLed(Board_GLED, Board_LED_TOGGLE);
-    
+
     if (gapProfileState == GAPROLE_CONNECTED )
-    {    
+    {
 
       //Request max supported size
       uint16_t requestedPDUSize = APP_SUGGESTED_PDU_SIZE;
       uint16_t requestedTxTime = APP_SUGGESTED_TX_TIME;
-   
+
       //This API is documented in hci.h
       if(SUCCESS != HCI_LE_SetDataLenCmd(connHandle, requestedPDUSize, requestedTxTime))
       {
@@ -1403,15 +1392,15 @@ static void SPPBLEServer_handleKeys(uint8_t shift, uint8_t keys)
   if (keys & KEY_LEFT)
   {
     //SPPBLEServer_toggleLed(Board_RLED, Board_LED_TOGGLE);
-    
+
     // Start or stop discovery
     if (gapProfileState == GAPROLE_CONNECTED)
     {
       uint8_t status;
-      
+
       //Send the notification
-      status = SerialPortService_SetParameter(SERIALPORTSERVICE_CHAR_DATA, 1, &charVal); 
-   
+      status = SerialPortService_SetParameter(SERIALPORTSERVICE_CHAR_DATA, 1, &charVal);
+
       if(status == SUCCESS){
         charVal++;
       }

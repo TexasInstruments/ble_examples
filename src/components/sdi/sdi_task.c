@@ -50,7 +50,6 @@
 
 #include <xdc/std.h>
 #include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Queue.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Clock.h>
@@ -69,19 +68,31 @@
 // ****************************************************************************
 
 //! \brief Transport layer RX Event (ie. bytes received, RX ISR etc.)
-#define SDITASK_TRANSPORT_RX_EVENT      Event_Id_00 
+#define SDITASK_TRANSPORT_RX_EVENT      Event_Id_00
 
 //! \brief Transmit Complete Event (likely associated with TX ISR etc.)
-#define SDITASK_TRANSPORT_TX_DONE_EVENT Event_Id_01 
+#define SDITASK_TRANSPORT_TX_DONE_EVENT Event_Id_01
 
 //! \brief A framed message buffer is ready to be sent to the transport layer.
-#define SDITASK_TX_READY_EVENT          Event_Id_02 
+#define SDITASK_TX_READY_EVENT          Event_Id_02
 
 //! \brief MRDY Received Event
 #define SDITASK_MRDY_EVENT              Event_Id_03
 
 //! \brief Size of stack created for SDI RTOS task
-#define SDITASK_STACK_SIZE 512
+#ifndef Display_DISABLE_ALL
+#ifdef __TI_COMPILER_VERSION__
+#define SDITASK_STACK_SIZE 752      /* in order to optimize memory, this value should be a multiple of 8 bytes */
+#else // !__TI_COMPILER_VERSION__
+#define SDITASK_STACK_SIZE 656      /* in order to optimize memory, this value should be a multiple of 8 bytes */
+#endif // __TI_COMPILER_VERSION__
+#else // Display_DISABLE_ALL
+#ifdef __TI_COMPILER_VERSION__
+#define SDITASK_STACK_SIZE 752      /* in order to optimize memory, this value should be a multiple of 8 bytes */
+#else // !__TI_COMPILER_VERSION__
+#define SDITASK_STACK_SIZE 608      /* in order to optimize memory, this value should be a multiple of 8 bytes */
+#endif // __TI_COMPILER_VERSION__
+#endif // Display_DISABLE_ALL
 
 //! \brief Task priority for SDI RTOS task
 #define SDITASK_PRIORITY 2
@@ -95,7 +106,7 @@
 
 //! \brief Queue record structure
 //!
-typedef struct SDI_QueueRec_t 
+typedef struct SDI_QueueRec_t
 {
     Queue_Elem _elem;
     SDIMSG_msg_t *sdiMsg;
@@ -105,23 +116,18 @@ typedef struct SDI_QueueRec_t
 //*****************************************************************************
 // globals
 //*****************************************************************************
-
-uint8 buf[SDI_TL_BUF_SIZE] ={0x00,};
-uint16 length;
-uint8 lengthRead;
-uint8 bufTest[SDI_TL_BUF_SIZE] ={0x00,};
-uint16 lenTest = 0;
-//! \brief ICall ID for stack which will be sending SDI messages
-//!
-//static uint32_t stackServiceID = 0x0000;
-
 //! \brief RTOS task structure for SDI task
 //!
 static Task_Struct sdiTaskStruct;
 
 //! \brief Allocated memory block for SDI task's stack
 //!
-Char sdiTaskStack[SDITASK_STACK_SIZE];
+#if defined __TI_COMPILER_VERSION__
+#pragma DATA_ALIGN(sdiTaskStack, 8)
+#else
+#pragma data_alignment=8
+#endif
+uint8_t sdiTaskStack[SDITASK_STACK_SIZE];
 
 //! \brief Handle for the ASYNC TX Queue
 //!
@@ -136,14 +142,19 @@ static uint8_t *lastQueuedTxMsg;
 Event_Struct uartEvent;
 Event_Handle hUartEvent; //!< Event used to control the UART thread
 
-//! \brief SDI ICall Application Entity ID.
-//!
-ICall_EntityID sdiAppEntityID = 0;
-
 //! \brief Pointer to Application RX event callback function for optional
 //!        rerouting of messages to application.
 //!
 static sdiIncomingEventCBack_t incomingRXEventAppCBFunc = NULL;
+
+//! \brief Data buffer to send to application
+//!
+static uint8 buf[SDI_TL_BUF_SIZE] ={0x00,};
+static uint16 length;
+static uint8 lengthRead;
+
+//! \brief Size of data to send to application
+//!
 static uint16 maxAppDataSize = DEFAULT_APP_DATA_LENGTH;
 
 //*****************************************************************************
@@ -197,7 +208,7 @@ static void SDITask_inititializeTask(void)
 
     Event_construct(&uartEvent, &evParams);
     hUartEvent = Event_handle(&uartEvent);
-    
+
     // Initialize Network Processor Interface (SDI) and Transport Layer
     SDITL_initTL( &SDITask_transportTxDoneCallBack,
                   &SDITask_transportRXCallBack,
@@ -211,17 +222,17 @@ static void SDITask_inititializeTask(void)
 //! \return     void
 // -----------------------------------------------------------------------------
 static void SDITask_process(void)
-{    
+{
   UInt postedEvents;
-  
+
     /* Forever loop */
-    while (1)
+    for (;; )
     {
         /* Wait for response message */
         postedEvents = Event_pend(hUartEvent, Event_Id_NONE, SDITASK_MRDY_EVENT | SDITASK_TX_READY_EVENT | SDITASK_TRANSPORT_RX_EVENT | SDITASK_TRANSPORT_TX_DONE_EVENT, BIOS_WAIT_FOREVER);
-        
+
         {
-            // Capture the ISR events flags now within this task loop.  
+            // Capture the ISR events flags now within this task loop.
 
             // MRDY event
             if (postedEvents & SDITASK_MRDY_EVENT)
@@ -240,11 +251,11 @@ static void SDITask_process(void)
                 {
                     SDITask_ProcessTXQ();
                 }
-  
+
                 if (Queue_empty(sdiTxQueue))
                 {
                     // Q is empty, no action.
- 
+
                 }
                 else
                 {
@@ -257,7 +268,7 @@ static void SDITask_process(void)
             // The Transport Layer has received some bytes
             if(postedEvents & SDITASK_TRANSPORT_RX_EVENT)
             {
-                length = SDIRxBuf_GetRxBufLen();
+                length = SDIRxBuf_GetRxBufCount();
 
                 if(length > maxAppDataSize)
                 {
@@ -266,12 +277,10 @@ static void SDITask_process(void)
                 {
                   lengthRead = (length & 0xFF);
                 }
-                
-                //bufTest[lenTest++] = length;
-                
+
                 //Do custom app processing
                 SDIRxBuf_ReadFromRxBuf(buf, lengthRead);
-                
+
                 //Echo back via UART
                 //SDITask_sendToUART(buf, length);
 
@@ -283,7 +292,7 @@ static void SDITask_process(void)
                 if(length > maxAppDataSize)
                 {
                     // Additional bytes to collect, preserve the flag and repost
-                    // to the semaphore
+                    // to the event
                     Event_post(hUartEvent, SDITASK_TRANSPORT_RX_EVENT);
                 }
             }
@@ -292,12 +301,12 @@ static void SDITask_process(void)
             if(postedEvents & SDITASK_TRANSPORT_TX_DONE_EVENT)
             {
                 // Current TX is done.
-             
+
                     if (!Queue_empty(sdiTxQueue))
                     {
                         // There are pending ASYNC messages waiting to be sent
                         // to the host.  Post to event.
-                       
+
                         Event_post(hUartEvent, SDITASK_TX_READY_EVENT);
                     }
             }
@@ -381,26 +390,26 @@ void SDITask_sendToUART(uint8_t *pMsg, uint16 length)
     SDI_QueueRec *recPtr;
 
     SDIMSG_msg_t *pSDIMsg =(SDIMSG_msg_t *)ICall_malloc( sizeof(SDIMSG_msg_t));
-    
-    key = ICall_enterCriticalSection();	
-    
+
+    key = ICall_enterCriticalSection();
+
     if(pSDIMsg)
     {
       pSDIMsg->msgType = SDIMSG_Type_ASYNC;
       pSDIMsg->pBuf = (uint8 *)ICall_allocMsg(length);
       pSDIMsg->pBufSize = length;
-        
+
       if(pSDIMsg->pBuf)
       {
           // Payload
           memcpy(pSDIMsg->pBuf, pMsg, length);
       }
-      
+
       recPtr = ICall_malloc(sizeof(SDI_QueueRec));
 
       recPtr->sdiMsg = pSDIMsg;
     }
-    
+
     switch (pSDIMsg->msgType)
     {
         case SDIMSG_Type_ASYNC:
@@ -427,9 +436,16 @@ void SDITask_sendToUART(uint8_t *pMsg, uint16 length)
 // -----------------------------------------------------------------------------
 static void SDITask_ProcessTXQ(void)
 {
-
+    ICall_CSState key;
     SDI_QueueRec *recPtr = NULL;
 
+    // Processing of any TX Queue should only be done
+    // in a critical section since any application
+    // task can enqueue items freely
+    key = ICall_enterCriticalSection();
+
+    if (!Queue_empty(sdiTxQueue))
+    {
     recPtr = Queue_dequeue(sdiTxQueue);
 
     if (recPtr != NULL)
@@ -441,8 +457,10 @@ static void SDITask_ProcessTXQ(void)
 		//free the Queue record
 		ICall_free(recPtr->sdiMsg);
 		ICall_free(recPtr);
-	}
+      }
+    }
 
+    ICall_leaveCriticalSection(key);
 }
 
 // -----------------------------------------------------------------------------
@@ -457,7 +475,7 @@ static void SDITask_ProcessTXQ(void)
 // -----------------------------------------------------------------------------
 static void SDITask_transportTxDoneCallBack(int size)
 {
-    
+
     if(lastQueuedTxMsg)
     {
         //Deallocate most recent message being transmitted.
@@ -480,7 +498,16 @@ static void SDITask_transportTxDoneCallBack(int size)
 // -----------------------------------------------------------------------------
 static void SDITask_transportRXCallBack(int size)
 {
-    SDIRxBuf_Read(size);
+    if ( size < SDIRxBuf_GetRxBufAvail() )
+    {
+    	SDIRxBuf_Read(size);
+    }
+    else
+    {
+        // Trap here for pending buffer overflow. If SDI_FLOW_CTRL is
+        // enabled, increase size of RxBuf to handle larger frames from host.
+        for(;;);
+    }
     Event_post(hUartEvent, SDITASK_TRANSPORT_RX_EVENT);
 }
 

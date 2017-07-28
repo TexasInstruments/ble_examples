@@ -236,8 +236,8 @@ static void SDITL_setPM(void)
         return;
     }
     // set constraints for Standby and idle mode
-    Power_setConstraint(Power_SB_DISALLOW);
-    Power_setConstraint(Power_IDLE_PD_DISALLOW);
+    Power_setConstraint(PowerCC26XX_SB_DISALLOW);
+    Power_setConstraint(PowerCC26XX_IDLE_PD_DISALLOW);
     sdiPMSetConstraint = TRUE;
 }
 #endif
@@ -256,8 +256,8 @@ static void SDITL_relPM(void)
         return;
     }
     // release constraints for Standby and idle mode
-    Power_releaseConstraint(Power_SB_DISALLOW);
-    Power_releaseConstraint(Power_IDLE_PD_DISALLOW);
+    Power_releaseConstraint(PowerCC26XX_SB_DISALLOW);
+    Power_releaseConstraint(PowerCC26XX_IDLE_PD_DISALLOW);
     sdiPMSetConstraint = FALSE;
 }
 #endif

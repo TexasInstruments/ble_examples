@@ -69,7 +69,6 @@
 
 #include "util.h"
 #include "board_key.h"
-//#include <ti/mw/display/Display.h>
 #include "board.h"
 
 #include "ble_user_config.h"
@@ -176,7 +175,7 @@
 #define SBC_TASK_STACK_SIZE                   864
 #endif
 
-      
+
 // Application states
 enum
 {
@@ -203,14 +202,14 @@ enum
  */
 
 // RTOS queue for profile/app messages.
-typedef struct _queueRec_ 
+typedef struct _queueRec_
 {
   Queue_Elem _elem;          // queue element
   uint8_t *pData;            // pointer to app data
 } queueRec_t;
 
 // App event passed from profiles.
-typedef struct 
+typedef struct
 {
   appEvtHdr_t hdr; // event header
   uint8_t *pData; // event data pointer
@@ -270,7 +269,7 @@ static Queue_Handle appMsgQueue;
 
 // Queue object used for UART messages
 static Queue_Struct appUARTMsg;
-static Queue_Handle appUARTMsgQueue; 
+static Queue_Handle appUARTMsgQueue;
 
 // Task pending events
 static uint16_t events = 0;
@@ -440,9 +439,9 @@ void SPPBLEClient_blinkLed(uint8_t led, uint8_t nBlinks)
 
   for (i=0; i<nBlinks; i++)
   {
-    PIN_setOutputValue(hGpioPin, led, Board_LED_ON);
+    PIN_setOutputValue(hGpioPin, led, 1);
     delay_ms(BLINK_DURATION);
-    PIN_setOutputValue(hGpioPin, led, Board_LED_OFF);
+    PIN_setOutputValue(hGpioPin, led, 0);
     delay_ms(BLINK_DURATION);
   }
 }
@@ -459,16 +458,16 @@ void SPPBLEClient_blinkLed(uint8_t led, uint8_t nBlinks)
 void SPPBLEClient_toggleLed(uint8_t led, uint8_t state)
 {
     uint8_t nextLEDstate = 0;
-  
+
     if(state == Board_LED_TOGGLE)
     {
       nextLEDstate = !(PIN_getOutputValue(led));
     }
     else
-    { 
+    {
       nextLEDstate = state;
     }
-                    
+
     PIN_setOutputValue(hGpioPin, led, nextLEDstate);
 }
 
@@ -498,18 +497,18 @@ static void SPPBLEClient_init(void)
 
   // Handling of LED
   hGpioPin = PIN_open(&pinGpioState, SPPBLEAppPinTable);
-  
+
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
   appUARTMsgQueue = Util_constructQueue(&appUARTMsg);
-  
+
   // Setup discovery delay as a one-shot timer
   Util_constructClock(&startDiscClock, SPPBLEClient_genericHandler,
                       DEFAULT_SVC_DISCOVERY_DELAY, 0, false, SBC_START_DISCOVERY_EVT);
-  
+
   Util_constructClock(&startNotiEnableClock, SPPBLEClient_genericHandler,
-                      DEFAULT_NOTI_ENABLE_DELAY, 0, false, SBC_UART_CHANGE_EVT);  
+                      DEFAULT_NOTI_ENABLE_DELAY, 0, false, SBC_UART_CHANGE_EVT);
 
   Board_initKeys(SPPBLEClient_keyChangeHandler);
 
@@ -537,9 +536,9 @@ static void SPPBLEClient_init(void)
                    (void *)attDeviceName);
 
   //Set CI to 20ms
-  GAP_SetParamValue(TGAP_CONN_EST_INT_MIN, 6); //16 - 20ms
-  GAP_SetParamValue(TGAP_CONN_EST_INT_MAX, 6);
-  
+  GAP_SetParamValue(TGAP_CONN_EST_INT_MIN, 16);
+  GAP_SetParamValue(TGAP_CONN_EST_INT_MAX, 16);
+
   // Setup the GAP Bond Manager
   {
     uint32_t passkey = DEFAULT_PASSCODE;
@@ -574,7 +573,7 @@ static void SPPBLEClient_init(void)
 
   //Register to receive UART messages
   SDITask_registerIncomingRXEventAppCB(SPPBLEClient_enqueueUARTMsg);
-  
+
   // Register with GAP for HCI/Host messages (for RSSI)
   GAP_RegisterForMsgs(selfEntity);
 
@@ -583,9 +582,9 @@ static void SPPBLEClient_init(void)
 
   uint8_t hello[] = "Hello from SPP BLE Client! With Data Length Extension support!\n\r";
   DEBUG(hello);
-  
+
   Display_print0(dispHandle, 0, 0, "BLE Central");
-  
+
   //Blink twice for client
   SPPBLEClient_blinkLed(Board_GLED, 2);
 }
@@ -634,14 +633,14 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
         }
       }
     }
-    
+
       // If RTOS queue is not empty, process app UART message.
       if (!Queue_empty(appUARTMsgQueue))
       {
-        //Get the message at the front of the queue but still keep it in the queue 
+        //Get the message at the front of the queue but still keep it in the queue
         queueRec_t *pRec = Queue_head(appUARTMsgQueue);
         sbcUARTEvt_t *pMsg = (sbcUARTEvt_t *)pRec->pData;
-        
+
         if (pMsg && (state == BLE_STATE_CONNECTED))
         {
           // Process message.
@@ -662,7 +661,7 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
               req.cmd = TRUE;
 
             retVal = GATT_WriteNoRsp(connHandle, &req);
-            
+
             if ( retVal != SUCCESS )
             {
               GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
@@ -674,11 +673,11 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
 
               //Toggle LED to indicate data received from UART terminal and sent over the air
               //SPPBLEClient_toggleLed(Board_GLED, Board_LED_TOGGLE);
-                  
-                ICall_freeMsg(pMsg->pData);
+
+              ICall_freeMsg(pMsg->pData);
               // Free the space from the message.
               ICall_free(pMsg);
-              
+
               if(!Queue_empty(appUARTMsgQueue))
               {
                 // Wake up the application to flush out any remaining UART data in the queue.
@@ -686,11 +685,11 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
               }
             }
           }
-            
+
         }
 
       }
-    
+
     // If RTOS queue is not empty, process app message
     while (!Queue_empty(appMsgQueue))
     {
@@ -704,23 +703,23 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
         ICall_free(pMsg);
       }
     }
-    
-    
+
+
     if (events & SBC_UART_CHANGE_EVT)
-    {      
+    {
       // Process message.
       uint8 retVal;
       attWriteReq_t req;
       uint8 configData[2] = {0x01,0x00};
-      
+
       events &= ~SBC_UART_CHANGE_EVT;
-       
+
       req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 2, NULL);
-      
-      if ((charCCCDHdl == NULL) && (charDataHdl != NULL)) {charCCCDHdl = charDataHdl + 1;} //Hardcoded 
+
+      if ((charCCCDHdl == NULL) && (charDataHdl != NULL)) {charCCCDHdl = charDataHdl + 1;} //Hardcoded
       if ( (req.pValue != NULL) && charCCCDHdl)
       {
-        req.handle = charCCCDHdl; //Handle for CCCD of Data characteristic        
+        req.handle = charCCCDHdl; //Handle for CCCD of Data characteristic
         req.len = 2;
         memcpy(req.pValue, configData, 2);
         req.cmd = TRUE; //Has to be true for NoRsp from server(command, not request)
@@ -734,30 +733,30 @@ static void SPPBLEClient_taskFxn(UArg a0, UArg a1)
         {
           DEBUG("Notification enabled...\n\r");
         }
-      }          
+      }
     }
-    
+
 
     if (events & SBC_START_DISCOVERY_EVT)
     {
       events &= ~SBC_START_DISCOVERY_EVT;
-     
+
       if(!scanningStarted)
-      SPPBLEClient_startDiscovery();   
-      
+      SPPBLEClient_startDiscovery();
+
     }
 
     if (events & SBC_AUTO_CONNECT_EVT)
     {
       events &= ~SBC_AUTO_CONNECT_EVT;
 
-#if defined (CLIENT_AUTO_CONNECT) && (CLIENT_AUTO_CONNECT == TRUE) 
+#if defined (CLIENT_AUTO_CONNECT) && (CLIENT_AUTO_CONNECT == TRUE)
       SPPBLEClient_autoConnect();
 #endif
     }
-    
-    
-      
+
+
+
   }
 }
 
@@ -886,10 +885,10 @@ static void SPPBLEClient_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
         Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(pEvent->initDone.devAddr));
         Display_print0(dispHandle, 2, 0, "Initialized");
-        
-#if defined (CLIENT_AUTO_CONNECT) && (CLIENT_AUTO_CONNECT == TRUE)  
+
+#if defined (CLIENT_AUTO_CONNECT) && (CLIENT_AUTO_CONNECT == TRUE)
         SPPBLEClient_genericHandler(SBC_AUTO_CONNECT_EVT);
-#endif  
+#endif
       }
       break;
 
@@ -902,7 +901,7 @@ static void SPPBLEClient_processRoleEvent(gapCentralRoleEvent_t *pEvent)
                                            pEvent->deviceInfo.pEvtData,
                                            pEvent->deviceInfo.dataLen))
           {
-            SPPBLEClient_addDeviceInfo(pEvent->deviceInfo.addr, 
+            SPPBLEClient_addDeviceInfo(pEvent->deviceInfo.addr,
                                            pEvent->deviceInfo.addrType);
           }
         }
@@ -944,7 +943,7 @@ static void SPPBLEClient_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           procedureInProgress = TRUE;
 
           SPPBLEClient_toggleLed(Board_GLED, Board_LED_TOGGLE);
-          
+
           // If service discovery not performed initiate service discovery
           if (charDataHdl == 0)
           {
@@ -1009,19 +1008,19 @@ static void SPPBLEClient_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
 {
   (void)shift;  // Intentionally unreferenced parameter
-  
-  
-  // Set Packet Length in a Connection 
+
+
+  // Set Packet Length in a Connection
   if (keys & KEY_RIGHT)
   {
     //SPPBLEClient_toggleLed(Board_GLED, Board_LED_TOGGLE);
-    
+
     if (state == BLE_STATE_CONNECTED )
-    {    
+    {
       //Request max supported size
       uint16_t requestedPDUSize = APP_SUGGESTED_PDU_SIZE;
       uint16_t requestedTxTime = APP_SUGGESTED_TX_TIME;
-   
+
       //This API is documented in hci.h
       if(SUCCESS != HCI_LE_SetDataLenCmd(connHandle, requestedPDUSize, requestedTxTime))
       {
@@ -1032,7 +1031,7 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
     {
       uint8_t addrType;
       uint8_t *peerAddr;
-      
+
       // Connect or disconnect
       if (state == BLE_STATE_IDLE)
       {
@@ -1042,9 +1041,9 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
           // connect to current device in scan result
           peerAddr = devList[scanIdx].addr;
           addrType = devList[scanIdx].addrType;
-        
+
           state = BLE_STATE_CONNECTING;
-          
+
           GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
                                        DEFAULT_LINK_WHITE_LIST,
                                        addrType, peerAddr);
@@ -1057,7 +1056,7 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
   if (keys & KEY_LEFT)
   {
     //SPPBLEClient_toggleLed(Board_RLED, Board_LED_TOGGLE);
-    
+
     // Start or stop discovery
     if (state == BLE_STATE_CONNECTED &&
              charDataHdl != 0  &&
@@ -1096,7 +1095,7 @@ static void SPPBLEClient_handleKeys(uint8_t shift, uint8_t keys)
     }
     else
     {
-#if defined (CLIENT_AUTO_CONNECT) && (CLIENT_AUTO_CONNECT == TRUE)  
+#if defined (CLIENT_AUTO_CONNECT) && (CLIENT_AUTO_CONNECT == TRUE)
       SPPBLEClient_genericHandler(SBC_AUTO_CONNECT_EVT);
 #endif
     }
@@ -1117,7 +1116,7 @@ void SPPBLEClient_autoConnect(void)
 {
     uint8_t addrType;
     uint8_t peerAddr[6];
-   
+
     // connect to hardcoded device address i.e. 0x050403020100
     int x = 0;
     for(x = 0; x<6; x++)
@@ -1128,7 +1127,7 @@ void SPPBLEClient_autoConnect(void)
     addrType = ADDRTYPE_PUBLIC;
 
     DEBUG("Auto connecting..."); DEBUG_NEWLINE();
-    
+
     GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
                                  DEFAULT_LINK_WHITE_LIST,
                                  addrType, peerAddr);
@@ -1146,12 +1145,12 @@ static void SPPBLEClient_processGATTMsg(gattMsgEvent_t *pMsg)
 {
   if (state == BLE_STATE_CONNECTED)
   {
-    
+
     if(pMsg->method == ATT_HANDLE_VALUE_NOTI)
-    { 
+    {
       //Send received bytes to serial port
-      SDITask_sendToUART(pMsg->msg.handleValueNoti.pValue, pMsg->msg.handleValueNoti.len); 
-      
+      SDITask_sendToUART(pMsg->msg.handleValueNoti.pValue, pMsg->msg.handleValueNoti.len);
+
       //Toggle LED to indicate data received from client
       SPPBLEClient_toggleLed(Board_RLED, Board_LED_TOGGLE);
     }
@@ -1246,13 +1245,13 @@ static void SPPBLEClient_processCmdCompleteEvt(hciEvt_CmdComplete_t *pMsg)
     DEBUG("Max TX bytes: ");
     DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[1] + (pMsg->pReturnParam[2]<<8))); DEBUG_NEWLINE();
     DEBUG("Max TX time: ");
-    DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[3] + (pMsg->pReturnParam[4]<<8))); DEBUG_NEWLINE();    
+    DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[3] + (pMsg->pReturnParam[4]<<8))); DEBUG_NEWLINE();
     DEBUG("Max RX bytes: ");
-    DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[5] + (pMsg->pReturnParam[6]<<8))); DEBUG_NEWLINE();    
+    DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[5] + (pMsg->pReturnParam[6]<<8))); DEBUG_NEWLINE();
     DEBUG("Max RX time: ");
     DEBUG((uint8_t*)convInt32ToText((int)pMsg->pReturnParam[7] + (pMsg->pReturnParam[8]<<8))); DEBUG_NEWLINE();
     break;
-    
+
 //    case HCI_READ_RSSI:
 //      {
 //        int8 rssi = (int8)pMsg->pReturnParam[3];
@@ -1540,7 +1539,7 @@ static void SPPBLEClient_startDiscovery(void)
  * @return  none
  */
 static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
-{ 
+{
   if (discState == BLE_DISC_STATE_MTU)
   {
     // MTU size response received, discover simple BLE service
@@ -1567,9 +1566,9 @@ static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       svcEndHdl = ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
       DEBUG("Found Serial Port Service...");
     }
-    
+
     // If procedure complete
-    if (((pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP) && 
+    if (((pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP) &&
          (pMsg->hdr.status == bleProcedureComplete))  ||
         (pMsg->method == ATT_ERROR_RSP))
     {
@@ -1577,34 +1576,34 @@ static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       {
         attReadByTypeReq_t req;
         uint8_t uuid[ATT_UUID_SIZE] = { TI_BASE_UUID_128(SERIALPORTSERVICE_DATA_UUID) };
-        
+
         // Discover characteristic
         discState = BLE_DISC_STATE_CHAR;
-        
+
         req.startHandle = svcStartHdl;
         req.endHandle = svcEndHdl;
         req.type.len = ATT_UUID_SIZE;
         memcpy(req.type.uuid,  uuid, ATT_UUID_SIZE);
-        
+
         //DEBUG("Reading UUIDs...");
 
-        
+
         // Discover characteristic descriptors
         GATT_DiscAllCharDescs(connHandle,
                               svcStartHdl + 1,
                               svcEndHdl,
-                              selfEntity);     
+                              selfEntity);
       }
     }
   }
   else if (discState == BLE_DISC_STATE_CHAR)
-  {      
+  {
     // Characteristic descriptors found
     if (pMsg->method == ATT_FIND_INFO_RSP &&
-        pMsg->msg.findInfoRsp.numInfo > 0) 
+        pMsg->msg.findInfoRsp.numInfo > 0)
     {
       uint8_t i;
-      
+
       // For each handle/uuid pair
       for (i = 0; i < pMsg->msg.findInfoRsp.numInfo; i++)
       {
@@ -1633,27 +1632,27 @@ static void SPPBLEClient_processGATTDiscEvent(gattMsgEvent_t *pMsg)
         }
       }
     }
-        
-    
+
+
     // If procedure complete
-    if ((pMsg->method == ATT_FIND_INFO_RSP  && 
+    if ((pMsg->method == ATT_FIND_INFO_RSP  &&
          pMsg->hdr.status == bleProcedureComplete) ||
         (pMsg->method == ATT_ERROR_RSP))
     {
-      
+
       //Enable notification on peripheral(after a few seconds delay, let it finish connection/discovery process)
       {
         Util_startClock(&startNotiEnableClock);
       }
-      
-      procedureInProgress = FALSE; 
+
+      procedureInProgress = FALSE;
       discState = BLE_DISC_STATE_IDLE;
     }
-        
 
-    
-    
-    
+
+
+
+
   }
 }
 
@@ -1899,7 +1898,7 @@ static void SPPBLEClient_genericHandler(UArg arg)
 void SPPBLEClient_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
 {
   sbcUARTEvt_t *pMsg;
-  
+
   //Enqueue message only in a connected state
   if(state == BLE_STATE_CONNECTED)
   {
@@ -1914,7 +1913,7 @@ void SPPBLEClient_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
         memcpy(pMsg->pData , data, len);
       }
       pMsg->length = len;
-      
+
       // Enqueue the message.
       Util_enqueueMsg(appUARTMsgQueue, sem, (uint8_t *)pMsg);
     }

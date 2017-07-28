@@ -53,6 +53,7 @@
         -Dxdc_runtime_Assert_DISABLE_ALL
         -Dxdc_runtime_Log_DISABLE_ALL
         -DCC2650_LAUNCHXL
+        -DxBOOSTXL_CC2650MA
         -DCC26XXWARE
         -DCC26XX
 

@@ -140,28 +140,28 @@ void SDITLUART_registerIncomingRXErrorStatusAppCB(sdiTLIncomingEventCBack_t appR
 void SDITLUART_closeUART(void)
 {
   ICall_CSState key;
-  
+
   key = ICall_enterCriticalSection();
-  
+
   // Cancel any pending reads
   UART_readCancel(uartHandle);
-  
+
   // Close / power off the UART.
   UART_close(uartHandle);
-  
+
   ICall_leaveCriticalSection(key);
 }
 
 
 uint8 SDITLUART_configureUARTParams(UART_Params *initParams)
-{ 
+{
   uint8 status = SUCCESS;
   ICall_CSState key;
-  
+
   SDITLUART_closeUART();
-  
+
   key = ICall_enterCriticalSection();
-  
+
   // Open / power on the UART.
   uartHandle = UART_open(Board_UART, &paramsUART);
   if(uartHandle != NULL)
@@ -171,17 +171,17 @@ uint8 SDITLUART_configureUARTParams(UART_Params *initParams)
     //DEBUG("ERROR in UART_open");
     status = FAILURE;
   }
- 
+
   //Enable Partial Reads on all subsequent UART_read()
   status = UART_control(uartHandle, UARTCC26XX_RETURN_PARTIAL_ENABLE,  NULL);
-  
+
   ICall_leaveCriticalSection(key);
-  
+
   #ifndef POWER_SAVING
     //Initiate first read to start polling UART
     SDITLUART_readTransport();
   #endif //POWER_SAVING
-  
+
   return status;
 }
 
@@ -191,8 +191,8 @@ uint8 SDITLUART_configureUARTParams(UART_Params *initParams)
 //!
 //! \param[in]  tRxBuf - pointer to SDI TL Tx Buffer
 //! \param[in]  tTxBuf - pointer to SDI TL Rx Buffer
-//! \param[in]  sdiCBack - SDI TL call back function to be invoked at the end of 
-//!             a UART transaction                     
+//! \param[in]  sdiCBack - SDI TL call back function to be invoked at the end of
+//!             a UART transaction
 //!
 //! \return     void
 // -----------------------------------------------------------------------------
@@ -218,7 +218,7 @@ void SDITLUART_initializeTransport(Char *tRxBuf, Char *tTxBuf, sdiCB_t sdiCBack)
     paramsUART.writeCallback = SDITLUART_writeCallBack;
 
     //paramsUART.readReturnMode = UART_RETURN_FULL;
-    
+
     // Open / power on the UART.
     uartHandle = UART_open(Board_UART, &paramsUART);
     if(uartHandle != NULL)
@@ -248,7 +248,7 @@ void SDITLUART_stopTransfer(void)
     // or that the FIFO has already been read for this UART_read()
     // In either case UART_readCancel will call the read CB function and it will
     // invoke sdiTransmitCB with the appropriate number of bytes read
-    if (!UARTCharsAvail(((UARTCC26XX_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr))
+    if (!UARTCharsAvail(((UARTCC26XX_HWAttrsV1 const *)(uartHandle->hwAttrs))->baseAddr))
     {
         RxActive = FALSE;
         UART_readCancel(uartHandle);
@@ -270,7 +270,7 @@ void SDITLUART_handleMrdyEvent(void)
 {
     ICall_CSState key;
     key = ICall_enterCriticalSection();
-    
+
     mrdy_flag = 0;
 
     // If we haven't already begun reading, now is the time before Master
@@ -299,7 +299,7 @@ void SDITLUART_handleMrdyEvent(void)
     }
 
     ICall_leaveCriticalSection(key);
-    
+
     return;
 }
 #endif //POWER_SAVING
@@ -321,7 +321,7 @@ static void SDITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
 
     if (errStatus = ((UARTCC26XX_Handle)handle->object)->status)
     {
-      //report UART error status to application 
+      //report UART error status to application
       if(incomingRXErrorStatusAppCBFunc != NULL)
         incomingRXErrorStatusAppCBFunc(UART_ERROR_EVT, &errStatus, sizeof(errStatus));
     }
@@ -337,7 +337,7 @@ static void SDITLUART_writeCallBack(UART_Handle handle, void *ptr, size_t size)
     }
 
     TxActive = FALSE;
-    
+
 #else
     if ( sdiTransmitCB )
     {
@@ -366,7 +366,7 @@ static void SDITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
 
     if (errStatus = ((UARTCC26XX_Handle)handle->object)->status)
     {
-      //report UART error status to application 
+      //report UART error status to application
       if(incomingRXErrorStatusAppCBFunc != NULL)
         incomingRXErrorStatusAppCBFunc(UART_ERROR_EVT, &errStatus, sizeof(errStatus));
     }
@@ -390,11 +390,11 @@ static void SDITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
 #ifdef POWER_SAVING
     // Read has been cancelled by transport layer, or bus timeout and no bytes in FIFO
     //    - do not invoke another read
-    if ( !UARTCharsAvail(((UARTCC26XX_HWAttrs const *)(uartHandle->hwAttrs))->baseAddr) &&
+    if ( !UARTCharsAvail(((UARTCC26XX_HWAttrsV1 const *)(uartHandle->hwAttrs))->baseAddr) &&
             mrdy_flag )
     {
         RxActive = FALSE;
-        
+
         // If TX has also completed then we are safe to issue call back
         if ( !TxActive && sdiTransmitCB )
         {
@@ -450,14 +450,14 @@ void SDITLUART_readTransport(void)
 {
     ICall_CSState key;
     key = ICall_enterCriticalSection();
-    
+
 #ifdef POWER_SAVING
     RxActive = TRUE;
 #endif //POWER_SAVING
 
     TransportRxLen = 0;
     UART_read(uartHandle, &isrRxBuf[0], UART_ISR_BUF_SIZE);
-    
+
     ICall_leaveCriticalSection(key);
 }
 
@@ -473,7 +473,7 @@ uint16 SDITLUART_writeTransport(uint16 len)
 {
     ICall_CSState key;
     key = ICall_enterCriticalSection();
-    
+
     TransportTxLen = len;
 
 #ifdef POWER_SAVING
@@ -492,6 +492,6 @@ uint16 SDITLUART_writeTransport(uint16 len)
     }
 #endif //POWER_SAVING
     ICall_leaveCriticalSection(key);
-    
+
     return TransportTxLen;
 }

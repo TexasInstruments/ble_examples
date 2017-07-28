@@ -77,8 +77,8 @@ extern "C"
 #               error "ERROR: You must choose Board_SPI1 SPI module for NPI."
 #       endif
 #  elif defined(SDI_USE_UART)
-#    define MRDY_PIN Board_KEY_UP
-#    define SRDY_PIN Board_KEY_DOWN
+#    define MRDY_PIN Board_BUTTON0
+#    define SRDY_PIN Board_BUTTON1
 #  endif
 #  define SRDY_ENABLE()                   PIN_setOutputValue(hSdiHandshakePins, SRDY_PIN, 0) /* RTS low */
 #  define SRDY_DISABLE()                  PIN_setOutputValue(hSdiHandshakePins, SRDY_PIN, 1) /* RTS high */
@@ -90,7 +90,7 @@ extern "C"
 #define SDI_TL_BUF_SIZE         270
 #define SDI_SPI_PAYLOAD_SIZE    255
 #define SDI_SPI_HDR_LEN         4
-  
+
 #ifdef NPI_USE_SPI
 #  if (NPI_TL_BUF_SIZE - NPI_SPI_HDR_LEN) < NPI_SPI_PAYLOAD_SIZE
 #    define NPI_MAX_FRAG_SIZE       (NPI_TL_BUF_SIZE - NPI_SPI_HDR_LEN)
