@@ -38,7 +38,7 @@
  */
 """
 
-from transport import TransportBase
+from .transport import TransportBase
 import logging
 import pywinusb.hid as hid
 from struct import pack

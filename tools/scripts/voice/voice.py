@@ -46,6 +46,7 @@ import argparse
 from time import sleep
 import time
 import wave
+import sys
 
 
 def set_debug_level(loggers, formatter):
@@ -126,12 +127,23 @@ def main():
 
     transport.setDataValidation(args["transport_validation"])
 
-    transport.open()
+    print ('Starting script...\n')
+    sys.stdout.flush()
 
-    while transport.isConnected():
-        sleep(1)
+    if transport.open():
+        print ('\t1. Press and Hold MIC button')
+        print ('\t2. Speak into Microphone')
+        print ('\t3. Release MIC button to save data to file')
+        sys.stdout.flush()
 
-    transport.close()
+        while transport.isConnected():
+            sleep(1)
+
+        transport.close()
+    else:
+        print ('\tUSB device is not connected or it does not have voice service.')
+        print ('\tMake sure the remote is connected.')
+        print ('\tAdd the \"-h\" option for help.')
 
 if __name__ == '__main__':
     main()

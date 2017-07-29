@@ -38,7 +38,7 @@
  */
 """
 
-from codec import CodecBase
+from .codec import CodecBase
 import logging
 from struct import unpack, pack
 
