@@ -1,6 +1,6 @@
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.40.00.00**
+These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.40.00.45**
 
 This repository contains **experimental** *Bluetooth&reg;* 5 and
 *Bluetooth&reg;* 4.2 Low Energy sample applications for Texas Instruments'
@@ -23,8 +23,13 @@ For extra examples for **TI BLE-Stack 2.2.x SDK**, see
 
 ## Change Log
 
+Note: The version numbers below are related to GitHub ble_examples releases.
+The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremented
+as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
+SDK release.
+
 ### 1.40.00.00
-Initial offering of Simplelink CC2640R2 SDK 1.40.00.00 examples.
+Initial offering of Simplelink CC2640R2 SDK 1.40.00.45 examples.
 * BLE5-Stack: Throughput Demo (Central/Peripheral)
 * BLE5-Stack: Long Range Demo (Central/Peripheral)
 * BLE5-Stack: Serial Port Profile (SPP) Server/Client
@@ -51,7 +56,7 @@ location.
 
 By default the SimpleLink CC2640R2 SDK will install to:
 
-    C:\ti\simplelink_cc2640r2_sdk_1_40_00_00
+    C:\ti\simplelink_cc2640r2_sdk_1_40_00_45
 
 If the Simplelink CC2640R2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing

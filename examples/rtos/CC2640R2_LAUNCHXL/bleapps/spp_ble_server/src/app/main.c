@@ -52,6 +52,7 @@
 
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
+#include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/BIOS.h>
 
 #include "icall.h"

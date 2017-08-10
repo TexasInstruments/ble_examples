@@ -25,7 +25,7 @@
 
         <!-- Project properties -->
         <property name="type" value="rtsc"/>
-        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.40.00.00"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.40.00.45"/>
         <property name="xdcToolsVersion" value="3.50.01.12"/>
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2640R2F"/>
@@ -42,7 +42,7 @@
             --cmd_file=${TI_BLE_SDK_BASE}/examples/rtos/CC2640R2_LAUNCHXL/blestack/oad_target/tirtos/iar/stack/build_config.opt
             -mv7M3 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off
             -D${COM_TI_SIMPLELINK_CC2640R2_SDK_SYMBOLS}
-            -DDEVICE_FAMILY=cc26x0r2
+            -DDeviceFamily_CC26X0R2
             -DBOARD_DISPLAY_USE_LCD=0
             -DBOARD_DISPLAY_USE_UART=0
             -DBOARD_DISPLAY_USE_UART_ANSI=0
@@ -61,7 +61,6 @@
             -DICALL_MAX_NUM_ENTITIES=6
             -DICALL_MAX_NUM_TASKS=4
             -DxPOWER_SAVING
-            -DUSE_CORE_SDK
             -DUSE_ICALL
             -Dxdc_runtime_Assert_DISABLE_ALL
             -Dxdc_runtime_Log_DISABLE_ALL

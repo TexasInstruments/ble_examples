@@ -17,7 +17,7 @@
 
         <!-- Project properties -->
         <property name="type" value="rtsc"/>
-        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.40.00.00"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.40.00.45"/>
         <property name="xdcToolsVersion" value="3.50.01.12"/>
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2640R2F"/>
@@ -44,7 +44,7 @@
             -DCC2640R2_LAUNCHXL
             -DCC26XX
             -DCC26XX_R2
-            -DDEVICE_FAMILY=cc26x0r2
+            -DDeviceFamily_CC26X0R2
             -DHEAPMGR_SIZE=0
             -DICALL_EVENTS
             -DICALL_JT
@@ -52,9 +52,9 @@
             -DICALL_MAX_NUM_ENTITIES=6
             -DICALL_MAX_NUM_TASKS=3
             -DICALL_STACK0_ADDR
+            -DRF_SINGLEMODE
             -DPOWER_SAVING
             -DSTACK_LIBRARY
-            -DUSE_CORE_SDK
             -DUSE_ICALL
             -Dxdc_runtime_Assert_DISABLE_ALL
             -Dxdc_runtime_Log_DISABLE_ALL

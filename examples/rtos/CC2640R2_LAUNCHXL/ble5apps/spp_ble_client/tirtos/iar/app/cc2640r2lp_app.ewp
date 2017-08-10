@@ -188,7 +188,7 @@
           <state>SDI_USE_UART</state>
           <state>CC26XX</state>
           <state>CC26XX_R2</state>
-          <state>DEVICE_FAMILY=cc26x0r2</state>
+          <state>DeviceFamily_CC26X0R2</state>
           <state>Display_DISABLE_ALL</state>
           <state>HEAPMGR_SIZE=0</state>
           <state>ICALL_EVENTS</state>
@@ -197,9 +197,9 @@
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>ICALL_MAX_NUM_TASKS=4</state>
           <state>MAX_PDU_SIZE=135</state>
+          <state>RF_SINGLEMODE</state>
           <state>xPOWER_SAVING</state>
           <state>STACK_LIBRARY</state>
-          <state>USE_CORE_SDK</state>
           <state>USE_ICALL</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>

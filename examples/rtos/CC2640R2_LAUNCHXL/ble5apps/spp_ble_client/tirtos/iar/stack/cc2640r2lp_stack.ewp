@@ -183,7 +183,7 @@
           <state>CC26XX</state>
           <state>CC26XX_R2</state>
           <state>DATA=</state>
-          <state>DEVICE_FAMILY=cc26x0r2</state>
+          <state>DeviceFamily_CC26X0R2</state>
           <state>EXT_HAL_ASSERT</state>
           <state>FLASH_ROM_BUILD</state>
           <state>ICALL_EVENTS</state>
@@ -194,7 +194,6 @@
           <state>OSAL_SNV=1</state>
           <state>POWER_SAVING</state>
           <state>STACK_LIBRARY</state>
-          <state>USE_CORE_SDK</state>
           <state>USE_ICALL</state>
         </option>
         <option>

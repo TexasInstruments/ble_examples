@@ -76,9 +76,9 @@
 
 #include "longrange_peripheral.h"
 
-#undef DEVICE_FAMILY_PATH
-#define DEVICE_FAMILY_PATH(x) <ti/devices/DEVICE_FAMILY/x>
-#include DEVICE_FAMILY_PATH(driverlib/aon_batmon.h)
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/aon_batmon.h)
+
 
 /*********************************************************************
  * CONSTANTS
