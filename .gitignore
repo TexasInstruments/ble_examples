@@ -7,7 +7,7 @@
 **/FlashOnly*/
 **/configPkg/
 **/settings
-**/config/src
+**/src
 *.dep
 *.log
 *.ewt

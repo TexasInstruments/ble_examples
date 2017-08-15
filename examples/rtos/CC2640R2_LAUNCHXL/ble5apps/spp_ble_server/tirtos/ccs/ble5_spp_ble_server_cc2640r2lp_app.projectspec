@@ -98,10 +98,10 @@
             -l${SRC_BLE_DIR}/common/cc26xx/ccs/cc26xx_app.cmd
             -x
             --define=CC26X0ROM=2
-            --diag_suppress=16002-D
-            --diag_suppress=10247-D
+            --diag_suppress=10229-D
             --diag_suppress=10325-D
-            --diag_suppress=10229-D"
+            --diag_suppress=16002-D
+            --diag_suppress=16032-D"
         />
 
         <pathVariable name="EXAMPLE_ROOT" path="../.." scope="project"/>
@@ -125,7 +125,6 @@
         <file path="SRC_COMMON_DIR/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
 
         <!-- ICall Folder -->
-        <file path="SRC_COMMON_DIR/heapmgr/heapmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="SRC_COMMON_DIR/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="SRC_COMMON_DIR/icall/src/inc/icall.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="SRC_BLE_DIR/icall/inc/icall_addrs.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
@@ -172,7 +171,7 @@
         <file path="EXAMPLE_ROOT/src/app/main.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
 
         <!-- TOOLS Folder -->
-        <file path="EXAMPLE_ROOT/tirtos/ccs/config/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_ROOT/tirtos/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="SRC_BLE_DIR/common/cc26xx/ccs/cc26xx_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="EXAMPLE_ROOT/tirtos/ccs/config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM"/>
         <file path="EXAMPLE_ROOT/tirtos/ccs/config/ccs_linker_defines.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>

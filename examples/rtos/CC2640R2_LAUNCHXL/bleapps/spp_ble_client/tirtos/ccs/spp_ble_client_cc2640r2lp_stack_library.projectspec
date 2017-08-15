@@ -180,7 +180,7 @@
 
         <!-- TOOLS Folder -->
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/config/build_components.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
-        <file path="PROJECT_BUILD_BASE/tirtos/iar/stack/build_config.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
+        <file path="PROJECT_BUILD_BASE/tirtos/build_config.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/common/cc26xx/onboard.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/common/cc26xx/onboard.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
     </project>

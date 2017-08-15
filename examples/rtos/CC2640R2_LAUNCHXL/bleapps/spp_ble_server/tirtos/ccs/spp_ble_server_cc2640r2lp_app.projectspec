@@ -92,10 +92,10 @@
             -l${TI_BLE_SDK_BASE}/source/ti/blestack/common/cc26xx/ccs/cc26xx_app.cmd
             -x
             --define=CC26X0ROM=2
-            --diag_suppress=16002-D
-            --diag_suppress=10247-D
+            --diag_suppress=10229-D
             --diag_suppress=10325-D
-            --diag_suppress=10229-D"
+            --diag_suppress=16002-D
+            --diag_suppress=16032-D"
         />
         
         <configuration
@@ -162,10 +162,10 @@
             -l${TI_BLE_SDK_BASE}/source/ti/blestack/common/cc26xx/ccs/cc26xx_app.cmd
             -x
             --define=CC26X0ROM=2
-            --diag_suppress=16002-D
-            --diag_suppress=10247-D
+            --diag_suppress=10229-D
             --diag_suppress=10325-D
-            --diag_suppress=10229-D"
+            --diag_suppress=16002-D
+            --diag_suppress=16032-D"
         />
 
         <pathVariable name="CC26XXWARE" path="${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/devices/cc26x0r2" scope="project"/>
@@ -194,7 +194,6 @@
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
 
         <!-- ICall Folder -->
-        <file path="TI_BLE_SDK_BASE/source/ti/blestack/heapmgr/heapmgr.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/icall/src/inc/icall.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/icall/inc/icall_addrs.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
@@ -241,7 +240,7 @@
         <file path="PROJECT_BUILD_BASE/src/app/main.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
 
         <!-- TOOLS Folder -->
-        <file path="PROJECT_BUILD_BASE/tirtos/ccs/config/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="PROJECT_BUILD_BASE/tirtos/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/common/cc26xx/ccs/cc26xx_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
         <file path="PROJECT_BUILD_BASE/tirtos/ccs/config/ccs_compiler_defines.bcfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM"/>
         <file path="PROJECT_BUILD_BASE/tirtos/ccs/config/ccs_linker_defines.cmd" openOnCreation="" excludeFromBuild="true" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>

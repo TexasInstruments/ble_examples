@@ -199,6 +199,7 @@
           <state>ICALL_MAX_NUM_ENTITIES=6</state>
           <state>ICALL_MAX_NUM_TASKS=3</state>
           <state>RF_SINGLEMODE</state>
+          <state>ICALL_STACK0_ADDR</state>
           <state>POWER_SAVING</state>
           <state>STACK_LIBRARY</state>
           <state>USE_ICALL</state>
@@ -287,7 +288,7 @@
           <name>IExtraOptions</name>
           <state>-f $SRC_BLE_DIR$/config/build_components.opt</state>
           <state>-f $SRC_BLE_DIR$/config/factory_config.opt</state>
-          <state>-f $PROJ_DIR$\..\stack\build_config.opt</state>
+          <state>-f $EXAMPLE_BLE_ROOT$/tirtos/build_config.opt</state>
           <state>-f $PROJ_DIR$\..\config\configPkg\compiler.opt.defs</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.bdef</state>
         </option>
@@ -340,23 +341,24 @@
           <state>$SRC_BLE_DIR$/controller/cc26xx_r2/inc</state>
           <state>$SRC_BLE_DIR$/inc</state>
           <state>$SRC_BLE_DIR$/common/cc26xx</state>
-          <state>$EXAMPLE_ROOT$/src/app</state>
+          <state>$EXAMPLE_BLE_ROOT$/src/app</state>
           <state>$SRC_LOCAL_DIR$/profiles/throughput</state>
           <state>$SRC_BLE_DIR$/icall/inc</state>
           <state>$SRC_BLE_DIR$/inc</state>
           <state>$SRC_BLE_DIR$/profiles/roles</state>
           <state>$SRC_BLE_DIR$/profiles/roles/cc26xx</state>
           <state>$SRC_BLE_DIR$/target</state>
-          <state>$SRC_COMMON_DIR$/hal/src/inc</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/_common</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/cc2650/rom</state>
-          <state>$SRC_COMMON_DIR$/heapmgr</state>
-          <state>$SRC_COMMON_DIR$/icall/src/inc</state>
-          <state>$SRC_COMMON_DIR$/osal/src/inc</state>
-          <state>$SRC_COMMON_DIR$/services/src/saddr</state>
-          <state>$SRC_COMMON_DIR$/services/src/sdata</state>
-          <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$/source/ti/devices/cc26x0r2</state>
+          <state>$SRC_BLE_DIR$/hal/src/inc</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/_common</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/_common/cc26xx</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/cc2650/rom</state>
+          <state>$SRC_BLE_DIR$/heapmgr</state>
+          <state>$SRC_BLE_DIR$/icall/src/inc</state>
+          <state>$SRC_BLE_DIR$/osal/src/inc</state>
+          <state>$SRC_BLE_DIR$/services/src/saddr</state>
+          <state>$SRC_BLE_DIR$/services/src/sdata</state>
+          <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc26x0r2</state>
+          <state>$EXAMPLE_BLE_ROOT$\..\app\source</state>
           <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source</state>
         </option>
         <option>
@@ -683,8 +685,8 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>"$XDCROOT$/xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$" --cfgArgs NO_ROM=0</prebuild>
-        <postbuild></postbuild>
+        <prebuild>"$XDCROOT$\xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$" --cfgArgs NO_ROM=0 -o $PROJ_DIR$\..\config\configPkg $EXAMPLE_BLE_ROOT$\tirtos\app_ble.cfg</prebuild>
+        <postbuild>$TOOLS_BLE_DIR$\output_converter\output_converter.exe $EXE_DIR$\$TARGET_BNAME$.bin</postbuild>
       </data>
     </settings>
     <settings>
@@ -831,6 +833,8 @@
           <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x0r2.arm3</state>
           <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_singleMode_cc26x0r2.arm3</state>
           <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\display\lib\display.arm3</state>
+          <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\grlib.arm3</state>
+          <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\mw\lcd\lib\lcd.arm3</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1031,16 +1035,16 @@
       <name>$SRC_BLE_DIR$\common\cc26xx\board_key.h</name>
     </file>
     <file>
-      <name>$EXAMPLE_ROOT$\src\app\throughput_central.c</name>
+      <name>$EXAMPLE_BLE_ROOT$\src\app\throughput_central.c</name>
     </file>
     <file>
-      <name>$EXAMPLE_ROOT$\src\app\throughput_central.h</name>
+      <name>$EXAMPLE_BLE_ROOT$\src\app\throughput_central.h</name>
     </file>
     <file>
-      <name>$EXAMPLE_ROOT$\src\app\throughput_central_menu.c</name>
+      <name>$EXAMPLE_BLE_ROOT$\src\app\throughput_central_menu.c</name>
     </file>
     <file>
-      <name>$EXAMPLE_ROOT$\src\app\throughput_central_menu.h</name>
+      <name>$EXAMPLE_BLE_ROOT$\src\app\throughput_central_menu.h</name>
     </file>
     <file>
       <name>$SRC_BLE_DIR$\common\cc26xx\menu\two_btn_menu.c</name>
@@ -1078,9 +1082,6 @@
   </group>
   <group>
     <name>ICall</name>
-    <file>
-      <name>$SRC_BLE_DIR$\heapmgr\heapmgr.h</name>
-    </file>
     <file>
       <name>$SRC_BLE_DIR$\icall\src\icall.c</name>
     </file>
@@ -1163,13 +1164,13 @@
       <name>$PROJ_DIR$\..\config\ccfg_app_ble.c</name>
     </file>
     <file>
-      <name>$EXAMPLE_ROOT$\src\app\main.c</name>
+      <name>$EXAMPLE_BLE_ROOT$\src\app\main.c</name>
     </file>
   </group>
   <group>
     <name>Tools</name>
     <file>
-      <name>$PROJ_DIR$\..\config\app_ble.cfg</name>
+      <name>$PROJ_DIR$\app_ble.cfg</name>
     </file>
     <file>
       <name>$SRC_BLE_DIR$\common\cc26xx\iar\cc26xx_app_and_stack.icf</name>

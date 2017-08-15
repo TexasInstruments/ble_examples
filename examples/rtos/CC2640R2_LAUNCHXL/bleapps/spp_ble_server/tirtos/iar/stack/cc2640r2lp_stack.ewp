@@ -192,6 +192,7 @@
           <state>ICALL_LITE</state>
           <state>OSAL_CBTIMER_NUM_TASKS=1</state>
           <state>OSAL_SNV=1</state>
+          <state>RF_SINGLEMODE</state>
           <state>POWER_SAVING</state>
           <state>USE_ICALL</state>
         </option>
@@ -277,7 +278,7 @@
           <state>--aeabi</state>
           <state>-f $SRC_BLE_DIR$/config/build_components.opt</state>
           <state>-f $SRC_BLE_DIR$/config/factory_config.opt</state>
-          <state>-f $PROJ_DIR$/build_config.opt</state>
+          <state>-f $EXAMPLE_BLE_ROOT$/tirtos/build_config.opt</state>
           <state>--diag_suppress=Pa050</state>
           <state>-Dxdc_target_types__=iar/targets/arm/std.h</state>
           <state>--make_all_definitions_weak</state>
@@ -333,21 +334,21 @@
           <state>$SRC_BLE_DIR$/rom</state>
           <state>$SRC_BLE_DIR$/common/cc26xx</state>
           <state>$SRC_BLE_DIR$/common/cc26xx/npi/stack</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/_common</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/_common</state>
           <state>$PROJ_DIR$\..\..\..\src/stack</state>
           <state>$SRC_BLE_DIR$/icall/inc</state>
           <state>$SRC_BLE_DIR$/inc</state>
           <state>$SRC_BLE_DIR$/profiles/roles</state>
-          <state>$SRC_COMMON_DIR$/hal/src/inc</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/_common</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target</state>
-          <state>$SRC_COMMON_DIR$/icall/src/inc</state>
-          <state>$SRC_COMMON_DIR$/npi/src</state>
-          <state>$SRC_COMMON_DIR$/osal/src/inc</state>
-          <state>$SRC_COMMON_DIR$/services/src/nv</state>
-          <state>$SRC_COMMON_DIR$/services/src/nv/cc26xx</state>
-          <state>$SRC_COMMON_DIR$/services/src/saddr</state>
+          <state>$SRC_BLE_DIR$/hal/src/inc</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/_common/cc26xx</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/_common</state>
+          <state>$SRC_BLE_DIR$/hal/src/target</state>
+          <state>$SRC_BLE_DIR$/icall/src/inc</state>
+          <state>$SRC_BLE_DIR$/npi/src</state>
+          <state>$SRC_BLE_DIR$/osal/src/inc</state>
+          <state>$SRC_BLE_DIR$/services/src/nv</state>
+          <state>$SRC_BLE_DIR$/services/src/nv/cc26xx</state>
+          <state>$SRC_BLE_DIR$/services/src/saddr</state>
           <state>$TI_RTOS_KERNEL$/packages</state>
           <state>$CC26XXWARE$</state>
           <state>$CC26XXWARE$/rf_patches</state>
@@ -679,7 +680,7 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>$TOOLS_BLE_DIR$/lib_search/lib_search.exe $PROJ_DIR$/build_config.opt $SRC_BLE_DIR$/blelib  $PROJ_DIR$/../config/lib_linker.cmd cc2640 $TOOLS_BLE_DIR$/lib_search/lib_search.xml $SRC_BLE_DIR$/symbols</prebuild>
+        <prebuild>$TOOLS_BLE_DIR$/lib_search/lib_search.exe $EXAMPLE_BLE_ROOT$/tirtos/build_config.opt $SRC_BLE_DIR$/blelib  $PROJ_DIR$/../config/lib_linker.cmd cc2640 $TOOLS_BLE_DIR$/lib_search/lib_search.xml $SRC_BLE_DIR$/symbols</prebuild>
         <postbuild>"$TOOLS_BLE_DIR$/frontier/frontier.exe" iar "$PROJ_DIR$/$CONFIG_NAME$/List/spp_ble_server_cc2640r2lp_stack.map" "$PROJ_DIR$/../config/iar_boundary.bdef" "$PROJ_DIR$/../config/iar_boundary.xcl"</postbuild>
       </data>
     </settings>
@@ -1200,6 +1201,7 @@
           <state>ICALL_LITE</state>
           <state>OSAL_CBTIMER_NUM_TASKS=1</state>
           <state>OSAL_SNV=1</state>
+          <state>RF_SINGLEMODE</state>
           <state>POWER_SAVING</state>
           <state>STACK_LIBRARY</state>
           <state>USE_ICALL</state>
@@ -1286,7 +1288,7 @@
           <state>--aeabi</state>
           <state>-f $SRC_BLE_DIR$/config/build_components.opt</state>
           <state>-f $SRC_BLE_DIR$/config/factory_config.opt</state>
-          <state>-f $PROJ_DIR$/build_config.opt</state>
+          <state>-f $EXAMPLE_BLE_ROOT$/tirtos/build_config.opt</state>
           <state>--diag_suppress=Pa050</state>
           <state>-Dxdc_target_types__=iar/targets/arm/std.h</state>
           <state>--make_all_definitions_weak</state>
@@ -1342,21 +1344,21 @@
           <state>$SRC_BLE_DIR$/rom</state>
           <state>$SRC_BLE_DIR$/common/cc26xx</state>
           <state>$SRC_BLE_DIR$/common/cc26xx/npi/stack</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/_common</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/_common</state>
           <state>$PROJ_DIR$\..\..\..\src/stack</state>
           <state>$SRC_BLE_DIR$/icall/inc</state>
           <state>$SRC_BLE_DIR$/inc</state>
           <state>$SRC_BLE_DIR$/profiles/roles</state>
-          <state>$SRC_COMMON_DIR$/hal/src/inc</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/_common/cc26xx</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target/_common</state>
-          <state>$SRC_COMMON_DIR$/hal/src/target</state>
-          <state>$SRC_COMMON_DIR$/icall/src/inc</state>
-          <state>$SRC_COMMON_DIR$/npi/src</state>
-          <state>$SRC_COMMON_DIR$/osal/src/inc</state>
-          <state>$SRC_COMMON_DIR$/services/src/nv</state>
-          <state>$SRC_COMMON_DIR$/services/src/nv/cc26xx</state>
-          <state>$SRC_COMMON_DIR$/services/src/saddr</state>
+          <state>$SRC_BLE_DIR$/hal/src/inc</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/_common/cc26xx</state>
+          <state>$SRC_BLE_DIR$/hal/src/target/_common</state>
+          <state>$SRC_BLE_DIR$/hal/src/target</state>
+          <state>$SRC_BLE_DIR$/icall/src/inc</state>
+          <state>$SRC_BLE_DIR$/npi/src</state>
+          <state>$SRC_BLE_DIR$/osal/src/inc</state>
+          <state>$SRC_BLE_DIR$/services/src/nv</state>
+          <state>$SRC_BLE_DIR$/services/src/nv/cc26xx</state>
+          <state>$SRC_BLE_DIR$/services/src/saddr</state>
           <state>$TI_RTOS_KERNEL$/packages</state>
           <state>$CC26XXWARE$</state>
           <state>$CC26XXWARE$/rf_patches</state>
@@ -1688,7 +1690,7 @@
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>$TOOLS_BLE_DIR$/lib_search/lib_search.exe $PROJ_DIR$/build_config.opt $SRC_BLE_DIR$/blelib  $PROJ_DIR$/../config/lib_linker.cmd cc2640 $TOOLS_BLE_DIR$/lib_search/lib_search.xml $SRC_BLE_DIR$/symbols</prebuild>
+        <prebuild>$TOOLS_BLE_DIR$/lib_search/lib_search.exe $EXAMPLE_BLE_ROOT$/tirtos/build_config.opt $SRC_BLE_DIR$/blelib  $PROJ_DIR$/../config/lib_linker.cmd cc2640 $TOOLS_BLE_DIR$/lib_search/lib_search.xml $SRC_BLE_DIR$/symbols</prebuild>
         <postbuild></postbuild>
       </data>
     </settings>
@@ -2024,40 +2026,40 @@
     <group>
       <name>Common</name>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\common\hal_assert.c</name>
+       :<name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\common\hal_assert.c</name>
       </file>
     </group>
     <group>
       <name>Include</name>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_adc.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_adc.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_assert.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_assert.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_board.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_board.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_defs.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_defs.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_key.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_key.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_lcd.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_lcd.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_led.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_led.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_sleep.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_sleep.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_timer.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_timer.h</name>
       </file>
       <file>
-        <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\inc\hal_uart.h</name>
+        <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\inc\hal_uart.h</name>
       </file>
     </group>
     <group>
@@ -2067,28 +2069,28 @@
         <group>
           <name>_common</name>
           <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\hal_mcu.h</name>
+            <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\target\_common\hal_mcu.h</name>
           </file>
         </group>
         <group>
           <name>Config</name>
           <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\hal_board_cfg.h</name>
+            <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\target\_common\hal_board_cfg.h</name>
           </file>
         </group>
         <group>
           <name>Drivers</name>
           <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\hal_flash_wrapper.c</name>
+            <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\target\_common\hal_flash_wrapper.c</name>
           </file>
           <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\hal_rtc_wrapper.h</name>
+            <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\target\_common\hal_rtc_wrapper.h</name>
           </file>
           <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\hal_trng_wrapper.c</name>
+            <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\target\_common\hal_trng_wrapper.c</name>
           </file>
           <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\hal_trng_wrapper.h</name>
+            <name>$SRC_BLE_DIR$\source\ti\blestack\hal\src\target\_common\hal_trng_wrapper.h</name>
           </file>
         </group>
       </group>
@@ -2097,154 +2099,154 @@
   <group>
     <name>Host</name>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\host\gatt_uuid.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\host\gatt_uuid.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\inc\gatt_uuid.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\inc\gatt_uuid.h</name>
     </file>
   </group>
   <group>
     <name>ICallBLE</name>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\inc\ble_dispatch.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\icall\inc\ble_dispatch.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\stack\ble_dispatch_JT.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\icall\stack\ble_dispatch_JT.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\stack\ble_dispatch_lite.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\icall\stack\ble_dispatch_lite.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\src\icall_lite_translation.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\icall\src\icall_lite_translation.c</name>
     </file>
   </group>
   <group>
     <name>NPI</name>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\npi\stack\npi.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\common\cc26xx\npi\stack\npi.c</name>
     </file>
   </group>
   <group>
     <name>OSAL</name>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\comdef.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\comdef.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\common\osal.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\common\osal.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\common\osal_bufmgr.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\common\osal_bufmgr.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_bufmgr.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal_bufmgr.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\common\osal_cbtimer.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\common\osal_cbtimer.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_cbtimer.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal_cbtimer.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\common\osal_clock.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\common\osal_clock.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_clock.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal_clock.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_memory.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal_memory.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\common\osal_memory_icall.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\common\osal_memory_icall.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\common\osal_pwrmgr.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\common\osal_pwrmgr.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_pwrmgr.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal_pwrmgr.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_snv.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal_snv.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\mcu\cc26xx\osal_snv_wrapper.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\mcu\cc26xx\osal_snv_wrapper.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_task.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal_task.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\common\osal_timers.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\common\osal_timers.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_timers.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\osal\src\inc\osal_timers.h</name>
     </file>
   </group>
   <group>
     <name>Profiles</name>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\gap.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\profiles\roles\gap.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\gapbondmgr.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\profiles\roles\gapbondmgr.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\gapbondmgr.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\profiles\roles\gapbondmgr.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\inc\gapgattserver.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\inc\gapgattserver.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\inc\gattservapp.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\inc\gattservapp.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\host\gattservapp_util.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\host\gattservapp_util.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\host\sm_ecc.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\host\sm_ecc.c</name>
     </file>
   </group>
   <group>
     <name>ROM</name>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\rom\r2\common_rom_init.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\rom\r2\common_rom_init.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\rom\r2\rom_flash_jt.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\rom\r2\rom_flash_jt.h</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\rom\r2\rom_init.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\rom\r2\rom_init.c</name>
     </file>
   </group>
   <group>
     <name>Startup</name>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\stack\ble_user_config.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\icall\stack\ble_user_config.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\icall_startup.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\common\cc26xx\icall_startup.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\examples\rtos\CC2640R2_LAUNCHXL\blestack\simple_peripheral\src\stack\osal_icall_ble.c</name>
+      <name>$SRC_BLE_DIR$\examples\rtos\CC2640R2_LAUNCHXL\blestack\simple_peripheral\src\stack\osal_icall_ble.c</name>
     </file>
   </group>
   <group>
     <name>Tools</name>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\config\build_components.opt</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\config\build_components.opt</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\build_config.opt</name>
+      <name>$EXAMPLE_BLE_ROOT$/tirtos/build_config.opt</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\iar\cc26xx_stack.icf</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\common\cc26xx\iar\cc26xx_stack.icf</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\onboard.c</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\common\cc26xx\onboard.c</name>
     </file>
     <file>
-      <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\onboard.h</name>
+      <name>$SRC_BLE_DIR$\source\ti\blestack\common\cc26xx\onboard.h</name>
     </file>
   </group>
 </project>
