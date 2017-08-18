@@ -148,6 +148,20 @@ Extension with OAD support:
     * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/src)
 
+
+## Tools
+
+### [Voice.py](tools/scripts/voice/voice.py)
+This is script allows developers to evaluate the Voice over
+HID-over-GATT-Profile (HoGP) profile which is demonstrated as part of the
+`voice_hogp_remote` example. The `voie_hogp_remote` is available as part of the
+[Simplelink CC2640R2 SDK BLE Example Pack](http://www.ti.com/tool/download/SIMPLELINK-CC2640R2-SDK-BLE-EXAMPLE-PACK).
+The `voice.py` Python script is compatible with Python 2 or Python 3 and depends
+on the Windows&reg; only [pywinusb](https://pypi.python.org/pypi/pywinusb/) python
+module. The script has been tested to work on a Window 10 host with a BLE 4.0
+compatible BLE controller. For help on how to use the `voice.py` script, simply
+invoke its help menu `voice.py --help`.
+
 ## References
 
 The following reference pages may be helpful during general Bluetooth Low
