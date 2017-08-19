@@ -181,7 +181,6 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>HEAPMGR_METRICS</state>
           <state>CACHE_AS_RAM</state>
           <state>MAX_PDU_SIZE=251</state>
           <state>MAX_NUM_PDU=6</state>
@@ -192,7 +191,6 @@
           <state>CC26XX</state>
           <state>CC26XX_R2</state>
           <state>DeviceFamily_CC26X0R2</state>
-          <state>HEAPMGR_SIZE=0</state>
           <state>ICALL_EVENTS</state>
           <state>ICALL_JT</state>
           <state>ICALL_LITE</state>
@@ -816,6 +814,7 @@
           <state>-f $PROJ_DIR$\..\config\configPkg\linker.cmd</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.xcl</state>
           <state>-f $PROJ_DIR$/../config/lib_linker.cmd</state>
+          <state>--diag_suppress=Lt009</state>
         </option>
         <option>
           <name>IlinkLowLevelInterfaceSlave</name>

@@ -211,8 +211,8 @@
                 <debug>1</debug>
                 <option>
                     <name>CCDefines</name>
-                    <state>HEAPMGR_METRICS</state>
                     <state>CACHE_AS_RAM</state>
+                    <state>GAPCENTRALROLE_TASK_STACK_SIZE=768</state>
                     <state>xMAX_PDU_SIZE=251</state>
                     <state>MAX_NUM_PDU=6</state>
                     <state>BOARD_DISPLAY_USE_LCD=0</state>
@@ -222,7 +222,6 @@
                     <state>CC26XX</state>
                     <state>CC26XX_R2</state>
                     <state>DeviceFamily_CC26X0R2</state>
-                    <state>HEAPMGR_SIZE=0</state>
                     <state>ICALL_EVENTS</state>
                     <state>ICALL_JT</state>
                     <state>ICALL_LITE</state>
@@ -712,8 +711,8 @@
             <name>BUILDACTION</name>
             <archiveVersion>1</archiveVersion>
             <data>
-              <prebuild>"$XDCROOT$\xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$" --cfgArgs NO_ROM=0 -o $PROJ_DIR$\..\config\configPkg $EXAMPLE_BLE_ROOT$\tirtos\app_ble.cfg</prebuild>
-              <postbuild>$TOOLS_BLE_DIR$\output_converter\output_converter.exe $EXE_DIR$\$TARGET_BNAME$.bin</postbuild>
+                <prebuild>"$XDCROOT$\xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$" --cfgArgs NO_ROM=0 -o $PROJ_DIR$\..\config\configPkg $EXAMPLE_BLE_ROOT$\tirtos\app_ble.cfg</prebuild>
+                <postbuild></postbuild>
             </data>
         </settings>
         <settings>
@@ -842,6 +841,7 @@
                     <state>--keep __vector_table</state>
                     <state>-f $PROJ_DIR$/../config/configPkg/linker.cmd</state>
                     <state>-f $PROJ_DIR$/../config/lib_linker.cmd</state>
+                    <state>--diag_suppress=Lt009</state>
                 </option>
                 <option>
                     <name>IlinkLowLevelInterfaceSlave</name>
@@ -1093,10 +1093,10 @@
             <name>$PROJ_DIR$\..\..\..\src\app\longrange_central_menu.h</name>
         </file>
         <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\source\ti\ble5stack\common\cc26xx\menu\two_btn_menu.c</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\common\cc26xx\menu\two_btn_menu.c</name>
         </file>
         <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\source\ti\ble5stack\common\cc26xx\menu\two_btn_menu.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\common\cc26xx\menu\two_btn_menu.h</name>
         </file>
         <file>
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\common\cc26xx\util.c</name>

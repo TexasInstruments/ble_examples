@@ -54,7 +54,6 @@
             -DFEATURE_OAD_ONCHIP
             -DIMAGE_INVALIDATE
             -DHAL_IMAGE_B
-            -DHEAPMGR_SIZE=0
             -DICALL_EVENTS
             -DICALL_JT
             -DICALL_LITE

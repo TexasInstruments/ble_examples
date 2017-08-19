@@ -33,7 +33,6 @@
             --cmd_file=${WORKSPACE_LOC}/ble5_throughput_central_cc2640r2lp_stack_library/TOOLS/build_config.opt
             -mv7M3 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on --display_error_number --diag_wrap=off
             -D${COM_TI_SIMPLELINK_CC2640R2_SDK_SYMBOLS}
-            -DHEAPMGR_METRICS
             -DCACHE_AS_RAM
             -DMAX_PDU_SIZE=251
             -DMAX_NUM_PDU=6
@@ -45,7 +44,6 @@
             -DCC26XX
             -DCC26XX_R2
             -DDeviceFamily_CC26X0R2
-            -DHEAPMGR_SIZE=0
             -DICALL_EVENTS
             -DICALL_JT
             -DICALL_LITE

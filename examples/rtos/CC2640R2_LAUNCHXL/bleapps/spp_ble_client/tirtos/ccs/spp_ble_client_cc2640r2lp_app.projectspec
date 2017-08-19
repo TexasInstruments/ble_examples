@@ -39,7 +39,6 @@
             -DCC2640R2_LAUNCHXL
             -DCC26XX
             -DCC26XX_R2
-            -DHEAPMGR_SIZE=0
             -DICALL_EVENTS
             -DICALL_JT
             -DICALL_LITE

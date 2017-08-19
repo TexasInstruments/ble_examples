@@ -190,7 +190,6 @@
           <state>CC26XX_R2</state>
           <state>DeviceFamily_CC26X0R2</state>
           <state>Display_DISABLE_ALL</state>
-          <state>HEAPMGR_SIZE=0</state>
           <state>ICALL_EVENTS</state>
           <state>ICALL_JT</state>
           <state>ICALL_LITE</state>
@@ -200,7 +199,6 @@
           <state>xPOWER_SAVING</state>
           <state>STACK_LIBRARY</state>
           <state>USE_ICALL</state>
-          <state>HEAPMGR_METRICS</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>
         </option>
@@ -812,6 +810,7 @@
           <state>-f $PROJ_DIR$\..\config\configPkg\linker.cmd</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.xcl</state>
           <state>-f $PROJ_DIR$/../config/lib_linker.cmd</state>
+          <state>--diag_suppress=Lt009</state>
         </option>
         <option>
           <name>IlinkLowLevelInterfaceSlave</name>
@@ -1208,7 +1207,6 @@
           <state>CC26XX_R2</state>
           <state>DeviceFamily_CC26X0R2</state>
           <state>Display_DISABLE_ALL</state>
-          <state>HEAPMGR_SIZE=0</state>
           <state>ICALL_EVENTS</state>
           <state>ICALL_JT</state>
           <state>ICALL_LITE</state>
@@ -1219,7 +1217,6 @@
           <state>xPOWER_SAVING</state>
           <state>STACK_LIBRARY</state>
           <state>USE_ICALL</state>
-          <state>HEAPMGR_METRICS</state>
           <state>CACHE_AS_RAM</state>
           <state>xdc_runtime_Assert_DISABLE_ALL</state>
           <state>xdc_runtime_Log_DISABLE_ALL</state>
@@ -1832,6 +1829,7 @@
           <state>-f $PROJ_DIR$\..\config\configPkg\linker.cmd</state>
           <state>-f $PROJ_DIR$\..\config\iar_boundary.xcl</state>
           <state>-f $PROJ_DIR$/../config/lib_linker.cmd</state>
+          <state>--diag_suppress=Lt009</state>
         </option>
         <option>
           <name>IlinkLowLevelInterfaceSlave</name>
