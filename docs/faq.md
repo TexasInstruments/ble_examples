@@ -95,5 +95,5 @@ To setup your PC to receive this data please follow the steps below:
 
 ---
 
-[BLE5-Stack]: (http://software-dl.ti.com/lprf/ble5stack-docs-latest/html)
-[BLE-Stack]:  (http://software-dl.ti.com/lprf/sdg-latest/html)
+[BLE5-Stack]: (http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk/1.40.00.45/exports/docs/ble5stack/ble_user_guide/html/ble-stack-5.x-guide/index.html)
+[BLE-Stack]:  (http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk/1.40.00.45/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html)
