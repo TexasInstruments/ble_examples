@@ -7,7 +7,9 @@
 **/FlashOnly*/
 **/configPkg/
 **/settings
-**/src
+**/config/src
+**/tirtos/src
+**/tirtos/iar/config/
 *.dep
 *.log
 *.ewt
@@ -15,6 +17,7 @@
 *.bak
 *.obj
 *.a
+!cc2650_mSBC_library.a
 *.pos
 *.pp
 .tags

@@ -18,7 +18,7 @@ For other hardware and software resources,
 [please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions
 please refer to the [FAQ page](docs/faq.md).
 
-For extra examples for **TI BLE-Stack 2.2.x SDK**, see
+For extra examples for **TI BLE-Stack 2.2.x SDK** (CC26x0R1), see
 [Branch: ble_examples-2.2](https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2).
 
 ## Change Log
@@ -34,6 +34,7 @@ Initial offering of Simplelink CC2640R2 SDK 1.40.00.45 examples.
 * BLE5-Stack: Long Range Demo (Central/Peripheral)
 * BLE5-Stack: Serial Port Profile (SPP) Server/Client
 * BLE-Stack:  Serial Port Profile (SPP) Server/Client
+* BLE-Stack:  Bidirectional Audio Demo (Central/Peripheral)
 * Tools:      voice.py script for Voice-over-HOGP
 
 
@@ -81,6 +82,21 @@ The [FAQ page](docs/faq.md) will try to address some of the common questions
 related to the ble_examples repo.
 
 ## Examples / Demo List
+
+### Full Duplex Bidirectional Audio Demo
+
+Encode and transmit a full duplex bidirectional audio stream over BLE using two
+CC2640R2 LaunchPads with CC3200AUDBOOST.
+
+* simple\_central\_bidirectional\_audio
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_central_bidirectional_audio/readme.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_central_bidirectional_audio/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_central_bidirectional_audio/src)
+
+* simple\_peripheral\_bidirectional\_audio
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_bidirectional_audio/readme.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_bidirectional_audio/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_bidirectional_audio/src)
 
 ### Bluetooth 5 Throughput Demo
 
