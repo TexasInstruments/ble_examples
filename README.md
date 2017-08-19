@@ -35,6 +35,7 @@ Initial offering of Simplelink CC2640R2 SDK 1.40.00.45 examples.
 * BLE5-Stack: Serial Port Profile (SPP) Server/Client
 * BLE-Stack:  Serial Port Profile (SPP) Server/Client
 * BLE-Stack:  Bidirectional Audio Demo (Central/Peripheral)
+* BLE-Stack:  Apple Notification Center Service (ANCS) Demo (Peripheral)
 * Tools:      voice.py script for Voice-over-HOGP
 
 
@@ -164,6 +165,16 @@ Extension with OAD support:
     * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/src)
 
+### Apple Notification Center Service (ANCS) Demo
+
+This is an example that demonstrates the use and functionality of the ANCS. ANCS is a GATT 
+service present on iOS devices used to retrieve and interact with iOS notifications. 
+
+* ancs
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/readme.md)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/src)
 
 ## Tools
 
