@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file       ancsApp.c
+ @file       ancs_app.h
 
  @brief This file contains the ANCS Application sample application for use
         with the CC2640R2 Bluetooth Low Energy Protocol Stack.
@@ -39,11 +39,8 @@
  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_40_00_45
- Release Date: 2017-07-20 17:16:59
  *****************************************************************************/
+
 #include <ti/display/Display.h>
 
 #ifndef ANCSAPP_H

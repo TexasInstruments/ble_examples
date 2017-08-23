@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file       ancsApp.c
+ @file       ancs_app.c
 
  @brief This file contains the ANCS Application sample application for use
         with the CC2640R2 Bluetooth Low Energy Protocol Stack.
@@ -9,7 +9,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2013-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -39,10 +39,6 @@
  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_40_00_45
- Release Date: 2017-07-20 17:16:59
  *****************************************************************************/
 
 
@@ -56,10 +52,6 @@
 #include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/knl/Queue.h>
 #include <ti/display/Display.h>
-
-#if defined( USE_FPGA ) || defined( DEBUG_SW_TRACE )
-#include <driverlib/ioc.h>
-#endif // USE_FPGA | DEBUG_SW_TRACE
 
 #include <icall.h>
 #include "util.h"
@@ -80,7 +72,7 @@
 
 // ANCS App includes.
 #include "board_key.h"
-#include "ancsApp.h"
+#include "ancs_app.h"
 #include "ancs.h"
 
 /*********************************************************************
@@ -150,7 +142,7 @@
 // ANCS: 7905F431-B5CE-4E99-A40F-4B1E122D00D0
 #define ANCSAPP_ANCS_SVC_UUID 0xD0, 0x00, 0x2D, 0x12, 0x1E, 0x4B, 0x0F, 0xA4, 0x99, 0x4E, 0xCE, 0xB5, 0x31, 0xF4, 0x05, 0x79
 // Notification Source: UUID 9FBF120D-6301-42D9-8C58-25E699A21DBD (notifiable)
-#define ANCSAPP_NOTIF_SRC_CHAR_UUID                   0x1DBD 
+#define ANCSAPP_NOTIF_SRC_CHAR_UUID                   0x1DBD
 // Control point: UUID 69D1D8F3-45E1-49A8-9821-9BBDFDAAD9D9 (writable with response)
 #define ANCSAPP_CTRL_PT_CHAR_UUID                     0xD9D9
 // Data Source: UUID 22EAC6E9-24D6-4BB5-BE44-B36ACE7C7BFB (notifiable)
@@ -163,7 +155,7 @@
 #define LAST_ANCS_CHAR                                1
 
 #ifdef USE_WATCHDOG_TIMER
-  #define WATCHDOG_TIMER_TIMEOUT_PERIOD                 1500000 * 5 // 1 second * 5 
+  #define WATCHDOG_TIMER_TIMEOUT_PERIOD                 1500000 * 5 // 1 second * 5
   #define ANCSAPP_PERIODIC_EVT                          Event_Id_02
 #endif
 
@@ -318,7 +310,7 @@ static void AncsApp_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle, uint8_t
 static void AncsApp_pairStateCB(uint16_t connHandle, uint8_t state, uint8_t status);
 static void AncsApp_processPairState(uint8_t state, uint8_t status);
 static void AncsApp_processPasscode(uint8_t uiOutputs);
-static void AncsApp_stateChangeCB(gaprole_States_t newState); 
+static void AncsApp_stateChangeCB(gaprole_States_t newState);
 static uint8_t AncsApp_enqueueMsg(uint8_t event, uint8_t state, uint8_t *pData);
 /********************ANCS APP FUNCTIONS********************/
 // Board I/O
@@ -412,28 +404,10 @@ static void AncsApp_init(void)
   RCOSC_enableCalibration();
 #endif // USE_RCOSC
 
-#if defined( USE_FPGA )
-  // configure RF Core SMI Data Link
-  IOCPortConfigureSet(IOID_12, IOC_PORT_RFC_GPO0, IOC_STD_OUTPUT);
-  IOCPortConfigureSet(IOID_11, IOC_PORT_RFC_GPI0, IOC_STD_INPUT);
-
-  // configure RF Core SMI Command Link
-  IOCPortConfigureSet(IOID_10, IOC_IOCFG0_PORT_ID_RFC_SMI_CL_OUT, IOC_STD_OUTPUT);
-  IOCPortConfigureSet(IOID_9, IOC_IOCFG0_PORT_ID_RFC_SMI_CL_IN, IOC_STD_INPUT);
-
-  // configure RF Core tracer IO
-  IOCPortConfigureSet(IOID_8, IOC_PORT_RFC_TRC, IOC_STD_OUTPUT);
-#else // !USE_FPGA
-  #if defined( DEBUG_SW_TRACE )
-    // configure RF Core tracer IO
-    IOCPortConfigureSet(IOID_8, IOC_PORT_RFC_TRC, IOC_STD_OUTPUT | IOC_CURRENT_4MA | IOC_SLEW_ENABLE);
-  #endif // DEBUG_SW_TRACE
-#endif // USE_FPGA
-
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
-  // Initialize the CC2640r2's I/O 
+  // Initialize the CC2640r2's I/O
   Board_initKeys(AncsApp_keyPressCB);
 
   dispHandle = Display_open(ANCSAPP_DISPLAY_TYPE, NULL);
@@ -442,7 +416,7 @@ static void AncsApp_init(void)
   // Create one-shot clocks for internal periodic events.
   Util_constructClock(&periodicClock, AncsApp_clockHandler,
                       ANCSAPP_PERIODIC_EVT_PERIOD, 0, false, ANCSAPP_PERIODIC_EVT);
-  
+
   // Call watchdog init functions
   Watchdog_init();
   Watchdog_Params params;
@@ -450,7 +424,7 @@ static void AncsApp_init(void)
   params.resetMode      = Watchdog_RESET_ON;
   params.debugStallMode = Watchdog_DEBUG_STALL_ON;
   watchdogHandle        = Watchdog_open(Board_WATCHDOG0, &params);
-  // 5 * 1 seconds. 
+  // 5 * 1 seconds.
   Watchdog_setReload(watchdogHandle, WATCHDOG_TIMER_TIMEOUT_PERIOD);
 #endif
 
@@ -679,7 +653,7 @@ static void AncsApp_taskFxn(UArg a0, UArg a1)
         // discoveryState = ANCS_DISC_SERVICE;
         AncsApp_discoverService(NULL);
       }
-#ifdef USE_WATCHDOG_TIMER      
+#ifdef USE_WATCHDOG_TIMER
       // Periodic Event for the WDT
       if (events & ANCSAPP_PERIODIC_EVT)
       {
@@ -818,7 +792,7 @@ static uint8_t AncsApp_processGATTMsg(gattMsgEvent_t *pMsg)
     // because we only subscribe to notifications from the Notification Source
     // ancs Data Source.
 
-    // This variable is used just to make the code look clearer for the 
+    // This variable is used just to make the code look clearer for the
     // two conditionals below :)
     uint8_t notifHandle = pMsg->msg.handleValueNoti.handle;
 
@@ -829,7 +803,7 @@ static uint8_t AncsApp_processGATTMsg(gattMsgEvent_t *pMsg)
       Ancs_queueNewNotif(pMsg);
     }
 
-    // If it is not from the Notification Source we check to see if it is from 
+    // If it is not from the Notification Source we check to see if it is from
     // the Data Source by checking if the handle is equal to the Data Source
     // Start handle stored in the cache. If so, process the data it holds,
     // and ask for more.
@@ -851,7 +825,7 @@ static uint8_t AncsApp_processGATTMsg(gattMsgEvent_t *pMsg)
     GAPBondMgr_GetParameter(GAPBOND_MITM_PROTECTION, &mitm);
     GAPBondMgr_GetParameter(GAPBOND_BONDING_ENABLED, &bonding);
     uint8_t authRequest = ((mitm & 0x01) << 2) | ((bonding & 0x01) << 1) | (bonding & 0x01);
-  
+
     discoveryState = ANCS_DISC_FINISH;
     ancsAppState   = ANCS_STATE_READY;
     GAP_SendSlaveSecurityRequest(conn_handle, authRequest);
@@ -873,7 +847,7 @@ static uint8_t AncsApp_processGATTMsg(gattMsgEvent_t *pMsg)
       return (FALSE);
     }
   }
-  //If we have received a read or write response, assume that it is related to 
+  //If we have received a read or write response, assume that it is related to
   //CCCD configuration
   else if (pMsg->method == ATT_READ_RSP || pMsg->method == ATT_WRITE_RSP)
   {
@@ -968,13 +942,13 @@ static void AncsApp_freeAttRsp(uint8_t status)
  *
  * @brief   Function to handle the discovery of the ANCS service
  *
- * @param   pMsg - GATT message to process, may be NULL in DISC_ANCS_START 
+ * @param   pMsg - GATT message to process, may be NULL in DISC_ANCS_START
  *
  * @return  none
  */
 static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 {
-  // These will hold the ANCS service start and end handles that are returned after 
+  // These will hold the ANCS service start and end handles that are returned after
   // GATT_DiscPrimaryServiceByUUID() function receives a response from the iPhone.
   static uint16_t Ancs_svcStartHdl;
   static uint16_t Ancs_svcEndHdl;
@@ -995,7 +969,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t1");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tExchange MTUs");
-#endif 
+#endif
         discoveryState = ANCS_DISC_SERVICE;
         Event_post(syncEvent, ANCSAPP_START_DISC_EVT);
       }
@@ -1009,7 +983,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t2");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tDiscover the ANCS");
-#endif 
+#endif
       // Initialize the ANCS handles to zero.
       Ancs_svcStartHdl = 0;
       Ancs_svcEndHdl   = 0;
@@ -1020,7 +994,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
       // Discover the ANCS by UUID.
       uint8_t discCheck = GATT_DiscPrimaryServiceByUUID(Ancs_connHandle, uuid, ATT_UUID_SIZE, ICall_getEntityId());
 
-      // If successfully discovered proceed, throw error if not.      
+      // If successfully discovered proceed, throw error if not.
       if(discCheck == SUCCESS)
         discoveryState = ANCS_STORE_SERVICE_HANDLES;
       else
@@ -1038,8 +1012,8 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t3");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tStore the ANCS handles");
-#endif 
-      // Did the application receive a response from the GATT Disc Primary Service? 
+#endif
+      // Did the application receive a response from the GATT Disc Primary Service?
       if (pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP )
       {
         // Check if the ANCS was found.
@@ -1068,18 +1042,18 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t4");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tDiscover the ANCS characteristics");
-#endif 
+#endif
       // Check if service handle discovery event has completed.
       if (pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP )
       {
         if(pMsg->hdr.status == bleProcedureComplete)
         {
-          // Sanity check to make sure the handle is valid before proceeding. 
+          // Sanity check to make sure the handle is valid before proceeding.
           if (Ancs_svcStartHdl != 0)
           {
             // Discover all characteristics of the ANCS.
             uint8_t discCheck = GATT_DiscAllChars(Ancs_connHandle, Ancs_svcStartHdl, Ancs_svcEndHdl, ICall_getEntityId());
-            
+
             // If the request was successfully sent, proceed with the discovery process.
             if (discCheck == SUCCESS)
             {
@@ -1104,7 +1078,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t5");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tStore the ANCS characteristics' handles");
-#endif 
+#endif
       // Wait until GATT "Read by type response" is received, then confirm that the correct number of
       // pairs are present, and that their length is correct
       if (pMsg->method == ATT_READ_BY_TYPE_RSP )
@@ -1120,7 +1094,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
           uint16_t  charUuid;
           // Stores what pair the loop is currently processing.
           uint8_t   currentCharIndex;
-          
+
           // Set the pair pointer to the first pair.
           pCharPairList = pMsg->msg.readByTypeRsp.pDataList;
 
@@ -1143,17 +1117,17 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
                 Ancs_handleCache[ANCS_NOTIF_SCR_HDL_START] = charStartHandle;
                 Ancs_handleCache[ANCS_NOTIF_SCR_HDL_END]   = charEndHandle;
                 break;
-              // If it's the Control Point.  
+              // If it's the Control Point.
               case ANCSAPP_CTRL_PT_CHAR_UUID:
                 Ancs_handleCache[ANCS_CTRL_POINT_HDL_START] = charStartHandle;
                 Ancs_handleCache[ANCS_CTRL_POINT_HDL_END]   = charEndHandle;
                 break;
-              // If it's the Data Source.  
+              // If it's the Data Source.
               case ANCSAPP_DATA_SRC_CHAR_UUID:
                 Ancs_handleCache[ANCS_DATA_SRC_HDL_START] = charStartHandle;
                 Ancs_handleCache[ANCS_DATA_SRC_HDL_END]   = charEndHandle;
                 break;
-                
+
               default:
                 break;
             }
@@ -1173,12 +1147,12 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
           // less than each respective end handle.
           if(Ancs_handleCache[ANCS_NOTIF_SCR_HDL_START]  != 0 &&
              Ancs_handleCache[ANCS_CTRL_POINT_HDL_START] != 0 &&
-             Ancs_handleCache[ANCS_DATA_SRC_HDL_START]   != 0) 
+             Ancs_handleCache[ANCS_DATA_SRC_HDL_START]   != 0)
           {
             if(Ancs_handleCache[ANCS_NOTIF_SCR_HDL_START]  < Ancs_handleCache[ANCS_NOTIF_SCR_HDL_END]  &&
                Ancs_handleCache[ANCS_CTRL_POINT_HDL_START] < Ancs_handleCache[ANCS_CTRL_POINT_HDL_END] &&
                Ancs_handleCache[ANCS_DATA_SRC_HDL_START]   < Ancs_handleCache[ANCS_DATA_SRC_HDL_END])
-            { 
+            {
               discoveryState = ANCS_DISC_NS_DESCS;
             }
             else
@@ -1186,7 +1160,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
               Display_print0(dispHandle, 12, 0, "ANCS_STORE_CHARS_HANDLES FAILURE");
               discoveryState = ANCS_DISC_FAILED;
               errorcode = 4;
-            } 
+            }
           }
           // Throw an error if the handles are invalid.
           else
@@ -1194,7 +1168,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
             Display_print0(dispHandle, 12, 0, "ANCS_STORE_CHARS_HANDLES FAILURE");
             discoveryState = ANCS_DISC_FAILED;
             errorcode = 5;
-          }        
+          }
         }
         // Throw an error if the length or number of pairs is incorrect.
         else
@@ -1207,14 +1181,14 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
     }
     break;
 
-    // Discover the Notification Source's descriptors (namely, the CCCD) using the start 
+    // Discover the Notification Source's descriptors (namely, the CCCD) using the start
     // and end handle stored in the handle cache.
     case ANCS_DISC_NS_DESCS:
     {
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t6");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tDiscover the Notification Source's CCCD");
-#endif 
+#endif
       // Wait until the characteristic handle discovery has finished.
       if ( (pMsg->method == ATT_READ_BY_TYPE_RSP) && (pMsg->hdr.status == bleProcedureComplete) )
       {
@@ -1244,7 +1218,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t7");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tStore the Notification Source's CCCD handle");
-#endif 
+#endif
       // Wait for the discovery response.
       if (pMsg->method == ATT_FIND_INFO_RSP )
       {
@@ -1271,25 +1245,25 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
     }
     break;
 
-    // Discover the Data Source's descriptors (namely, the CCCD) using the start 
+    // Discover the Data Source's descriptors (namely, the CCCD) using the start
     // and end handle stored in the handle cache.
     case ANCS_DISC_DS_DESCS:
     {
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t8");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tDiscover the Data Source's CCCD");
-#endif 
+#endif
       // Wait until the Notification Source descriptors discovery has finished.
       if ( (pMsg->method == ATT_FIND_INFO_RSP) && (pMsg->hdr.status == bleProcedureComplete) )
       {
 
-        // Discover ANCS Notification Source CCCD 
+        // Discover ANCS Notification Source CCCD
         uint8_t discCheck = GATT_DiscAllCharDescs(Ancs_connHandle,
                               Ancs_handleCache[ANCS_DATA_SRC_HDL_START] + 1,
                               Ancs_handleCache[ANCS_DATA_SRC_HDL_END],
                               ICall_getEntityId());
         // If the discovery was successful, proceed.
-        if (discCheck == SUCCESS ) 
+        if (discCheck == SUCCESS )
           discoveryState = ANCS_STORE_DS_DESCS_HANDLES;
         // If not, throw an error and invalidate the CCCD handle in the handle cache.
         else
@@ -1303,14 +1277,14 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
     }
     break;
 
-    // Discover the Data Source's descriptors (namely, the CCCD) using the start 
+    // Discover the Data Source's descriptors (namely, the CCCD) using the start
     // and end handle stored in the handle cache.
     case ANCS_STORE_DS_DESCS_HANDLES:
     {
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t9");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tStore the Data Source's CCCD handle");
-#endif 
+#endif
       // Wait for the discovery response.
       if (pMsg->method == ATT_FIND_INFO_RSP )
       {
@@ -1331,7 +1305,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
               Ancs_handleCache[ANCS_DATA_SRC_HDL_CCCD] = ATT_BT_PAIR_HANDLE(pMsg->msg.findInfoRsp.pInfo, currentPair);
               discoveryState = ANCS_WRITE_DS_CCCD;
 
-              // The next state may need to run multiple times, thus it relies on 
+              // The next state may need to run multiple times, thus it relies on
               // event posts as opposed to a singular event like a BLE complete response.
               Event_post(syncEvent, ANCSAPP_START_DISC_EVT);
             }
@@ -1341,21 +1315,21 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
     }
     break;
 
-    // Subscribe to the Data Source. This is done first as when the Notification Source 
-    // is subscribed too, it will immediately send GATT notifications for every ANCS notification  
-    // present. This can hinder app functionality as some ANCS notifications maybe ignored 
+    // Subscribe to the Data Source. This is done first as when the Notification Source
+    // is subscribed too, it will immediately send GATT notifications for every ANCS notification
+    // present. This can hinder app functionality as some ANCS notifications maybe ignored
     // due to the app receiving them before it is initialized to a state which can process them.
     // To avoid this, we subscribe to the Notification Source second.
     case ANCS_WRITE_DS_CCCD:
-    { 
+    {
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t10");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tSubscribe to the Data Source");
-#endif 
+#endif
       // Call the function which writes to the Data Source's CCCD.
       uint8_t check = Ancs_subsDataSrc();
 
-      // If it is successful, advance the state. If the check is not 
+      // If it is successful, advance the state. If the check is not
       // successful, a loop will be sustained until the subscription succeeds.
       if(check == SUCCESS)
         discoveryState = ANCS_WRITE_NS_CCCD;
@@ -1369,7 +1343,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t11");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tSubscribe to the Notification Source");
-#endif 
+#endif
       /// Call the function which writes to the Notification Source's CCCD.
       uint8_t check = Ancs_subsNotifSrc();
 
@@ -1382,7 +1356,7 @@ static void AncsApp_discoverService(gattMsgEvent_t *pMsg)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t12");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tProcessing notification data");
-#endif 
+#endif
       }
       else
         Event_post(syncEvent, ANCSAPP_START_DISC_EVT);
@@ -1442,7 +1416,7 @@ static void AncsApp_processAppMsg(ancsAppEvt_t *pMsg)
     case ANCSAPP_KEY_CHANGE_EVT:
       {
         AncsApp_handleKeysEvt(pMsg->hdr.state);
-    
+
         break;
       }
 
@@ -1565,7 +1539,7 @@ static void AncsApp_processStateChangeEvt(gaprole_States_t newState)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t0");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tConnected");
-#endif 
+#endif
 
         // Initialize the app and discovery state to their respective beginning.
         notifAttrPktProcessState = NOTI_ATTR_FIRST_PKT;
@@ -1612,7 +1586,7 @@ static void AncsApp_processStateChangeEvt(gaprole_States_t newState)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t0");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tDisconnected");
-#endif 
+#endif
       Ancs_popAllNotifsFromQueue();
 
       // Clear remaining lines
@@ -1630,7 +1604,7 @@ static void AncsApp_processStateChangeEvt(gaprole_States_t newState)
 #ifdef USE_GUI_COMPOSER
     Display_print0(dispHandle, 16, 0, "Discovery Progress:\t0");
     Display_print0(dispHandle, 16, 0, "Discovery State:\tTimed out");
-#endif 
+#endif
       Ancs_popAllNotifsFromQueue();
 
       // Clear remaining lines
@@ -1697,7 +1671,7 @@ static void AncsApp_processPairState(uint8_t state, uint8_t status)
       // Now that the device has successfully paired to the iPhone,
       // the subscription will not fail due to insufficient authentication.
       discoveryState = ANCS_WRITE_DS_CCCD;
-      Event_post(syncEvent, ANCSAPP_START_DISC_EVT);      
+      Event_post(syncEvent, ANCSAPP_START_DISC_EVT);
     }
     else
     {
@@ -1708,7 +1682,7 @@ static void AncsApp_processPairState(uint8_t state, uint8_t status)
   {
     if (status == SUCCESS)
     {
-      Display_print0(dispHandle, 2, 0, "Bonding Successful");    
+      Display_print0(dispHandle, 2, 0, "Bonding Successful");
     }
   }
   else if (state == GAPBOND_PAIRING_STATE_BOND_SAVED)
@@ -1741,7 +1715,7 @@ static void AncsApp_handleKeysEvt(uint8_t keys)
 
   // Else If: A single key is pressed.
   else
-  { 
+  {
     // Calls the function to perform a negative action upon the current notification.
     if (keys == IO_BUTTON_LEFT)
         Ancs_acceptIncomingCall();

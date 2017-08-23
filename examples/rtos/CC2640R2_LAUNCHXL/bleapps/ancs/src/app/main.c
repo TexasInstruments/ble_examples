@@ -8,7 +8,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2013-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -38,10 +38,6 @@
  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_40_00_45
- Release Date: 2017-07-20 17:16:59
  *****************************************************************************/
 
 /*******************************************************************************
@@ -60,7 +56,7 @@
 #include "hal_assert.h"
 #include "bcomdef.h"
 #include "peripheral.h"
-#include "ancsApp.h"
+#include "ancs_app.h"
 
 /* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
@@ -91,15 +87,6 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
  * CONSTANTS
  */
 
-#if defined( USE_FPGA )
-  #define RFC_MODE_BLE                 PRCM_RFCMODESEL_CURR_MODE1
-  #define RFC_MODE_ANT                 PRCM_RFCMODESEL_CURR_MODE4
-  #define RFC_MODE_EVERYTHING_BUT_ANT  PRCM_RFCMODESEL_CURR_MODE5
-  #define RFC_MODE_EVERYTHING          PRCM_RFCMODESEL_CURR_MODE6
-  //
-  #define SET_RFC_BLE_MODE(mode) HWREG( PRCM_BASE + PRCM_O_RFCMODESEL ) = (mode)
-#endif // USE_FPGA
-
 /*******************************************************************************
  * TYPEDEFS
  */
@@ -111,24 +98,6 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
 /*******************************************************************************
  * GLOBAL VARIABLES
  */
-
-#ifdef CC1350_LAUNCHXL
-#ifdef POWER_SAVING
-// Power Notify Object for wake-up callbacks
-Power_NotifyObj rFSwitchPowerNotifyObj;
-static uint8_t rFSwitchNotifyCb(uint8_t eventType, uint32_t *eventArg,
-                                uint32_t *clientArg);
-#endif //POWER_SAVING
-
-PIN_State  radCtrlState;
-PIN_Config radCtrlCfg[] =
-{
-  Board_DIO1_RFSW   | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW  | PIN_PUSHPULL | PIN_DRVSTR_MAX, /* RF SW Switch defaults to 2.4GHz path*/
-  Board_DIO30_SWPWR | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX, /* Power to the RF Switch */
-  PIN_TERMINATE
-};
-PIN_Handle radCtrlHandle;
-#endif //CC1350_LAUNCHXL
 
 /*******************************************************************************
  * EXTERNS
@@ -155,32 +124,10 @@ extern Display_Handle dispHandle;
  */
 int main()
 {
-#if defined( USE_FPGA )
-  HWREG(PRCM_BASE + PRCM_O_PDCTL0) &= ~PRCM_PDCTL0_RFC_ON;
-  HWREG(PRCM_BASE + PRCM_O_PDCTL1) &= ~PRCM_PDCTL1_RFC_ON;
-#endif // USE_FPGA
-
   /* Register Application callback to trap asserts raised in the Stack */
   RegisterAssertCback(AssertHandler);
 
   PIN_init(BoardGpioInitTable);
-
-#ifdef CC1350_LAUNCHXL
-  // Enable 2.4GHz Radio
-  radCtrlHandle = PIN_open(&radCtrlState, radCtrlCfg);
-
-#ifdef POWER_SAVING
-  Power_registerNotify(&rFSwitchPowerNotifyObj,
-                       PowerCC26XX_ENTERING_STANDBY | PowerCC26XX_AWAKE_STANDBY,
-                       (Power_NotifyFxn) rFSwitchNotifyCb, NULL);
-#endif //POWER_SAVING
-#endif //CC1350_LAUNCHXL
-
-#if defined( USE_FPGA )
-  // set RFC mode to support BLE
-  // Note: This must be done before the RF Core is released from reset!
-  SET_RFC_BLE_MODE(RFC_MODE_BLE);
-#endif // USE_FPGA
 
 #ifdef CACHE_AS_RAM
   // retain cache during standby
@@ -193,12 +140,12 @@ int main()
   VIMSModeSet(VIMS_BASE, VIMS_MODE_ENABLED);
 #endif //CACHE_AS_RAM
 
-#if !defined( POWER_SAVING ) || defined( USE_FPGA )
+#if !defined( POWER_SAVING )
   /* Set constraints for Standby, powerdown and idle mode */
   // PowerCC26XX_SB_DISALLOW may be redundant
   Power_setConstraint(PowerCC26XX_SB_DISALLOW);
   Power_setConstraint(PowerCC26XX_IDLE_PD_DISALLOW);
-#endif // POWER_SAVING | USE_FPGA
+#endif // POWER_SAVING
 
 #ifdef ICALL_JT
   /* Update User Configuration of the stack */
@@ -354,41 +301,6 @@ void smallErrorHook(Error_Block *eb)
 {
   for (;;);
 }
-
-#if defined (CC1350_LAUNCHXL) && defined (POWER_SAVING)
-/*******************************************************************************
- * @fn          rFSwitchNotifyCb
- *
- * @brief       Power driver callback to toggle RF switch on Power state
- *              transitions.
- *
- * input parameters
- *
- * @param   eventType - The state change.
- * @param   eventArg  - Not used.
- * @param   clientArg - Not used.
- *
- * @return  Power_NOTIFYDONE to indicate success.
- */
-static uint8_t rFSwitchNotifyCb(uint8_t eventType, uint32_t *eventArg,
-                                uint32_t *clientArg)
-{
-  if (eventType == PowerCC26XX_ENTERING_STANDBY)
-  {
-    // Power down RF Switch
-    PIN_setOutputValue(radCtrlHandle, Board_DIO30_SWPWR, 0);
-  }
-  else if (eventType == PowerCC26XX_AWAKE_STANDBY)
-  {
-    // Power up RF Switch
-    PIN_setOutputValue(radCtrlHandle, Board_DIO30_SWPWR, 1);
-  }
-
-  // Notification handled successfully
-  return Power_NOTIFYDONE;
-}
-#endif //CC1350_LAUNCHXL || POWER_SAVING
-
 
 /*******************************************************************************
  */

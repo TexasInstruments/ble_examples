@@ -39,10 +39,6 @@
  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_40_00_45
- Release Date: 2017-07-20 17:16:59
  *****************************************************************************/
 
 
@@ -54,7 +50,7 @@
 #include <ti/display/Display.h>
 #include "Board.h"
 #include "ancs.h"
-#include "ancsApp.h"
+#include "ancs_app.h"
 #include "icall_ble_api.h"
 
 
@@ -67,18 +63,18 @@
 
 #define REQUESTED_ATTR_ID_APPID                   0x01
 #define REQUESTED_ATTR_ID_DS                      0x02
-#define REQUESTED_ATTR_ID_TITLE                   0x04  
+#define REQUESTED_ATTR_ID_TITLE                   0x04
 #define REQUESTED_ATTR_ID_SUBTITLE                0x08
-#define REQUESTED_ATTR_ID_MESSAGE                 0x10 
-#define REQUESTED_ATTR_ID_MESSAGE_SIZE            0x20   
+#define REQUESTED_ATTR_ID_MESSAGE                 0x10
+#define REQUESTED_ATTR_ID_MESSAGE_SIZE            0x20
 #define REQUESTED_ATTR_ID_DATE                    0x40
 
- 
+
 #define ATTR_APPID_REQUEST_SIZE                   0
 #define ATTR_TITLE_REQUEST_SIZE                   20
-#define ATTR_SUBTITLE_REQUEST_SIZE                30  
-#define ATTR_MESSAGE_REQUEST_SIZE                 DATA_BUFFER_SIZE - 1  
-#define ATTR_MESSAGE_SIZE_REQUEST_SIZE            0        
+#define ATTR_SUBTITLE_REQUEST_SIZE                30
+#define ATTR_MESSAGE_REQUEST_SIZE                 DATA_BUFFER_SIZE - 1
+#define ATTR_MESSAGE_SIZE_REQUEST_SIZE            0
 #define ATTR_DATE_REQUEST_SIZE                    0
 
 
@@ -116,7 +112,7 @@ uint8_t appAttrPktProcessState;
  * LOCAL VARIABLES
  */
 
-// Used to stored the retrieved attribute data. 
+// Used to stored the retrieved attribute data.
 static uint8_t  dataBuf[DATA_BUFFER_SIZE] = { '\0' };
 
 // Stores the length of the retrieved attribute data.
@@ -145,7 +141,7 @@ static void Ancs_pushNotifToQueue(uint8_t categoryID, uint8_t *pNotifUID);
 static bool Ancs_queueEmpty(void);
 static uint8_t Ancs_queueSize(void);
 
-// Functions used to process incoming GATT notifications from the 
+// Functions used to process incoming GATT notifications from the
 // Notification Source and Data Source, and request additional data.
        void Ancs_acceptIncomingCall(void);
 static uint8_t Ancs_CCCDConfig(uint16_t attrHdl, uint8_t isEnable);
@@ -241,7 +237,7 @@ static notifQueueNode_t* Ancs_findNotifInQueue(uint8_t *pNotifUID)
  *
  * @brief   Clear the queue of all notifications
  *
- * @param   none   
+ * @param   none
  *
  * @return  none
  */
@@ -260,7 +256,7 @@ void Ancs_popAllNotifsFromQueue(void)
     pDelete = NULL;
   }
   pNotifQueueFront = NULL;
-  
+
   return;
 }
 
@@ -269,12 +265,12 @@ void Ancs_popAllNotifsFromQueue(void)
  *
  * @brief   Move to the front of the queue to the next element and delete the old front
  *
- * @param   none   
+ * @param   none
  *
  * @return  none
  */
 static void Ancs_popNotifFromQueue(void)
-{   
+{
   if ( pNotifQueueFront == NULL)
     return;
 
@@ -337,7 +333,7 @@ static void Ancs_pushNotifToQueue(uint8_t categoryID, uint8_t *pNotifUID)
  *
  * @brief   Indicate if the notification queue is empty or not.
  *
- * @param   none   
+ * @param   none
  *
  * @return  bool - Return TRUE if pNotifQueueFront equals NULL, FALSE else.
  */
@@ -349,7 +345,7 @@ static bool Ancs_queueEmpty(void)
 /*********************************************************************
  * @fn      Ancs_queueSize
  *
- * @brief   Print the current size of the notification queue.  
+ * @brief   Print the current size of the notification queue.
  *
  * @param   none
  *
@@ -400,7 +396,7 @@ void Ancs_acceptIncomingCall(void)
 /*********************************************************************
  * @fn      Ancs_CCCDConfig
  *
- * @brief   subscribe Notification Source. 
+ * @brief   subscribe Notification Source.
  *
  * @param   none.
  *
@@ -449,7 +445,7 @@ static uint8_t Ancs_CCCDConfig(uint16_t attrHdl, uint8_t isEnable)
     // or the Data Source's CCCD handle).
     req.handle = attrHdl;
 
-    // Send write request. If it fails, free the memory allocated and 
+    // Send write request. If it fails, free the memory allocated and
     // return a failure.
     status = GATT_WriteCharValue(Ancs_connHandle, &req, ICall_getEntityId());
     if ( status != SUCCESS)
@@ -484,7 +480,7 @@ void Ancs_declineIncomingCall(void)
 /*********************************************************************
  * @fn      Ancs_getNotifAttr
  *
- * @brief   Get notification attributes. 
+ * @brief   Get notification attributes.
  *
  * @param   pNotificationUID - notification's ID.
  *
@@ -525,7 +521,7 @@ static uint8_t Ancs_getNotifAttr(uint8_t *pNotificationUID, uint8_t attributeID,
     requestPayload++;
 
     // Set length to desired max length to be retrieved.
-    *requestPayload = LO_UINT16(len);       
+    *requestPayload = LO_UINT16(len);
     requestPayload++;
     *requestPayload = HI_UINT16(len);
 
@@ -638,8 +634,8 @@ static void Ancs_handleNotifAttrRsp(uint8_t *pNotificationUID)
 
   switch ( pNode->notifData.currentState )
   {
-  // The initial state is used to kick-off the state machine and 
-  // immediately proceed to the AppID state (hence the missing break).   
+  // The initial state is used to kick-off the state machine and
+  // immediately proceed to the AppID state (hence the missing break).
   case NOTI_ATTR_ID_BEGIN:
     pNode->notifData.currentState = NOTI_ATTR_ID_APPID;
 
@@ -698,7 +694,7 @@ static void Ancs_handleNotifAttrRsp(uint8_t *pNotificationUID)
     {
       Ancs_getNotifAttr(pNotificationUID, NOTIFICATION_ATTRIBUTE_ID_MESSAGE_SIZE, ATTR_MESSAGE_SIZE_REQUEST_SIZE);
       pNode->notifData.requestedAttrs |= REQUESTED_ATTR_ID_MESSAGE_SIZE;
-    }     
+    }
     break;
 
   // If the Date request flag hasn't been set, request the Date attribute
@@ -918,7 +914,7 @@ void Ancs_processDataServiceNotif(gattMsgEvent_t *pMsg)
       // Initialize the data buffer write index to zero, as this is
       // the first packet.
       currentDataBufWriteIndex = 0;
-  
+
       // Ensure Command ID is equal to zero as stated in the spec.
       if (*packetData != COMMAND_ID_GET_NOTIFICATION_ATTRIBUTES)
       {
@@ -929,20 +925,20 @@ void Ancs_processDataServiceNotif(gattMsgEvent_t *pMsg)
         return;
       }
       packetData++;
-  
+
       // Copy the ANCS notification UID so it may be used by
       // to perform a positive or negative action is desired.
       VOID memcpy(currentNotifUID, packetData, ANCS_NOTIF_UID_LENGTH);
 
       packetData += ANCS_NOTIF_UID_LENGTH;
-  
+
       // Store the ANCS attribute ID of the retrieved attribute.
       AttrID = *packetData;
       packetData++;
-  
+
       // Store the 2-byte length of the data that is being retrieved.
       dataLen = BUILD_UINT16(*packetData, *(packetData + 1));
-  
+
       // Check if the length is zero, if so the notification does not
       // have the specified attribute as stated in the ANCS spec.
       if ( dataLen == 0 )
@@ -958,28 +954,28 @@ void Ancs_processDataServiceNotif(gattMsgEvent_t *pMsg)
         pNotifQueueFront->notifData.currentState++;
 
         Ancs_processNotifications();
-        
+
         return;
       }
       // Move the pointer to the data portion.
       packetData += 2;
-  
+
       // Clear the data buffer in preparation for the new data.
       VOID memset(dataBuf, '\0', DATA_BUFFER_SIZE);
-  
+
       // If the data length specified in the first ANCS Data Service notification
-      // is greater than the number of bytes that was sent in the 
+      // is greater than the number of bytes that was sent in the
       // first data packet(total GATT msg length - request metadata), the data will be split into multiple packets.
       if (dataLen > pMsg->msg.handleValueNoti.len - NOTIF_ATTR_REQUEST_METADATA_LENGTH)
       {
-        // Copy the number of bytes that were sent in the 
-        // first packet to the data buffer, then set the 
+        // Copy the number of bytes that were sent in the
+        // first packet to the data buffer, then set the
         // data buffer write index, and set the state from first packet
         // to continued packet.
         VOID memcpy(dataBuf, packetData, (pMsg->msg.handleValueNoti.len - NOTIF_ATTR_REQUEST_METADATA_LENGTH));
         currentDataBufWriteIndex = (pMsg->msg.handleValueNoti.len - NOTIF_ATTR_REQUEST_METADATA_LENGTH);
         notifAttrPktProcessState = NOTI_ATTR_CONTINUE_PKT;
-  
+
         // Subtract the number of data bytes contained in the first packet
         // from the total number of expected data bytes.
         dataLen -= (pMsg->msg.handleValueNoti.len - NOTIF_ATTR_REQUEST_METADATA_LENGTH);
@@ -988,8 +984,8 @@ void Ancs_processDataServiceNotif(gattMsgEvent_t *pMsg)
       else
       {
         // In this case all the ANCS attribute data was contained in
-        // the first packet so the data is copied, and both the index and 
-        // length are reset. 
+        // the first packet so the data is copied, and both the index and
+        // length are reset.
         VOID memcpy(dataBuf, packetData, dataLen);
         currentDataBufWriteIndex = 0;
         dataLen = 0x0000;
@@ -999,7 +995,7 @@ void Ancs_processDataServiceNotif(gattMsgEvent_t *pMsg)
 
     // Check if the is a continued data packet.
     case NOTI_ATTR_CONTINUE_PKT:
-    {  
+    {
       if (dataLen > 0)
       {
         // Copy all the data from the notification packet to the data buffer
@@ -1010,7 +1006,7 @@ void Ancs_processDataServiceNotif(gattMsgEvent_t *pMsg)
         // the total, and increase the data buffer write index by that amount.
         dataLen -= pMsg->msg.handleValueNoti.len;
         currentDataBufWriteIndex += pMsg->msg.handleValueNoti.len;
-  
+
         // Checks if this is the last the continued packet.
         if (dataLen == 0x0000)
         {
@@ -1191,7 +1187,7 @@ static uint8_t Ancs_performNegativeAction(uint8_t* notifUID)
   // Allocate the memory for the request.
   req.pValue = GATT_bm_alloc(Ancs_connHandle, ATT_WRITE_REQ, PERFORM_NOTIFICATION_ACTION_LENGTH, NULL);
 
-  // If the allocation was not successful, set status to FAILURE. 
+  // If the allocation was not successful, set status to FAILURE.
   if (req.pValue == NULL)
     status = FAILURE;
 
@@ -1208,7 +1204,7 @@ static uint8_t Ancs_performNegativeAction(uint8_t* notifUID)
     req.len = PERFORM_NOTIFICATION_ACTION_LENGTH;
 
     // Set the command ID to perform an action on the notification.
-    *requestPayload = COMMAND_ID_PERFORM_NOTIFICATION_ACTION; 
+    *requestPayload = COMMAND_ID_PERFORM_NOTIFICATION_ACTION;
     requestPayload++;
 
     // Copy the ANCS notification UID to the request.
@@ -1221,7 +1217,7 @@ static uint8_t Ancs_performNegativeAction(uint8_t* notifUID)
     // Signature and command must be set to zero.
     req.sig = 0;
     req.cmd = 0;
-    
+
     status = GATT_WriteCharValue(Ancs_connHandle, &req, ICall_getEntityId());
     // If the GATT write is unsuccessful, free the allocated memory and set the status to FAILURE.
     if (status != SUCCESS)
@@ -1252,7 +1248,7 @@ static uint8_t Ancs_performPositiveAction(uint8_t *notifUID)
   // Allocate the memory for the request.
   req.pValue = GATT_bm_alloc(Ancs_connHandle, ATT_WRITE_REQ, PERFORM_NOTIFICATION_ACTION_LENGTH, NULL);
 
-  // If the allocation was not successful, set status to FAILURE. 
+  // If the allocation was not successful, set status to FAILURE.
   if (req.pValue == NULL)
     status = FAILURE;
 
@@ -1269,20 +1265,20 @@ static uint8_t Ancs_performPositiveAction(uint8_t *notifUID)
     req.len = PERFORM_NOTIFICATION_ACTION_LENGTH;
 
     // Set the command ID to perform an action on the notification.
-    *requestPayload = COMMAND_ID_PERFORM_NOTIFICATION_ACTION; 
+    *requestPayload = COMMAND_ID_PERFORM_NOTIFICATION_ACTION;
     requestPayload++;
 
     // Copy the ANCS notification UID to the request.
     VOID memcpy(requestPayload, notifUID, ANCS_NOTIF_UID_LENGTH);
     requestPayload += ANCS_NOTIF_UID_LENGTH;
-    
+
     // Set the action type to positive.
     *requestPayload = ACTION_ID_POSITIVE;
 
     // Signature and command must be set to zero.
     req.sig = 0;
     req.cmd = 0;
-    
+
     status = GATT_WriteCharValue(Ancs_connHandle, &req, ICall_getEntityId());
     // If the GATT write is unsuccessful, free the allocated memory and set the status to FAILURE.
     if (status != SUCCESS)
@@ -1312,14 +1308,14 @@ static void Ancs_printNotifDate(uint8_t *dataBuf)
   char hour[3]   = {'\0'};
   char minute[3] = {'\0'};
   char second[3] = {'\0'};
-  
+
   memcpy(year,   dataBuf,      4);
   memcpy(month,  dataBuf + 4,  2);
   memcpy(day,    dataBuf + 6,  2);
   memcpy(hour,   dataBuf + 9,  2);
   memcpy(minute, dataBuf + 11, 2);
   memcpy(second, dataBuf + 13, 2);
-  
+
   uint8_t num;
   char time[14] = {'\0'};
   time[2] = ':';
@@ -1335,7 +1331,7 @@ static void Ancs_printNotifDate(uint8_t *dataBuf)
   }
   else
    memcpy(time + 8, " AM", 3);
-  
+
   if (num < 10)
   {
     time[0] = '0';
@@ -1463,7 +1459,7 @@ uint8_t Ancs_subsDataSrc(void)
   // Empty notification list first
   Ancs_popAllNotifsFromQueue();
 
-  // Call the function to write "01" to the Data Source CCCD. 
+  // Call the function to write "01" to the Data Source CCCD.
   return Ancs_CCCDConfig(Ancs_handleCache[ANCS_DATA_SRC_HDL_CCCD], TRUE);
 }
 
@@ -1481,7 +1477,7 @@ uint8_t Ancs_subsNotifSrc(void)
   // Empty notification list first
   Ancs_popAllNotifsFromQueue();
 
-  // Call the function to write "01" to the Notification Source CCCD. 
+  // Call the function to write "01" to the Notification Source CCCD.
   return Ancs_CCCDConfig(Ancs_handleCache[ANCS_NOTIF_SCR_HDL_CCCD], TRUE);
 }
 

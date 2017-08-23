@@ -2147,10 +2147,10 @@
             </excluded>
         </file>
         <file>
-            <name>$EXAMPLE_BLE_ROOT$\src\app\ancsApp.c</name>
+            <name>$EXAMPLE_BLE_ROOT$\src\app\ancs_app.c</name>
         </file>
         <file>
-            <name>$EXAMPLE_BLE_ROOT$\src\app\ancsApp.h</name>
+            <name>$EXAMPLE_BLE_ROOT$\src\app\ancs_app.h</name>
         </file>
         <file>
             <name>$EXAMPLE_BLE_ROOT$\src\app\ancs.c</name>

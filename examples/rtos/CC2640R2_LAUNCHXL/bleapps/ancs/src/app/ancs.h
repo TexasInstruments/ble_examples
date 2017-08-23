@@ -39,10 +39,6 @@
  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_40_00_45
- Release Date: 2017-07-20 17:16:59
  *****************************************************************************/
 
 #ifndef ANCS_H
@@ -87,10 +83,10 @@ enum
   ANCS_NOTIF_SCR_HDL_START,         // ANCS Notification Source characteristic start handle.
   ANCS_NOTIF_SCR_HDL_END,           // ANCS Notification Source characteristic end handle.
   ANCS_NOTIF_SCR_HDL_CCCD,          // ANCS Notification Source CCCD handle.
-    
+
   ANCS_CTRL_POINT_HDL_START,        // ANCS Control Point characteristic start handle.
   ANCS_CTRL_POINT_HDL_END,          // ANCS Control Point characteristic end handle.
-    
+
   ANCS_DATA_SRC_HDL_START,          // ANCS Data Source characteristic start handle.
   ANCS_DATA_SRC_HDL_END,            // ANCS Data Source characteristic end handle.
   ANCS_DATA_SRC_HDL_CCCD,           // ANCS Data Source CCCD handle.
@@ -99,19 +95,17 @@ enum
 // Cache array length.
 #define HDL_CACHE_LEN            8
 
-// States for the notification attribute retrieval state machine (Ancs_handleNotifAttrRsp()). 
+// States for the notification attribute retrieval state machine (Ancs_handleNotifAttrRsp()).
 enum
 {
   NOTI_ATTR_ID_BEGIN,                 // ANCS notification attribute initial retrieval state.
-      
   NOTI_ATTR_ID_APPID,                 // ANCS notification attribute AppID retrieval state.
-  APP_ATTR_ID_DN,                      // ANCS application attribute display name retrieval state.  
+  APP_ATTR_ID_DN,                      // ANCS application attribute display name retrieval state.
   NOTI_ATTR_ID_TITLE,                 // ANCS notification attribute Title retrieval state.
-  NOTI_ATTR_ID_SUBTITLE,              // ANCS notification attribute Subtitle retrieval state.  
+  NOTI_ATTR_ID_SUBTITLE,              // ANCS notification attribute Subtitle retrieval state.
   NOTI_ATTR_ID_MESSAGE,               // ANCS notification attribute Message retrieval state.
-  NOTI_ATTR_ID_MESSAGE_SIZE,          // ANCS notification attribute Message Size retrieval state.      
-  NOTI_ATTR_ID_DATE,                  // ANCS notification attribute Date retrieval state. 
-
+  NOTI_ATTR_ID_MESSAGE_SIZE,          // ANCS notification attribute Message Size retrieval state.
+  NOTI_ATTR_ID_DATE,                  // ANCS notification attribute Date retrieval state.
   NOTI_ATTR_ID_END                    // ANCS notification attribute final retrieval state.
 };
 
@@ -139,13 +133,13 @@ enum
 #define ACTION_ID_NEGATIVE                                    1
 
 // Notification AttributeID Values
-#define NOTIFICATION_ATTRIBUTE_ID_APP_IDENTIFIER              0       
-#define NOTIFICATION_ATTRIBUTE_ID_TITLE                       1       
-#define NOTIFICATION_ATTRIBUTE_ID_SUBTITLE                    2       
-#define NOTIFICATION_ATTRIBUTE_ID_MESSAGE                     3       
-#define NOTIFICATION_ATTRIBUTE_ID_MESSAGE_SIZE                4 
-#define NOTIFICATION_ATTRIBUTE_ID_DATE                        5 
-#define NOTIFICATION_ATTRIBUTE_ID_POSITIVE_ACTION_LABEL       6 
+#define NOTIFICATION_ATTRIBUTE_ID_APP_IDENTIFIER              0
+#define NOTIFICATION_ATTRIBUTE_ID_TITLE                       1
+#define NOTIFICATION_ATTRIBUTE_ID_SUBTITLE                    2
+#define NOTIFICATION_ATTRIBUTE_ID_MESSAGE                     3
+#define NOTIFICATION_ATTRIBUTE_ID_MESSAGE_SIZE                4
+#define NOTIFICATION_ATTRIBUTE_ID_DATE                        5
+#define NOTIFICATION_ATTRIBUTE_ID_POSITIVE_ACTION_LABEL       6
 #define NOTIFICATION_ATTRIBUTE_ID_NEGATIVE_ACTION_LABEL       7
 
 // EventID Values
@@ -154,11 +148,11 @@ enum
 #define EVENT_ID_NOTIFICATION_REMOVED                         2
 
 // EventFlags
-#define EVENT_FLAG_SILENT                                     0x01    
-#define EVENT_FLAG_IMPORTANT                                  0x02    
-#define EVENT_FLAG_PREEXISTING                                0x04    
-#define EVENT_FLAG_POSITIVE_ACTION                            0x08    
-#define EVENT_FLAG_NEGATIVE_ACTION                            0x10    
+#define EVENT_FLAG_SILENT                                     0x01
+#define EVENT_FLAG_IMPORTANT                                  0x02
+#define EVENT_FLAG_PREEXISTING                                0x04
+#define EVENT_FLAG_POSITIVE_ACTION                            0x08
+#define EVENT_FLAG_NEGATIVE_ACTION                            0x10
 
 // CategoryID Values
 #define CATEGORY_ID_OTHER                                     0
@@ -192,7 +186,7 @@ enum
 
 // ANCS Control Point action length.
 #define PERFORM_NOTIFICATION_ACTION_LENGTH                    6
-                 
+
 /*********************************************************************
  * GLOBAL
  */
@@ -214,7 +208,7 @@ extern uint8_t appAttrPktProcessState;
 // ANCS service discovery functions.
 extern uint8_t Ancs_subsNotifSrc(void);
 extern uint8_t Ancs_subsDataSrc(void);
- 
+
 // ANCS notification handling function.
 extern void Ancs_processDataServiceNotif(gattMsgEvent_t *pMsg);
 extern void Ancs_queueNewNotif(gattMsgEvent_t *pMsg);
