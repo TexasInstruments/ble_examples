@@ -114,6 +114,8 @@ uint8 audioConfigEnable = 0;
 #define SBC_KEY_CHANGE_EVT                    0x0010
 #define SBC_STATE_CHANGE_EVT                  0x0020
 #define SBC_SCANNING_TOGGLE_EVT               0x0040
+#define SBC_AUDIO_FORCESTOP_EVT               0x0080
+#define SBC_AUDIO_VOLUMEDOWN_EVT              0x0100
 
 
 // Maximum number of scan responses
@@ -292,6 +294,9 @@ typedef struct
 // Display Interface
 Display_Handle dispHandle = NULL;
 
+#ifdef STREAM_TO_AUDBOOST
+  static uint8_t volume = 0;
+#endif
 /*********************************************************************
  * EXTERNAL VARIABLES
  */
@@ -455,14 +460,14 @@ PIN_Config ledPinTable[] = {
 int16_t *audio_decoded;
 const unsigned char msbc_data[] =
 {
-	0xad, 0x00, 0x00, 0x00, 0xe0, 0x00, 0x01, 0x12,
-	0xe1, 0xeb, 0x31, 0x60, 0x76, 0xcd, 0x61, 0xf3,
-	0x40, 0xe5, 0x09, 0x38, 0xc4, 0xba, 0xa3, 0xa2,
-	0x38, 0x7b, 0x09, 0xb8, 0x1d, 0xdf, 0x30, 0x7c,
-	0xd1, 0xa2, 0x42, 0x4b, 0xe5, 0xae, 0xa9, 0x15,
-	0x9e, 0x1e, 0xc1, 0x62, 0x07, 0x6e, 0xb5, 0x1f,
-	0x33, 0x56, 0x90, 0x92, 0xf9, 0x7b, 0xaa, 0x35,
-	0xe0
+  0xad, 0x00, 0x00, 0x00, 0xe0, 0x00, 0x01, 0x12,
+  0xe1, 0xeb, 0x31, 0x60, 0x76, 0xcd, 0x61, 0xf3,
+  0x40, 0xe5, 0x09, 0x38, 0xc4, 0xba, 0xa3, 0xa2,
+  0x38, 0x7b, 0x09, 0xb8, 0x1d, 0xdf, 0x30, 0x7c,
+  0xd1, 0xa2, 0x42, 0x4b, 0xe5, 0xae, 0xa9, 0x15,
+  0x9e, 0x1e, 0xc1, 0x62, 0x07, 0x6e, 0xb5, 0x1f,
+  0x33, 0x56, 0x90, 0x92, 0xf9, 0x7b, 0xaa, 0x35,
+  0xe0
 };
 
 #ifdef STREAM_TO_AUDBOOST
@@ -472,6 +477,7 @@ uint8_t audio_encoded[100] = {0};
 sbc_t sbc = {0};
 size_t written = 0;
 struct {
+  uint8_t sourceIsPDM;
   uint8_t streamType;
   uint8_t samplesPerFrame;
   uint8_t notificationsPerFrame;
@@ -574,6 +580,7 @@ static void SimpleBLECentral_init(void)
   HCI_LE_WriteSuggestedDefaultDataLenCmd(DLE_MAX_PDU_SIZE , DLE_MAX_TX_TIME);
 #endif
 
+  HCI_EXT_SetSCACmd(120);
   // Open all pins
   ledPinHandle = PIN_open(&allPinState, ledPinTable);
 
@@ -779,6 +786,65 @@ static void SimpleBLECentral_taskFxn(UArg a0, UArg a1)
       PIN_setOutputValue(ledPinHandle, Board_GLED, !PIN_getOutputValue(Board_GLED));
     }
 
+    if (events & SBC_AUDIO_FORCESTOP_EVT)
+    {
+      events &= ~SBC_AUDIO_FORCESTOP_EVT;
+      PIN_setOutputValue(ledPinHandle, Board_RLED, Board_LED_OFF);
+#ifdef STREAM_TO_AUDBOOST
+      if (i2sStreamInProgress) {
+        I2SCC26XX_stopStream(i2sHandle);
+        i2sStreamInProgress = false;
+        Display_print0(dispHandle, 5, 0, "Force Shutdown I2S stream");
+
+        /* Turn output volume back down */ //TODO: Turn off codec
+        volume = 0;
+        AudioCodecSpeakerVolCtrl(AUDIO_CODEC_TI_3254, AUDIO_CODEC_SPEAKER_HP, volume);
+
+        if (streamVariables.streamType == BLE_AUDIO_CMD_START_MSBC)
+        {
+          sbc_finish(&sbc);
+        }
+      }
+      if (streamVariables.i2sOpened == TRUE)
+      {
+        I2SCC26XX_close(i2sHandle);
+        streamVariables.i2sOpened = FALSE;
+        Display_print0(dispHandle, 5, 0, "Closed I2S driver");
+        if (audio_decoded) {
+          ICall_free(audio_decoded);
+          audio_decoded = NULL;
+          Display_print0(dispHandle, 5, 0, "Free'd memory for I2S driver");
+        }
+        else {
+          asm(" NOP");
+          Display_print0(dispHandle, 5, 0, "Failed to free memory for I2S driver");
+        }
+      }
+#else //STREAM_TO_PC
+#ifdef UART_DUMP_UNCOMPRESSED
+      if (audio_decoded) {
+        ICall_free(audio_decoded);
+      }
+#endif //UART_DUMP_UNCOMPRESSED
+      if (streamVariables.streamType == BLE_AUDIO_CMD_START_MSBC)
+      {
+        sbc_finish(&sbc);
+      }
+#endif //STREAM_TO_AUDBOOST
+      streamVariables.streamType = BLE_AUDIO_CMD_STOP;
+      Display_print0(dispHandle, 5, 0, "Force Shutdown");
+    }
+
+    if (events & SBC_AUDIO_VOLUMEDOWN_EVT)
+    {
+      events &= ~SBC_AUDIO_VOLUMEDOWN_EVT;
+      /* Turn output volume back down */ //TODO: Turn off codec
+      volume = 0;
+      AudioCodecSpeakerVolCtrl(AUDIO_CODEC_TI_3254, AUDIO_CODEC_SPEAKER_HP, volume);
+      Display_print0(dispHandle, 5, 0, "Turn Volume down to 0");
+    }
+
+
   }
 }
 
@@ -930,8 +996,6 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
 
             Util_startClock(&scanningToggleClock);
           }
-//          // Initiate connection
-//          SimpleBLECentral_EstablishLink( TRUE, addrType, remoteAddr );
         }
         else
         {
@@ -1181,10 +1245,9 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
  */
 static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 {
-  static uint8_t audio_pkt_counter = 0, frameReady = FALSE;
-#ifdef STREAM_TO_AUDBOOST
-  static uint8_t volume = 0;
-#endif
+  static uint16_t prevSeqNum = 0;
+  static int numberOfPackets = 0, lostPackets = 0, counterToAccountForSamplingFrequencyDifference = 0;
+  static uint8_t audio_pkt_counter = 0, frameReady = FALSE, missedFrames = 0;
 
   if (state == BLE_STATE_CONNECTED)
   {
@@ -1215,12 +1278,36 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               {
                   audio_pkt_counter = 0;
                   frameReady = TRUE;
+                  // Check for missing frames
+                  numberOfPackets++;
+                  counterToAccountForSamplingFrequencyDifference++;
+                  missedFrames = 0;
+                  uint8_t curSeqNum = audio_encoded[0] >> 3;
+                  if (((prevSeqNum + 1) & 0x001F) != curSeqNum) {
+                      if (curSeqNum > prevSeqNum) {
+                          missedFrames = curSeqNum - prevSeqNum;
+                      } else {
+                          missedFrames = (curSeqNum + 31) - prevSeqNum;
+                      }
+                      numberOfPackets += missedFrames;
+                      counterToAccountForSamplingFrequencyDifference += missedFrames;
+                      lostPackets += missedFrames;
+                      Display_print2(dispHandle, 5, 0, "Missing frame, PER %d/%d", lostPackets, numberOfPackets);
+                      // Don't account for too many missed frames, limit to three
+                      missedFrames &= 0x03;
+                  }
+                  prevSeqNum = curSeqNum;
+                  // Account for sampling frequency mismatch, in case source is PDM from CC26xx Remote (sampled at ~15.97kHz
+                  if ((streamVariables.sourceIsPDM == TRUE) && (counterToAccountForSamplingFrequencyDifference >= 375)) {
+                      counterToAccountForSamplingFrequencyDifference -= 375;
+                      missedFrames += 1;
+                      Display_print1(dispHandle, 5, 0, "Accounting for sampling frequency mismatch, frame %d", numberOfPackets);
+                  }
               }
           }
           else if (streamVariables.streamType == BLE_AUDIO_CMD_START_MSBC)
           {
               if ((pMsg->msg.handleValueNoti.pValue[0] == 0xAD) &&
-//    			  (pMsg->msg.handleValueNoti.pValue[1] == 0x00) &&
                   (pMsg->msg.handleValueNoti.pValue[2] == 0x00))
               {
                   audio_pkt_counter = 0;
@@ -1240,6 +1327,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
 #ifdef STREAM_TO_AUDBOOST
             if (i2sStreamInProgress) {
               I2SCC26XX_BufferRequest bufferRequest;
+              void *bufferCopy;
               I2SCC26XX_BufferRelease bufferRelease;
               bool gotBuffer = I2SCC26XX_requestBuffer(i2sHandle, &bufferRequest);
               if (gotBuffer) {
@@ -1254,16 +1342,34 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
                 }
                 PIN_setOutputValue( ledPinHandle, Board_DIO26_ANALOG, 1);
               }
+              // Repeat to make up for missing frames
+              while (missedFrames) {
+                // Get new buffer to copy to before releasing
+                bufferRelease.bufferHandleIn = NULL;
+                bufferRelease.bufferHandleOut = bufferRequest.bufferHandleOut;
+                bufferCopy = bufferRequest.bufferOut;
+                // Now get new buffer
+                gotBuffer = I2SCC26XX_requestBuffer(i2sHandle, &bufferRequest);
+                if (gotBuffer) {
+                  missedFrames--;
+                  // Copy the same samples
+                  memcpy(bufferRequest.bufferOut, bufferCopy, streamVariables.samplesPerFrame * sizeof(int16_t));
+                }
+                // Then release buffer, and try again if there are more missing frames
+                I2SCC26XX_releaseBuffer(i2sHandle, &bufferRelease);
+              }
               bufferRelease.bufferHandleIn = NULL;
               bufferRelease.bufferHandleOut = bufferRequest.bufferHandleOut;
               I2SCC26XX_releaseBuffer(i2sHandle, &bufferRelease);
               if (gotBuffer) {
                 if (volume <= streamVariables.maxVolume) {
-                  if ((volume % 20) == 0) {
-                    // Volume control
-                    AudioCodecSpeakerVolCtrl(AUDIO_CODEC_TI_3254, AUDIO_CODEC_SPEAKER_HP, volume);
+                  if (volume < streamVariables.maxVolume) {
+                    volume += 5;
+                  } else if (volume > streamVariables.maxVolume) {
+                    volume -= 5;
                   }
-                  volume++;
+                  // Volume control
+                  AudioCodecSpeakerVolCtrl(AUDIO_CODEC_TI_3254, AUDIO_CODEC_SPEAKER_HP, volume);
                 }
               }
             }
@@ -1287,6 +1393,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               if (audio_decoded) {
                 i2sParams.blockSize              = streamVariables.samplesPerFrame;
                 i2sParams.pvContBuffer           = (void *) audio_decoded;
+                memset(audio_decoded, 0, sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
                 i2sParams.ui32conBufTotalSize    = sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE);
                 I2SCC26XX_open(i2sHandle, &i2sParams);
                 Display_print0(dispHandle, 5, 0, "Opened I2S driver");
@@ -1321,30 +1428,31 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               }
               PIN_setOutputValue( ledPinHandle, Board_DIO26_ANALOG, 0);
               UART_write(uartHandle, audio_decoded, streamVariables.samplesPerFrame * sizeof(int16_t));
-              PIN_setOutputValue( ledPinHandle, Board_DIO26_ANALOG, 1);
+#else //!UART_DUMP_UNCOMPRESSED
+            if (streamVariables.streamType == BLE_AUDIO_CMD_START_MSBC) {
+              UART_write(uartHandle, audio_encoded, MSBC_ENCODED_SIZE);
             }
             else {
+              UART_write(uartHandle, audio_encoded, BLEAUDIO_BUFSIZE_ADPCM + BLEAUDIO_HDRSIZE_ADPCM);
+            }
+#endif //UART_DUMP_UNCOMPRESSED
+            PIN_setOutputValue( ledPinHandle, Board_DIO26_ANALOG, 1);
+            }
+            else{
               audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
             }
-#else //!UART_DUMP_UNCOMPRESSED
-              if (streamVariables.streamType == BLE_AUDIO_CMD_START_MSBC) {
-                UART_write(uartHandle, audio_encoded, MSBC_ENCODED_SIZE);
-              }
-              else {
-                UART_write(uartHandle, audio_encoded, BLEAUDIO_BUFSIZE_ADPCM + BLEAUDIO_HDRSIZE_ADPCM);
-              }
-#endif //UART_DUMP_UNCOMPRESSED
 #endif //STREAM_TO_AUDBOOST
             frameReady = FALSE;
           }
 #ifdef STREAM_TO_AUDBOOST
-          else if (streamVariables.i2sOpened == FALSE) {
+          else if ((streamVariables.i2sOpened == FALSE)&& (streamVariables.streamType != BLE_AUDIO_CMD_STOP)) {
             // Failed to open, take the opportunity to try again
             // Allocate memory for decoded PCM data
-            audio_decoded = ICall_malloc(sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
+           audio_decoded = ICall_malloc(sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
             if (audio_decoded) {
               i2sParams.blockSize              = streamVariables.samplesPerFrame;
               i2sParams.pvContBuffer           = (void *) audio_decoded;
+              memset(audio_decoded, 0, sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
               i2sParams.ui32conBufTotalSize    = sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE);
               I2SCC26XX_open(i2sHandle, &i2sParams);
               volume = 40;
@@ -1374,60 +1482,81 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
           // If we received a stop command reset the audio_pkt_counter, SI, PV
           if(BLE_AUDIO_CMD_START == *(pMsg->msg.handleValueNoti.pValue))
           {
-            audio_pkt_counter = 0;
-            PIN_setOutputValue(ledPinHandle, Board_RLED, Board_LED_ON);
-            streamVariables.streamType = BLE_AUDIO_CMD_START;
-            streamVariables.notificationsPerFrame = BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM;
-            streamVariables.samplesPerFrame = ADPCM_SAMPLES_PER_FRAME;
-            streamVariables.maxVolume = 85 - 10;
-            // Allocate memory for decoded PCM data
-#ifdef STREAM_TO_AUDBOOST
-            audio_decoded = ICall_malloc(sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
-            if (audio_decoded) {
-              i2sParams.blockSize              = streamVariables.samplesPerFrame;
-              i2sParams.pvContBuffer           = (void *) audio_decoded;
-              i2sParams.ui32conBufTotalSize    = sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE);
-              I2SCC26XX_open(i2sHandle, &i2sParams);
-              Display_print0(dispHandle, 5, 0, "Opened I2S driver");
-              streamVariables.i2sOpened = TRUE;
+            if (streamVariables.streamType != BLE_AUDIO_CMD_STOP) {
+              Display_print0(dispHandle, 5, 0, "Already started stream");
             }
+            else {
+                  numberOfPackets = 0;
+                  lostPackets = 0;
+                  prevSeqNum = 0;
+                  counterToAccountForSamplingFrequencyDifference = 0;
+                  audio_pkt_counter = 0;
+                  PIN_setOutputValue(ledPinHandle, Board_RLED, Board_LED_ON);
+                  streamVariables.streamType = BLE_AUDIO_CMD_START;
+                  streamVariables.notificationsPerFrame = BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM;
+                  streamVariables.samplesPerFrame = ADPCM_SAMPLES_PER_FRAME;
+                  streamVariables.maxVolume = 85 - 10;
+                  // Allocate memory for decoded PCM data
+#ifdef STREAM_TO_AUDBOOST
+                  audio_decoded = ICall_malloc(sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
+
+                  if (audio_decoded) {
+                    i2sParams.blockSize              = streamVariables.samplesPerFrame;
+                    i2sParams.pvContBuffer           = (void *) audio_decoded;
+                    memset(audio_decoded, 0, sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
+                    i2sParams.ui32conBufTotalSize    = sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE);
+                    I2SCC26XX_open(i2sHandle, &i2sParams);
+                    Display_print1(dispHandle, 5, 0, "Opened I2S driver: %d", 1);
+                    streamVariables.i2sOpened = TRUE;
+                  }
+                  else {
+                        Display_print0(dispHandle, 5, 0, "Failed to allocate mem for I2S driver on start");
+                  }
 #else //STREAM_TO_PC
 #ifdef UART_DUMP_UNCOMPRESSED
-            audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
+                  audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
 #endif //UART_DUMP_UNCOMPRESSED
 #endif //STREAM_TO_AUDBOOST
-            Display_print0(dispHandle, 5, 0, "ADPCM Stream");
+                  Display_print0(dispHandle, 5, 0, "ADPCM Stream");
+            }
           }
           else if(BLE_AUDIO_CMD_START_MSBC == *(pMsg->msg.handleValueNoti.pValue))
           {
-            audio_pkt_counter = 0;
-            PIN_setOutputValue(ledPinHandle, Board_RLED, Board_LED_ON);
-            streamVariables.streamType = BLE_AUDIO_CMD_START_MSBC;
-            streamVariables.notificationsPerFrame = BLEAUDIO_NUM_NOT_PER_FRAME_MSBC;
-            streamVariables.samplesPerFrame = MSBC_SAMPLES_PER_FRAME;
-            streamVariables.maxVolume = 90 - 15;
-            // Allocate memory for decoded PCM data
-#ifdef STREAM_TO_AUDBOOST
-            audio_decoded = ICall_malloc(sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
-            if (audio_decoded) {
-              i2sParams.blockSize              = streamVariables.samplesPerFrame;
-              i2sParams.pvContBuffer           = (void *) audio_decoded;
-              i2sParams.ui32conBufTotalSize    = sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE);
-              I2SCC26XX_open(i2sHandle, &i2sParams);
-              Display_print0(dispHandle, 5, 0, "Opened I2S driver");
-              streamVariables.i2sOpened = TRUE;
+            if (streamVariables.streamType != BLE_AUDIO_CMD_STOP) {
+              Display_print0(dispHandle, 5, 0, "Already started stream");
             }
             else {
-              Display_print0(dispHandle, 5, 0, "Failed to allocate mem for I2S driver on start");
-            }
+                  audio_pkt_counter = 0;
+                  PIN_setOutputValue(ledPinHandle, Board_RLED, Board_LED_ON);
+                  streamVariables.streamType = BLE_AUDIO_CMD_START_MSBC;
+                  streamVariables.notificationsPerFrame = BLEAUDIO_NUM_NOT_PER_FRAME_MSBC;
+                  streamVariables.samplesPerFrame = MSBC_SAMPLES_PER_FRAME;
+                  streamVariables.maxVolume = 90 - 15;
+                  // Allocate memory for decoded PCM data
+#ifdef STREAM_TO_AUDBOOST
+                  audio_decoded = ICall_malloc(sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
+
+                  if (audio_decoded) {
+                    i2sParams.blockSize              = streamVariables.samplesPerFrame;
+                    i2sParams.pvContBuffer           = (void *) audio_decoded;
+                    memset(audio_decoded, 0, sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
+                    i2sParams.ui32conBufTotalSize    = sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE);
+                    I2SCC26XX_open(i2sHandle, &i2sParams);
+                    Display_print0(dispHandle, 5, 0, "Opened I2S driver");
+                    streamVariables.i2sOpened = TRUE;
+                  }
+                  else {
+                    Display_print0(dispHandle, 5, 0, "Failed to allocate mem for I2S driver on start");
+                  }
 #else //STREAM_TO_PC
 #ifdef UART_DUMP_UNCOMPRESSED
-            audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
+                  audio_decoded = ICall_malloc(sizeof(int16_t) * streamVariables.samplesPerFrame);
 #endif //UART_DUMP_UNCOMPRESSED
 #endif //STREAM_TO_AUDBOOST
-            // Initialize encoder
-            sbc_init_msbc(&sbc, 0);
-            Display_print0(dispHandle, 5, 0, "mSBC Stream");
+                // Initialize encoder
+                sbc_init_msbc(&sbc, 0);
+                Display_print0(dispHandle, 5, 0, "mSBC Stream");
+            }
           }
           else if(BLE_AUDIO_CMD_STOP == *(pMsg->msg.handleValueNoti.pValue))
           {
@@ -1442,9 +1571,6 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
               /* Turn output volume back down */ //TODO: Turn off codec
               volume = 0;
               AudioCodecSpeakerVolCtrl(AUDIO_CODEC_TI_3254, AUDIO_CODEC_SPEAKER_HP, volume);
-
-//              /* Clean up output buffers to avoid playing back noise when starting next stream */
-//              memset(audio_decoded, 0, sizeof(int16_t) * (streamVariables.samplesPerFrame * I2SCC26XX_QUEUE_SIZE));
 
               if (streamVariables.streamType == BLE_AUDIO_CMD_START_MSBC)
               {
@@ -2070,8 +2196,10 @@ static uint8 SimpleBLECentral_FindHIDRemote( uint8* pData, uint8 length )
   // adjust length as well
   length -= 2;
 
+  streamVariables.sourceIsPDM = FALSE;
   if (length == sizeof(remoteNameRC)) {
       resultFindRC = osal_memcmp( remoteNameRC, pData, length );
+      streamVariables.sourceIsPDM = TRUE;
   }
   else if (length == sizeof(remoteNameTx)) {
       resultFindRC = osal_memcmp( remoteNameTx, pData, length );
@@ -2086,28 +2214,6 @@ static uint8 SimpleBLECentral_FindHIDRemote( uint8* pData, uint8 length )
       'S', 'e', 'n',  's',  'o',  'r',  'T',  'a',  'g'
     };
 
-    //    // complete name
-    //  0x11,   // length of this data
-    //  GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-    //  'C', 'C', '2', '6', '5', '0', ' ',
-    //  'S', 'e', 'n',  's',  'o',  'r',  'T',  'a',  'g',
-    //
-    //  // connection interval range
-    //  0x05,   // length of this data
-    //  GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
-    //  LO_UINT16(DEFAULT_DESIRED_MIN_CONN_INTERVAL),
-    //  HI_UINT16(DEFAULT_DESIRED_MIN_CONN_INTERVAL),
-    //  LO_UINT16(DEFAULT_DESIRED_MAX_CONN_INTERVAL),
-    //  HI_UINT16(DEFAULT_DESIRED_MAX_CONN_INTERVAL),
-    //
-    //  // Tx power level
-    //  0x02,   // length of this data
-    //  GAP_ADTYPE_POWER_LEVEL,
-    //  0       // 0dBm
-
-    // adjust length as well, totla length is 0x11 + 0xA = 0x1B = 27
-    // the needed array size(for the name) is only 16 bytes
-//    length -= 11; // already moved when search for RC
     length -= 9;
     resultFindST = osal_memcmp( remoteNameST, pData, length );
   }
@@ -2271,13 +2377,38 @@ static void SimpleBLECentral_scanningToggleHandler(UArg arg)
 
 #ifdef STREAM_TO_AUDBOOST
 static void I2SCC26XX_i2sCallbackFxn(I2SCC26XX_Handle handle, I2SCC26XX_StreamNotification *notification) {
-    if (notification->status == I2SCC26XX_STREAM_BUFFER_READY) {
-      // Provide buffer
-      PIN_setOutputValue( ledPinHandle, Board_DIO25_ANALOG, !(PIN_getOutputValue(Board_DIO25_ANALOG)));
+  static uint8_t lostConsecutively = 0;
+  uint32_t hwiKey;
+  if (notification->status == I2SCC26XX_STREAM_BUFFER_READY) {
+    // Provide buffer
+    PIN_setOutputValue( ledPinHandle, Board_DIO25_ANALOG, !(PIN_getOutputValue(Board_DIO25_ANALOG)));
+    lostConsecutively = 0;
+    streamVariables.maxVolume = 75;
+  }
+  else if (notification->status == I2SCC26XX_STREAM_BUFFER_READY_BUT_NO_AVAILABLE_BUFFERS) {
+    // Provide buffer
+    lostConsecutively++;
+    PIN_setOutputValue( ledPinHandle, Board_DIO25_ANALOG, !(PIN_getOutputValue(Board_DIO25_ANALOG)));
+    if ((lostConsecutively > 5 ) & (lostConsecutively <= 40 )) {
+      if( volume > 0 ){
+        // hwiKey = Hwi_disable();
+        // events |= SBC_AUDIO_VOLUMEDOWN_EVT;
+        // Hwi_restore(hwiKey);
+        // Semaphore_post(sem);
+        streamVariables.maxVolume = 0;
+      }
     }
-    else {
-      PIN_setOutputValue( ledPinHandle, Board_RLED, !(PIN_getOutputValue(Board_RLED)));
+    else if (lostConsecutively > 40 ) {
+      hwiKey = Hwi_disable();
+      events |= SBC_AUDIO_FORCESTOP_EVT;
+      lostConsecutively = 0;
+      Hwi_restore(hwiKey);
+      Semaphore_post(sem);
     }
+  }
+  else {
+    PIN_setOutputValue( ledPinHandle, Board_RLED, !(PIN_getOutputValue(Board_RLED)));
+  }
 }
 #endif //STREAM_TO_AUDBOOST
 

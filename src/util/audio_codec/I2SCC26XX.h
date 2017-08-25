@@ -247,7 +247,7 @@ extern "C" {
  *  At least three elements must exist for good flow in driver
  */
 #define I2SCC26XX_MIN_ALLOWED_QUEUE_SIZE        3
-#define I2SCC26XX_QUEUE_SIZE                    5 //7
+#define I2SCC26XX_QUEUE_SIZE                    7
 
 /*!
  *  PDM block overhead size in number of bytes --> sizeof(queueNodeI2S_t)
