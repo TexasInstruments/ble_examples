@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file  ccfg_app_ble.c
+ @file       ccfg_app_ble.c
 
  @brief Customer Configuration CC26xx PG2 device family.
 
@@ -8,7 +8,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
-
+ 
  Copyright (c) 2014-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -40,8 +40,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_35_00_29
- Release Date: 2017-04-21 17:44:47
+ Release Name: simplelink_cc2640r2_sdk_1_40_00_45
+ Release Date: 2017-07-20 17:16:59
  *****************************************************************************/
 
 //

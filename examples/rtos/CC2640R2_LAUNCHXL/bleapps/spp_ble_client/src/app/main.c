@@ -78,15 +78,7 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
 
 #endif // USE_DEFAULT_USER_CFG
 
-#ifdef USE_CORE_SDK
 #include <ti/display/Display.h>
-#else // !USE_CORE_SDK
-  #include <ti/mw/display/Display.h>
-#endif // USE_CORE_SDK
-
-#ifdef USE_FPGA
-#include <inc/hw_prcm.h>
-#endif // USE_FPGA
 
 /*******************************************************************************
  * MACROS
@@ -95,15 +87,6 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
 /*******************************************************************************
  * CONSTANTS
  */
-
-#if defined( USE_FPGA )
-  #define RFC_MODE_BLE                 PRCM_RFCMODESEL_CURR_MODE1
-  #define RFC_MODE_ANT                 PRCM_RFCMODESEL_CURR_MODE4
-  #define RFC_MODE_EVERYTHING_BUT_ANT  PRCM_RFCMODESEL_CURR_MODE5
-  #define RFC_MODE_EVERYTHING          PRCM_RFCMODESEL_CURR_MODE6
-  //
-  #define SET_RFC_BLE_MODE(mode) HWREG( PRCM_BASE + PRCM_O_RFCMODESEL ) = (mode)
-#endif // USE_FPGA
 
 /*******************************************************************************
  * TYPEDEFS

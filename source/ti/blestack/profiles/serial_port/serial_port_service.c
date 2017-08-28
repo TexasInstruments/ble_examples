@@ -42,20 +42,14 @@
  * INCLUDES
  */
 #include <string.h>
-
-#include "bcomdef.h"
-#include "osal.h"
-#include "linkdb.h"
-#include "att.h"
-#include "gatt.h"
-#include "gatt_uuid.h"
-#include "gattservapp.h"
-#include "gapbondmgr.h"
+#include <icall.h>
+#include "util.h"
+/* This Header file contains all BLE API and icall structure definition */
+#include "icall_ble_api.h"
 
 #ifdef SDI_USE_UART
 #include "inc/sdi_task.h"
 #endif
-
 
 #ifdef SDI_USE_UART
 #include "inc/sdi_tl_uart.h"
@@ -66,9 +60,6 @@
 #include "spp_ble_server.h"
 
 #include "serial_port_service.h"
-
-#include "icall_api.h"
-
 
 /*********************************************************************
  * MACROS

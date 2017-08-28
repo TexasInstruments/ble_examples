@@ -54,32 +54,23 @@
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/knl/Queue.h>
+#include <ti/display/Display.h>
 
 #include "bcomdef.h"
 
-#include "hci_tl.h"
-#include "linkdb.h"
-#include "gatt.h"
-#include "gapgattserver.h"
-#include "gattservapp.h"
+#include <icall.h>
+#include "util.h"
+/* This Header file contains all BLE API and icall structure definition */
+#include "icall_ble_api.h"
+
 #include "central.h"
-#include "gapbondmgr.h"
-#include "gatt_uuid.h"
 #include "serial_port_service.h"
 
 #include "spp_ble_client.h"
 #include "inc/sdi_task.h"
 
-#include "osal_snv.h"
-#include "icall_apimsg.h"
-
-#include "util.h"
 #include "board_key.h"
-#ifdef USE_CORE_SDK
-#include <ti/display/Display.h>
-#else // !USE_CORE_SDK
-  #include <ti/mw/display/Display.h>
-#endif // USE_CORE_SDK
+
 #include "board_key.h"
 #include "board.h"
 
@@ -87,11 +78,6 @@
 
 #include "ble_user_config.h"
 
-#if defined( USE_FPGA ) || defined( DEBUG_SW_TRACE )
-#include <driverlib/ioc.h>
-#endif // USE_FPGA | DEBUG_SW_TRACE
-
-#include "icall_api.h"
 /*********************************************************************
  * MACROS
  */
@@ -198,26 +184,14 @@
 
 // Type of Display to open
 #if !defined(Display_DISABLE_ALL)
-  #ifdef USE_CORE_SDK
     #if defined(BOARD_DISPLAY_USE_LCD) && (BOARD_DISPLAY_USE_LCD!=0)
-      #define SBC_DISPLAY_TYPE Display_Type_LCD
+      #define SBP_DISPLAY_TYPE Display_Type_LCD
     #elif defined (BOARD_DISPLAY_USE_UART) && (BOARD_DISPLAY_USE_UART!=0)
-      #define SBC_DISPLAY_TYPE Display_Type_UART
+      #define SBP_DISPLAY_TYPE Display_Type_UART
     #else // !BOARD_DISPLAY_USE_LCD && !BOARD_DISPLAY_USE_UART
-      #define SBC_DISPLAY_TYPE 0 // Option not supported
+      #define SBP_DISPLAY_TYPE 0 // Option not supported
     #endif // BOARD_DISPLAY_USE_LCD && BOARD_DISPLAY_USE_UART
-  #else // !USE_CORE_SDK
-    #if !defined(BOARD_DISPLAY_EXCLUDE_LCD)
-      #define SBC_DISPLAY_TYPE Display_Type_LCD
-    #elif !defined (BOARD_DISPLAY_EXCLUDE_UART)
-      #define SBC_DISPLAY_TYPE Display_Type_UART
-    #else // BOARD_DISPLAY_EXCLUDE_LCD && BOARD_DISPLAY_EXCLUDE_UART
-      #define SBC_DISPLAY_TYPE 0 // Option not supported
-    #endif // BOARD_DISPLAY_EXCLUDE_LCD
-  #endif // USE_CORE_SDK
-#else // Display_DISABLE_ALL
-  #define SBC_DISPLAY_TYPE 0 // No Display
-#endif // Display_DISABLE_ALL
+#endif
 
 // Task configuration
 #define SBC_TASK_PRIORITY                     1

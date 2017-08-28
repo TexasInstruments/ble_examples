@@ -41,8 +41,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_30_00_25
- Release Date: 2017-03-02 20:08:31
+ Release Name: simplelink_cc2640r2_sdk_1_40_00_45
+ Release Date: 2017-07-20 17:16:59
  *****************************************************************************/
 
 /*********************************************************************
@@ -54,36 +54,20 @@
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/knl/Queue.h>
-
-#include "hci_tl.h"
-#include "gatt.h"
-#include "linkdb.h"
-#include "gapgattserver.h"
-#include "gattservapp.h"
-#include "devinfoservice.h"
-
-#if defined(FEATURE_OAD) || defined(IMAGE_INVALIDATE)
-#include "oad_target.h"
-#include "oad.h"
-#endif //FEATURE_OAD || IMAGE_INVALIDATE
-
-#include "peripheral.h"
-#include "gapbondmgr.h"
-
-#include "osal_snv.h"
-#include "icall_apimsg.h"
+#include <ti/display/Display.h>
 
 #include "util.h"
+
+/* This Header file contains all BLE API and icall structure definition */
+#include "icall_ble_api.h"
+#include "devinfoservice.h"
+
+#include "peripheral.h"
 
 #ifdef USE_RCOSC
 #include "rcosc_calibration.h"
 #endif //USE_RCOSC
 
-#ifdef USE_CORE_SDK
-  #include <ti/display/Display.h>
-#else // !USE_CORE_SDK
-  #include <ti/mw/display/Display.h>
-#endif // USE_CORE_SDK
 #include "board_key.h"
 
 #include "board.h"
@@ -97,7 +81,6 @@
 #include <driverlib/ioc.h>
 #endif // USE_FPGA | DEBUG_SW_TRACE
 
-#include "icall_api.h"
 /*********************************************************************
  * CONSTANTS
  */
@@ -149,7 +132,6 @@
 
 // Type of Display to open
 #if !defined(Display_DISABLE_ALL)
-  #ifdef USE_CORE_SDK
     #if defined(BOARD_DISPLAY_USE_LCD) && (BOARD_DISPLAY_USE_LCD!=0)
       #define SBP_DISPLAY_TYPE Display_Type_LCD
     #elif defined (BOARD_DISPLAY_USE_UART) && (BOARD_DISPLAY_USE_UART!=0)
@@ -157,18 +139,7 @@
     #else // !BOARD_DISPLAY_USE_LCD && !BOARD_DISPLAY_USE_UART
       #define SBP_DISPLAY_TYPE 0 // Option not supported
     #endif // BOARD_DISPLAY_USE_LCD && BOARD_DISPLAY_USE_UART
-  #else // !USE_CORE_SDK
-    #if !defined(BOARD_DISPLAY_EXCLUDE_LCD)
-      #define SBP_DISPLAY_TYPE Display_Type_LCD
-    #elif !defined (BOARD_DISPLAY_EXCLUDE_UART)
-      #define SBP_DISPLAY_TYPE Display_Type_UART
-    #else // BOARD_DISPLAY_EXCLUDE_LCD && BOARD_DISPLAY_EXCLUDE_UART
-      #define SBP_DISPLAY_TYPE 0 // Option not supported
-    #endif // !BOARD_DISPLAY_EXCLUDE_LCD || !BOARD_DISPLAY_EXCLUDE_UART
-  #endif // USE_CORE_SDK
-#else // BOARD_DISPLAY_USE_LCD && BOARD_DISPLAY_USE_UART
-  #define SBP_DISPLAY_TYPE 0 // No Display
-#endif // Display_DISABLE_ALL
+#endif
 
 #ifdef FEATURE_OAD
 // The size of an OAD packet.

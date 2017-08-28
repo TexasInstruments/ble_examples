@@ -259,11 +259,7 @@ void SDITLUART_stopTransfer(void)
     // or that the FIFO has already been read for this UART_read()
     // In either case UART_readCancel will call the read CB function and it will
     // invoke sdiTransmitCB with the appropriate number of bytes read
-#ifndef USE_CORE_SDK
-    if (!UARTCharsAvail(((UARTCC26XX_HWAttrsV1 const *)(uartHandle->hwAttrs))->baseAddr))
-#else // USE_CORE_SDK
     if (!UARTCharsAvail(((UARTCC26XX_HWAttrsV2 const *)(uartHandle->hwAttrs))->baseAddr))
-#endif // !USE_CORE_SDK
     {
         RxActive = FALSE;
         UART_readCancel(uartHandle);
@@ -405,13 +401,8 @@ static void SDITLUART_readCallBack(UART_Handle handle, void *ptr, size_t size)
 #if (SDI_FLOW_CTRL == 1)
     // Read has been cancelled by transport layer, or bus timeout and no bytes in FIFO
     //    - do not invoke another read
-#ifndef USE_CORE_SDK
-    if ( !UARTCharsAvail(((UARTCC26XX_HWAttrsV1 const *)(uartHandle->hwAttrs))->baseAddr) &&
-            mrdy_flag )
-#else // USE_CORE_SDK
     if ( !UARTCharsAvail(((UARTCC26XX_HWAttrsV2 const *)(uartHandle->hwAttrs))->baseAddr) &&
             mrdy_flag )
-#endif // !USE_CORE_SDK
     {
         RxActive = FALSE;
 

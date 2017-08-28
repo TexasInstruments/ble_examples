@@ -23,16 +23,16 @@
       <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack</value>
     </variable>
     <variable>
+      <name>SRC_COMMON_DIR</name>
+      <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$/source/ti/ble5stack</value>
+    </variable>
+    <variable>
       <name>TOOLS_BLE_DIR</name>
       <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\tools\ble5stack</value>
     </variable>
     <variable>
       <name>ROM_DIR</name>
       <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\rom</value>
-    </variable>
-    <variable>
-      <name>SRC_LOCAL_DIR</name>
-      <value>$EXAMPLE_BLE_ROOT$/../../../../../source/ti/ble5stack</value>
     </variable>
   </group>
 </iarUserArgVars>

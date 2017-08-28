@@ -52,8 +52,9 @@
 
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
-#include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/BIOS.h>
+#include <ti/sysbios/knl/Clock.h>
+#include <ti/display/Display.h>
 
 #include "icall.h"
 #include "hal_assert.h"
@@ -79,15 +80,7 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
 
 #endif // USE_DEFAULT_USER_CFG
 
-#ifdef USE_CORE_SDK
-  #include <ti/display/Display.h>
-#else // !USE_CORE_SDK
-  #include <ti/mw/display/Display.h>
-#endif // USE_CORE_SDK
-
-#ifdef USE_FPGA
-#include <inc/hw_prcm.h>
-#endif // USE_FPGA
+#include <ti/display/Display.h>
 
 /*******************************************************************************
  * MACROS

@@ -40,8 +40,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_30_00_25
- Release Date: 2017-03-02 20:08:31
+ Release Name: simplelink_cc2640r2_sdk_1_40_00_45
+ Release Date: 2017-07-20 17:16:59
  *****************************************************************************/
 
 /*
@@ -62,12 +62,15 @@
     BLE_V41_FEATURES        Configure the stack to use features from the BLE 4.1 Specification
         L2CAP_COC_CFG       - Enable L2CAP Connection Oriented Channels
         V41_CTRL_CFG        - Enable Ping, Slave Feature Exchange, Connection Parameter Request, and
-                              Master Slave connection roles within the Controller (always enabled)
+                              Master Slave connection roles within the Controller. This feature
+                              is enabled by default and cannot be disabled.
 
     BLE_V42_FEATURES        Configure the stack to use features from the BLE 4.2 Specification
-        EXT_DATA_LEN_CFG    - Enable the Extended Data Length Feature in the Controller (always enabled)
+                            The following BLE 4.2 features are enabled by default and cannot
+                            be disabled.
+        EXT_DATA_LEN_CFG    - Enable the Extended Data Length Feature in the Controller
         SECURE_CONNS_CFG    - Enable Secure Connections Pairing Procedure
-        PRIVACY_1_2_CFG     - Enable Enhanced Privacy (always enabled)
+        PRIVACY_1_2_CFG     - Enable Enhanced Privacy
 
     HCI_TL_FULL             - All supported HCI commands are available via the Tranport Layer's NPI.
                             - Intended for NP solution.
@@ -133,7 +136,6 @@
 /* When using linker command files provided by this SDK, the linker     */
 /* symbol ENCRYPTION_ROM=1 or ENCRYPTION_ROM=2 may be defined to set    */
 /* this upper limit for R1 and R2 devices, respectively.                */
--DV42_FEATURES=SECURE_CONNS_CFG
 
 /* Include Transport Layer (Full or PTM) */
 -DHCI_TL_NONE
