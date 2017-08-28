@@ -30,7 +30,6 @@ SDK release.
 
 ### 1.40.00.00
 Initial offering of Simplelink CC2640R2 SDK 1.40.00.45 examples.
-* BLE5-Stack: Throughput Demo (Central/Peripheral)
 * BLE5-Stack: Long Range Demo (Central/Peripheral)
 * BLE5-Stack: Serial Port Profile (SPP) Server/Client
 * BLE-Stack:  Serial Port Profile (SPP) Server/Client
@@ -99,23 +98,6 @@ CC2640R2 LaunchPads with CC3200AUDBOOST.
     * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_bidirectional_audio/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_bidirectional_audio/src)
 
-### Bluetooth 5 Throughput Demo
-
-This is a 2 part demo where a throughput\_central and throughput\_peripheral
-connect with one another, demonstrating the BLE5-Stack's 1 Mbps, 2 Mbps, 1+2
-Mbps, and Coded PHYs.
-
-* throughput\_central
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_central/src)
-* throughput\_peripheral
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/throughput_peripheral/src)
-
 ### Bluetooth 5 Long Range Demo
 
 This is a 2 part demo where a longrange\_central and longrange\_peripheral
@@ -167,8 +149,8 @@ Extension with OAD support:
 
 ### Apple Notification Center Service (ANCS) Demo
 
-This is an example that demonstrates the use and functionality of the ANCS. ANCS is a GATT 
-service present on iOS devices used to retrieve and interact with iOS notifications. 
+This is an example that demonstrates the use and functionality of the ANCS. ANCS is a GATT
+service present on iOS devices used to retrieve and interact with iOS notifications.
 
 * ancs
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/readme.md)
