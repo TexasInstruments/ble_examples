@@ -736,7 +736,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>spp_ble_server_$PROJ_FNAME$_$CONFIG_NAME$.out</state>
+          <state>spp_ble_server_cc2640r2lp_app.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -1806,7 +1806,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>spp_ble_server_$PROJ_FNAME$_$CONFIG_NAME$.out</state>
+          <state>spp_ble_server_cc2640r2lp_app.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -2147,6 +2147,22 @@
         </file>
         <file>
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\board_key.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\common\cc26xx\rcosc\rcosc_calibration.c</name>
+      <excluded>
+        <configuration>FlashROM</configuration>
+        <configuration>FlashROM_StackLibrary</configuration>
+      </excluded>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\common\cc26xx\rcosc\rcosc_calibration.h</name>
+      <excluded>
+        <configuration>FlashROM</configuration>
+        <configuration>FlashROM_StackLibrary</configuration>
+        <configuration>FlashROM_SL_CacheAsRAM</configuration>
+        <configuration>FlashOnly_OAD_ImgB</configuration>
+      </excluded>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\src\app\spp_ble_server.c</name>

@@ -97,7 +97,8 @@
             -l${SRC_BLE_DIR}/common/cc26xx/ccs/cc26xx_app.cmd
             -x
             --define=CC26X0ROM=2
-            --diag_suppress=10229-D
+            --diag_suppress=16002-D
+            --diag_suppress=10247-D
             --diag_suppress=10325-D
             --diag_suppress=10229-D
             --diag_suppress=16032-D"
