@@ -81,7 +81,7 @@
             -I${SRC_BLE_DIR}/osal/src/inc
             -I${SRC_BLE_DIR}/services/src/saddr
             -I${SRC_BLE_DIR}/services/src/sdata
-	    -I${EXAMPLE_BLE_ROOT}/../../../../../source/ti/ble5stack/sdi/src/
+            -I${EXAMPLE_BLE_ROOT}/../../../../../source/ti/ble5stack/sdi/src/
             -I${SRC_BLE_DIR}/../../../source/ti/devices/cc26x0r2"
             linkerBuildOptions="
             -l${SRC_BLE_DIR}/../../../source/ti/devices/cc26x0r2/driverlib/bin/ccs/driverlib.lib
@@ -97,7 +97,8 @@
             -l${SRC_BLE_DIR}/common/cc26xx/ccs/cc26xx_app.cmd
             -x
             --define=CC26X0ROM=2
-            --diag_suppress=10229-D
+            --diag_suppress=16002-D
+            --diag_suppress=10247-D
             --diag_suppress=10325-D
             --diag_suppress=10229-D
             --diag_suppress=16032-D"
