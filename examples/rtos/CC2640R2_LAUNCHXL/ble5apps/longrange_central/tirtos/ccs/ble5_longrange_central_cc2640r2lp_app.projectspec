@@ -13,6 +13,7 @@
         postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out"
         description=""
         launchWizard="false"
+        references="ble5_longrange_central_cc2640r2lp_stack_library"
     >
 
         <!-- Project properties -->
