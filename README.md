@@ -21,12 +21,38 @@ please refer to the [FAQ page](docs/faq.md).
 For extra examples for **TI BLE-Stack 2.2.x SDK** (CC26x0R1), see
 [Branch: ble_examples-2.2](https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2).
 
+# Navigating the Repository
+
+The examples provided on this GitHub page serve as a plugin to a corresponding
+BLE-Stack SDK release. The master branch will always point to the latest release.
+
+Older releases can be accessed by checking out/downloading their corresponding
+branch. For more information on supported examples
+please consult the readme.md of the desired branch/release.
+
+**Note: As of CC21640R2 SDK 1.35 and later the `ble5apps` component was added.**
+ - ble5apps: Supports the Bluetooth 5 Core Specification and TI's BLE5-Stack.
+ - bleapps: Supports the Bluetooth 4.2 Core Specification and TI's BLE-Stack component.
+
+For for more information about different SDK components, please consult the
+stack's User Guide.
+
 ## Change Log
 
 Note: The version numbers below are related to GitHub ble_examples releases.
 The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremented
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
+
+### 1.40.02.02
+* Memory optimized Duplex Audio demo (Central + Peripheral)
+* SPP over BLE bug-fixes
+* Throughput demo fixes and porting to 1.40 SDK
+
+### 1.40.01.01
+
+* Added SPP over BLE (client/server) projects for BLE5- Stack and BLE-Stack
+* Minor ANCS updates
 
 ### 1.40.00.00
 Initial offering of Simplelink CC2640R2 SDK 1.40.00.45 examples.
@@ -167,8 +193,8 @@ Extension with OAD support:
 
 ### Apple Notification Center Service (ANCS) Demo
 
-This is an example that demonstrates the use and functionality of the ANCS. ANCS is a GATT 
-service present on iOS devices used to retrieve and interact with iOS notifications. 
+This is an example that demonstrates the use and functionality of the ANCS. ANCS is a GATT
+service present on iOS devices used to retrieve and interact with iOS notifications.
 
 * ancs
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/readme.md)
