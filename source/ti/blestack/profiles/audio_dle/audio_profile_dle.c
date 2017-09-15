@@ -57,7 +57,6 @@
 #include "gatt_uuid.h"
 #include "gattservapp.h"
 #include "gapbondmgr.h"
-#include "peripheral.h"
 
 #include "audio_profile_dle.h"
 #include "ll.h"
@@ -78,19 +77,19 @@
  * GLOBAL VARIABLES
  */
 // audio GATT Profile Service UUID: 0xB000
-static CONST uint8 audioProfileServUUID[ATT_UUID_SIZE] =
+static CONST uint8_t audioProfileServUUID[ATT_UUID_SIZE] =
 {
   TI_BASE_UUID_128(AUDIO_SERV_UUID)
 };
 
 // Start/Stop Characteristic UUID: 0xB001
-static CONST uint8 audioProfileStartUUID[ATT_UUID_SIZE] =
+static CONST uint8_t audioProfileStartUUID[ATT_UUID_SIZE] =
 {
   TI_BASE_UUID_128(AUDIOPROFILE_START_UUID)
 };
 
 // Audio Stream Characteristic UUID: 0xB002
-static CONST uint8 audioProfileAudioUUID[ATT_UUID_SIZE] =
+static CONST uint8_t audioProfileAudioUUID[ATT_UUID_SIZE] =
 {
   TI_BASE_UUID_128(AUDIOPROFILE_AUDIO_UUID)
 };
@@ -115,16 +114,16 @@ static CONST gattAttrType_t audioProfileService = {ATT_UUID_SIZE,
                                                    audioProfileServUUID};
 
 // Audio Profile Start/Stop Characteristic Properties
-static uint8 audioProfileStartProps = GATT_PROP_READ | GATT_PROP_NOTIFY;
+static uint8_t audioProfileStartProps = GATT_PROP_READ | GATT_PROP_NOTIFY;
 
 // Start/Stop Characteristic Value
-static uint8 audioProfileStart = 0;
+static uint8_t audioProfileStart = 0;
 
 // Start/Stop Characteristic Configuration Descriptor Value
 static gattCharCfg_t *audioProfileStartConfig;
 
 // Simple Profile Audio Stream Characteristic Properties
-static uint8 audioProfileAudioProps = GATT_PROP_READ | GATT_PROP_NOTIFY;
+static uint8_t audioProfileAudioProps = GATT_PROP_READ | GATT_PROP_NOTIFY;
 
 // Audio Stream Characteristic Value
 static uint8_t audioProfileAudio[BLEAUDIO_MAX_NOTSIZE];
@@ -145,7 +144,7 @@ static gattAttribute_t audioProfileAttrTbl[] =
     {ATT_BT_UUID_SIZE, primaryServiceUUID},   /* type */
     GATT_PERMIT_READ,                         /* permissions */
     0,                                        /* handle */
-    (uint8 *)&audioProfileService             /* pValue */
+    (uint8_t *)&audioProfileService             /* pValue */
   },
 
     // Start/Stop Characteristic Declaration
@@ -169,7 +168,7 @@ static gattAttribute_t audioProfileAttrTbl[] =
         {ATT_BT_UUID_SIZE, clientCharCfgUUID},
         GATT_PERMIT_READ | GATT_PERMIT_WRITE,
         0,
-        (uint8 *)&audioProfileStartConfig
+        (uint8_t *)&audioProfileStartConfig
       },
 
     // Audio Stream Characteristic Declaration
@@ -185,7 +184,7 @@ static gattAttribute_t audioProfileAttrTbl[] =
         {ATT_UUID_SIZE, audioProfileAudioUUID},
         GATT_PERMIT_READ,
         0,
-        (uint8 *)audioProfileAudio
+        (uint8_t *)audioProfileAudio
       },
 
       // Audio Stream Characteristic configuration
@@ -193,22 +192,22 @@ static gattAttribute_t audioProfileAttrTbl[] =
         {ATT_BT_UUID_SIZE, clientCharCfgUUID},
         GATT_PERMIT_READ | GATT_PERMIT_WRITE,
         0,
-        (uint8 *)&audioProfileAudioConfig
+        (uint8_t *)&audioProfileAudioConfig
       },
 };
 
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
-static uint8 audioProfile_ReadAttrCB(uint16 connHandle, gattAttribute_t *pAttr,
-                                     uint8 *pValue, uint16 *pLen, uint16 offset,
-                                     uint16 maxLen, uint8 method);
-static bStatus_t audioProfile_WriteAttrCB(uint16 connHandle,
+static uint8_t audioProfile_ReadAttrCB(uint16_t connHandle, gattAttribute_t *pAttr,
+                                     uint8_t *pValue, uint16_t *pLen, uint16_t offset,
+                                     uint16_t maxLen, uint8_t method);
+static bStatus_t audioProfile_WriteAttrCB(uint16_t connHandle,
                                           gattAttribute_t *pAttr,
-                                          uint8 *pValue,
-                                          uint16 len,
-                                          uint16 offset,
-                                          uint8 method);
+                                          uint8_t *pValue,
+                                          uint16_t len,
+                                          uint16_t offset,
+                                          uint8_t method);
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -243,7 +242,7 @@ static CONST gattServiceCBs_t audioProfileCBs =
  */
 bStatus_t Audio_AddService(void)
 {
-  uint8 status = SUCCESS;
+  uint8_t status = SUCCESS;
 
   // Allocate Audio Cmd Client Characteristic Configuration table
   audioProfileStartConfig = (gattCharCfg_t *)ICall_malloc(sizeof(gattCharCfg_t)*
@@ -285,13 +284,13 @@ bStatus_t Audio_AddService(void)
  * @param   len - length of data to write
  * @param   value - pointer to data to write.  This is dependent on
  *          the parameter ID and WILL be cast to the appropriate
- *          data type (example: data type of uint16 will be cast to
- *          uint16 pointer).
+ *          data type (example: data type of uint16_t will be cast to
+ *          uint16_t pointer).
  *
  * @return  SUCCESS, bleInvalidRange, INVALIDPARAMETER, or return
  *          value of GATTServApp_ProcessCharCfg
  */
-bStatus_t Audio_SetParameter(uint8 param, uint8 len, void *value)
+bStatus_t Audio_SetParameter(uint8_t param, uint8_t len, void *value)
 {
   bStatus_t ret = SUCCESS;
 
@@ -300,7 +299,7 @@ bStatus_t Audio_SetParameter(uint8 param, uint8 len, void *value)
     case AUDIOPROFILE_START:
       if (len == sizeof (audioProfileStart))
       {
-        audioProfileStart = *((uint8*)value);
+        audioProfileStart = *((uint8_t*)value);
 
         // See if Notifications have been enabled and send
         ret = GATTServApp_ProcessCharCfg(audioProfileStartConfig,
@@ -348,19 +347,19 @@ bStatus_t Audio_SetParameter(uint8 param, uint8 len, void *value)
  * @param   param - Profile parameter ID
  * @param   value - pointer to data to put.  This is dependent on
  *          the parameter ID and WILL be cast to the appropriate
- *          data type (example: data type of uint16 will be cast to
- *          uint16 pointer).
+ *          data type (example: data type of uint16_t will be cast to
+ *          uint16_t pointer).
  *
  * @return  SUCCESS or INVALIDPARAMETER
  */
-bStatus_t Audio_GetParameter(uint8 param, void *value)
+bStatus_t Audio_GetParameter(uint8_t param, void *value)
 {
   bStatus_t ret = SUCCESS;
 
   switch (param)
   {
     case AUDIOPROFILE_START:
-      *((uint8*)value) = audioProfileStart;
+      *((uint8_t*)value) = audioProfileStart;
       break;
 
     case AUDIOPROFILE_AUDIO:
@@ -415,13 +414,13 @@ bStatus_t Audio_SetAudioDataLen(uint8_t len)
  * @return      SUCCESS, ATT_ERR_INSUFFICIENT_AUTHOR,
  *              ATT_ERR_ATTR_NOT_LONG, or ATT_ERR_INVALID_HANDLE
  */
-static uint8 audioProfile_ReadAttrCB(uint16 connHandle,
+static uint8_t audioProfile_ReadAttrCB(uint16_t connHandle,
                                      gattAttribute_t *pAttr,
-                                     uint8 *pValue,
-                                     uint16 *pLen,
-                                     uint16 offset,
-                                     uint16 maxLen,
-                                     uint8 method)
+                                     uint8_t *pValue,
+                                     uint16_t *pLen,
+                                     uint16_t offset,
+                                     uint16_t maxLen,
+                                     uint8_t method)
 {
   bStatus_t status = SUCCESS;
 
@@ -434,7 +433,7 @@ static uint8 audioProfile_ReadAttrCB(uint16 connHandle,
   if (pAttr->type.len == ATT_UUID_SIZE)
   {
     // 128-bit UUID
-    uint16 uuid = BUILD_UINT16(pAttr->type.uuid[12], pAttr->type.uuid[13]);
+    uint16_t uuid = BUILD_UINT16(pAttr->type.uuid[12], pAttr->type.uuid[13]);
     switch (uuid)
     {
     case AUDIOPROFILE_START_UUID:
@@ -480,12 +479,12 @@ static uint8 audioProfile_ReadAttrCB(uint16 connHandle,
  * @return  SUCCESS, ATT_ERR_INSUFFICIENT_AUTHOR,
  *          ATT_ERR_ATTR_NOT_LONG, or ATT_ERR_INVALID_HANDLE
  */
-static bStatus_t audioProfile_WriteAttrCB(uint16 connHandle,
+static bStatus_t audioProfile_WriteAttrCB(uint16_t connHandle,
                                           gattAttribute_t *pAttr,
-                                          uint8 *pValue,
-                                          uint16 len,
-                                          uint16 offset,
-                                          uint8 method)
+                                          uint8_t *pValue,
+                                          uint16_t len,
+                                          uint16_t offset,
+                                          uint8_t method)
 {
   bStatus_t status = SUCCESS;
 
@@ -497,7 +496,7 @@ static bStatus_t audioProfile_WriteAttrCB(uint16 connHandle,
   if (pAttr->type.len == ATT_BT_UUID_SIZE)
   {
     // 16-bit UUID
-    uint16 uuid = BUILD_UINT16(pAttr->type.uuid[0], pAttr->type.uuid[1]);
+    uint16_t uuid = BUILD_UINT16(pAttr->type.uuid[0], pAttr->type.uuid[1]);
     switch (uuid)
     {
       case GATT_CLIENT_CHAR_CFG_UUID:
@@ -514,7 +513,7 @@ static bStatus_t audioProfile_WriteAttrCB(uint16 connHandle,
   else if (pAttr->type.len == ATT_UUID_SIZE)
   {
     // 128-bit UUID
-    uint16 uuid = BUILD_UINT16(pAttr->type.uuid[12], pAttr->type.uuid[13]);
+    uint16_t uuid = BUILD_UINT16(pAttr->type.uuid[12], pAttr->type.uuid[13]);
     switch (uuid)
     {
       case AUDIOPROFILE_START_UUID:

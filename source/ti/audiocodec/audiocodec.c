@@ -46,7 +46,6 @@
 
 #include <ti/drivers/I2C.h>
 #include <ti/drivers/i2c/I2CCC26XX.h>
-#include <ti/blestack/boards/CC2640R2_LAUNCHXL_I2S/Board_I2S.h>
 #include "board.h"
 #include "audiocodec.h"
 #include "ti3254.h"
@@ -70,7 +69,7 @@ static unsigned long AudioCodecRegWrite(unsigned char ulRegAddr,unsigned char uc
 /*********************************************************************
  * @fn      AudioCodecOpen
  *
- * @brief   Initalizes and opens I2C interface to TLV320AIC3254, resets
+ * @brief   Initializes and opens I2C interface to TLV320AIC3254, resets
  *
  * @param   none
  *

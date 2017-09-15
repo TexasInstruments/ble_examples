@@ -218,7 +218,7 @@
                     <state>ICALL_LITE</state>
                     <state>NEAR_FUNC=</state>
                     <state>OSAL_CBTIMER_NUM_TASKS=1</state>
-                    <state>OSAL_SNV=1</state>
+                    <state>OSAL_SNV=2</state>
                     <state>POWER_SAVING</state>
                     <state>RF_SINGLEMODE</state>
                     <state>STACK_LIBRARY</state>

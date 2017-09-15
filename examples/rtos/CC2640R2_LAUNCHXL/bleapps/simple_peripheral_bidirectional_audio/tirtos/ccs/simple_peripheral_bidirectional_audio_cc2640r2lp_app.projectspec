@@ -36,7 +36,7 @@
             -D${COM_TI_SIMPLELINK_CC2640R2_SDK_SYMBOLS}
             -DDeviceFamily_CC26X0R2
             -DHEAPMGR_METRICS
-            -DCACHE_AS_RAM
+            -DEXT_HAL_ASSERT
             -DSBP_TASK_STACK_SIZE=900
             -DGAPROLE_TASK_STACK_SIZE=700
             -DBOARD_DISPLAY_USE_LCD=0
@@ -70,7 +70,8 @@
             -I${TI_BLE_SDK_BASE}/source/ti/blestack/rom
             -I${TI_BLE_SDK_BASE}/source/ti/blestack/common/cc26xx
             -I${PROJECT_BUILD_BASE}/src/app
-            -I${PROJECT_BUILD_BASE}/../../../../../source
+            -I${PROJECT_BUILD_BASE}/../../../../../source/ti/blestack/
+            -I${PROJECT_BUILD_BASE}/../../../../../source/
             -I${TI_BLE_SDK_BASE}/source/ti/blestack/icall/inc
             -I${TI_BLE_SDK_BASE}/source/ti/blestack/inc
             -I${TI_BLE_SDK_BASE}/source/ti/blestack/profiles/roles/cc26xx
@@ -101,7 +102,6 @@
             -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/blestack/common/cc26xx/ccs/cc26xx_app.cmd
             -x
             --define=CC26X0ROM=2
-            --define=CACHE_AS_RAM=1
             --diag_suppress=16002-D
             --diag_suppress=10325-D
             --diag_suppress=10229-D
@@ -115,12 +115,13 @@
         <pathVariable name="PROJECT_BUILD_BASE" path="../.." scope="project"/>
 
         <!-- Application Folder -->
+        <file path="TI_BLE_SDK_BASE/source/ti/blestack/hal/src/common/hal_assert.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/common/cc26xx/board_key.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/common/cc26xx/board_key.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="PROJECT_BUILD_BASE/src/app/simple_peripheral_bidirectional_audio.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="PROJECT_BUILD_BASE/src/app/simple_peripheral_bidirectional_audio.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
-       <file path="PROJECT_BUILD_BASE/src/app/audio_peripheral.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
-       <file path="PROJECT_BUILD_BASE/src/app/audio_peripheral.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="../../../../../../../source/ti/blestack/profiles/audio_dle/audio_duplex.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="../../../../../../../source/ti/blestack/profiles/audio_dle/audio_duplex.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/common/cc26xx/util.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
@@ -148,11 +149,11 @@
         </file>
 
         <!-- Drivers/Audio Codec Folder -->
-        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/blestack/audiocodec/audiocodec.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Audio Codec" createVirtualFolders="true">
+        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/audiocodec/audiocodec.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Audio Codec" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/blestack/audiocodec/audiocodec.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Audio Codec" createVirtualFolders="true">
+        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/audiocodec/audiocodec.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Audio Codec" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/blestack/audiocodec/ti3254.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Audio Codec" createVirtualFolders="true">
+        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/audiocodec/ti3254.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/Audio Codec" createVirtualFolders="true">
         </file>
 
         <!-- ICall Folder -->
@@ -192,11 +193,11 @@
         <file path="TI_BLE_SDK_BASE/source/ti/blestack/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary, FlashROM_StackLibrary_RCOSC"/>
 
         <!-- Startup/Board I2S Folder -->
-        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/blestack/boards/CC2640R2_LAUNCHXL_I2S/Board_I2S.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup/Board I2S" createVirtualFolders="true">
+        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/boards/CC2640R2_LAUNCHXL_I2S/Board_I2S.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup/Board I2S" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/blestack/boards/CC2640R2_LAUNCHXL_I2S/CC2640R2_LAUNCHXL_I2S.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup/Board I2S" createVirtualFolders="true">
+        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/boards/CC2640R2_LAUNCHXL_I2S/CC2640R2_LAUNCHXL_I2S.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup/Board I2S" createVirtualFolders="true">
         </file>
-        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/blestack/boards/CC2640R2_LAUNCHXL_I2S/CC2640R2_LAUNCHXL_I2S.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup/Board I2S" createVirtualFolders="true">
+        <file path="PROJECT_BUILD_BASE/../../../../../source/ti/boards/CC2640R2_LAUNCHXL_I2S/CC2640R2_LAUNCHXL_I2S.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup/Board I2S" createVirtualFolders="true">
         </file>
 
         <!-- Tools Folder -->

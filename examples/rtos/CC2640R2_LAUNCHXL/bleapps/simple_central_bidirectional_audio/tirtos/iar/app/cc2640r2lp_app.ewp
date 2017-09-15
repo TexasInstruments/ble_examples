@@ -211,8 +211,8 @@
                 <debug>1</debug>
                 <option>
                     <name>CCDefines</name>
+                    <state>EXT_HAL_ASSERT</state>
                     <state>HEAPMGR_METRICS</state>
-                    <state>CACHE_AS_RAM</state>
                     <state>MAX_PDU_SIZE=107</state>
                     <state>GAPCENTRALROLE_TASK_STACK_SIZE=700</state>
                     <state>BOARD_DISPLAY_USE_LCD=0</state>
@@ -361,7 +361,8 @@
                 </option>
                 <option>
                     <name>CCIncludePath2</name>
-                    <state>$PROJ_DIR$/../../../../../../../../source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\..\..\..\source</state>
                     <state>$SRC_BLE_DIR$\controller\cc26xx_r2\inc</state>
                     <state>$SRC_BLE_DIR$\inc</state>
                     <state>$SRC_BLE_DIR$\common\cc26xx</state>
@@ -770,7 +771,6 @@
                     <name>IlinkConfigDefines</name>
                     <state>CC2650=2</state>
                     <state>FLASH_ROM_BUILD=2</state>
-                    <state>CACHE_AS_RAM=1</state>
                 </option>
                 <option>
                     <name>IlinkMapFile</name>
@@ -1076,16 +1076,19 @@
     <group>
         <name>Application</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\src\app\audio_central.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_duplex.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\src\app\audio_central.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_duplex.h</name>
         </file>
         <file>
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\board_key.c</name>
         </file>
         <file>
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\board_key.h</name>
+        </file>
+        <file>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\common\hal_assert.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\src\app\simple_central_bidirectional_audio.c</name>
@@ -1105,13 +1108,13 @@
         <group>
             <name>Audio Codec</name>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\audiocodec\audiocodec.c</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\audiocodec\audiocodec.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\audiocodec\audiocodec.h</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\audiocodec\audiocodec.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\audiocodec\ti3254.h</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\audiocodec\ti3254.h</name>
             </file>
         </group>
         <group>
@@ -1252,13 +1255,13 @@
         <group>
             <name>Board I2S</name>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\boards\CC2640R2_LAUNCHXL_I2S\BoardI2S.h</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\boards\CC2640R2_LAUNCHXL_I2S\BoardI2S.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\boards\CC2640R2_LAUNCHXL_I2S\CC2640R2_LAUNCHXL_I2S.c</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\boards\CC2640R2_LAUNCHXL_I2S\CC2640R2_LAUNCHXL_I2S.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\boards\CC2640R2_LAUNCHXL_I2S\CC2640R2_LAUNCHXL_I2S.h</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\boards\CC2640R2_LAUNCHXL_I2S\CC2640R2_LAUNCHXL_I2S.h</name>
             </file>
         </group>
         <file>

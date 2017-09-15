@@ -44,9 +44,7 @@
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>
 
-// TODO: Create correct path
-//#include <ti/drivers/i2s/I2SCC26XX.h>
-#include "I2SCC26XX.h"
+#include <ti/drivers/i2s/I2SCC26XX.h>
 
 #include <string.h>
 
@@ -198,7 +196,7 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
     object->currentStream->status       = I2SCC26XX_STREAM_IDLE;
 
     /* The following are constants that apply to I2S */
-    object->i32SampleRate = 0;//I2S_SAMPLE_RATE_16K;                             /* If negative then use user configured clock division */
+    object->i32SampleRate = 0;//I2S_SAMPLE_RATE_16K;                         /* If negative then use user configured clock division */
     object->audioClkCfg.wclkDiv = 250; //16                                  /* I2S Word Clock divider override*/
     object->audioClkCfg.sampleOnPositiveEdge = I2SCC26XX_SampleEdge_Postive; /* I2S Sample Edge */
     object->audioClkCfg.wclkPhase = I2SCC26XX_WordClockPhase_Dual;           /* I2S Word Clock Phase */
@@ -224,26 +222,27 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
     object->audioFmtCfg.dualPhase = I2SCC26XX_DualPhase;                     /* Selects dual- or single phase format (0: Single, 1: Dual) */
     object->audioFmtCfg.memLen = I2SCC26XX_MemLen16bit;                      /* Size of each word stored to or loaded from memory (0: 16, 1: 24) */
     object->audioFmtCfg.dataDelay = I2SCC26XX_FormatI2SandDSP;               /* Number of BCLK perids between a WCLK edge and MSB of the first word in a phase */
+
     // Find out how many channels are In and Out respectively
     uint8_t ui8TotalNumberOfChannelsIn = 0;
     uint8_t ui8TotalNumberOfChannelsOut = 0;
     switch (object->audioPinCfg.bitFields.ad0Usage)
     {
-    case I2SCC26XX_ADUsageInput:
-        ui8TotalNumberOfChannelsIn += object->audioPinCfg.bitFields.ad0NumOfChannels;
-        break;
-    case I2SCC26XX_ADUsageOutput:
-        ui8TotalNumberOfChannelsOut += object->audioPinCfg.bitFields.ad0NumOfChannels;
-        break;
+        case I2SCC26XX_ADUsageInput:
+            ui8TotalNumberOfChannelsIn += object->audioPinCfg.bitFields.ad0NumOfChannels;
+            break;
+        case I2SCC26XX_ADUsageOutput:
+            ui8TotalNumberOfChannelsOut += object->audioPinCfg.bitFields.ad0NumOfChannels;
+            break;
     }
     switch (object->audioPinCfg.bitFields.ad1Usage)
     {
-    case I2SCC26XX_ADUsageInput:
-        ui8TotalNumberOfChannelsIn += object->audioPinCfg.bitFields.ad1NumOfChannels;
-        break;
-    case I2SCC26XX_ADUsageOutput:
-        ui8TotalNumberOfChannelsOut += object->audioPinCfg.bitFields.ad1NumOfChannels;
-        break;
+        case I2SCC26XX_ADUsageInput:
+            ui8TotalNumberOfChannelsIn += object->audioPinCfg.bitFields.ad1NumOfChannels;
+            break;
+        case I2SCC26XX_ADUsageOutput:
+            ui8TotalNumberOfChannelsOut += object->audioPinCfg.bitFields.ad1NumOfChannels;
+            break;
     }
 
     uint32_t ui32BlockSizeInBytesIn = (object->blockSize * ( (object->audioFmtCfg.memLen) ? 3 : 2 ) * ui8TotalNumberOfChannelsIn);

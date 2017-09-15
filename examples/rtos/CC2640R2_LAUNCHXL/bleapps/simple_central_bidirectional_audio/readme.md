@@ -10,8 +10,8 @@ Voice data is transferred over BLE using the TI audio\_profile\_dle which is a
 Voice Over GATT Profile (VoGP) design. This profile has been augmented to use
 data length extension and large MTU.
 
-This profile has been update to add an additional start byte. This new start
-byte indicates that the following stream uses mSBC compression.
+The TI audio\_profile\_dle has been updated to add an additional start byte.
+This new start byte indicates that the following stream uses mSBC compression.
 
 In this demo, data flows bidirectionally between a streamer (GATT server) and a
 receiver (GATT client) device. This means both devices must act as both a GATT
@@ -24,7 +24,7 @@ The central project was slightly modified to:
 
  - Automatically connect to the audio peripheral based on the peripheral's
    advertisement data.
- - Transmit and receive voice streams using the TI VoGP audio\_profile
+ - Transmit and receive voice streams using the TI VoGP audio\_profile\_dle
  - Encode a voice stream from a microphone on the CC3200AUDBOOST.
  - Decode a voice stream and output to headphone/line out on CC3200AUDBOOST.
  - Stream audio data with IMA-ADPCM or mSBC codec using the Data Length
@@ -40,7 +40,7 @@ this example is slightly modified to use Data Length extension and large MTU.
 
 Some quick facts about voice over BLE:
 
- - `CC3200AUDBOOST boosterpack`
+ - `CC3200AUDBOOST BoosterPack`
  - Sample rate: `16kHz`
  - Bit Depth: `16 bits`
  - Compression mechanism: `4:1 IMA-ADPCM` or `mSBC`
@@ -48,6 +48,28 @@ Some quick facts about voice over BLE:
  - Voice quality (IMA-ADPCM) has been qualified by Nuance and is sufficient for
    voice recognition solutions
 
+_Note: The files in source/ti/audiocodec are used as the control interface to
+the TLV320AIC3254 on the CC3200AUDBOOST. The software codecs responsible for
+compression and decompression are found in the following locations:_
+ - MSBC: source/third_party/sbc (of this repo)
+ - ADPCM: source/ti/drivers/pdm (of the SDK install)
+
+Runtime Buffer Management
+=========================
+
+During normal operation the instruction cache is enabled.
+
+When bidirectional streaming begins, the cache is disabled and is temporarily used
+as RAM for I2S buffers. Once the stream stops, the instruction cache is re-enabled.
+
+This offers significant power consumption improvements over a `CACHE_AS_RAM`
+configuration.
+
+Upon a disconnect, the `osal_snv` module within the stack will trigger a
+compaction if necessary. The `OSAL_SNV=1` (one page SNV) will use the cache for
+this. In order to prevent potential memory corruption during compaction and the
+cleanup of an I2S stream, **the OSAL_SNV=2 or OSAL_SNV=0 configurations are
+recommended**
 
 Prerequisites
 =============
@@ -61,7 +83,7 @@ Before running the demo, the user will need the following components:
   - [CC3200AUDBOOST](http://www.ti.com/tool/cc3200audboost)
 - Two sets of headphones
 
-_Note: Apple headphones will not work with the CC3200 boosterpack_
+_Note: Apple headphones will not work with the CC3200 BoosterPack_
 
 #### Firmware Requirements
 
@@ -121,14 +143,19 @@ ready to demo the voice capabilities of the CC2640R2.
   };
  ```
 4. If an acceptable voice streaming device is found (CC2640R2LP with the correct
-   name and audio profile), the central will connect, pair, and bond to the device.
+   name and audio profile), the central will connect to the device.
    If attached, the serial port will log:
+
  * Audio Central
   ```
+  Audio Central with DLE
+  <BD_ADDR>
+  Initialized
+  Idle...
   Discovering...
-  Pairing started
   Connected
   <PEER_BD_ADDR>
+  MTU_EXCHANGE_RSP 103
   ```
  * Audio Peripheral
   ```
@@ -140,26 +167,15 @@ ready to demo the voice capabilities of the CC2640R2.
     ADPCM compression.
   * Press the left button on the peripheral device to start streaming with mSBC
     compression
-  * Press both buttons on the peripheral device simultaneously to stop the stream.
-
-6. The demo is written such that, once an audio peripheral is discovered, the
-audio\_central project will pair and bond to it. Scanning/connecting to other
-devices is not allowed while **bonded**. (I.e. left button is disabled).
-In order to "forget the devices" you should:
- * Power off your audio peripheral device. Wait for link to be terminated. Red LED will turn on on the central device.
- * Press the right button on the central device to erase the bonds from the audio\_peripheral project. Green LED will blink one time while the red LED stays on.
- * The bonds are now erased, you can discover and connect to another device.
-
 
 Demo LED states
 ===============
 
-The following states of the device can be described by the red and green LEDs on the LaunchPad.
+The following states of the device can be described by the red and green LEDs
+on the LaunchPad.
 * Idle + bonds forgotten: Red LED is on, solid
 * Scanning for devices: Green LED is flashing
-* Device connected + bond saved: Green LED is on, solid
-* Device connected and bonded + streaming voice: Red LED blinks on both LP and STK or Remote.
-* Bonds forgotten: Green LED blinks 1x while red LED is on.
+* Device connected: Green LED is on, solid
 
 References
 ==========

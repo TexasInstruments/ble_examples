@@ -55,8 +55,6 @@
 #include "linkdb.h"
 #include "gapgattserver.h"
 #include "gattservapp.h"
-#include "devinfoservice.h"
-#include "simple_gatt_profile.h"
 
 #include "peripheral.h"
 #include "gapbondmgr.h"
@@ -73,7 +71,8 @@
 
 #include "board.h"
 
-#include "audio_peripheral.h"
+#include <profiles/audio_dle/audio_duplex.h>
+#include <profiles/audio_dle/audio_profile_dle.h>
 
 #include "simple_peripheral_bidirectional_audio.h"
 
@@ -190,7 +189,7 @@ enum
  * LOCAL VARIABLES
  */
 // Connection handle of current connection
-static uint16_t connHandle = GAP_CONNHANDLE_INIT;
+static uint16_t connHandle = INVALID_CONNHANDLE;
 
 static PIN_Config SBP_configTable[] =
 {
@@ -492,9 +491,6 @@ static void SimpleBLEPeripheral_init(void)
   GGS_AddService(GATT_ALL_SERVICES);           // GAP
   GATTServApp_AddService(GATT_ALL_SERVICES);   // GATT attributes
 
-  // Add Audio Service
-  Audio_AddService();
-
   // Start the Device
   VOID GAPRole_StartDevice(&SimpleBLEPeripheral_gapRoleCBs);
 
@@ -509,12 +505,13 @@ static void SimpleBLEPeripheral_init(void)
 
   HCI_LE_ReadMaxDataLenCmd();
 
-  Display_print0(dispHandle, 0, 0, "Audio Tx Peripheral with DLE");
+  Display_print0(dispHandle, 0, 0, "Audio Peripheral with DLE");
 
   // Open pin structure for use
   hSbpPins = PIN_open(&sbpPins, SBP_configTable);
 
-  AudioPeripheral_init(dispHandle, hSbpPins);
+  AudioDuplex_open(dispHandle, hSbpPins,
+                   (pfnAudioDuplexCB_t)SimpleBLEPeripheral_setEvent);
 }
 
 /*********************************************************************
@@ -668,10 +665,17 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
       // Check to see if notification is from audio data or control char
       if (pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle)
       {
-        genericAudioData_t pData;
+        AudioDuplex_audioData pData;
         pData.len = pMsg->msg.handleValueNoti.len;
         pData.pValue = pMsg->msg.handleValueNoti.pValue;
-        AudioPeripheral_processData(AUDIO_DATA, &pData);
+        AudioDuplex_processData(AudioDuplex_data, &pData);
+      }
+      else if (pMsg->msg.handleValueNoti.handle == audioStartCharValueHandle)
+      {
+        AudioDuplex_audioData pData;
+        pData.len = pMsg->msg.handleValueNoti.len;
+        pData.pValue = pMsg->msg.handleValueNoti.pValue;
+        AudioDuplex_processData(AudioDuplex_start_stop, &pData);
       }
       break;
 
@@ -926,7 +930,7 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
   }
   case SBP_AUDIO_EVT:
   {
-    AudioPeripheral_eventHandler(pMsg->hdr.state);
+    AudioDuplex_eventHandler(pMsg->hdr.state);
     break;
   }
 
@@ -989,6 +993,8 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
 
     GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connHandle);
 
+    AudioDuplex_setConnectionHandle(connHandle);
+
     Display_print0(dispHandle, 2, 0, "Connected");
     Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddress));
 
@@ -1019,7 +1025,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
     audioDataCharValueHandle   = GATT_INVALID_HANDLE;
     audioDataCCCHandle         = GATT_INVALID_HANDLE;
 
-    AudioPeripheral_stopStreaming();
+    AudioDuplex_stopStreaming();
 
     // Clear remaining lines
     Display_clearLines(dispHandle, 3, 5);
@@ -1037,7 +1043,7 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
     audioDataCharValueHandle   = GATT_INVALID_HANDLE;
     audioDataCCCHandle         = GATT_INVALID_HANDLE;
 
-    AudioPeripheral_stopStreaming();
+    AudioDuplex_stopStreaming();
 
     // Clear remaining lines
     Display_clearLines(dispHandle, 3, 5);
@@ -1111,8 +1117,35 @@ static uint8_t SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state,
  */
 static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
 {
-  (void)shift;  // Intentionally unreferenced parameter
-  AudioPeripheral_handleKeys(keys);
+  static uint8_t previousKeys = 0;
+  uint16_t connectionHandle = AudioDuplex_getConnectionHandle();
+
+  // Only process changes in keys pressed
+  if (keys != previousKeys)
+  {
+    if(connectionHandle != INVALID_CONNHANDLE && linkDB_Up(connectionHandle))
+    {
+      // Check for both keys first
+      if (keys == (KEY_LEFT | KEY_RIGHT))
+      {
+        // Start chain of events to stop stream
+        AudioDuplex_stopStreaming();
+      }
+      else if (keys & KEY_LEFT)
+      {
+        AudioDuplex_startStreaming(AUDIO_DUPLEX_STREAM_TYPE_MSBC);
+      }
+      else if (keys & KEY_RIGHT)
+      {
+        AudioDuplex_startStreaming(AUDIO_DUPLEX_STREAM_TYPE_ADPCM);
+      }
+    }
+    else
+    {
+      Display_print0(dispHandle, 2, 0, "Connection required for stream");
+    }
+  }
+  previousKeys = keys;
 }
 
 /*********************************************************************

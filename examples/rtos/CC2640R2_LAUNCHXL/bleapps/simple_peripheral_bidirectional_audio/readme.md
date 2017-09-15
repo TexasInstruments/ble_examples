@@ -24,4 +24,4 @@ Purpose / Scope
 ===============
 
 The theory and steps required to run the demo are described in the readme
-inside the `simple_peripheral_bidirectional_audio` folder of this repo.
+inside the `simple_central_bidirectional_audio` folder of this repo.

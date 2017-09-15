@@ -48,6 +48,8 @@
 #include <ti/sysbios/knl/Event.h>
 #include <ti/sysbios/knl/Queue.h>
 
+#include <ti/display/Display.h>
+
 #include "bcomdef.h"
 
 #include "hci_tl.h"
@@ -57,7 +59,6 @@
 #include "gattservapp.h"
 #include "central.h"
 #include "gapbondmgr.h"
-#include "simple_gatt_profile.h"
 #include "gatt_profile_uuid.h"
 #include "gatt_uuid.h"
 
@@ -72,7 +73,8 @@
 
 #include "ble_user_config.h"
 
-#include "audio_central.h"
+#include <profiles/audio_dle/audio_duplex.h>
+#include <profiles/audio_dle/audio_profile_dle.h>
 
 #include <ti/drivers/PIN.h>
 #include <ti/drivers/pin/PINCC26XX.h>
@@ -102,9 +104,7 @@
 
 #define SBC_ALL_EVENTS                        (SBC_ICALL_EVT           | \
                                                SBC_QUEUE_EVT           | \
-                                               SBC_START_DISCOVERY_EVT | \
-                                               AUDIO_I2S_FRAME_EVENT   | \
-                                               AUDIO_I2S_ERROR_EVENT)
+                                               SBC_START_DISCOVERY_EVT)
 
 // Maximum number of scan responses
 #define DEFAULT_MAX_SCAN_RES                  8
@@ -584,8 +584,6 @@ static void SimpleBLECentral_init(void)
   GGS_AddService(GATT_ALL_SERVICES);         // GAP
   GATTServApp_AddService(GATT_ALL_SERVICES); // GATT attributes
 
-  // Add Audio Service
-  Audio_AddService();
   // Start the Device
   VOID GAPCentralRole_StartDevice(&SimpleBLECentral_roleCB);
 
@@ -600,7 +598,8 @@ static void SimpleBLECentral_init(void)
 
   Display_print0(dispHandle, 0, 0, "Audio Central with DLE");
 
-  AudioCentral_init(dispHandle, ledPinHandle);
+  AudioDuplex_open(dispHandle, ledPinHandle,
+                  (pfnAudioDuplexCB_t)SimpleBLECentral_setEvent);
 }
 
 /*********************************************************************
@@ -788,7 +787,7 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
 
     case SBC_AUDIO_EVT:
     {
-      AudioCentral_eventHandler(pMsg->hdr.state);
+      AudioDuplex_eventHandler(pMsg->hdr.state);
       break;
     }
 
@@ -916,6 +915,10 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         {
           state = BLE_STATE_CONNECTED;
           connHandle = pEvent->linkCmpl.connectionHandle;
+
+          // Set Audio Cxn Handle
+          AudioDuplex_setConnectionHandle(connHandle);
+
           //This one eventually calls GATT_ExchangeMTU
           Util_startClock(&startDiscClock);
 
@@ -966,7 +969,7 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
           SimpleBLECentral_SaveHandles();
         }
 
-        AudioCentral_stopStreaming();
+        AudioDuplex_stopStreaming();
 
         // Invalidate service discovery variables.
         serviceDiscComplete    = FALSE;
@@ -1102,17 +1105,17 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       // Check to see if notification is from audio data or control char
       if (pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle)
       {
-        genericAudioData_t pData;
+        AudioDuplex_audioData pData;
         pData.len = pMsg->msg.handleValueNoti.len;
         pData.pValue = pMsg->msg.handleValueNoti.pValue;
-        AudioCentral_processData(AUDIO_DATA, &pData);
+        AudioDuplex_processData(AudioDuplex_data, &pData);
       }
       else if (pMsg->msg.handleValueNoti.handle == audioStartCharValueHandle)
       {
-        genericAudioData_t pData;
+        AudioDuplex_audioData pData;
         pData.len = pMsg->msg.handleValueNoti.len;
         pData.pValue = pMsg->msg.handleValueNoti.pValue;
-        AudioCentral_processData(AUDIO_DATA_START_STOP, &pData);
+        AudioDuplex_processData(AudioDuplex_start_stop, &pData);
       }
       break;
 

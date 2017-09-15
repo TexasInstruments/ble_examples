@@ -1,7 +1,7 @@
 /*
  * Filename: audiocodec.h
  *
- * Description: This file implments the control interface to the
+ * Description: This file implements the control interface to the
  *              TLV320AIC3254 Stereo Audio Codec
  *
  *

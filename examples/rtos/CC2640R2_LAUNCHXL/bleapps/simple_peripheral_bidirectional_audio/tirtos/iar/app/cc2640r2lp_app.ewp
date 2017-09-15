@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>3</fileVersion>
     <configuration>
@@ -11,7 +11,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>28</version>
+                <version>29</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.1.13270</state>
+                    <state>8.11.2.13604</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -190,11 +190,15 @@
                 </option>
                 <option>
                     <name>GenLocaleTags</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>GenLocaleDisplayOnly</name>
-                    <state/>
+                    <state></state>
+                </option>
+                <option>
+                    <name>DSPExtension</name>
+                    <state>0</state>
                 </option>
             </data>
         </settings>
@@ -207,13 +211,13 @@
                 <debug>1</debug>
                 <option>
                     <name>CCDefines</name>
-                    <state>CACHE_AS_RAM</state>
+                    <state>EXT_HAL_ASSERT</state>
+                    <state>HEAPMGR_METRICS</state>
                     <state>SBP_TASK_STACK_SIZE=900</state>
                     <state>GAPROLE_TASK_STACK_SIZE=700</state>
                     <state>MAX_PDU_SIZE=107</state>
                     <state>BOARD_DISPLAY_USE_LCD=0</state>
                     <state>BOARD_DISPLAY_USE_UART=1</state>
-                    <state>BOARD_DISPLAY_USE_UART_ANSI=1</state>
                     <state>CC2640R2_LAUNCHXL</state>
                     <state>CC26XX</state>
                     <state>CC26XX_R2</state>
@@ -275,15 +279,15 @@
                 </option>
                 <option>
                     <name>CCDiagRemark</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>CCDiagWarning</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>CCDiagError</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>CCObjPrefix</name>
@@ -351,7 +355,7 @@
                 </option>
                 <option>
                     <name>PreInclude</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>CompilerMisraOverride</name>
@@ -359,7 +363,8 @@
                 </option>
                 <option>
                     <name>CCIncludePath2</name>
-                    <state>$PROJ_DIR$/../../../../../../../../source</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\..\..\..\source</state>
                     <state>$SRC_BLE_DIR$\controller\cc26xx_r2\inc</state>
                     <state>$SRC_BLE_DIR$\inc</state>
                     <state>$SRC_BLE_DIR$\common\cc26xx</state>
@@ -535,15 +540,15 @@
                 </option>
                 <option>
                     <name>AWarnOne</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>AWarnRange1</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>AWarnRange2</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>ADebug</name>
@@ -555,7 +560,7 @@
                 </option>
                 <option>
                     <name>ADefines</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>AList</name>
@@ -647,7 +652,7 @@
                 </option>
                 <option>
                     <name>AUserIncludes</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>AExtraOptionsCheckV2</name>
@@ -655,7 +660,7 @@
                 </option>
                 <option>
                     <name>AExtraOptionsV2</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>AsmNoLiteralPool</name>
@@ -697,15 +702,15 @@
             <name>CUSTOM</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <extensions/>
-                <cmdline/>
+                <extensions></extensions>
+                <cmdline></cmdline>
                 <hasPrio>0</hasPrio>
             </data>
         </settings>
         <settings>
             <name>BICOMP</name>
             <archiveVersion>0</archiveVersion>
-            <data/>
+            <data />
         </settings>
         <settings>
             <name>BUILDACTION</name>
@@ -744,33 +749,32 @@
                 </option>
                 <option>
                     <name>IlinkKeepSymbols</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkRawBinaryFile</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkRawBinarySymbol</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkRawBinarySegment</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkRawBinaryAlign</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkDefines</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkConfigDefines</name>
                     <state>CC2650=2</state>
                     <state>FLASH_ROM_BUILD=2</state>
-                    <state>CACHE_AS_RAM=1</state>
                 </option>
                 <option>
                     <name>IlinkMapFile</name>
@@ -806,7 +810,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFileSlave</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkEnableRemarks</name>
@@ -814,19 +818,19 @@
                 </option>
                 <option>
                     <name>IlinkSuppressDiags</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkTreatAsRem</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkTreatAsWarn</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkTreatAsErr</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkWarningsAreErrors</name>
@@ -994,11 +998,11 @@
                 </option>
                 <option>
                     <name>IlinkStackControlFile</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkStackCallGraphFile</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>CrcAlgorithm</name>
@@ -1020,7 +1024,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFile_AltDefault</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IlinkEncInput</name>
@@ -1053,7 +1057,7 @@
                 <debug>1</debug>
                 <option>
                     <name>IarchiveInputs</name>
-                    <state/>
+                    <state></state>
                 </option>
                 <option>
                     <name>IarchiveOverride</name>
@@ -1068,16 +1072,16 @@
         <settings>
             <name>BILINK</name>
             <archiveVersion>0</archiveVersion>
-            <data/>
+            <data />
         </settings>
     </configuration>
     <group>
         <name>Application</name>
         <file>
-            <name>$EXAMPLE_BLE_ROOT$\src\app\audio_peripheral.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_duplex.c</name>
         </file>
         <file>
-            <name>$EXAMPLE_BLE_ROOT$\src\app\audio_peripheral.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_duplex.h</name>
         </file>
         <file>
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\board_key.c</name>
@@ -1086,16 +1090,19 @@
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\board_key.h</name>
         </file>
         <file>
-            <name>$EXAMPLE_BLE_ROOT$\src\app\simple_peripheral_bidirectional_audio.c</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\common\hal_assert.c</name>
         </file>
         <file>
-            <name>$EXAMPLE_BLE_ROOT$\src\app\simple_peripheral_bidirectional_audio.h</name>
+            <name>$PROJ_DIR$\..\..\..\src\app\simple_peripheral_bidirectional_audio.c</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\common\cc26xx\util.c</name>
+            <name>$PROJ_DIR$\..\..\..\src\app\simple_peripheral_bidirectional_audio.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\common\cc26xx\util.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\util.c</name>
+        </file>
+        <file>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\util.h</name>
         </file>
     </group>
     <group>
@@ -1103,13 +1110,13 @@
         <group>
             <name>Audio Codec</name>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\audiocodec\audiocodec.c</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\audiocodec\audiocodec.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\audiocodec\audiocodec.h</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\audiocodec\audiocodec.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\audiocodec\ti3254.h</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\audiocodec\ti3254.h</name>
             </file>
         </group>
         <group>
@@ -1119,6 +1126,15 @@
             </file>
             <file>
                 <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\pdm\Codec1.h</name>
+            </file>
+        </group>
+        <group>
+            <name>ECC</name>
+            <file>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\ecc\ECCROMCC26XX.c</name>
+            </file>
+            <file>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\ecc\ECCROMCC26XX.h</name>
             </file>
         </group>
         <group>
@@ -1137,94 +1153,85 @@
             </file>
         </group>
         <group>
-            <name>ECC</name>
-            <file>
-                <name>$SRC_BLE_DIR$\common\cc26xx\ecc\ECCROMCC26XX.c</name>
-            </file>
-            <file>
-                <name>$SRC_BLE_DIR$\common\cc26xx\ecc\ECCROMCC26XX.h</name>
-            </file>
-        </group>
-        <group>
             <name>TRNG</name>
             <file>
-                <name>$SRC_BLE_DIR$\hal\src\target\_common\TRNGCC26XX.c</name>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\TRNGCC26XX.c</name>
             </file>
             <file>
-                <name>$SRC_BLE_DIR$\hal\src\target\_common\TRNGCC26XX.h</name>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\TRNGCC26XX.h</name>
             </file>
         </group>
     </group>
     <group>
         <name>ICall</name>
         <file>
-            <name>$SRC_BLE_DIR$\icall\src\icall.c</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\src\icall.c</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\icall\src\inc\icall.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\src\inc\icall.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\icall\inc\icall_addrs.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\inc\icall_addrs.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\icall\src\icall_cc2650.c</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\src\icall_cc2650.c</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\icall\src\icall_platform.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\src\icall_platform.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\icall\src\icall_user_config.c</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\src\icall_user_config.c</name>
         </file>
     </group>
     <group>
         <name>ICallBLE</name>
         <file>
-            <name>$SRC_BLE_DIR$\icall\app\ble_user_config.c</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\app\ble_user_config.c</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\icall\inc\ble_user_config.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\inc\ble_user_config.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\icall\app\icall_api_lite.c</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\app\icall_api_lite.c</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\icall\inc\icall_ble_apimsg.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\inc\icall_ble_apimsg.h</name>
         </file>
     </group>
     <group>
         <name>Include</name>
         <file>
-            <name>$SRC_BLE_DIR$\inc\gap.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\inc\gap.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\profiles\roles\gapbondmgr.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\gapbondmgr.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\inc\gapgattserver.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\inc\gapgattserver.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\inc\gatt.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\inc\gatt.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\inc\hci.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\inc\hci.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\osal\src\inc\osal_snv.h</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\osal\src\inc\osal_snv.h</name>
         </file>
     </group>
     <group>
         <name>Profiles</name>
         <file>
-            <name>$SRC_BLE_DIR$\profiles\roles\cc26xx\peripheral.c</name>
-        </file>
-        <file>
-            <name>$SRC_BLE_DIR$\profiles\roles\cc26xx\peripheral.h</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_profile_dle.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_profile_dle.h</name>
+        </file>
+        <file>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\cc26xx\peripheral.c</name>
+        </file>
+        <file>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\cc26xx\peripheral.h</name>
         </file>
     </group>
     <group>
@@ -1238,26 +1245,23 @@
         <group>
             <name>Board I2S</name>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\boards\CC2640R2_LAUNCHXL_I2S\BoardI2S.h</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\boards\CC2640R2_LAUNCHXL_I2S\BoardI2S.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\boards\CC2640R2_LAUNCHXL_I2S\CC2640R2_LAUNCHXL_I2S.c</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\boards\CC2640R2_LAUNCHXL_I2S\CC2640R2_LAUNCHXL_I2S.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\boards\CC2640R2_LAUNCHXL_I2S\CC2640R2_LAUNCHXL_I2S.h</name>
+                <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\boards\CC2640R2_LAUNCHXL_I2S\CC2640R2_LAUNCHXL_I2S.h</name>
             </file>
         </group>
         <file>
-            <name>$SRC_BLE_DIR$\target\board.c</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\target\board.c</name>
         </file>
         <file>
-            <name>$EXAMPLE_BLE_ROOT$\src\ccfg_app_ble.c</name>
-            <excluded>
-                <configuration>FlashROM_StackLibrary_RCOSC</configuration>
-            </excluded>
+            <name>$PROJ_DIR$\..\..\..\src\ccfg_app_ble.c</name>
         </file>
         <file>
-            <name>$EXAMPLE_BLE_ROOT$\src\app\main.c</name>
+            <name>$PROJ_DIR$\..\..\..\src\app\main.c</name>
         </file>
     </group>
     <group>
@@ -1266,7 +1270,7 @@
             <name>$PROJ_DIR$\..\..\app_ble.cfg</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\common\cc26xx\iar\cc26xx_app_and_stack.icf</name>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\iar\cc26xx_app_and_stack.icf</name>
         </file>
     </group>
 </project>

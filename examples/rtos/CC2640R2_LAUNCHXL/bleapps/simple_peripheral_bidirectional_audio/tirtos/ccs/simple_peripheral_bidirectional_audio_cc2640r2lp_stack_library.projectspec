@@ -48,7 +48,7 @@
             -DICALL_JT
             -DICALL_LITE
             -DOSAL_CBTIMER_NUM_TASKS=1
-            -DOSAL_SNV=1
+            -DOSAL_SNV=2
             -DPOWER_SAVING
             -DRF_SINGLEMODE
             -DSTACK_LIBRARY

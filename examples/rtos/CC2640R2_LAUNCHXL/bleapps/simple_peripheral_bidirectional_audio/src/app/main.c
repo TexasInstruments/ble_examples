@@ -104,6 +104,8 @@ bleUserCfg_t user0Cfg = BLE_USER_CFG;
  * EXTERNS
  */
 
+extern assertCback_t halAssertCback;
+
 extern void AssertHandler(uint8 assertCause, uint8 assertSubcause);
 
 extern Display_Handle dispHandle;
@@ -126,6 +128,7 @@ extern Display_Handle dispHandle;
 int main()
 {
   /* Register Application callback to trap asserts raised in the Stack */
+  halAssertCback = AssertHandler;
   RegisterAssertCback(AssertHandler);
 
   PIN_init(BoardGpioInitTable);
