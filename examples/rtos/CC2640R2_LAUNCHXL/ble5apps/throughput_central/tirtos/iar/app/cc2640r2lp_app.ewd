@@ -81,7 +81,7 @@
         </option>
         <option>
           <name>OCProductVersion</name>
-          <state>7.80.1.11865</state>
+          <state>7.80.3.12143</state>
         </option>
         <option>
           <name>OCDynDriverList</name>
@@ -1536,7 +1536,7 @@
         </option>
         <option>
           <name>CCXds100UsbSerialNoSelect</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCXds100JtagSpeedList</name>

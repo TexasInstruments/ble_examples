@@ -1,15 +1,15 @@
 /******************************************************************************
 
- @file  throughput_peripheral_menu.h
+ @file       ccfg_app_ble.c
 
- @brief This file contains menu objects for throughput_peripheral.
+ @brief Customer Configuration CC26xx PG2 device family.
 
- Group: WCS BTS
+ Group: CMCU, SCS
  Target Device: CC2640R2
 
  ******************************************************************************
-
- Copyright (c) 2016-2017, Texas Instruments Incorporated
+ 
+ Copyright (c) 2014-2017, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -41,42 +41,27 @@
 
 *****************************************************************************/
 
-#ifndef SIMPLE_PERIPHERAL_MENU_H
-#define SIMPLE_PERIPHERAL_MENU_H
+//
+//       ===> READ THIS BEFORE MODIFYING THIS FILE
+//
+//
+//       ===> READ THIS BEFORE MODIFYING THIS FILE
+//
+//
+//       ===> READ THIS BEFORE MODIFYING THIS FILE
+//
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+// The customer configuration area (ccfg section) is located at the end of the
+// flash and reflect the hw configuration of the device. it is very important
+// that it remains align with the version of driverlib you are using.
+// all BLE project except sensor tag use the same configuration.
+// Keeping the "#include <startup_files/ccfg.c>" guarantee that your project using
+// driverlib and the ccfg area will be align.
 
-// Includes
-#include <menu/two_btn_menu.h>
+// you can modify it if you want, the recommend way will be to remove the
+// bellow include, copy the content of the <startup_files/ccfg.c> file in this
+// file and rebuild.
 
-/*
- * Menus Declarations
- */
-
-/* Main Menu Object */
-extern tbmMenuObj_t sbpMenuMain;
-
-/* Items of (Main) */
-extern tbmMenuObj_t sbpMenuSetPhy;
-extern tbmMenuObj_t sbpMenuSetDLEPDU;
-
-/* Items of (ToggleThroughput) */
-extern bool SimpleBLEPeripheral_doThroughputDemo(uint8 index);
-
-/* Items of (SetPhy) */
-extern bool SimpleBLEPeripheral_doSetPhy(uint8 index);
-
-/* Items of (SetDLEPDU) */
-extern bool SimpleBLEPeripheral_doSetDLEPDU(uint8 index);
-
-/* Action items are defined in throughput_peripheral_menu.c */
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* SIMPLE_PERIPHERAL_MENU_H */
-
+// ==> KEEP IN MIND that if you do so, be sure that any further update of the
+// driverlib must be align with your modified version of ccfg area.
+#include <startup_files/ccfg.c>

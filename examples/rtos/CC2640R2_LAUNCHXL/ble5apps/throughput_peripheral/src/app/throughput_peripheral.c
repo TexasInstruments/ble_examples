@@ -40,10 +40,7 @@
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
- ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_35_00_07_eng
- Release Date: 2017-03-23 10:36:21
- *****************************************************************************/
+*****************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -160,7 +157,11 @@
 
 // For DLE
 #define DLE_MAX_PDU_SIZE 251
-#define DLE_MAX_TX_TIME 17040
+#if defined(PHY_LR_CFG)
+  #define DLE_MAX_TX_TIME 2120
+#else
+  #define DLE_MAX_TX_TIME 17040
+#endif
 
 #define DEFAULT_PDU_SIZE 27
 #define DEFAULT_TX_TIME 328
@@ -646,6 +647,16 @@ static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg)
           case HCI_COMMAND_COMPLETE_EVENT_CODE:
             // Process HCI Command Complete Event
             break;
+          case HCI_COMMAND_STATUS_EVENT_CODE:
+          {
+              hciEvt_CommandStatus_t *hciStat 
+                = (hciEvt_CommandStatus_t *)pMsg;
+              if(hciStat->cmdOpcode == HCI_LE_SET_PHY)
+              {
+                  Display_print1(dispHandle, SBP_ROW_STATUS_1, 0, "PHY Change Status: %d", hciStat->cmdStatus);
+              }
+              break;
+          }
 
           case HCI_BLE_HARDWARE_ERROR_EVENT_CODE:
             AssertHandler(HAL_ASSERT_CAUSE_HARDWARE_ERROR,0);

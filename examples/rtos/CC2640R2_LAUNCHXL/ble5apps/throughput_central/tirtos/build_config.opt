@@ -1,6 +1,6 @@
 /******************************************************************************
 
- @file  build_config.opt
+ @file       build_config.opt
 
  @brief This file contains the Bluetooth Low Energy (BLE) build config options.
 
@@ -39,10 +39,7 @@
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
- ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_35_00_07_eng
- Release Date: 2017-03-23 10:36:21
- *****************************************************************************/
+*****************************************************************************/
 
 /*
     The following is a list of all possible build defines and corresponding options
@@ -71,6 +68,13 @@
         EXT_DATA_LEN_CFG    - Enable the Extended Data Length Feature in the Controller
         SECURE_CONNS_CFG    - Enable Secure Connections Pairing Procedure
         PRIVACY_1_2_CFG     - Enable Enhanced Privacy
+
+    BLE_V50_FEATURES        Configure the stack to use features from the BLE 5.0 Specification
+                            The following BLE 5.0 features are enabled by default and cannot
+                            be disabled.
+        PHY_2MBPS_CFG       - Enable 2 Mbps data rate in the Controller
+        HDC_NC_ADV_CFG      - Enable High Duty Cycle Non-Connectable Advertising
+        CHAN_ALGO2_CFG      - Enable Channel Selection Algorithm 2
 
     HCI_TL_FULL             - All supported HCI commands are available via the Tranport Layer's NPI.
                             - Intended for NP solution.
@@ -122,24 +126,26 @@
 /* -DGATT_DB_OFF_CHIP */
 
 /* Include GAP Bond Manager */
-/* -DGAP_BOND_MGR */
+/* -GAP_BOND_MGR */
 
 /* BLE v4.1 Features */
 /* -DV41_FEATURES=L2CAP_COC_CFG */
 
-/* BLE v4.2 Features */
-/* Note: For advanced users who choose to explicitly build their BLE    */
-/* Stack without ROM the following upper limit on RAM usage must be     */
-/* observed when using the Secure Connections Feature:                  */
-/* R1: 0x20004F2C                                                       */
-/* R2: 0x20004F80                                                       */
-/* When using linker command files provided by this SDK, the linker     */
-/* symbol ENCRYPTION_ROM=1 or ENCRYPTION_ROM=2 may be defined to set    */
-/* this upper limit for R1 and R2 devices, respectively.                */
+/* BLE v4.2 Features
+ * Note: For advanced users who choose to explicitly build their BLE
+ * Stack without ROM the following upper limit on RAM usage must be
+ * observed when using the Secure Connections Feature:
+ * R1: 0x20004F2C
+ * R2: 0x20004F80
+ * When using linker command files provided by this SDK, the linker
+ * symbol ENCRYPTION_ROM=1 or ENCRYPTION_ROM=2 may be defined to set
+ * this upper limit for R1 and R2 devices, respectively.
+ */
 
-/* BLE v5.0 Features */
-/* Note: CTRL_V50_CONFIG is defined in bcomdef.h.*/
--DV50_FEATURES=PHY_LR_CFG
+/* BLE v5.0 Features
+ * Note: The Long Range feature is for evaluation only.
+ */
+ -DV50_FEATURES=PHY_LR_CFG
 
 /* Include Transport Layer (Full or PTM) */
 -DHCI_TL_NONE

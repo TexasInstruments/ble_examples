@@ -39,10 +39,7 @@
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
- ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_35_00_07_eng
- Release Date: 2017-03-23 10:36:21
- *****************************************************************************/
+*****************************************************************************/
 
 #ifdef CACHE_AS_RAM
   #define SET_CCFG_SIZE_AND_DIS_FLAGS_DIS_GPRAM  0x0 /* Enable GPRAM */

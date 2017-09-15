@@ -13,6 +13,7 @@
         postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out"
         description=""
         launchWizard="false"
+        references="ble5_throughput_central_cc2640r2lp_stack_library"
     >
 
         <!-- Project properties -->
@@ -33,17 +34,17 @@
             --cmd_file=${WORKSPACE_LOC}/ble5_throughput_central_cc2640r2lp_stack_library/TOOLS/build_config.opt
             -mv7M3 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on --display_error_number --diag_wrap=off
             -D${COM_TI_SIMPLELINK_CC2640R2_SDK_SYMBOLS}
+            -DDeviceFamily_CC26X0R2
             -DCACHE_AS_RAM
             -DMAX_PDU_SIZE=251
             -DMAX_NUM_PDU=6
-            -DTBM_ACTIVE_ITEMS_ONLY
+            -DGAPCENTRALROLE_TASK_STACK_SIZE=768
             -DBOARD_DISPLAY_USE_LCD=0
             -DBOARD_DISPLAY_USE_UART=1
             -DBOARD_DISPLAY_USE_UART_ANSI=1
             -DCC2640R2_LAUNCHXL
             -DCC26XX
             -DCC26XX_R2
-            -DDeviceFamily_CC26X0R2
             -DICALL_EVENTS
             -DICALL_JT
             -DICALL_LITE
@@ -54,8 +55,10 @@
             -DPOWER_SAVING
             -DSTACK_LIBRARY
             -DUSE_ICALL
+            -DTBM_ACTIVE_ITEMS_ONLY
             -Dxdc_runtime_Assert_DISABLE_ALL
             -Dxdc_runtime_Log_DISABLE_ALL
+            -I${SRC_LOCAL_DIR}/
             -I${PROJECT_LOC}/Application
             -I${PROJECT_LOC}/Startup
             -I${PROJECT_LOC}/PROFILES
@@ -68,7 +71,6 @@
             -I${SRC_BLE_DIR}/common/cc26xx
             -I${SRC_BLE_DIR}/icall/inc
             -I${SRC_BLE_DIR}/inc
-            -I${SRC_BLE_DIR}/profiles/simple_profile
             -I${SRC_BLE_DIR}/target
             -I${SRC_COMMON_DIR}/hal/src/target/_common
             -I${SRC_COMMON_DIR}/hal/src/target/_common/cc26xx
@@ -83,6 +85,7 @@
             -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/devices/cc26x0r2/driverlib/bin/ccs/driverlib.lib
             -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x0r2.aem3
             -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/drivers/lib/drivers_cc26x0r2.aem3
+            -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/drivers/rf/lib/rf_singleMode_cc26x0r2.aem3
             -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/display/lib/display.aem3
             -l${WORKSPACE_LOC}/ble5_throughput_central_cc2640r2lp_stack_library/FlashROM_Library/ble_r2.symbols
             -l${WORKSPACE_LOC}/ble5_throughput_central_cc2640r2lp_stack_library/FlashROM_Library/lib_linker.cmd
@@ -90,6 +93,7 @@
             -l${SRC_BLE_DIR}/common/cc26xx/ccs/cc26xx_app.cmd
             -x
             --define=CC26X0ROM=2
+            --define=CACHE_AS_RAM=1
             --diag_suppress=10229-D
             --diag_suppress=10325-D
             --diag_suppress=16002-D
@@ -116,10 +120,6 @@
         <!-- Drivers/ECC Folder -->
         <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
-
-        <!-- Drivers/RF Folder -->
-        <file path="COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR/source/ti/drivers/rf/RF.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
-        <file path="COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR/source/ti/drivers/rf/RFCC26XX_singleMode.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- Drivers/TRNG Folder -->
         <file path="SRC_COMMON_DIR/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
@@ -150,11 +150,11 @@
         <!-- PROFILES Folder -->
         <file path="SRC_BLE_DIR/profiles/roles/cc26xx/central.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="SRC_BLE_DIR/profiles/roles/cc26xx/central.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
-        <file path="SRC_LOCAL_DIR/profiles/throughput/throughput_service.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_LOCAL_DIR/profiles/throughput/throughput_service.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- Startup Folder -->
         <file path="SRC_BLE_DIR/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
-        <file path="EXAMPLE_ROOT/tirtos/iar/config/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_ROOT/src/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="EXAMPLE_ROOT/src/app/main.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- TOOLS Folder -->

@@ -23,7 +23,7 @@
     >
 
         <!-- Project properties -->
-        <property name="products" value="com.ti.rtsc.XDCtools:3.50.02.20"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:1.40.00.45;com.ti.rtsc.XDCtools:3.50.02.20"/>
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2640R2F"/>
         <property name="buildProfile" value="release"/>
@@ -38,6 +38,7 @@
             --cmd_file=${PROJECT_LOC}/TOOLS/build_config.opt
             -mv7M3 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on --display_error_number --diag_wrap=off
             -D${XDC_SYMBOLS}
+            -D${COM_TI_SIMPLELINK_CC2640R2_SDK_SYMBOLS}
             -DCC26XX
             -DCC26XX_R2
             -DDeviceFamily_CC26X0R2
@@ -174,7 +175,7 @@
 
         <!-- TOOLS Folder -->
         <file path="SRC_BLE_DIR/config/build_components.opt" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
-        <file path="EXAMPLE_ROOT/tirtos/build_config.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
+        <file path="EXAMPLE_BLE_ROOT/tirtos/build_config.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
         <file path="SRC_BLE_DIR/common/cc26xx/onboard.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
         <file path="SRC_BLE_DIR/common/cc26xx/onboard.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
     </project>
