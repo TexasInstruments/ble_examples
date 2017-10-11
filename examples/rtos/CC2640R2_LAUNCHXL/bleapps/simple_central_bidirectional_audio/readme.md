@@ -85,6 +85,22 @@ Before running the demo, the user will need the following components:
 
 _Note: Apple headphones will not work with the CC3200 BoosterPack_
 
+#### Codec requirements
+
+The CC3200 Audio BoosterPack includes a TLV320AIC3254 audio codec,
+this is a premium high performance model with many optional features.
+However, most of these features are not required for the demo.
+When selecting a codec for production hardware, this demo requires the
+following minimum specifications:
+
+- 1x ADC
+- 1x DAC
+- 1x bidirectional I2S port (Din, Dout)
+- 1x I2C control port
+
+Features such as the miniDSP, headphone amp, and speaker amp are optional
+and may or may not be needed for a given use case.
+
 #### Firmware Requirements
 
 1. Load the peripheral device with the `simple_peripheral_bidirectional_audio`
