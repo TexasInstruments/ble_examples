@@ -70,6 +70,10 @@
 #define BLEAUDIO_NUM_NOT_PER_FRAME_ADPCM  1
 #define BLEAUDIO_NUM_NOT_PER_FRAME_MSBC   1
 
+
+#define AUDIO_DUPLEX_DISP_STAT1           6
+#define AUDIO_DUPLEX_DISP_STAT2           7
+
 /*
  * Required Memory for Bi-directional audio streaming:
  * The I2S driver requires two blocks of memory to be
@@ -189,7 +193,8 @@ int8_t AudioDuplex_open(Display_Handle displayHandle, PIN_Handle pinHandle,
     // Store app callback if not null
     if(inputCB == NULL)
     {
-        Display_print0(hDisp, 4, 0, "Fail: AudioCB is NULL");
+        Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT1, 0,
+                        "Fail: AudioCB is NULL");
         return (AUDIO_INVALID_PARAMS);
     }
 
@@ -203,7 +208,8 @@ int8_t AudioDuplex_open(Display_Handle displayHandle, PIN_Handle pinHandle,
     status = AudioCodecOpen();
     if( AUDIO_CODEC_STATUS_SUCCESS != status)
     {
-        Display_print0(hDisp, 4, 0, "Fail: Can't open codec");
+        Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT1, 0,
+                        "Fail: Can't open codec");
     }
     // Configure Codec
     status =  AudioCodecConfig(AUDIO_CODEC_TI_3254, AUDIO_CODEC_16_BIT,
@@ -212,7 +218,8 @@ int8_t AudioDuplex_open(Display_Handle displayHandle, PIN_Handle pinHandle,
                                 AUDIO_DUPLEX_INPUT_OPTION);
     if( AUDIO_CODEC_STATUS_SUCCESS != status)
     {
-        Display_print0(hDisp, 4, 0, "Fail: Can't configure BP");
+        Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT1, 0,
+                        "Fail: Can't configure BP");
     }
 
     // Add the Audio service
@@ -220,7 +227,8 @@ int8_t AudioDuplex_open(Display_Handle displayHandle, PIN_Handle pinHandle,
 
     if(SUCCESS != status)
     {
-        Display_print0(hDisp, 4, 0, "Fail: Can't add Audio Service");
+        Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT1, 0,
+                        "Fail: Can't add Audio Service");
     }
 
     return (status);
@@ -388,7 +396,7 @@ void AudioDuplex_eventHandler(uint8_t events)
     // Handle error events from I2S driver
     if (events & AUDIO_DUPLEX_I2S_ERROR_EVENT)
     {
-        Display_print0(hDisp, 4, 0, "I2S Error Event");
+        Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT1, 0, "I2S Error Event");
 
         // Move to stop state
         uint_least16_t hwiKey = Hwi_disable();
@@ -438,7 +446,8 @@ void AudioDuplex_processData(AudioDuplex_dataType data_type,
 
                 numberOfPackets += missedFrames;
                 lostPackets += missedFrames;
-                Display_print2(hDisp, 5, 0, "Missing frame, PER %d/%d",
+                Display_print2(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                "Missing frame, PER %d/%d",
                                 lostPackets, numberOfPackets);
             }
             else
@@ -466,7 +475,8 @@ void AudioDuplex_processData(AudioDuplex_dataType data_type,
 
                 msbcnumberOfPackets += missedFrames;
                 msbclostPackets += missedFrames;
-                Display_print4(hDisp, 5, 0, "Missing frame, PER %d/%d (%d vs %d)",
+                Display_print4(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                "Missing frame, PER %d/%d (%d vs %d)",
                                 msbclostPackets, msbcnumberOfPackets,
                                 pMsg->pValue[1],
                                 prevSeqNum);
@@ -525,21 +535,24 @@ void AudioDuplex_processData(AudioDuplex_dataType data_type,
             {
                 if (streamVariables.streamType != AUDIO_DUPLEX_CMD_STOP)
                 {
-                    Display_print0(hDisp, 5, 0, "Already started stream");
+                    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                    "Already started stream");
                 }
                 else
                 {
                     // We received a start command for ADPCM, start the stream
                     AudioDuplex_startStreaming(AUDIO_DUPLEX_STREAM_TYPE_ADPCM);
 
-                    Display_print0(hDisp, 5, 0, "ADPCM Stream");
+                    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                    "ADPCM Stream");
                 }
             }
             else if(AUDIO_DUPLEX_CMD_START_MSBC == *(pMsg->pValue))
             {
                 if (streamVariables.streamType != AUDIO_DUPLEX_CMD_STOP)
                 {
-                    Display_print0(hDisp, 5, 0, "Already started stream");
+                    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                    "Already started stream");
                 }
                 else
                 {
@@ -547,7 +560,8 @@ void AudioDuplex_processData(AudioDuplex_dataType data_type,
                     AudioDuplex_startStreaming(AUDIO_DUPLEX_STREAM_TYPE_MSBC);
                     // Initialize encoder
                     sbc_init_msbc(&sbc, 0);
-                    Display_print0(hDisp, 5, 0, "mSBC Stream");
+                    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                    "mSBC Stream");
                 }
             }
             else if(AUDIO_DUPLEX_CMD_STOP == *(pMsg->pValue))
@@ -555,13 +569,15 @@ void AudioDuplex_processData(AudioDuplex_dataType data_type,
 
                 if(streamVariables.streamType != AUDIO_DUPLEX_STREAM_TYPE_NONE)
                 {
-                    Display_print0(hDisp, 5, 0, "Received Stop, sending stop");
+                    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                    "Received Stop, sending stop");
                     prevSeqNum = 0xFFFF;
                     AudioDuplex_stopStreaming();
                 }
                 else
                 {
-                    Display_print0(hDisp, 5, 0, "Received Stop, re-starting");
+                    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                    "Received Stop, re-starting");
                     prevSeqNum = 0xFFFF;
                     AudioDuplex_startStreaming(streamVariables.requestedStreamType);
                 }
@@ -636,7 +652,8 @@ void AudioDuplex_startStreaming(uint8_t requestedStreamType)
 
     if (i2sHandle != NULL)
     {
-        Display_print1(hDisp, 5, 0, "Opened I2S: %d samples/frame",
+        Display_print1(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                        "Opened I2S: %d samples/frame",
                         streamVariables.samplesPerFrame);
         // Move to send start command
         streamVariables.streamState = AudioDuplex_send_start_cmd;
@@ -648,7 +665,8 @@ void AudioDuplex_startStreaming(uint8_t requestedStreamType)
     }
     else
     {
-        Display_print0(hDisp, 5, 0, "Failed to opened I2S");
+        Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                        "Failed to opened I2S");
         // Return, or move to IDLE state
         streamVariables.streamState = AudioDuplex_stream_idle;
     }
@@ -684,16 +702,19 @@ void AudioDuplex_stopStreaming(void)
     if (i2sHandle != NULL)
     {
         I2SCC26XX_close(i2sHandle);
-        Display_print0(hDisp, 5, 0, "Closed I2S driver");
+        Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                        "Closed I2S driver");
 
         if (audio_decoded)
         {
             audio_decoded = NULL;
-            Display_print0(hDisp, 5, 0, "Free'd memory for I2S driver");
+            Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                            "Free'd memory for I2S driver");
         }
         else
         {
-            Display_print0(hDisp, 5, 0, "Failed to free memory for I2S driver");
+            Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                            "Failed to free memory for I2S driver");
         }
         if (i2sContMgtBuffer)
         {
@@ -706,7 +727,7 @@ void AudioDuplex_stopStreaming(void)
 
     streamVariables.streamType = AUDIO_DUPLEX_CMD_STOP;
     streamVariables.streamState =  AudioDuplex_stream_idle;
-    Display_print0(hDisp, 5, 0, "No Stream");
+    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0, "No Stream");
 }
 
 /*********************************************************************
@@ -729,7 +750,8 @@ static void AudioDuplex_sendStartCmd(void)
                                             &startCmd);
         if (retVal == SUCCESS)
         {
-            Display_print0(hDisp, 5, 0, "Sent Start Cmd, initializing encoder");
+            Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                            "Sent Start Cmd, initializing encoder");
             if (streamVariables.streamType == AUDIO_DUPLEX_STREAM_TYPE_MSBC)
             {
                 // Initialize encoder
@@ -800,7 +822,8 @@ static void AudioDuplex_sendStopCmd(void)
             }
             else
             {
-                Display_print1(hDisp, 5, 0, "Failed to send STOP: %d", retVal);
+                Display_print1(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                "Failed to send STOP: %d", retVal);
                 // Try again
                 if(appAudioCB != NULL)
                 {
@@ -860,21 +883,25 @@ static void AudioDuplex_startI2Sstream(void)
 
                 if (streamVariables.streamType == AUDIO_DUPLEX_STREAM_TYPE_MSBC)
                 {
-                    Display_print0(hDisp, 5, 0, "mSBC Stream Started");
+                    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                    "mSBC Stream Started");
                 }
                 else if (streamVariables.streamType == AUDIO_DUPLEX_STREAM_TYPE_ADPCM)
                 {
-                    Display_print0(hDisp, 5, 0, "ADPCM Stream Started");
+                    Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                    "ADPCM Stream Started");
                 }
             }
             else
             {
-                Display_print0(hDisp, 5, 0, "Failed to start I2S stream");
+                Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                                "Failed to start I2S stream");
             }
         }
         else
         {
-            Display_print0(hDisp, 5, 0, "Started stream when Active was not requested");
+            Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                            "Started stream when Active was not requested");
         }
     }
 }
@@ -896,17 +923,20 @@ static void AudioDuplex_stopI2Sstream(void)
         // Try to stop I2S stream
         if (I2SCC26XX_stopStream(i2sHandle))
         {
-            Display_print0(hDisp, 5, 0, "Stopped I2S stream");
+            Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                            "Stopped I2S stream");
             i2sStreamInProgress = false;
         }
         else
         {
-            Display_print0(hDisp, 5, 0, "Failed to stop I2S stream");
+            Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                            "Failed to stop I2S stream");
         }
     }
     else
     {
-        Display_print1(hDisp, 5, 0, "Tried to stop I2S stream in state %d",
+        Display_print1(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                        "Tried to stop I2S stream in state %d",
                         streamVariables.streamState);
     }
 }
@@ -943,7 +973,8 @@ static I2SCC26XX_Handle AudioDuplex_openI2S(void)
     }
     else
     {
-        Display_print0(hDisp, 5, 0, "Failed to allocate mem for I2S");
+        Display_print0(hDisp, AUDIO_DUPLEX_DISP_STAT2, 0,
+                        "Failed to allocate mem for I2S");
         if (i2sContMgtBuffer)
         {
           i2sContMgtBuffer = NULL;

@@ -59,7 +59,7 @@
 #include "icall.h"
 #include "hal_assert.h"
 #include "central.h"
-#include "simple_central_bidirectional_audio.h"
+#include "central_bidirectional_audio.h"
 
 /* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
@@ -168,7 +168,7 @@ int main()
   GAPCentralRole_createTask();
 
   /* Kick off application - Priority 1 */
-  SimpleBLECentral_createTask();
+  CentralAudio_createTask();
 
   /* enable interrupts and start SYS/BIOS */
   BIOS_start();

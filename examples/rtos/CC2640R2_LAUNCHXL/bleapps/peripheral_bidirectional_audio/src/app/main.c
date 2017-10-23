@@ -59,7 +59,7 @@
 #include "hal_assert.h"
 #include "bcomdef.h"
 #include "peripheral.h"
-#include "simple_peripheral_bidirectional_audio.h"
+#include "peripheral_bidirectional_audio.h"
 
 /* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
@@ -165,7 +165,7 @@ int main()
   /* Kick off profile - Priority 3 */
   GAPRole_createTask();
 
-  SimpleBLEPeripheral_createTask();
+  PeripheralAudio_createTask();
 
   /* enable interrupts and start SYS/BIOS */
   BIOS_start();

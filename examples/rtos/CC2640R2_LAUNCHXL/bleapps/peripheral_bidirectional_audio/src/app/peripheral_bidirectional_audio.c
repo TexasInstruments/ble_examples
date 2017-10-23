@@ -1,5 +1,5 @@
 /*
- * Filename: simple_peripheral_bidirectional_audio.c
+ * Filename: peripheral_bidirectional_audio.c
  *
  * Description: This is the simple_peripheral example modified to send
  * audio data over BLE.
@@ -43,6 +43,7 @@
  */
 #include <string.h>
 
+// TI-RTOS Includes
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Clock.h>
@@ -50,31 +51,33 @@
 #include <ti/sysbios/knl/Queue.h>
 #include <ti/display/Display.h>
 
-#include "hci_tl.h"
-#include "gatt.h"
-#include "linkdb.h"
-#include "gapgattserver.h"
-#include "gattservapp.h"
 
-#include "peripheral.h"
-#include "gapbondmgr.h"
+// BLE-Stack return codes
+#include <inc/bcomdef.h>
+/*
+ * All BLE stack APIs come from here, do not include BLE protocol layer files
+ * (i.e. gatt.h) directly!
+ */
+#include <icall/inc/icall_ble_api.h>
 
-#include "osal_snv.h"
-#include "icall_ble_api.h"
+// Common code
+#include <common/cc26xx/util.h>
+#include <common/cc26xx/board_key.h>
 
-#include "util.h"
+// Gateway to board file
+#include <target/board.h>
 
-#ifdef USE_RCOSC
-#include "rcosc_calibration.h"
-#endif //USE_RCOSC
-#include "board_key.h"
+// GAP Role
+#include <profiles/roles/cc26xx/peripheral.h>
 
-#include "board.h"
-
+// Audio Profile and Discovery code
 #include <profiles/audio_dle/audio_duplex.h>
 #include <profiles/audio_dle/audio_profile_dle.h>
+#include <profiles/audio_dle/audio_client_disc.h>
 
-#include "simple_peripheral_bidirectional_audio.h"
+
+// Application include file
+#include "peripheral_bidirectional_audio.h"
 
 /*********************************************************************
  * CONSTANTS
@@ -110,43 +113,32 @@
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         2
 
 // Task configuration
-#define SBP_TASK_PRIORITY                     1
+#define PA_TASK_PRIORITY                     1
 
 
-#ifndef SBP_TASK_STACK_SIZE
-#define SBP_TASK_STACK_SIZE                   864
+#ifndef PA_TASK_STACK_SIZE
+#define PA_TASK_STACK_SIZE                   864
 #endif
 
 // Internal Events for RTOS application
-#define SBP_STATE_CHANGE_EVT                  0x0001
-#define SBP_CHAR_CHANGE_EVT                   0x0002
-#define SBP_PAIRING_STATE_EVT                 0x0004
-#define SBP_PASSCODE_NEEDED_EVT               0x0008
-#define SBP_CONN_EVT_END_EVT                  0x0010
-#define SBP_KEY_CHANGE_EVT                    0x0020
-#define SBP_KEY_CHANGE_EVT                    0x0020
-#define SBP_AUDIO_EVT                         0x0040
+#define PA_STATE_CHANGE_EVT                  0x0001
+#define PA_PAIRING_STATE_EVT                 0x0002
+#define PA_PASSCODE_NEEDED_EVT               0x0004
+#define PA_CONN_EVT_END_EVT                  0x0008
+#define PA_KEY_CHANGE_EVT                    0x0010
+#define PA_AUDIO_EVT                         0x0020
 
 // Internal Events for RTOS application
-#define SBP_ICALL_EVT                         ICALL_MSG_EVENT_ID // Event_Id_31
-#define SBP_QUEUE_EVT                         UTIL_QUEUE_EVENT_ID // Event_Id_30
-#define SBP_PERIODIC_EVT                      Event_Id_00
+#define PA_ICALL_EVT                         ICALL_MSG_EVENT_ID  // Event_Id_31
+#define PA_QUEUE_EVT                         UTIL_QUEUE_EVENT_ID // Event_Id_30
+#define PA_PERIODIC_EVT                      Event_Id_00
 
-#define SBP_ALL_EVENTS                        (SBP_ICALL_EVT        | \
-                                               SBP_QUEUE_EVT        | \
-                                               SBP_PERIODIC_EVT)
+#define PA_ALL_EVENTS                        (PA_ICALL_EVT        | \
+                                               PA_QUEUE_EVT        | \
+                                               PA_PERIODIC_EVT)
 
-#define DLE_MAX_PDU_SIZE 251
-#define DLE_MAX_TX_TIME 2120
-
-#define DEFAULT_PDU_SIZE 27
-#define DEFAULT_TX_TIME 328
-
-// The combined overhead for L2CAP and ATT notification headers
-#define TOTAL_PACKET_OVERHEAD 7
-
-// GATT notifications for throughput example don't require an authenticated link
-#define GATT_NO_AUTHENTICATION 0
+#define DLE_MAX_PDU_SIZE                      251
+#define DLE_MAX_TX_TIME                       2120
 
 /*********************************************************************
  * TYPEDEFS
@@ -166,16 +158,6 @@ typedef struct
 // Display Interface
 Display_Handle dispHandle = NULL;
 
-
-typedef struct
-{
-  // Service and Characteristic discovery variables.
-  uint16 audioStartCharValueHandle;
-  uint16 audioDataCharValueHandle;
-  uint16 audioVolumeCharValueHandle;
-  uint8  lastRemoteAddr[B_ADDR_LEN];
-} SimpleBLEPeripheral_HandleInfo_t;
-
 // Application states
 enum
 {
@@ -191,14 +173,10 @@ enum
 // Connection handle of current connection
 static uint16_t connHandle = INVALID_CONNHANDLE;
 
-static PIN_Config SBP_configTable[] =
+static PIN_Config PA_configTable[] =
 {
  Board_LED1 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
  Board_LED2 | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
- Board_DIO25_ANALOG | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX,  /* Debug IO initially high       */
- Board_DIO26_ANALOG | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX,  /* Debug IO initially high       */
- Board_DIO27_ANALOG | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX,  /* Debug IO initially high       */
- Board_DIO28_ANALOG | PIN_GPIO_OUTPUT_EN | PIN_GPIO_HIGH | PIN_PUSHPULL | PIN_DRVSTR_MAX,  /* Debug IO initially high       */
  PIN_TERMINATE
 };
 
@@ -220,11 +198,8 @@ static Queue_Struct appMsg;
 static Queue_Handle appMsgQueue;
 
 // Task configuration
-Task_Struct sbpTask;
-Char sbpTaskStack[SBP_TASK_STACK_SIZE];
-
-// Profile state and parameters
-//static gaprole_States_t gapProfileState = GAPROLE_INIT;
+Task_Struct paTask;
+Char paTaskStack[PA_TASK_STACK_SIZE];
 
 // GAP - SCAN RSP data (max size = 31 bytes)
 static uint8_t scanRspData[] =
@@ -232,22 +207,8 @@ static uint8_t scanRspData[] =
  // complete name
  0x16,   // length of this data
  GAP_ADTYPE_LOCAL_NAME_COMPLETE,
- 'S',
- 'i',
- 'm',
- 'p',
- 'l',
- 'e',
- 'B',
- 'L',
- 'E',
- 'A',
- 'u',
- 'd',
- 'i',
- 'o',
- 'T',
- 'x',
+ 'S','i','m','p','l','e','B','L','E',
+ 'A','u','d','i','o','T','x',
 };
 
 // GAP - Advertisement data (max size = 31 bytes, though this is
@@ -275,73 +236,56 @@ static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE AudioTx";
 static gattMsgEvent_t *pAttRsp = NULL;
 static uint8_t rspTxRetry = 0;
 
-static uint8 serviceDiscComplete = FALSE;
-static uint16 serviceToDiscover = GATT_INVALID_HANDLE;
-static uint8 enableCCCDs = TRUE;
-
-// Handle info saved here after connection to skip service discovery.
-static SimpleBLEPeripheral_HandleInfo_t remoteHandles;
-
-/* Audio START characteristic */
-static uint16 audioStartCharValueHandle   = GATT_INVALID_HANDLE;
-static uint16 audioStartCCCHandle         = GATT_INVALID_HANDLE;
-/* Audio "Data" characteristic */
-static uint16 audioDataCharValueHandle    = GATT_INVALID_HANDLE;
-static uint16 audioDataCCCHandle          = GATT_INVALID_HANDLE;
+// Structure to store all handles found by AudioClientDisc module
+static AudioClientDisc_handles_t  audioSvcHandles;
 
 // Application state
 static uint8_t state = BLE_STATE_IDLE;
 
-// Discovered service start and end handle
-static uint16_t svcStartHdl = 0;
-static uint16_t svcEndHdl = 0;
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
 
-static void SimpleBLEPeripheral_init( void );
-static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1);
+static void PeripheralAudio_init( void );
+static void PeripheralAudio_taskFxn(UArg a0, UArg a1);
 
-static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg);
-static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg);
-static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg);
-static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState);
-
-static void SimpleBLEPeripheral_sendAttRsp(void);
-static void SimpleBLEPeripheral_freeAttRsp(uint8_t status);
-
-static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState);
-
-static uint8_t SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state,
+static uint8_t PeripheralAudio_processStackMsg(ICall_Hdr *pMsg);
+static uint8_t PeripheralAudio_processGATTMsg(gattMsgEvent_t *pMsg);
+static void PeripheralAudio_processAppMsg(sbpEvt_t *pMsg);
+static void PeripheralAudio_processStateChangeEvt(gaprole_States_t newState);
+static void PeripheralAudio_sendAttRsp(void);
+static void PeripheralAudio_freeAttRsp(uint8_t status);
+static void PeripheralAudio_stateChangeCB(gaprole_States_t newState);
+static uint8_t PeripheralAudio_enqueueMsg(uint8_t event, uint8_t state,
                                               uint8_t *pData);
-static void SimpleBLEPeripheral_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
-                                           uint8_t uiInputs, uint8_t uiOutputs);
-void SimpleBLEPeripheral_keyChangeHandler(uint8 keys);
-static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys);
+static void PeripheralAudio_passcodeCB(uint8_t *deviceAddr,
+                                            uint16_t connHandle,
+                                            uint8_t uiInputs, uint8_t uiOutputs);
+void PeripheralAudio_keyChangeHandler(uint8_t keys);
+static void PeripheralAudio_handleKeys(uint8_t shift, uint8_t keys);
 
-static void SimpleBLEPeripheral_pairStateCB(uint16_t connHandle, uint8_t state,
+static void PeripheralAudio_pairStateCB(uint16_t connHandle, uint8_t state,
                                             uint8_t status);
-static void SimpleBLEPeripheral_processPairState(uint8_t state, uint8_t status);
-static void SimpleBLEPeripheral_processPasscode(uint8_t uiOutputs);
-static void SimpleBLEPeripheral_DiscoverService( uint16 connHandle, uint16 svcUuid );
-static void SimpleBLEPeripheral_EnableNotification( uint16 connHandle, uint16 attrHandle );
+static void PeripheralAudio_processPairState(uint8_t state, uint8_t status);
+static void PeripheralAudio_processPasscode(uint8_t uiOutputs);
+static void PeripheralAudio_EnableNotification( uint16_t connHandle,
+                                                    uint16_t attrHandle );
 
-//static void SimpleBLECentral_SaveHandles( void );
 /*********************************************************************
  * PROFILE CALLBACKS
  */
 
 // GAP Role Callbacks
-static gapRolesCBs_t SimpleBLEPeripheral_gapRoleCBs =
+static gapRolesCBs_t PeripheralAudio_gapRoleCBs =
 {
- SimpleBLEPeripheral_stateChangeCB     // Profile State Change Callbacks
+ PeripheralAudio_stateChangeCB            // Profile State Change Callbacks
 };
 
 // GAP Bond Manager Callbacks
 static gapBondCBs_t simpleBLEPeripheral_BondMgrCBs =
 {
- (pfnPasscodeCB_t) SimpleBLEPeripheral_passcodeCB, // Passcode callback
- SimpleBLEPeripheral_pairStateCB                  // Pairing state callback
+ (pfnPasscodeCB_t) PeripheralAudio_passcodeCB,  // Passcode callback
+ PeripheralAudio_pairStateCB                    // Pairing state callback
 };
 
 /*********************************************************************
@@ -349,29 +293,59 @@ static gapBondCBs_t simpleBLEPeripheral_BondMgrCBs =
  */
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_createTask
+ * @fn      PeripheralAudio_createTask
  *
- * @brief   Task creation function for the Simple BLE Peripheral.
+ * @brief   Task creation function for the Peripheral Bidirectional Audio.
  *
  * @param   None.
  *
  * @return  None.
  */
-void SimpleBLEPeripheral_createTask(void)
+void PeripheralAudio_createTask(void)
 {
   Task_Params taskParams;
 
   // Configure task
   Task_Params_init(&taskParams);
-  taskParams.stack = sbpTaskStack;
-  taskParams.stackSize = SBP_TASK_STACK_SIZE;
-  taskParams.priority = SBP_TASK_PRIORITY;
+  taskParams.stack = paTaskStack;
+  taskParams.stackSize = PA_TASK_STACK_SIZE;
+  taskParams.priority = PA_TASK_PRIORITY;
 
-  Task_construct(&sbpTask, SimpleBLEPeripheral_taskFxn, &taskParams, NULL);
+  Task_construct(&paTask, PeripheralAudio_taskFxn, &taskParams, NULL);
+}
+
+
+/*********************************************************************
+ * @fn      PeripheralAudio_keyChangeHandler
+ *
+ * @brief   Key event handler function
+ *
+ * @param   a0 - ignored
+ *
+ * @return  none
+ */
+void PeripheralAudio_keyChangeHandler(uint8_t keys)
+{
+  PeripheralAudio_enqueueMsg(PA_KEY_CHANGE_EVT, keys, NULL);
+}
+
+
+/*********************************************************************
+ * @fn      PeripheralAudio_setEvent
+ *
+ * @brief   Function to set event in the Peripheral Bidirectional Audio task.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void PeripheralAudio_setEvent(uint8_t newEvents)
+{
+  PeripheralAudio_enqueueMsg(PA_AUDIO_EVT, newEvents, NULL);
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_init
+ * @fn      PeripheralAudio_init
  *
  * @brief   Called during initialization and contains application
  *          specific initialization (ie. hardware initialization/setup,
@@ -382,7 +356,7 @@ void SimpleBLEPeripheral_createTask(void)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_init(void)
+static void PeripheralAudio_init(void)
 {
   // ******************************************************************
   // NO STACK API CALLS CAN OCCUR BEFORE THIS CALL TO ICall_registerApp
@@ -391,19 +365,15 @@ static void SimpleBLEPeripheral_init(void)
   // so that the application can send and receive messages.
   ICall_registerApp(&selfEntity, &syncEvent);
 
-#ifdef USE_RCOSC
-  RCOSC_enableCalibration();
-#endif // USE_RCOSC
-
   HCI_LE_WriteSuggestedDefaultDataLenCmd(DLE_MAX_PDU_SIZE , DLE_MAX_TX_TIME);
 
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
   dispHandle = Display_open(Display_Type_ANY, NULL);
-  Display_print0(dispHandle, 0, 0, "\f");
+  Display_printf(dispHandle, 0, 0, "\f");
 
-  Board_initKeys(SimpleBLEPeripheral_keyChangeHandler);
+  Board_initKeys(PeripheralAudio_keyChangeHandler);
 
   // Setup the GAP
   GAP_SetParamValue(TGAP_CONN_PAUSE_PERIPHERAL, DEFAULT_CONN_PAUSE_PERIPHERAL);
@@ -492,7 +462,7 @@ static void SimpleBLEPeripheral_init(void)
   GATTServApp_AddService(GATT_ALL_SERVICES);   // GATT attributes
 
   // Start the Device
-  VOID GAPRole_StartDevice(&SimpleBLEPeripheral_gapRoleCBs);
+  VOID GAPRole_StartDevice(&PeripheralAudio_gapRoleCBs);
 
   // Start Bond Manager
   VOID GAPBondMgr_Register(&simpleBLEPeripheral_BondMgrCBs);
@@ -505,28 +475,28 @@ static void SimpleBLEPeripheral_init(void)
 
   HCI_LE_ReadMaxDataLenCmd();
 
-  Display_print0(dispHandle, 0, 0, "Audio Peripheral with DLE");
+  Display_printf(dispHandle, 0, 0, "Audio Peripheral with DLE");
 
   // Open pin structure for use
-  hSbpPins = PIN_open(&sbpPins, SBP_configTable);
+  hSbpPins = PIN_open(&sbpPins, PA_configTable);
 
   AudioDuplex_open(dispHandle, hSbpPins,
-                   (pfnAudioDuplexCB_t)SimpleBLEPeripheral_setEvent);
+                   (pfnAudioDuplexCB_t)PeripheralAudio_setEvent);
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_taskFxn
+ * @fn      PeripheralAudio_taskFxn
  *
- * @brief   Application task entry point for the Simple BLE Peripheral.
+ * @brief   Application task entry point for the Peripheral Bidirectional Audio.
  *
  * @param   a0, a1 - not used.
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
+static void PeripheralAudio_taskFxn(UArg a0, UArg a1)
 {
   // Initialize application
-  SimpleBLEPeripheral_init();
+  PeripheralAudio_init();
 
   // Application main loop
   for (;;)
@@ -537,7 +507,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
     // Note that an event associated with a thread is posted when a
     // message is queued to the message receive queue of the thread
 
-    events = Event_pend(syncEvent, Event_Id_NONE, SBP_ALL_EVENTS,
+    events = Event_pend(syncEvent, Event_Id_NONE, PA_ALL_EVENTS,
                         ICALL_TIMEOUT_FOREVER);
 
     if (events)
@@ -550,7 +520,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
       if (ICall_fetchServiceMsg(&src, &dest,
                                 (void **)&pMsg) == ICALL_ERRNO_SUCCESS)
       {
-        uint8 safeToDealloc = TRUE;
+        uint8_t safeToDealloc = TRUE;
 
         if ((src == ICALL_SERVICE_CLASS_BLE) && (dest == selfEntity))
         {
@@ -559,16 +529,16 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
           // Check for BLE stack events first
           if (pEvt->signature == 0xffff)
           {
-            if (pEvt->event_flag & SBP_CONN_EVT_END_EVT)
+            if (pEvt->event_flag & PA_CONN_EVT_END_EVT)
             {
               // Try to retransmit pending ATT Response (if any)
-              SimpleBLEPeripheral_sendAttRsp();
+              PeripheralAudio_sendAttRsp();
             }
           }
           else
           {
             // Process inter-task message
-            safeToDealloc = SimpleBLEPeripheral_processStackMsg((ICall_Hdr *)pMsg);
+            safeToDealloc = PeripheralAudio_processStackMsg((ICall_Hdr *)pMsg);
           }
         }
 
@@ -578,7 +548,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
         }
       }
       // If RTOS queue is not empty, process app message.
-      if (events & SBP_QUEUE_EVT)
+      if (events & PA_QUEUE_EVT)
       {
         while (!Queue_empty(appMsgQueue))
         {
@@ -586,7 +556,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
           if (pMsg)
           {
             // Process message.
-            SimpleBLEPeripheral_processAppMsg(pMsg);
+            PeripheralAudio_processAppMsg(pMsg);
 
             // Free the space from the message.
             ICall_free(pMsg);
@@ -598,7 +568,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processStackMsg
+ * @fn      PeripheralAudio_processStackMsg
  *
  * @brief   Process an incoming stack message.
  *
@@ -606,48 +576,48 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
  *
  * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
  */
-static uint8_t SimpleBLEPeripheral_processStackMsg(ICall_Hdr *pMsg)
+static uint8_t PeripheralAudio_processStackMsg(ICall_Hdr *pMsg)
 {
   uint8_t safeToDealloc = TRUE;
 
   switch (pMsg->event)
   {
-  case GATT_MSG_EVENT:
-    // Process GATT message
-    safeToDealloc = SimpleBLEPeripheral_processGATTMsg((gattMsgEvent_t *)pMsg);
-    break;
-
-  case HCI_GAP_EVENT_EVENT:
-  {
-    // Process HCI message
-    switch(pMsg->status)
-    {
-    case HCI_COMMAND_COMPLETE_EVENT_CODE:
-      // Process HCI Command Complete Event
+    case GATT_MSG_EVENT:
+      // Process GATT message
+      safeToDealloc = PeripheralAudio_processGATTMsg((gattMsgEvent_t *)pMsg);
       break;
+
+    case HCI_GAP_EVENT_EVENT:
+    {
+      // Process HCI message
+      switch(pMsg->status)
+      {
+        case HCI_COMMAND_COMPLETE_EVENT_CODE:
+          // Process HCI Command Complete Event
+          break;
+
+        default:
+          break;
+      }
+    }
+    break;
 
     default:
+      // do nothing
       break;
-    }
-  }
-  break;
-
-  default:
-    // do nothing
-    break;
   }
 
   return (safeToDealloc);
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processGATTMsg
+ * @fn      PeripheralAudio_processGATTMsg
  *
  * @brief   Process GATT messages and events.
  *
  * @return  TRUE if safe to deallocate incoming message, FALSE otherwise.
  */
-static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
+static uint8_t PeripheralAudio_processGATTMsg(gattMsgEvent_t *pMsg)
 {
   if (state == BLE_STATE_CONNECTED)
   {
@@ -656,154 +626,65 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
     {
       // No HCI buffer was available. App can try to retransmit the response
       // on the next connection event. Drop it for now.
-      Display_print1(dispHandle, 4, 0, "ATT Rsp dropped %d", pMsg->method);
+      Display_printf(dispHandle, 4, 0, "ATT Rsp dropped %d", pMsg->method);
     };
+
+    if(!AudioClientDisc_isComplete())
+    {
+      AudioClientDisc_status_t status = AudioClientDisc_processGATTDisc(pMsg, selfEntity);
+
+      if (status == AUDIO_CLIENT_DISC_COMPLETE)
+      {
+        Display_printf(dispHandle, 5, 0,
+                        "Service Discovery Complete");
+        PeripheralAudio_EnableNotification(pMsg->connHandle,
+                                            audioSvcHandles.audioStartCCCHandle);
+        PeripheralAudio_EnableNotification(pMsg->connHandle,
+                                            audioSvcHandles.audioDataCCCHandle);
+      }
+    }
 
     switch ( pMsg->method )
     {
-    case ATT_HANDLE_VALUE_NOTI:
-      // Check to see if notification is from audio data or control char
-      if (pMsg->msg.handleValueNoti.handle == audioDataCharValueHandle)
-      {
-        AudioDuplex_audioData pData;
-        pData.len = pMsg->msg.handleValueNoti.len;
-        pData.pValue = pMsg->msg.handleValueNoti.pValue;
-        AudioDuplex_processData(AudioDuplex_data, &pData);
-      }
-      else if (pMsg->msg.handleValueNoti.handle == audioStartCharValueHandle)
-      {
-        AudioDuplex_audioData pData;
-        pData.len = pMsg->msg.handleValueNoti.len;
-        pData.pValue = pMsg->msg.handleValueNoti.pValue;
-        AudioDuplex_processData(AudioDuplex_start_stop, &pData);
-      }
-      break;
-
-    case ATT_FIND_BY_TYPE_VALUE_RSP:
-      // Response from GATT_DiscPrimaryServiceByUUID
-      // Service found, store handles
-      if ( pMsg->msg.findByTypeValueRsp.numInfo > 0 )
-      {
-        svcStartHdl =
-            ATT_ATTR_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
-        svcEndHdl =
-            ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
-      }
-      // If procedure complete
-      else if ( pMsg->hdr.status == bleProcedureComplete )
-      {
-        if ( svcStartHdl != 0 )
+      case ATT_MTU_UPDATED_EVENT:
+        // MTU size updated
+        Display_printf(dispHandle, 4, 0,
+                        "MTU Size: %d", pMsg->msg.mtuEvt.MTU);
+        break;
+      case ATT_HANDLE_VALUE_NOTI:
+        // Check to see if notification is from audio data or control char
+        if (pMsg->msg.handleValueNoti.handle == audioSvcHandles.audioDataCharValueHandle)
         {
-          if ( serviceToDiscover == AUDIO_SERV_UUID)
-          {
-            // Discover all characteristics
-            GATT_DiscAllChars( connHandle, svcStartHdl, svcEndHdl, selfEntity );
-          }
-
+          AudioDuplex_audioData pData;
+          pData.len = pMsg->msg.handleValueNoti.len;
+          pData.pValue = pMsg->msg.handleValueNoti.pValue;
+          AudioDuplex_processData(AudioDuplex_data, &pData);
         }
-      }
-      break;
-
-    case ATT_ERROR_RSP:
-
-      if (serviceToDiscover ==  AUDIO_SERV_UUID
-          && pMsg->msg.errorRsp.reqOpcode == ATT_FIND_BY_TYPE_VALUE_REQ
-          && pMsg->msg.errorRsp.handle == 0x0001)
-        //0x0001 is the start attribute handle of 0xfff0, AUDIO_SERV_UUID
-      {
-        if ( (enableCCCDs == TRUE) && (audioStartCharValueHandle != GATT_INVALID_HANDLE))
+        else if (pMsg->msg.handleValueNoti.handle == audioSvcHandles.audioStartCharValueHandle)
         {
-          audioStartCCCHandle = audioStartCharValueHandle + 1;
-          // Begin configuring the characteristics for notifications
-          SimpleBLEPeripheral_EnableNotification( connHandle, audioStartCCCHandle );
-        }
-      }
-      break;
-
-    case ATT_READ_BY_TYPE_RSP:
-      // Response from Discover all Characteristics.
-      // Success indicates packet with characteristic discoveries.
-      if ( pMsg->hdr.status == SUCCESS )
-      {
-        attReadByTypeRsp_t *pRsp = &pMsg->msg.readByTypeRsp;
-
-        if( serviceToDiscover ==  AUDIO_SERV_UUID )
-        {
-          uint16 charUUID = GATT_INVALID_HANDLE;
-          uint16 *pHandle = &charUUID;
-          /* Write into charUUID what Audio Profile char value we're dealing with */
-          *pHandle = BUILD_UINT16( pRsp->pDataList[17] , pRsp->pDataList[18]);
-          if      (charUUID == AUDIOPROFILE_START_UUID) {
-            pHandle = &audioStartCharValueHandle;
-            *pHandle = BUILD_UINT16( pRsp->pDataList[3] , pRsp->pDataList[4]);
-          }
-          else if (charUUID == AUDIOPROFILE_AUDIO_UUID ){
-            pHandle = &audioDataCharValueHandle;
-            *pHandle = BUILD_UINT16( pRsp->pDataList[3] , pRsp->pDataList[4]);
-          }
+          AudioDuplex_audioData pData;
+          pData.len = pMsg->msg.handleValueNoti.len;
+          pData.pValue = pMsg->msg.handleValueNoti.pValue;
+          AudioDuplex_processData(AudioDuplex_start_stop, &pData);
         }
         break;
-      }
-
-      // This indicates that there is no more characteristic data
-      // to be discovered within the given handle range.
-      else if ( pMsg->hdr.status == bleProcedureComplete )
-      {
-        if ( serviceToDiscover == AUDIO_SERV_UUID )
-        {
-          /* This kicks off the enabling the 1st of notification enable event */
-          if (audioStartCharValueHandle != GATT_INVALID_HANDLE) {
-            audioStartCCCHandle = audioStartCharValueHandle + 1 ;
-            SimpleBLEPeripheral_EnableNotification( connHandle, audioStartCCCHandle );
-          }
-          break;
-        }
-
-      }
-      break;
-
-    case ATT_WRITE_RSP:
-      if ( pMsg->hdr.status == SUCCESS && !serviceDiscComplete )
-      {
-        uint16 handle = GATT_INVALID_HANDLE;
-
-        // Chain the CCCD enable writes so that a RSP for one triggers the next enable.
-        if (audioDataCCCHandle == GATT_INVALID_HANDLE) {
-          handle = audioDataCCCHandle = audioDataCharValueHandle + 1;
-        }
-        else {
-          serviceDiscComplete = TRUE;
-          break;
-        }
-
-        SimpleBLEPeripheral_EnableNotification( connHandle, handle );
-
-        break;
-
-      }
-
-      break;
-
-
-
       // Service Change indication
-    case ATT_HANDLE_VALUE_IND:
-      // Note: this logic assumes that the only indications that will be sent
-      //       will come from that GATT Service Changed Characteristic
-      if ( pMsg->hdr.status == SUCCESS )
-      {
+      case ATT_HANDLE_VALUE_IND:
+        // Note: this logic assumes that the only indications that will be sent
+        //       will come from that GATT Service Changed Characteristic
+        if ( pMsg->hdr.status == SUCCESS )
+        {
 
-        // Acknowledge receipt of indication
-        ATT_HandleValueCfm( pMsg->connHandle );
+          // Acknowledge receipt of indication
+          ATT_HandleValueCfm( pMsg->connHandle );
 
-      }
-      break;
+        }
+        break;
+      default:
+        break;
+    }
+  }
 
-    default:
-      // Unknown event
-      break;
-    } //switch
-  } // else - in case a GATT message came after a connection has dropped, ignore it.
   // Needed only for ATT Protocol messages
   GATT_bm_free(&pMsg->msg, pMsg->method);
 
@@ -812,7 +693,7 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_sendAttRsp
+ * @fn      PeripheralAudio_sendAttRsp
  *
  * @brief   Send a pending ATT response message.
  *
@@ -820,7 +701,7 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_sendAttRsp(void)
+static void PeripheralAudio_sendAttRsp(void)
 {
   // See if there's a pending ATT Response to be transmitted
   if (pAttRsp != NULL)
@@ -839,18 +720,18 @@ static void SimpleBLEPeripheral_sendAttRsp(void)
       HCI_EXT_ConnEventNoticeCmd(pAttRsp->connHandle, selfEntity, 0);
 
       // We're done with the response message
-      SimpleBLEPeripheral_freeAttRsp(status);
+      PeripheralAudio_freeAttRsp(status);
     }
     else
     {
       // Continue retrying
-      Display_print1(dispHandle, 5, 0, "Rsp send retry: %d", rspTxRetry);
+      Display_printf(dispHandle, 5, 0, "Rsp send retry: %d", rspTxRetry);
     }
   }
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_freeAttRsp
+ * @fn      PeripheralAudio_freeAttRsp
  *
  * @brief   Free ATT response message.
  *
@@ -858,7 +739,7 @@ static void SimpleBLEPeripheral_sendAttRsp(void)
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_freeAttRsp(uint8_t status)
+static void PeripheralAudio_freeAttRsp(uint8_t status)
 {
   // See if there's a pending ATT response message
   if (pAttRsp != NULL)
@@ -866,14 +747,14 @@ static void SimpleBLEPeripheral_freeAttRsp(uint8_t status)
     // See if the response was sent out successfully
     if (status == SUCCESS)
     {
-      Display_print1(dispHandle, 5, 0, "Rsp sent retry: %d", rspTxRetry);
+      Display_printf(dispHandle, 5, 0, "Rsp sent retry: %d", rspTxRetry);
     }
     else
     {
       // Free response payload
       GATT_bm_free(&pAttRsp->msg, pAttRsp->method);
 
-      Display_print1(dispHandle, 5, 0, "Rsp retry failed: %d", rspTxRetry);
+      Display_printf(dispHandle, 5, 0, "Rsp retry failed: %d", rspTxRetry);
     }
 
     // Free response message
@@ -886,7 +767,7 @@ static void SimpleBLEPeripheral_freeAttRsp(uint8_t status)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processAppMsg
+ * @fn      PeripheralAudio_processAppMsg
  *
  * @brief   Process an incoming callback from a profile.
  *
@@ -894,54 +775,54 @@ static void SimpleBLEPeripheral_freeAttRsp(uint8_t status)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
+static void PeripheralAudio_processAppMsg(sbpEvt_t *pMsg)
 {
   switch (pMsg->hdr.event)
   {
-  case SBP_STATE_CHANGE_EVT:
-  {
-    SimpleBLEPeripheral_processStateChangeEvt((gaprole_States_t)pMsg->
-                                              hdr.state);
-    break;
-  }
+    case PA_STATE_CHANGE_EVT:
+    {
+      PeripheralAudio_processStateChangeEvt((gaprole_States_t)pMsg->
+                                                hdr.state);
+      break;
+    }
 
-  case SBP_KEY_CHANGE_EVT:
-  {
-    SimpleBLEPeripheral_handleKeys(0, pMsg->hdr.state);
-    break;
-  }
+    case PA_KEY_CHANGE_EVT:
+    {
+      PeripheralAudio_handleKeys(0, pMsg->hdr.state);
+      break;
+    }
 
-    // Pairing event
-  case SBP_PAIRING_STATE_EVT:
-  {
-    SimpleBLEPeripheral_processPairState(pMsg->hdr.state, *pMsg->pData);
-
-    ICall_free(pMsg->pData);
-    break;
-  }
-
-  // Passcode event
-  case SBP_PASSCODE_NEEDED_EVT:
-  {
-      SimpleBLEPeripheral_processPasscode(*pMsg->pData);
+      // Pairing event
+    case PA_PAIRING_STATE_EVT:
+    {
+      PeripheralAudio_processPairState(pMsg->hdr.state, *pMsg->pData);
 
       ICall_free(pMsg->pData);
       break;
-  }
-  case SBP_AUDIO_EVT:
-  {
-    AudioDuplex_eventHandler(pMsg->hdr.state);
-    break;
-  }
+    }
 
-  default:
-    // Do nothing.
-    break;
+    // Passcode event
+    case PA_PASSCODE_NEEDED_EVT:
+    {
+        PeripheralAudio_processPasscode(*pMsg->pData);
+
+        ICall_free(pMsg->pData);
+        break;
+    }
+    case PA_AUDIO_EVT:
+    {
+      AudioDuplex_eventHandler(pMsg->hdr.state);
+      break;
+    }
+
+    default:
+      // Do nothing.
+      break;
   }
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_stateChangeCB
+ * @fn      PeripheralAudio_stateChangeCB
  *
  * @brief   Callback from GAP Role indicating a role state change.
  *
@@ -949,13 +830,13 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState)
+static void PeripheralAudio_stateChangeCB(gaprole_States_t newState)
 {
-  SimpleBLEPeripheral_enqueueMsg(SBP_STATE_CHANGE_EVT, newState, 0);
+  PeripheralAudio_enqueueMsg(PA_STATE_CHANGE_EVT, newState, 0);
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processStateChangeEvt
+ * @fn      PeripheralAudio_processStateChangeEvt
  *
  * @brief   Process a pending GAP Role state change event.
  *
@@ -963,119 +844,88 @@ static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState)
  *
  * @return  None.
  */
-static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
+static void PeripheralAudio_processStateChangeEvt(gaprole_States_t newState)
 {
   switch ( newState )
   {
-  case GAPROLE_STARTED:
-  {
-    uint8_t ownAddress[B_ADDR_LEN];
-
-    GAPRole_GetParameter(GAPROLE_BD_ADDR, ownAddress);
-
-    // Display device address
-    Display_print0(dispHandle, 1, 0, Util_convertBdAddr2Str(ownAddress));
-    Display_print0(dispHandle, 2, 0, "Initialized");
-  }
-  break;
-
-  case GAPROLE_ADVERTISING:
-    Display_print0(dispHandle, 2, 0, "Advertising");
-    break;
-
-  case GAPROLE_CONNECTED:
-  {
-    state = BLE_STATE_CONNECTED;
-
-    uint8_t peerAddress[B_ADDR_LEN];
-
-    GAPRole_GetParameter(GAPROLE_CONN_BD_ADDR, peerAddress);
-
-    GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connHandle);
-
-    AudioDuplex_setConnectionHandle(connHandle);
-
-    Display_print0(dispHandle, 2, 0, "Connected");
-    Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddress));
-
-    if (FALSE == serviceDiscComplete)
+    case GAPROLE_STARTED:
     {
-      // Begin Service Discovery of AUDIO Service to find out report handles
-      serviceToDiscover = AUDIO_SERV_UUID;
-      SimpleBLEPeripheral_DiscoverService( connHandle, serviceToDiscover );
+      uint8_t ownAddress[B_ADDR_LEN];
+
+      GAPRole_GetParameter(GAPROLE_BD_ADDR, ownAddress);
+
+      // Display device address
+      Display_printf(dispHandle, 1, 0, Util_convertBdAddr2Str(ownAddress));
+      Display_printf(dispHandle, 2, 0, "Initialized");
+      break;
+    }
+    case GAPROLE_ADVERTISING:
+      Display_printf(dispHandle, 2, 0, "Advertising");
+      break;
+
+    case GAPROLE_CONNECTED:
+    {
+      state = BLE_STATE_CONNECTED;
+
+      uint8_t peerAddress[B_ADDR_LEN];
+
+      GAPRole_GetParameter(GAPROLE_CONN_BD_ADDR, peerAddress);
+
+      GAPRole_GetParameter(GAPROLE_CONNHANDLE, &connHandle);
+
+      AudioDuplex_setConnectionHandle(connHandle);
+
+      Display_printf(dispHandle, 2, 0, "Connected");
+      Display_printf(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddress));
+
+      // Startup discovery processing on peer
+      AudioClientDisc_open(&audioSvcHandles);
+
+      break;
     }
 
+    case GAPROLE_CONNECTED_ADV:
+      Display_printf(dispHandle, 2, 0, "Connected Advertising");
+      break;
+
+    case GAPROLE_WAITING:
+      Util_stopClock(&periodicClock);
+      PeripheralAudio_freeAttRsp(bleNotConnected);
+
+      Display_printf(dispHandle, 2, 0, "Disconnected");
+
+      AudioDuplex_stopStreaming();
+
+      // Reset char handles and disc state
+      AudioClientDisc_close();
+
+      // Clear remaining lines
+      Display_clearLines(dispHandle, 3, 5);
+      break;
+
+      case GAPROLE_WAITING_AFTER_TIMEOUT:
+      PeripheralAudio_freeAttRsp(bleNotConnected);
+
+      Display_printf(dispHandle, 2, 0, "Timed Out");
+
+      AudioDuplex_stopStreaming();
+
+      // Clear remaining lines
+      Display_clearLines(dispHandle, 3, 5);
+      break;
+
+    case GAPROLE_ERROR:
+      Display_printf(dispHandle, 2, 0, "Error");
+      break;
+
+    default:
+      Display_clearLine(dispHandle, 2);
+      break;
   }
-  break;
-
-  case GAPROLE_CONNECTED_ADV:
-    Display_print0(dispHandle, 2, 0, "Connected Advertising");
-    break;
-
-  case GAPROLE_WAITING:
-    Util_stopClock(&periodicClock);
-    SimpleBLEPeripheral_freeAttRsp(bleNotConnected);
-
-    Display_print0(dispHandle, 2, 0, "Disconnected");
-
-    serviceDiscComplete = FALSE;
-
-    audioStartCharValueHandle  = GATT_INVALID_HANDLE;
-    audioStartCCCHandle        = GATT_INVALID_HANDLE;
-    audioDataCharValueHandle   = GATT_INVALID_HANDLE;
-    audioDataCCCHandle         = GATT_INVALID_HANDLE;
-
-    AudioDuplex_stopStreaming();
-
-    // Clear remaining lines
-    Display_clearLines(dispHandle, 3, 5);
-    break;
-
-  case GAPROLE_WAITING_AFTER_TIMEOUT:
-    SimpleBLEPeripheral_freeAttRsp(bleNotConnected);
-
-    Display_print0(dispHandle, 2, 0, "Timed Out");
-
-    serviceDiscComplete = FALSE;
-
-    audioStartCharValueHandle  = GATT_INVALID_HANDLE;
-    audioStartCCCHandle        = GATT_INVALID_HANDLE;
-    audioDataCharValueHandle   = GATT_INVALID_HANDLE;
-    audioDataCCCHandle         = GATT_INVALID_HANDLE;
-
-    AudioDuplex_stopStreaming();
-
-    // Clear remaining lines
-    Display_clearLines(dispHandle, 3, 5);
-    break;
-
-  case GAPROLE_ERROR:
-    Display_print0(dispHandle, 2, 0, "Error");
-    break;
-
-  default:
-    Display_clearLine(dispHandle, 2);
-    break;
-  }
-
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_keyChangeHandler
- *
- * @brief   Key event handler function
- *
- * @param   a0 - ignored
- *
- * @return  none
- */
-void SimpleBLEPeripheral_keyChangeHandler(uint8 keys)
-{
-  SimpleBLEPeripheral_enqueueMsg(SBP_KEY_CHANGE_EVT, keys, NULL);
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_enqueueMsg
+ * @fn      PeripheralAudio_enqueueMsg
  *
  * @brief   Creates a message and puts the message in RTOS queue.
  *
@@ -1084,7 +934,7 @@ void SimpleBLEPeripheral_keyChangeHandler(uint8 keys)
  *
  * @return  None.
  */
-static uint8_t SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state,
+static uint8_t PeripheralAudio_enqueueMsg(uint8_t event, uint8_t state,
                                            uint8_t *pData)
 {
   sbpEvt_t *pMsg = ICall_malloc(sizeof(sbpEvt_t));
@@ -1104,7 +954,7 @@ static uint8_t SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state,
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_handleKeys
+ * @fn      PeripheralAudio_handleKeys
  *
  * @brief   Handles all key events for this device.
  *
@@ -1115,7 +965,7 @@ static uint8_t SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state,
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
+static void PeripheralAudio_handleKeys(uint8_t shift, uint8_t keys)
 {
   static uint8_t previousKeys = 0;
   uint16_t connectionHandle = AudioDuplex_getConnectionHandle();
@@ -1142,7 +992,7 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
     }
     else
     {
-      Display_print0(dispHandle, 2, 0, "Connection required for stream");
+      Display_printf(dispHandle, 2, 0, "Connection required for stream");
     }
   }
   previousKeys = keys;
@@ -1155,7 +1005,7 @@ static void SimpleBLEPeripheral_handleKeys(uint8_t shift, uint8_t keys)
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_pairStateCB(uint16_t connHandle, uint8_t state,
+static void PeripheralAudio_pairStateCB(uint16_t connHandle, uint8_t state,
                                             uint8_t status)
 {
   uint8_t *pData;
@@ -1164,7 +1014,7 @@ static void SimpleBLEPeripheral_pairStateCB(uint16_t connHandle, uint8_t state,
   {
     *pData = status;
     // Queue the event.
-    SimpleBLEPeripheral_enqueueMsg(SBP_PAIRING_STATE_EVT, state, pData);
+    PeripheralAudio_enqueueMsg(PA_PAIRING_STATE_EVT, state, pData);
   }
 }
 
@@ -1175,75 +1025,42 @@ static void SimpleBLEPeripheral_pairStateCB(uint16_t connHandle, uint8_t state,
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_processPairState(uint8_t state, uint8_t status)
+static void PeripheralAudio_processPairState(uint8_t state, uint8_t status)
 {
   Display_clearLines(dispHandle, 5, 5);
   switch (state)
   {
   case GAPBOND_PAIRING_STATE_STARTED:
-    Display_print0(dispHandle, 2, 0, "Pairing started");
+    Display_printf(dispHandle, 2, 0, "Pairing started");
     break;
 
   case GAPBOND_PAIRING_STATE_COMPLETE:
     if (status == SUCCESS)
     {
       // Enter a GAP Bond manager Paired state
-      Display_print0(dispHandle, 2, 0, "Pairing success");
-
-      if (FALSE == serviceDiscComplete)
-      {
-        // Begin Service Discovery of AUDIO Service to find out report handles
-        serviceToDiscover = AUDIO_SERV_UUID;
-        SimpleBLEPeripheral_DiscoverService( connHandle, serviceToDiscover );
-      }
+      Display_printf(dispHandle, 2, 0, "Pairing success");
     }
     else
     {
-      Display_print1(dispHandle, 2, 0, "Pairing fail: %d", status);
+      Display_printf(dispHandle, 2, 0, "Pairing fail: %d", status);
     }
     break;
 
   case GAPBOND_PAIRING_STATE_BOND_SAVED:
     if (status == SUCCESS)
     {
-      Display_print0(dispHandle, 2, 0, "Bond Saved");
+      Display_printf(dispHandle, 2, 0, "Bond Saved");
     }
     break;
 
   case GAPBOND_PAIRING_STATE_BONDED:
     if (status == SUCCESS)
     {
-
-      if (
-          ( remoteHandles.audioStartCharValueHandle == GATT_INVALID_HANDLE )         ||
-          ( remoteHandles.audioDataCharValueHandle == GATT_INVALID_HANDLE )
-      )
-      {
-
-        serviceDiscComplete = FALSE;
-        serviceToDiscover = AUDIO_SERV_UUID;
-
-        // We must perform service discovery again, something might have changed.
-        // Begin Service Discovery
-        SimpleBLEPeripheral_DiscoverService( connHandle, serviceToDiscover );
-
-      }
-      else
-      {
-        // No change, restore handle info.
-        // bonding indicates that we probably already enabled all these characteristics. easy fix if not.
-        serviceDiscComplete    = TRUE;
-
-        audioStartCharValueHandle = remoteHandles.audioStartCharValueHandle;
-        audioDataCharValueHandle  = remoteHandles.audioDataCharValueHandle;
-
-      }
-
-      Display_print0(dispHandle, 2, 0, "Bond save success");
+      Display_printf(dispHandle, 2, 0, "Bond save success");
     }
     else
     {
-      Display_print1(dispHandle, 2, 0, "Bond save failed: %d", status);
+      Display_printf(dispHandle, 2, 0, "Bond save failed: %d", status);
     }
     break;
 
@@ -1253,13 +1070,13 @@ static void SimpleBLEPeripheral_processPairState(uint8_t state, uint8_t status)
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_passcodeCB
+ * @fn      PeripheralAudio_passcodeCB
  *
  * @brief   Passcode callback.
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
+static void PeripheralAudio_passcodeCB(uint8_t *deviceAddr, uint16_t connHandle,
                                            uint8_t uiInputs, uint8_t uiOutputs)
 {
   uint8_t *pData;
@@ -1270,18 +1087,18 @@ static void SimpleBLEPeripheral_passcodeCB(uint8_t *deviceAddr, uint16_t connHan
     *pData = uiOutputs;
 
     // Enqueue the event.
-    SimpleBLEPeripheral_enqueueMsg(SBP_PASSCODE_NEEDED_EVT, 0, pData);
+    PeripheralAudio_enqueueMsg(PA_PASSCODE_NEEDED_EVT, 0, pData);
   }
 }
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_processPasscode
+ * @fn      PeripheralAudio_processPasscode
  *
  * @brief   Process the Passcode request.
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_processPasscode(uint8_t uiOutputs)
+static void PeripheralAudio_processPasscode(uint8_t uiOutputs)
 {
   // This app uses a default passcode. A real-life scenario would handle all
   // pairing scenarios and likely generate this randomly.
@@ -1290,7 +1107,7 @@ static void SimpleBLEPeripheral_processPasscode(uint8_t uiOutputs)
   // Display passcode to user
   if (uiOutputs != 0)
   {
-    Display_print1(dispHandle, 4, 0, "Passcode: %d", passcode);
+    Display_printf(dispHandle, 4, 0, "Passcode: %d", passcode);
   }
 
   uint16_t connectionHandle;
@@ -1300,30 +1117,8 @@ static void SimpleBLEPeripheral_processPasscode(uint8_t uiOutputs)
   GAPBondMgr_PasscodeRsp(connectionHandle, SUCCESS, passcode);
 }
 
-
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_DiscoverService
- *
- * @brief   Discover service using UUID.
- *
- * @param   connHandle - connection handle to do discovery on
- * @param   svcUuid - service UUID to discover
- *
- * @return  none
- */
-static void SimpleBLEPeripheral_DiscoverService( uint16 connHandle, uint16 svcUuid )
-{
-  if(svcUuid == AUDIO_SERV_UUID) // only take care of Audio Service in this project
-  {
-    uint8 uuid[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB0,
-                      0x00, 0x40, 0x51, 0x04, LO_UINT16( svcUuid ), HI_UINT16( svcUuid ), 0x00, 0xF0};
-
-    VOID GATT_DiscPrimaryServiceByUUID( connHandle, uuid, ATT_UUID_SIZE, selfEntity );
-  }
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_EnableNotification
+ * @fn      PeripheralAudio_EnableNotification
  *
  * @brief   Enable notification for a given attribute handle.
  *
@@ -1332,14 +1127,15 @@ static void SimpleBLEPeripheral_DiscoverService( uint16 connHandle, uint16 svcUu
  *
  * @return  none
  */
-static void SimpleBLEPeripheral_EnableNotification( uint16 connHandle, uint16 attrHandle )
+static void PeripheralAudio_EnableNotification( uint16_t connHandle,
+                                                      uint16_t attrHandle )
 {
   attWriteReq_t req;
 
   req.pValue = GATT_bm_alloc( connHandle, ATT_WRITE_REQ, 2, NULL );
   if ( req.pValue != NULL )
   {
-    uint8 notificationsOn[] = {0x01, 0x00};
+    uint8_t notificationsOn[] = {0x01, 0x00};
 
     req.handle = attrHandle;
 
@@ -1347,58 +1143,15 @@ static void SimpleBLEPeripheral_EnableNotification( uint16 connHandle, uint16 at
     memcpy(req.pValue, notificationsOn, 2);
 
     req.sig = 0;
-    req.cmd = 0;
+    req.cmd = TRUE;
 
-    if ( GATT_WriteCharValue( connHandle, &req, selfEntity ) != SUCCESS )
+    bStatus_t status = GATT_WriteNoRsp( connHandle, &req);
+
+    if ( status != SUCCESS )
     {
       GATT_bm_free( (gattMsg_t *)&req, ATT_WRITE_REQ );
     }
   }
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_setEvent
- *
- * @brief   Function to set event in the Simple BLE Peripheral task.
- *
- * @param   None.
- *
- * @return  None.
- */
-void SimpleBLEPeripheral_setEvent(uint8_t newEvents)
-{
-  SimpleBLEPeripheral_enqueueMsg(SBP_AUDIO_EVT, newEvents, NULL);
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_setEvent
- *
- * @brief   Function to set event in the Simple BLE Peripheral task.
- *
- * @param   None.
- *
- * @return  None.
- */
-void SimpleBLEPeripheral_clearEvent(uint16_t clearEvents)
-{
-
-}
-
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_isConnected
- *
- * @brief   Function to set event in the Simple BLE Peripheral task.
- *
- * @param   None.
- *
- * @return  TRUE if connected, FALSE if not.
- */
-uint8_t SimpleBLEPeripheral_isConnected(void)
-{
-  uint8_t gapRoleState;
-  GAPRole_GetParameter(GAPROLE_STATE, &gapRoleState);
-
-  return (gapRoleState == GAPROLE_CONNECTED);
 }
 
 /*********************************************************************

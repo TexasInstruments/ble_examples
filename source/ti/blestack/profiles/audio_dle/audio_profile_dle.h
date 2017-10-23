@@ -57,6 +57,7 @@ extern "C"
  * INCLUDES
  */
 #include "bcomdef.h"
+#include "att.h"
 
 /*********************************************************************
  * CONSTANTS
@@ -97,6 +98,14 @@ typedef struct audioServiceConfig
 /*********************************************************************
  * MACROS
  */
+
+/*********************************************************************
+ * EXTERNS
+ */
+extern const uint8_t audioProfileServUUID[ATT_UUID_SIZE];
+extern const uint8_t audioProfileStartUUID[ATT_UUID_SIZE];
+extern const uint8_t audioProfileAudioUUID[ATT_UUID_SIZE];
+
 
 /*********************************************************************
  * Profile Callbacks

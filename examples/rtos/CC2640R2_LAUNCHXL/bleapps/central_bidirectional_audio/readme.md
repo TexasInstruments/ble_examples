@@ -17,7 +17,7 @@ In this demo, data flows bidirectionally between a streamer (GATT server) and a
 receiver (GATT client) device. This means both devices must act as both a GATT
 client and a GATT server.
 
-The `simple_central_bidirectional_audio` project is a modified version of
+The `central_bidirectional_audio` project is a modified version of
 `simple_central` from the BLE-SDK.
 
 The central project was slightly modified to:
@@ -105,7 +105,7 @@ and may or may not be needed for a given use case.
 
 1. Load the peripheral device with the `simple_peripheral_bidirectional_audio`
    project
-1. Load the central device with the `simple_central_bidirectional_audio`
+1. Load the central device with the `central_bidirectional_audio`
    project
 
 

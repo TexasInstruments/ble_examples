@@ -1,5 +1,5 @@
 /*
- * Filename: simple_peripheral_bidirectional_audio.h
+ * Filename: peripheral_bidirectional_audio.h
  *
  * Description: This is the simple_peripheral example modified to send
  * audio data over BLE.
@@ -70,40 +70,30 @@
  * PUBLIC FUNCTIONS
  */
 
-extern void SimpleBLEPeripheral_createTask(void);
-
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_setEvent
+ * @fn      PeripheralAudio_setEvent
  *
- * @brief   Function to set event in the Simple BLE Peripheral task.
+ * @brief   Function to create the Peripheral Bidirectional Audio
+ *          task.
  *
  * @param   None.
  *
  * @return  None.
  */
-void SimpleBLEPeripheral_setEvent(uint8_t newEvents);
+extern void PeripheralAudio_createTask(void);
 
 /*********************************************************************
- * @fn      SimpleBLEPeripheral_clearEvent
+ * @fn      PeripheralAudio_setEvent
  *
- * @brief   Function to clear event in the Simple BLE Peripheral task.
+ * @brief   Function to set event in the Peripheral Bidirectional Audio
+ *          task.
  *
  * @param   None.
  *
  * @return  None.
  */
-void SimpleBLEPeripheral_clearEvent(uint16_t clearEvents);
+extern void PeripheralAudio_setEvent(uint8_t newEvents);
 
-/*********************************************************************
- * @fn      SimpleBLEPeripheral_isConnected
- *
- * @brief   Function to set event in the Simple BLE Peripheral task.
- *
- * @param   None.
- *
- * @return  TRUE if connected, FALSE if not.
- */
-uint8_t SimpleBLEPeripheral_isConnected(void);
 
 /*********************************************************************
 *********************************************************************/

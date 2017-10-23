@@ -2,7 +2,7 @@
 
 <projectSpec>
     <project
-        name="simple_central_bidirectional_audio_cc2640r2lp_stack_library"
+        name="central_bidirectional_audio_cc2640r2lp_stack_library"
         device="CC2640R2F"
         cgtVersion="16.9"
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
@@ -13,7 +13,7 @@
         ${TI_BLE_SDK_BASE}/tools/blestack/lib_search/lib_search
         ${PROJECT_LOC}/TOOLS/build_config.opt
         ${TI_BLE_SDK_BASE}/source/ti/blestack/blelib
-        ${WORKSPACE_LOC}/simple_central_bidirectional_audio_cc2640r2lp_stack_library/FlashROM_Library/lib_linker.cmd
+        ${WORKSPACE_LOC}/central_bidirectional_audio_cc2640r2lp_stack_library/FlashROM_Library/lib_linker.cmd
         cc2640
         ${TI_BLE_SDK_BASE}/tools/blestack/lib_search/lib_search.xml
         ${TI_BLE_SDK_BASE}/source/ti/blestack/symbols"

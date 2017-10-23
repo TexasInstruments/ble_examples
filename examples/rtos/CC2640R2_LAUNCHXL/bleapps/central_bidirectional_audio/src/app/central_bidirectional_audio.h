@@ -1,5 +1,5 @@
 /*
- * Filename: simple_central_bidirectional_audio.h
+ * Filename: central_bidirectional_audio.h
  *
  * Description: This is the audio part of the simple_central example
  * modified to send audio data over BLE.
@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef SIMPLEBLECENTRAL_BIDIRECTIONAL_AUDIO_H
-#define SIMPLEBLECENTRAL_BIDIRECTIONAL_AUDIO_H
+#ifndef CENTRAL_AUDIO_H
+#define CENTRAL_AUDIO_H
 
 #ifdef __cplusplus
 extern "C"
@@ -66,14 +66,14 @@ extern "C"
  * FUNCTIONS
  */
 /*
- * Task creation function for the Simple BLE Central.
+ * Task creation function for the Central Bidirectional Audio.
  */
-extern void SimpleBLECentral_createTask(void);
+extern void CentralAudio_createTask(void);
 
 /*
-* Function to set event in the Simple BLE Peripheral task.
+* Function to set event in the Central Bidirectional Audio task.
 */
-extern void SimpleBLECentral_setEvent(uint8_t newEvents);
+extern void CentralAudio_setEvent(uint8_t newEvents);
 
 /*********************************************************************
 *********************************************************************/
@@ -82,4 +82,4 @@ extern void SimpleBLECentral_setEvent(uint8_t newEvents);
 }
 #endif
 
-#endif /* SIMPLEBLECENTRAL_BIDIRECTIONAL_AUDIO_H */
+#endif /* CENTRAL_AUDIO_H */

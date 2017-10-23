@@ -115,15 +115,15 @@ related to the ble_examples repo.
 Encode and transmit a full duplex bidirectional audio stream over BLE using two
 CC2640R2 LaunchPads with CC3200AUDBOOST.
 
-* simple\_central\_bidirectional\_audio
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_central_bidirectional_audio/readme.md)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_central_bidirectional_audio/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_central_bidirectional_audio/src)
+* central\_bidirectional\_audio
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/central_bidirectional_audio/readme.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/central_bidirectional_audio/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/central_bidirectional_audio/src)
 
-* simple\_peripheral\_bidirectional\_audio
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_bidirectional_audio/readme.md)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_bidirectional_audio/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_bidirectional_audio/src)
+* peripheral\_bidirectional\_audio
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/readme.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/src)
 
 ### Bluetooth 5 Throughput Demo
 

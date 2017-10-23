@@ -50,16 +50,9 @@
  */
 #include <string.h>
 #include "bcomdef.h"
-#include "OSAL.h"
-#include "linkdb.h"
-#include "att.h"
-#include "gatt.h"
-#include "gatt_uuid.h"
-#include "gattservapp.h"
-#include "gapbondmgr.h"
 
 #include "audio_profile_dle.h"
-#include "ll.h"
+#include "icall_ble_api.h"
 
 /*********************************************************************
  * MACROS
@@ -77,19 +70,19 @@
  * GLOBAL VARIABLES
  */
 // audio GATT Profile Service UUID: 0xB000
-static CONST uint8_t audioProfileServUUID[ATT_UUID_SIZE] =
+const uint8_t audioProfileServUUID[ATT_UUID_SIZE] =
 {
   TI_BASE_UUID_128(AUDIO_SERV_UUID)
 };
 
 // Start/Stop Characteristic UUID: 0xB001
-static CONST uint8_t audioProfileStartUUID[ATT_UUID_SIZE] =
+const uint8_t audioProfileStartUUID[ATT_UUID_SIZE] =
 {
   TI_BASE_UUID_128(AUDIOPROFILE_START_UUID)
 };
 
 // Audio Stream Characteristic UUID: 0xB002
-static CONST uint8_t audioProfileAudioUUID[ATT_UUID_SIZE] =
+const uint8_t audioProfileAudioUUID[ATT_UUID_SIZE] =
 {
   TI_BASE_UUID_128(AUDIOPROFILE_AUDIO_UUID)
 };

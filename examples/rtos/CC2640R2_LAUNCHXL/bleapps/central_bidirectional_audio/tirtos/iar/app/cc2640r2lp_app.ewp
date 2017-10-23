@@ -213,27 +213,25 @@
                     <name>CCDefines</name>
                     <state>EXT_HAL_ASSERT</state>
                     <state>HEAPMGR_METRICS</state>
-                    <state>SBP_TASK_STACK_SIZE=900</state>
-                    <state>GAPROLE_TASK_STACK_SIZE=700</state>
                     <state>MAX_PDU_SIZE=107</state>
+                    <state>GAPCENTRALROLE_TASK_STACK_SIZE=700</state>
                     <state>BOARD_DISPLAY_USE_LCD=0</state>
                     <state>BOARD_DISPLAY_USE_UART=1</state>
+                    <state>BOARD_DISPLAY_USE_UART_ANSI=0</state>
                     <state>CC2640R2_LAUNCHXL</state>
                     <state>CC26XX</state>
                     <state>CC26XX_R2</state>
                     <state>DeviceFamily_CC26X0R2</state>
-                    <state>xDisplay_DISABLE_ALL</state>
                     <state>ICALL_EVENTS</state>
                     <state>ICALL_JT</state>
                     <state>ICALL_LITE</state>
+                    <state>ICALL_STACK0_ADDR</state>
                     <state>ICALL_MAX_NUM_ENTITIES=6</state>
                     <state>ICALL_MAX_NUM_TASKS=3</state>
-                    <state>ICALL_STACK0_ADDR</state>
-                    <state>MAX_NUM_BLE_CONNS=1</state>
                     <state>POWER_SAVING</state>
-                    <state>RF_SINGLEMODE</state>
                     <state>STACK_LIBRARY</state>
                     <state>USE_ICALL</state>
+                    <state>RF_SINGLEMODE</state>
                     <state>xdc_runtime_Assert_DISABLE_ALL</state>
                     <state>xdc_runtime_Log_DISABLE_ALL</state>
                 </option>
@@ -371,11 +369,9 @@
                     <state>$EXAMPLE_BLE_ROOT$\src\app</state>
                     <state>$SRC_BLE_DIR$\icall\inc</state>
                     <state>$SRC_BLE_DIR$\inc</state>
-                    <state>$SRC_BLE_DIR$\profiles\dev_info</state>
                     <state>$SRC_BLE_DIR$\profiles\roles</state>
                     <state>$SRC_BLE_DIR$\profiles\roles\cc26xx</state>
                     <state>$SRC_BLE_DIR$\profiles\simple_profile</state>
-                    <state>$SRC_BLE_DIR$\profiles\simple_profile\cc26xx</state>
                     <state>$SRC_BLE_DIR$\target</state>
                     <state>$SRC_BLE_DIR$\hal\src\inc</state>
                     <state>$SRC_BLE_DIR$\hal\src\target\_common</state>
@@ -741,7 +737,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>ble_simple_peripheral_$PROJ_FNAME$_$CONFIG_NAME$.out</state>
+                    <state>central_audio_$PROJ_FNAME$_$CONFIG_NAME$.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -818,7 +814,9 @@
                 </option>
                 <option>
                     <name>IlinkSuppressDiags</name>
-                    <state></state>
+                    <state>lt009
+
+</state>
                 </option>
                 <option>
                     <name>IlinkTreatAsRem</name>
@@ -1093,10 +1091,10 @@
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\common\hal_assert.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\src\app\simple_peripheral_bidirectional_audio.c</name>
+            <name>$PROJ_DIR$\..\..\..\src\app\central_bidirectional_audio.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\src\app\simple_peripheral_bidirectional_audio.h</name>
+            <name>$PROJ_DIR$\..\..\..\src\app\central_bidirectional_audio.h</name>
         </file>
         <file>
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\common\cc26xx\util.c</name>
@@ -1153,6 +1151,15 @@
             </file>
         </group>
         <group>
+            <name>RF</name>
+            <file>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\RF.h</name>
+            </file>
+            <file>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\RFCC26XX_singleMode.c</name>
+            </file>
+        </group>
+        <group>
             <name>TRNG</name>
             <file>
                 <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\hal\src\target\_common\TRNGCC26XX.c</name>
@@ -1181,6 +1188,9 @@
         </file>
         <file>
             <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\icall\src\icall_user_config.c</name>
+        </file>
+        <file>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\heapmgr\rtos_heaposal.h</name>
         </file>
     </group>
     <group>
@@ -1228,10 +1238,16 @@
             <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_profile_dle.h</name>
         </file>
         <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\cc26xx\peripheral.c</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_client_disc.c</name>
         </file>
         <file>
-            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\cc26xx\peripheral.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\blestack\profiles\audio_dle\audio_client_disc.h</name>
+        </file>
+        <file>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\cc26xx\central.c</name>
+        </file>
+        <file>
+            <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\blestack\profiles\roles\cc26xx\central.h</name>
         </file>
     </group>
     <group>
