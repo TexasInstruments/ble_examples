@@ -1,3 +1,13 @@
+## Table of Contents
+
+* [Navigating the Repository](#navigating-the-repository)
+* [Change Log](#change-log)
+* [Installation](#installation)
+* [Required Tools](#required-tools)
+* [Examples List](#examples--demo-list)
+* [Tools](#tools)
+* [References](#references)
+
 # Introduction
 
 These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.40.00.45**
