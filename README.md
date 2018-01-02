@@ -201,6 +201,20 @@ Extension with OAD support:
     * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/src)
 
+### Simple Peripheral Observer BLE Example
+
+This sample project is used to add observer role to a BLE peripheral device to
+show scanning functionality in a peripheral based project.
+
+The example supports Bluetooth 4.2:
+
+* simple\_peripheral\_observer
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/readme.md)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/src)
+
+
 ### Apple Notification Center Service (ANCS) Demo
 
 This is an example that demonstrates the use and functionality of the ANCS. ANCS is a GATT
