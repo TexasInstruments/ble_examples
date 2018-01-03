@@ -54,13 +54,18 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 1.40.03.03
+* Addition of Peripheral Observer Project
+* Audio project establish link bugfix
+* Audio disovery cleanup
+* Readme updates
+
 ### 1.40.02.02
 * Memory optimized Duplex Audio demo (Central + Peripheral)
 * SPP over BLE bug-fixes
 * Throughput demo fixes and porting to 1.40 SDK
 
 ### 1.40.01.01
-
 * Added SPP over BLE (client/server) projects for BLE5- Stack and BLE-Stack
 * Minor ANCS updates
 
