@@ -728,7 +728,8 @@ static void CentralAudio_processRoleEvent(gapCentralRoleEvent_t *pEvent)
       if ( peerDeviceFound == TRUE )
       {
 
-        CentralAudio_EstablishLink( FALSE, addrType, peerAddr );
+        CentralAudio_EstablishLink( DEFAULT_LINK_WHITE_LIST, addrType,
+                                    peerAddr );
 
         peerDeviceFound = FALSE;
         scanRes = 0;
@@ -1459,7 +1460,7 @@ static void CentralAudio_EstablishLink( uint8_t whiteList, uint8_t addrType,
 
     // Try to connect to remote device
     GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE,
-                                 DEFAULT_LINK_WHITE_LIST,
+                                 whiteList,
                                  addrType, peerAddr);
   }
 }
