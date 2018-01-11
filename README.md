@@ -30,25 +30,28 @@ please refer to the [FAQ page](docs/faq.md).
 For extra examples for **TI BLE-Stack 2.2.x SDK** (CC26x0R1), see
 [Branch: ble_examples-2.2](https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2).
 
-# A Note about CC2640R2 SDK 1.50
+# A Note about SimpleLink CC2640R2 SDK 1.50
 
-The CC2640R2 SDK 1.50 is unique in that it's BLE-Stack and BLE5-Stack component
-are split into two separate installers, they are both available at the
+The CC2640R2 SDK 1.50 is offered in two separate SDK installers, a Bluetooth
+4.2 production certified installer (BLE-Stack), and a Bluetooth 5 (BLE5-Stack)
+SDK installer permitting evaluation of the Bluetooth 5 Long Range (LE Coded PHY)
+connections and Advertising Extension (AE) features. Both of these SDKs can be
+obtained on the SDK portal page:
 [CC2640R2 SDK download page](http://www.ti.com/tool/SIMPLELINK-CC2640R2-SDK).
 
-The BLE5-Stack component is now available via My Secure Software, and is
-evaulation only. The evaluation SDK now contains native support for Long Range
-mode. The evaluation mode sdk is `simplelink_cc2640r2_sdk_1_50_00_71`, this
-release is not supported by the Github examples.
+Note: Access to production Bluetooth 5 2Mbps stack (BLE5-Stack 1.0.1) in SDK
+1.40 can be found at the above SDK portal page as well with related GitHub
+examples on the `simplelink_sdk-1.40` branch..
 
-The BLE-Stack component installer is `simplelink_cc2640r2_sdk_1_50_00_58`.
-This release is fully supported by Github. Since this installer does not support
-the BLE5-Stack, the `ble5apps/` has been removed.
+The Bluetooth 5 (BLE5-Stack 1.1.0) SDK for evaluating BLE5 Long Range features
+is `simplelink_cc2640r2_sdk_1_50_00_71`, this SDK contains sample applications
+for evaluating long range and is not supported by GitHub examples.
 
-Customers wishing to access BLE5-Stack examples should refer to the my secure
-software release of the SDK or the SimpleLink CC2640R2 SDK 1.40 release on
-Github. This past release is accessible via the `simplelink_sdk-1.40` branch.
-See below for more details on how to check out this branch.
+The production-certified Bluetooth 4.2 (BLE-Stack 3.1.1) component is included
+in SDK installer version `simplelink_cc2640r2_sdk_1_50_00_58`.
+This release is enabled with GitHub examples. Since this installer does not
+support the BLE5-Stack component, the `ble5apps/` has been removed.
+
 
 
 # Navigating the Repository
