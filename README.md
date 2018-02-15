@@ -73,6 +73,11 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 1.50.01.01
+New examples added.
+* BLE-Stack:  Micro BLE Stack Broadcaster + Observer example
+
+
 ### 1.50.00.00
 Initial offering of Simplelink CC2640R2 SDK 1.50.00.58 examples.
 * BLE-Stack:  Serial Port Profile (SPP) Server/Client
@@ -125,6 +130,16 @@ The [FAQ page](docs/faq.md) will try to address some of the common questions
 related to the ble_examples repo.
 
 ## Examples / Demo List
+
+### Micro BLE Stack Broadcaster + Observer
+
+Advertise and scan using the Micro BLE Stack.
+
+* uble\_bcast\_scan
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/uble_bcast_scan/readme.md)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/uble_bcast_scan/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/uble_bcast_scan/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/uble_bcast_scan/src)
 
 ### Full Duplex Bidirectional Audio Demo
 
