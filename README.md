@@ -7,6 +7,8 @@
 * [Examples List](#examples--demo-list)
 * [Tools](#tools)
 * [References](#references)
+* [FAQ](docs/faq.md)
+* [Versioning BLE-Stack Projects](docs/suggested_workflow.md)
 
 # Introduction
 

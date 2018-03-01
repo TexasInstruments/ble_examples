@@ -28,6 +28,15 @@ for more details.
    custom installation directory where you installed the SimpleLink CC2640R2 SDK.
 
 ---
+### <a name="versioning"></a>How should I keep my application based on a TI BLE-Stack SDK under version control?
+
+There are many ways to solve and address this issue. We are merely presenting
+one suggested workflow out of the many combinations that exist.
+
+Since this is an advanced topic, it has its own page dedicated to it.
+You can read more here: [Version Control](suggested_workflow.md)
+
+---
 
 ### <a name="python"></a>Why am I getting an error when I am trying to run a Python script from the /tools folder?
 
