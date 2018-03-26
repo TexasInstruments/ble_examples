@@ -1251,7 +1251,6 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeriObsRoleEvent_t *
       }
         
       ICall_free(pEvent->deviceInfo.pEvtData);
-      ICall_free(pEvent);
       break;
 
     case GAP_DEVICE_DISCOVERY_EVENT:
@@ -1264,7 +1263,6 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeriObsRoleEvent_t *
       Display_print0(dispHandle, 4, 0, "Scanning Off");
 
       ICall_free(pEvent->discCmpl.pDevList);
-      ICall_free(pEvent);
 
       break;
 
