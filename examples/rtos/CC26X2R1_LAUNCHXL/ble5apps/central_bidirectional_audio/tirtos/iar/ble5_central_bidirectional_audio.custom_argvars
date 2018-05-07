@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<iarUserArgVars>
+  <group active="true" name="SIMPLELINK_CC2640R2_SDK">
+    <variable>
+      <name>SIMPLELINK_CORE_SDK_INSTALL_DIR</name>
+      <value>C:\ti\simplelink_cc26x2_sdk_1_60_00_43</value>
+    </variable>
+    <variable>
+      <name>XDCROOT</name>
+      <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\..\xdctools_3_50_04_43_core</value>
+    </variable>
+    <variable>
+      <name>EXAMPLE_BLE_ROOT</name>
+      <value>$PROJ_DIR$\..\..\..</value>
+    </variable>
+    <variable>
+      <name>XDCPATH</name>
+      <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages;$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source;$SRC_BLE_DIR$</value>
+    </variable>
+    <variable>
+        <name>SRC_BLE_DIR</name>
+        <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack</value>
+    </variable>
+    <variable>
+        <name>TOOLS_BLE_DIR</name>
+        <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\tools\ble5stack</value>
+    </variable>
+    <variable>
+      <name>SRC_LOCAL_DIR</name>
+      <value>$EXAMPLE_BLE_ROOT$/../../../../../</value>
+    </variable>
+  </group>
+</iarUserArgVars>
+
+

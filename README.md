@@ -12,49 +12,27 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.50.00.58**
+These examples and demos are for **TI SimpleLink CC26x2 SDK 1.60.00.43**
 
-This repository contains *Bluetooth&reg;* 4.2 Low Energy sample applications for
-Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
-validated as production-ready.
+This repository contains *Bluetooth&reg;* 5 sample applications for
+Texas Instruments' SimpleLink CC26x2 SDK.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
 [Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
 
 To use the examples and tools in this repository, please download and install
-the [SimpleLink CC2640R2 SDK](http://www.ti.com/ble-stack) **first**, and if
-necessary [buy an evaluation kit](http://www.ti.com/tool/launchxl-cc2640r2).
+the [SimpleLink CC26x2 SDK](http://www.ti.com/tool/SIMPLELINK-CC26X2-SDK) **first**, and if
+necessary [buy an evaluation kit](http://www.ti.com/tool/LAUNCHXL-CC26X2R1).
 
 For other hardware and software resources,
 [please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions
 please refer to the [FAQ page](docs/faq.md).
 
+For extra examples for **TI CC2640R2 SDK**, see
+[Branch: simplelink_sdk-1.50](https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.50).
+
 For extra examples for **TI BLE-Stack 2.2.x SDK** (CC26x0R1), see
 [Branch: ble_examples-2.2](https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2).
-
-# A Note about SimpleLink CC2640R2 SDK 1.50
-
-The CC2640R2 SDK 1.50 is offered in two separate SDK installers, a Bluetooth
-4.2 production certified installer (BLE-Stack), and a Bluetooth 5 (BLE5-Stack)
-SDK installer permitting evaluation of the Bluetooth 5 Long Range (LE Coded PHY)
-connections and Advertising Extension (AE) features. Both of these SDKs can be
-obtained on the SDK portal page:
-[CC2640R2 SDK download page](http://www.ti.com/tool/SIMPLELINK-CC2640R2-SDK).
-
-Note: Access to production Bluetooth 5 2Mbps stack (BLE5-Stack 1.0.1) in SDK
-1.40 can be found at the above SDK portal page as well with related GitHub
-examples on the `simplelink_sdk-1.40` branch..
-
-The Bluetooth 5 (BLE5-Stack 1.1.0) SDK for evaluating BLE5 Long Range features
-is `simplelink_cc2640r2_sdk_1_50_00_71`, this SDK contains sample applications
-for evaluating long range and is not supported by GitHub examples.
-
-The production-certified Bluetooth 4.2 (BLE-Stack 3.1.1) component is included
-in SDK installer version `simplelink_cc2640r2_sdk_1_50_00_58`.
-This release is enabled with GitHub examples. Since this installer does not
-support the BLE5-Stack component, the `ble5apps/` has been removed.
-
-
 
 # Navigating the Repository
 
@@ -65,9 +43,6 @@ Older releases can be accessed by checking out/downloading their corresponding
 branch. For more information on supported examples
 please consult the readme.md of the desired branch/release.
 
-For for more information about different SDK components, please consult the
-stack's User Guide.
-
 ## Change Log
 
 Note: The version numbers below are related to GitHub ble_examples releases.
@@ -75,24 +50,17 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
-### 1.50.01.01
-New examples added.
-* BLE-Stack:  Micro BLE Stack Broadcaster + Observer example
-
-
-### 1.50.00.00
-Initial offering of Simplelink CC2640R2 SDK 1.50.00.58 examples.
-* BLE-Stack:  Serial Port Profile (SPP) Server/Client
-* BLE-Stack:  Bidirectional Audio Demo (Central/Peripheral)
-* BLE-Stack:  Apple Notification Center Service (ANCS) Demo (Peripheral)
-* Tools:      voice.py script for Voice-over-HOGP
-
+### 1.60.00.00
+Initial offering of SimpleLink CC26x2 SDK 1.60.00.43 examples.
+* Bidirectional Audio Demo (Central/Peripheral): now on BLE5-Stack
+* Created i2secho application that demonstrates audio sampling and playback
+  with the CC3200AUDBOOST
 
 ## Installation
 
 This repository can be cloned and tracked using Git. For instructions on how to
-clone a repository from Github please refer to this guide:
-[Clone from Github](https://help.github.com/articles/cloning-a-repository/)
+clone a repository from GitHub please refer to this guide:
+[Clone from GitHub](https://help.github.com/articles/cloning-a-repository/)
 
 For users who are unfamiliar with Git, there is the option of downloading the
 contents of the repository as a zip file. See instructions below.
@@ -102,26 +70,26 @@ contents of the repository as a zip file. See instructions below.
 1. Zip folder will appear in your Downloads folder
 
 This repository can be cloned/download anywhere on your computer. There is a
-dependency between this repository and the SimpleLink CC2640R2 SDK install
+dependency between this repository and the SimpleLink CC26x2 SDK install
 location.
 
-By default the SimpleLink CC2640R2 SDK will install to:
+By default the SimpleLink CC26x2 SDK will install to:
 
-    C:\ti\simplelink_cc2640r2_sdk_1_50_00_58
+    C:\ti\simplelink_cc26x2_sdk_1_60_00_43
 
-If the Simplelink CC2640R2 SDK must be installed to a different location, then
+If the SimpleLink CC26x2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
 environment variables.
 
 ## Required Tools
 
-Similar to the Simplelink CC2640R2 SDK, the examples in this repository support
+Similar to the SimpleLink CC26x2 SDK, the examples in this repository support
 the CCS and IAR toolchains. Please pay careful attention to versions of these
 tools, the supported version are listed below. Using a non supported version is
 untested and may result in unexpected behavior.
 
-* CCS v7.3.0 with TI ARM Compiler v16.09.03 LTS
-* IAR for ARM v8.11.2
+* CCS v7.04.00 with TI ARM Compiler v16.09.06LTS
+* IAR for ARM v8.11.4
 
 For more information on toolchain setup, please refer to our
 [FAQ page](docs/faq.md).
@@ -133,99 +101,44 @@ related to the ble_examples repo.
 
 ## Examples / Demo List
 
-### Micro BLE Stack Broadcaster + Observer
-
-Advertise and scan using the Micro BLE Stack.
-
-* uble\_bcast\_scan
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/uble_bcast_scan/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/uble_bcast_scan/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/uble_bcast_scan/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/uble_bcast_scan/src)
-
 ### Full Duplex Bidirectional Audio Demo
 
 Encode and transmit a full duplex bidirectional audio stream over BLE using two
-CC2640R2 LaunchPads with CC3200AUDBOOST.
+CC26x2 LaunchPads with CC3200AUDBOOST.
 
 * central\_bidirectional\_audio
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/central_bidirectional_audio/readme.md)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/central_bidirectional_audio/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/central_bidirectional_audio/src)
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/central_bidirectional_audio/readme.md)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/central_bidirectional_audio/tirtos/ccs)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/central_bidirectional_audio/tirtos/iar)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/central_bidirectional_audio/src)
 
 * peripheral\_bidirectional\_audio
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/readme.md)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/src)
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/peripheral_bidirectional_audio/readme.md)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/peripheral_bidirectional_audio/tirtos/ccs)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/peripheral_bidirectional_audio/tirtos/iar)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/peripheral_bidirectional_audio/src)
 
-### Serial Port Profile (SPP) BLE Examples
+### I2S Echo
 
-This is a 2 part example where a spp\_ble\_client and spp\_ble\_server connect
-with one another and exchange data over UART.
+Read audio frames in from an external codec and loop them back using I2S.
 
-The example also supports Bluetooth 4.2 demonstrating the BLE-Stack's Data Length
-Extension with OAD support:
+* i2secho
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/README.md)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/ccs)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/iar)
+    * [GCC Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/gcc)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/)
 
-* spp\_ble\_client
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/src)
-* spp\_ble\_server
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/src)
-
-### Simple Peripheral Observer BLE Example
-
-This sample project is used to add observer role to a BLE peripheral device to
-show scanning functionality in a peripheral based project.
-
-The example supports Bluetooth 4.2:
-
-* simple\_peripheral\_observer
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/src)
-
-
-### Apple Notification Center Service (ANCS) Demo
-
-This is an example that demonstrates the use and functionality of the ANCS. ANCS is a GATT
-service present on iOS devices used to retrieve and interact with iOS notifications.
-
-The example supports Bluetooth 4.2:
-
-* ancs
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/ancs/src)
-
-## Tools
-
-### [Voice.py](tools/scripts/voice/voice.py)
-This is script allows developers to evaluate the Voice over
-HID-over-GATT-Profile (HoGP) profile which is demonstrated as part of the
-`voice_hogp_remote` example. The `voie_hogp_remote` is available as part of the
-[Simplelink CC2640R2 SDK BLE Example Pack](http://www.ti.com/tool/download/SIMPLELINK-CC2640R2-SDK-BLE-EXAMPLE-PACK).
-The `voice.py` Python script is compatible with Python 2 or Python 3 and depends
-on the Windows&reg; only [pywinusb](https://pypi.python.org/pypi/pywinusb/) python
-module. The script has been tested to work on a Window 10 host with a BLE 4.0
-compatible BLE controller. For help on how to use the `voice.py` script, simply
-invoke its help menu `voice.py --help`.
 
 ## References
 
 The following reference pages may be helpful during general Bluetooth Low
-Energy development.
-Users developing Bluetooth 4.2 applications are encouraged to read the
-[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
+Energy development. New users of the SimpleLink CC26x2 platform and Bluetooth
+5 development are encouraged to read the
+[BLE5-Stack User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC26X2%20SDK%2FDocuments%2FBLE5-Stack%2FBLE5-Stack%20User's%20Guide).
 
 As an additional resource, users are encouraged to complete the
-[SimpleLink Academy](http://software-dl.ti.com/lprf/simplelink_academy/overview.html)
+[SimpleLink Academy](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC26X2%20SDK%2FSimpleLink%20Academy)
 training.
 
 Other resources can be found below:

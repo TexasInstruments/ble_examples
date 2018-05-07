@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IAR Project Connection File -->
+
+<iarProjectConnection version="1.2" name="I2S Echo" oneShot="true"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="IarProjectConnection_1.2.xsd">
+
+  <device>
+    <name>CC2642R1F</name>
+  </device>
+
+  <extraOptions>
+    <args>
+      <arg>-I$PROJ_DIR$</arg>
+      <arg>-f$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/release/iar/compiler.opt.defs</arg>
+      <arg>-DDeviceFamily_CC26X2</arg>
+      <arg>-I$BLE_EXAMPLES_DRIVERS_ROOT$/source</arg>
+      <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source</arg>
+      <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/posix/iar</arg>
+      <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/devices/cc13x2_cc26x2</arg>
+      <arg>--debug</arg>
+      <arg>--silent</arg>
+      <arg>-e</arg>
+      <arg>--aeabi</arg>
+      <arg>--thumb</arg>
+      <arg>--diag_suppress=Pa050</arg>
+    </args>
+  </extraOptions>
+
+  <asmIncludePath>
+    <path>$PROJ_DIR$</path>
+  </asmIncludePath>
+
+  <asmDefines>
+  </asmDefines>
+
+  <linkerFile>
+    <override>true</override>
+    <path>$PROJ_DIR$/$PROJ_FNAME$_CC26X2R1_LAUNCHXL_TIRTOS.icf</path>
+  </linkerFile>
+
+  <linkerExtraOptions>
+    <args>
+      <arg>-f$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/release/iar/linker.cmd</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/display/lib/display.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/mw/lcd/lib/lcd.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/grlib/lib/grlib.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/rf/lib/rf_multiMode_cc26x2.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/lib/drivers_cc26x2.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/pdm/lib/pdm_cc26x2.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/devices/cc13x2_cc26x2/driverlib/bin/iar/driverlib.lib</arg>
+      <arg>--silent</arg>
+      <arg>--cpu=Cortex-M4F</arg>
+      <arg>--redirect</arg>
+      <arg>_Printf=_PrintfSmall</arg>
+      <arg>--redirect</arg>
+      <arg>_Scanf=_ScanfSmall</arg>
+    </args>
+  </linkerExtraOptions>
+
+  <heaps>
+    <heap> <!-- If omitted, id="0" -->
+      <size>0</size>
+    </heap>
+    <heap id="1">
+      <size>0</size>
+    </heap>
+  </heaps>
+  <stacks>
+    <stack> <!-- If omitted, id="0" -->
+      <size>512</size>
+    </stack>
+  </stacks>
+
+  <preBuild>
+    <command>iarbuild.exe $SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/release/iar/tirtos_builds_CC26X2R1_LAUNCHXL_release.ewp Debug -log all</command>
+  </preBuild>
+
+  <files>
+    <group name="Source files">
+      <path copyTo="$PROJ_DIR$/main_tirtos.c">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/main_tirtos.c</path>
+      <path copyTo="$PROJ_DIR$/i2secho.c">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/i2secho.c</path>
+      <path copyTo="$PROJ_DIR$/CC26X2R1_LAUNCHXL.c">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/CC26X2R1_LAUNCHXL.c</path>
+      <path copyTo="$PROJ_DIR$/ccfg.c">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/ccfg.c</path>
+      <path copyTo="$PROJ_DIR$/$PROJ_FNAME$_CC26X2R1_LAUNCHXL_TIRTOS.icf">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/iar/CC26X2R1_LAUNCHXL_TIRTOS.icf</path>
+
+      <path copyTo="$PROJ_DIR$/I2SCC26XX.c">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/drivers/i2s/I2SCC26XX.c</path>
+      <path copyTo="$PROJ_DIR$/I2SCC26XX.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/drivers/i2s/I2SCC26XX.h</path>
+      <path copyTo="$PROJ_DIR$/audiocodec.c">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/audiocodec.c</path>
+      <path copyTo="$PROJ_DIR$/audiocodec.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/audiocodec.h</path>
+      <path copyTo="$PROJ_DIR$/ti3254.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/ti3254.h</path>
+    </group>
+
+    <group name="Header files">
+      <path copyTo="$PROJ_DIR$/Board.h">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/Board.h</path>
+      <path copyTo="$PROJ_DIR$/CC26X2R1_LAUNCHXL.h">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/CC26X2R1_LAUNCHXL.h</path>
+    </group>
+
+    <group name="Documentation" build="false">
+      <path copyTo="$PROJ_DIR$/README.md">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/README.md</path>
+      <path reference="$PROJ_DIR$/Board.html">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/boards/CC26X2R1_LAUNCHXL/Board.html</path>
+    </group>
+  </files>
+</iarProjectConnection>

@@ -4,7 +4,7 @@
 
     <project
         name="cc26xx_mSBC_library"
-        device="CC2640R2F"
+        device="Cortex M.CC2642R1F"
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
         toolChain="TI"
 
@@ -23,11 +23,8 @@
 	<pathVariable name="SBC_SRC" path="../" scope="project"></pathVariable>
 
         <!-- Project properties -->
-
-        <property name="products" value="com.ti.rtsc.TIRTOSCC13XX_CC26XX:2.20.01.08"/>
-
-        <property name="target" value="ti.targets.arm.elf.M3"/>
-        <property name="platform" value="ti.platforms.simplelink:CC2650F128"/>
+        <property name="target" value="ti.targets.arm.elf.M4F"/>
+        <property name="platform" value="ti.platforms.simplelink:CC2642R1F"/>
         <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
         <property name="configuroOptions" value="--compileOptions &quot;${COMPILER_FLAGS} &quot; "/>
@@ -35,7 +32,7 @@
         <configuration
             name="cc26xx_mSBC_library"
 
-			compilerBuildOptions="-mv7M3 -O4 --opt_for_speed=5 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off
+			compilerBuildOptions="--silicon_version=7M4 -O4 --opt_for_speed=5 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off
 
 			-DAUDIO_TRANSMITTER
 			-DAUDIO_RECEIVER
@@ -47,7 +44,7 @@
         <configuration
             name="cc26xx_mSBCencode_library"
 
-			compilerBuildOptions="-mv7M3 -O4 --opt_for_speed=5 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off
+			compilerBuildOptions="--silicon_version=7M4 -O4 --opt_for_speed=5 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off
 
 			-DAUDIO_TRANSMITTER
 
@@ -57,7 +54,7 @@
 
         <configuration
             name="cc26xx_mSBCdecode_library"
-			compilerBuildOptions="-mv7M3 -O4 --opt_for_speed=5 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off
+			compilerBuildOptions="--silicon_version=7M4 -O4 --opt_for_speed=5 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on  --display_error_number --diag_wrap=off
 
 			-DAUDIO_RECEIVER
 

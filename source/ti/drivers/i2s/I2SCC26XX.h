@@ -222,7 +222,6 @@
 extern "C" {
 #endif
 
-#include <hal_types.h>
 #include <ti/drivers/pin/PINCC26XX.h>
 #include <ti/drivers/Power.h>
 #include <ti/drivers/power/PowerCC26XX.h>

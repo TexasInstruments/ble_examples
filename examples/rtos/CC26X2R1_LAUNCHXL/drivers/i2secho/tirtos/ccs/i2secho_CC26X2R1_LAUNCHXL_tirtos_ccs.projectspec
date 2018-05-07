@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectSpec>
+    <applicability>
+        <when>
+            <context
+                deviceFamily="ARM"
+                deviceId="Cortex M.CC2642R1F"
+            />
+        </when>
+    </applicability>
+
+    <import spec="${com.ti.SIMPLELINK_CC26X2_SDK:1.60}/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/debug/ccs/tirtos_builds_CC26X2R1_LAUNCHXL_debug_ccs.projectspec"/>
+
+    <project
+        title="I2S Echo"
+        name="i2secho_CC26X2R1_LAUNCHXL_tirtos_ccs"
+        toolChain="TI"
+        connection="TIXDS110_Connection.xml"
+        device="Cortex M.CC2642R1F"
+        ignoreDefaultDeviceSettings="true"
+        references="tirtos_builds_CC26X2R1_LAUNCHXL_debug_ccs"
+        compilerBuildOptions="
+        -I${PROJECT_ROOT}
+        -DDeviceFamily_CC26X2
+        -I${CG_TOOL_ROOT}/include
+        -I${BLE_EXAMPLES_ROOT}/source/
+        -I${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/devices/cc13x2_cc26x2
+        --silicon_version=7M4
+        --code_state=16
+        --little_endian
+        --display_error_number
+        --diag_warning=255
+        --diag_wrap=off
+        --gen_func_subsections=on
+        --float_support=FPv4SPD16
+        --symdebug:dwarf"
+        linkerBuildOptions="
+        -i${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source
+        -lti/display/lib/display.aem4f
+        -lti/mw/lcd/lib/lcd.aem4f
+        -lti/grlib/lib/grlib.aem4f
+        -lti/drivers/rf/lib/rf_multiMode_cc26x2.aem4f
+        -lti/drivers/lib/drivers_cc26x2.aem4f
+        -lti/drivers/pdm/lib/pdm_cc26x2.aem4f
+        -i${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/kernel/tirtos/packages
+        -lti/dpl/lib/dpl_cc26x2.aem4f
+        -lti/devices/cc13x2_cc26x2/driverlib/bin/ccs/driverlib.lib
+        --warn_sections
+        --display_error_number
+        --diag_wrap=off
+        --rom_model
+        -i${CG_TOOL_ROOT}/lib
+        -llibc.a"
+        description="Echoes audio frames back using the I2S driver and CC3200 Audio BoosterPack">
+
+        <pathVariable name="BLE_EXAMPLES_ROOT" path="../../../../../../.." scope="project"/>
+
+        <property name="buildProfile" value="debug"/>
+        <property name="isHybrid" value="true"/>
+        <group id="i2secho.SIMPLELINK_CC26X2_SDK.CC26X2R1_LAUNCHXL.drivers.TI"/>
+        <file path="../../overview.rov.json" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../tirtos/main_tirtos.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../i2secho.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../Board.h" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../CC26X2R1_LAUNCHXL.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../CC26X2R1_LAUNCHXL.h" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../tirtos/ccs/CC26X2R1_LAUNCHXL_TIRTOS.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../ccfg.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${BLE_EXAMPLES_ROOT}/source/ti/drivers/i2s/I2SCC26XX.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${BLE_EXAMPLES_ROOT}/source/ti/drivers/i2s/I2SCC26XX.h" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${BLE_EXAMPLES_ROOT}/source/ti/audiocodec/audiocodec.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${BLE_EXAMPLES_ROOT}/source/ti/audiocodec/audiocodec.h" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${BLE_EXAMPLES_ROOT}/source/ti/audiocodec/ti3254.h" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/boards/CC26X2R1_LAUNCHXL/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
+        </file>
+    </project>
+</projectSpec>
+

@@ -170,7 +170,7 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
     if (object->isOpen == true) {
         Hwi_restore(key);
 
-        Log_warning1("I2S:(%p) already in use.", hwAttrs->baseAddr);
+        //Log_warning1("I2S:(%p) already in use.", hwAttrs->baseAddr);
 
         return (NULL);
     }
@@ -196,7 +196,7 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
     object->currentStream->status       = I2SCC26XX_STREAM_IDLE;
 
     /* The following are constants that apply to I2S */
-    object->i32SampleRate = 0;//I2S_SAMPLE_RATE_16K;                         /* If negative then use user configured clock division */
+    object->i32SampleRate = 0; // I2S_SAMPLE_RATE_48K;                       /* If negative then use user configured clock division */
     object->audioClkCfg.wclkDiv = 250; //16                                  /* I2S Word Clock divider override*/
     object->audioClkCfg.sampleOnPositiveEdge = I2SCC26XX_SampleEdge_Postive; /* I2S Sample Edge */
     object->audioClkCfg.wclkPhase = I2SCC26XX_WordClockPhase_Dual;           /* I2S Word Clock Phase */
@@ -249,9 +249,9 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
     uint32_t ui32BlockSizeInBytesOut = (object->blockSize * ( (object->audioFmtCfg.memLen) ? 3 : 2 ) * ui8TotalNumberOfChannelsOut);
     uint32_t ui32NumberOfBlocks = (object->ui32conBufTotalSize/(ui32BlockSizeInBytesIn + ui32BlockSizeInBytesOut));
     if (ui32NumberOfBlocks < I2SCC26XX_MIN_ALLOWED_QUEUE_SIZE) {
-        Log_warning2("I2S:(%p) Buffer size %d too small.",
-                     hwAttrs->baseAddr,
-                     ui32BlockSizeInBytesIn * ui32NumberOfBlocks);
+        //Log_warning2("I2S:(%p) Buffer size %d too small.",
+                     //hwAttrs->baseAddr,
+                     //ui32BlockSizeInBytesIn * ui32NumberOfBlocks);
 
         /* Release power dependency - i.e. potentially power down serial domain. */
         //Power_releaseDependency(hwAttrs->powerMngrId);
@@ -272,9 +272,9 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
     if (ui32BlockSizeInBytesOut) {
         ui32TotalNumberOfBlocks += ui32NumberOfBlocks;
     }
-    if ( (ui32TotalNumberOfBlocks * sizeof(queueNodeI2S_t)) < object->ui32conMgtBufTotalSize ) {
+    if ( (ui32TotalNumberOfBlocks * sizeof(queueNodeI2S_t)) > object->ui32conMgtBufTotalSize ) {
         /* Not enough memory has been allocated */
-        Log_warning0("Not enough memory provided");
+        //Log_warning0("Not enough memory provided");
 
         /* Release power dependency - i.e. potentially power down serial domain. */
         //Power_releaseDependency(hwAttrs->powerMngrId);
@@ -288,8 +288,8 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
         return (NULL);
     }
 
-    Log_print2(Diags_USER2,"I2S:(%p) Found memory for %d blocks",
-                            hwAttrs->baseAddr, ui32NumberOfBlocks);
+    //Log_print2(Diags_USER2,"I2S:(%p) Found memory for %d blocks",
+                            //hwAttrs->baseAddr, ui32NumberOfBlocks);
 
     /* Register power dependency - i.e. power up and enable clock for I2S. */
     Power_setDependency(hwAttrs->powerMngrId);
@@ -301,7 +301,7 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
     if (!I2SCC26XX_initIO(handle)) {
         /* Trying to use I2S driver when some other driver or application
         *  has already allocated these pins, error! */
-        Log_warning0("Could not allocate I2S pins, already in use.");
+        //Log_warning0("Could not allocate I2S pins, already in use.");
 
         /* Release power dependency - i.e. potentially power down serial domain. */
         Power_releaseDependency(hwAttrs->powerMngrId);
@@ -399,8 +399,8 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
 
     /* Check the transfer mode */
     if (object->requestMode == I2SCC26XX_MODE_BLOCKING) {
-        Log_print1(Diags_USER2, "I2S:(%p) in I2SCC26XX_MODE_BLOCKING mode",
-                                 hwAttrs->baseAddr);
+        //Log_print1(Diags_USER2, "I2S:(%p) in I2SCC26XX_MODE_BLOCKING mode",
+                                 //hwAttrs->baseAddr);
 
         /* Create a semaphore to block task execution for the duration of the
          * I2S transfer */
@@ -412,7 +412,7 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
         object->callbackFxn = I2SCC26XX_callback;
     }
     else {
-        Log_print1(Diags_USER2, "I2S:(%p) in I2SCC26XX_MODE_NONBLOCKING mode", hwAttrs->baseAddr);
+        //Log_print1(Diags_USER2, "I2S:(%p) in I2SCC26XX_MODE_NONBLOCKING mode", hwAttrs->baseAddr);
 
         /* Check to see if a callback function was defined for async mode */
         Assert_isTrue(params->callbackFxn != NULL, NULL);
@@ -421,7 +421,7 @@ I2SCC26XX_Handle I2SCC26XX_open(I2SCC26XX_Handle handle, I2SCC26XX_Params *param
         object->callbackFxn = params->callbackFxn;
     }
 
-    Log_print1(Diags_USER2, "I2S:(%p) opened", hwAttrs->baseAddr);
+    //Log_print1(Diags_USER2, "I2S:(%p) opened", hwAttrs->baseAddr);
 
     /* Register notification functions */
 //    Power_registerNotify(&object->i2sPostObj, Power_AWAKE_STANDBY, (Fxn)i2sPostNotify, (UInt32)handle, NULL );
@@ -437,6 +437,12 @@ void I2SCC26XX_close(I2SCC26XX_Handle handle) {
     unsigned int                 key;
     I2SCC26XX_Object             *object;
     I2SCC26XX_HWAttrs const      *hwAttrs;
+
+    if(handle == NULL)
+    {
+        // Return early if handle is NULL
+        return;
+    }
 
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = handle->hwAttrs;
@@ -488,7 +494,7 @@ void I2SCC26XX_close(I2SCC26XX_Handle handle) {
     object->isOpen = false;
     Hwi_restore(key);
 
-    Log_print1(Diags_USER2, "I2S:(%p) closed", hwAttrs->baseAddr);
+    //Log_print1(Diags_USER2, "I2S:(%p) closed", hwAttrs->baseAddr);
 }
 
 /*
@@ -505,7 +511,7 @@ static void I2SCC26XX_hwiFxn (UArg arg) {
     object = ((I2SCC26XX_Handle)arg)->object;
     hwAttrs = ((I2SCC26XX_Handle)arg)->hwAttrs;
 
-    Log_print1(Diags_USER2, "I2S:(%p) interrupt context start", hwAttrs->baseAddr);
+    //Log_print1(Diags_USER2, "I2S:(%p) interrupt context start", hwAttrs->baseAddr);
 
     /* Get the interrupt status of the I2S controller */
     intStatus = I2SIntStatus(hwAttrs->baseAddr, true);
@@ -529,7 +535,7 @@ static void I2SCC26XX_hwiFxn (UArg arg) {
           i2sBlockActiveIn->queueIndicator = NODE_INDICATOR_READY_QUEUE;
 #endif //I2S_DEBUG
         } else {
-            Log_print1(Diags_USER2, "I2S:(%p) reusable buffer used In", hwAttrs->baseAddr);
+            //Log_print1(Diags_USER2, "I2S:(%p) reusable buffer used In", hwAttrs->baseAddr);
         }
         /* Setup next active buffer */
         i2sBlockActiveIn = i2sBlockNextIn;
@@ -599,7 +605,7 @@ static void I2SCC26XX_hwiFxn (UArg arg) {
             i2sBlockActiveOut->queueIndicator = NODE_INDICATOR_READY_QUEUE;
 #endif //I2S_DEBUG
         } else {
-            Log_print1(Diags_USER2, "I2S:(%p) reusable buffer used Out", hwAttrs->baseAddr);
+            //Log_print1(Diags_USER2, "I2S:(%p) reusable buffer used Out", hwAttrs->baseAddr);
         }
         /* Setup next active buffer */
         i2sBlockActiveOut = i2sBlockNextOut;
@@ -683,15 +689,15 @@ static void I2SCC26XX_hwiFxn (UArg arg) {
             notification = object->currentStream;
             /* Notify caller about availability of buffer */
             object->callbackFxn((I2SCC26XX_Handle)arg, notification);
-            Log_print1(Diags_USER2, "I2S missing next pointer: (%p) !\n", hwAttrs->baseAddr);
+            //Log_print1(Diags_USER2, "I2S missing next pointer: (%p) !\n", hwAttrs->baseAddr);
         }
     }
     else if (intStatus & (I2S_INT_TIMEOUT | I2S_INT_BUS_ERR | I2S_INT_WCLK_ERR)) {
         asm(" NOP"); // Any other error
     }
 
-    Log_print1(Diags_USER2, "I2S:(%p) interrupt context end",
-               hwAttrs->baseAddr);
+    //Log_print1(Diags_USER2, "I2S:(%p) interrupt context end",
+               //hwAttrs->baseAddr);
 }
 
 /*
@@ -712,8 +718,8 @@ bool I2SCC26XX_startStream(I2SCC26XX_Handle handle) {
     if (object->currentStream->status != I2SCC26XX_STREAM_IDLE) {
         Hwi_restore(key);
 
-        Log_error1("I2S:(%p) stream still in progress",
-                ((I2SCC26XX_HWAttrs const *)(handle->hwAttrs))->baseAddr);
+        //Log_error1("I2S:(%p) stream still in progress",
+                //((I2SCC26XX_HWAttrs const *)(handle->hwAttrs))->baseAddr);
 
         /* Flag that the transfer failed to start */
         object->currentStream->status = I2SCC26XX_STREAM_FAILED;
@@ -785,8 +791,9 @@ bool I2SCC26XX_startStream(I2SCC26XX_Handle handle) {
 
     /* Configure buffers */
     I2SBufferConfig(hwAttrs->baseAddr,
-                    (i2sBlockActiveIn) ? (uint32_t)i2sBlockActiveIn->buf : NULL,
-                    (i2sBlockActiveOut) ? (uint32_t)i2sBlockActiveOut->buf : NULL, object->blockSize,
+                    (i2sBlockActiveIn) ? (uint32_t)i2sBlockActiveIn->buf : (uint32_t)NULL,
+                    (i2sBlockActiveOut) ? (uint32_t)i2sBlockActiveOut->buf : (uint32_t)NULL,
+                    object->blockSize,
                     I2SCC26XX_DEFAULT_SAMPLE_STAMP_MOD);
     /* Enable the I2S module. This will set first buffer and DMA length */
     I2SEnable(hwAttrs->baseAddr);
@@ -840,9 +847,22 @@ bool I2SCC26XX_stopStream(I2SCC26XX_Handle handle) {
     I2SCC26XX_HWAttrs const             *hwAttrs;
     unsigned int                        key;
 
+    // Check to be sure that handle is not NULL
+    if( (handle->object == NULL) ||
+        (handle->hwAttrs == NULL))
+    {
+        return false;
+    }
+
     /* Get the pointer to the object and hwAttrs */
     object = handle->object;
     hwAttrs = handle->hwAttrs;
+
+    // Check the current stream is not NULL
+    if (object->currentStream == NULL)
+    {
+        return false;
+    }
 
     /* Check if a transfer is in progress */
     key = Hwi_disable();
@@ -890,8 +910,8 @@ bool I2SCC26XX_stopStream(I2SCC26XX_Handle handle) {
     /* Indicate we are done with this stream */
     object->currentStream->status = I2SCC26XX_STREAM_IDLE;
 
-    Log_print2(Diags_USER2,"I2S:(%p) stream: %p stopped",
-                            hwAttrs->baseAddr, (UArg)object->currentStream);
+    //Log_print2(Diags_USER2,"I2S:(%p) stream: %p stopped",
+                            //hwAttrs->baseAddr, (UArg)object->currentStream);
 
     /* Release constraint after streaming */
     Power_releaseConstraint(PowerCC26XX_SB_DISALLOW);
@@ -915,9 +935,9 @@ bool I2SCC26XX_requestBuffer(I2SCC26XX_Handle handle, I2SCC26XX_BufferRequest *b
 #endif //I2S_DEBUG
 
     if (object->requestMode == I2SCC26XX_MODE_BLOCKING) {
-        Log_print1(Diags_USER2, "I2S:(%p) request pending on blockComplete "
-                                "semaphore",
-                ((I2SCC26XX_HWAttrs const *)(handle->hwAttrs))->baseAddr);
+        //Log_print1(Diags_USER2, "I2S:(%p) request pending on blockComplete "
+                                //"semaphore",
+                //((I2SCC26XX_HWAttrs const *)(handle->hwAttrs))->baseAddr);
 
         if (!Semaphore_pend(Semaphore_handle(&(object->blockComplete)), object->ui32requestTimeout)) {
             /* Stop stream, if we experience a timeout */
@@ -1035,8 +1055,8 @@ void I2SCC26XX_releaseBuffer(I2SCC26XX_Handle handle, I2SCC26XX_BufferRelease *b
 static void I2SCC26XX_callback(I2SCC26XX_Handle handle, I2SCC26XX_StreamNotification *msg) {
     I2SCC26XX_Object         *object;
 
-    Log_print1(Diags_USER2, "I2S DMA:(%p) posting block complete semaphore",
-                ((I2SCC26XX_HWAttrs const *)(handle->hwAttrs))->baseAddr);
+    //Log_print1(Diags_USER2, "I2S DMA:(%p) posting block complete semaphore",
+                //((I2SCC26XX_HWAttrs const *)(handle->hwAttrs))->baseAddr);
 
     /* Get the pointer to the object */
     object = handle->object;
@@ -1102,7 +1122,7 @@ static void I2SCC26XX_initHw(I2SCC26XX_Handle handle) {
     I2SIntDisable(hwAttrs->baseAddr, I2S_INT_ALL);
 
     /* Print the configuration */
-    Log_print1(Diags_USER2, "I2S:(%p) Configured", hwAttrs->baseAddr);
+    //Log_print1(Diags_USER2, "I2S:(%p) Configured", hwAttrs->baseAddr);
 }
 
 /*

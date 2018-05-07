@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<iarUserArgVars>
+  <group active="true" name="SIMPLELINK_CC26X2_SDK_1_60_00_43">
+    <variable>
+      <name>XDCPATH</name>
+      <value>c:/ti/simplelink_cc26x2_sdk_1_60_00_43/kernel/tirtos/packages;c:/ti/simplelink_cc26x2_sdk_1_60_00_43/source</value>
+    </variable>
+    <variable>
+      <name>XDCROOT</name>
+      <value>c:/ti/xdctools_3_50_04_43_core</value>
+    </variable>
+    <variable>
+      <name>SIMPLELINK_CC26X2_SDK_INSTALL_DIR</name>
+      <value>c:/ti/simplelink_cc26x2_sdk_1_60_00_43</value>
+    </variable>
+    <variable>
+      <name>EXAMPLE_ROOT</name>
+      <value>c:/ti/simplelink_cc26x2_sdk_1_60_00_43/tools/iar</value>
+    </variable>
+    <variable>
+      <name>BLE_EXAMPLES_DRIVERS_ROOT</name>
+      <value>../../../../../../..</value>
+    </variable>
+  </group>
+</iarUserArgVars>
