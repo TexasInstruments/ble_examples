@@ -129,6 +129,23 @@ Read audio frames in from an external codec and loop them back using I2S.
     * [GCC Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/gcc)
     * [Source](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/)
 
+### Serial Port Profile (SPP) BLE Examples
+
+This is a UART to BLE bridge example where a spp\_ble\_client and spp\_ble\_server connect
+with one another and exchange UART data over the air.
+
+The example also supports Bluetooth 5 demonstrating the BLE-Stack's support for different PHYs:
+
+* spp\_ble\_client
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_client/readme.md)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_client/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_client/src)
+* spp\_ble\_server
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/readme.md)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/src)
 
 ## References
 
