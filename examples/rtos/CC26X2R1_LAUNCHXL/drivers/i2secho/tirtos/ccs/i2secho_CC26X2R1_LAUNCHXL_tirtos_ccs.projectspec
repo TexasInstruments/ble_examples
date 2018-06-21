@@ -9,7 +9,7 @@
         </when>
     </applicability>
 
-    <import spec="${com.ti.SIMPLELINK_CC26X2_SDK:1.60}/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/debug/ccs/tirtos_builds_CC26X2R1_LAUNCHXL_debug_ccs.projectspec"/>
+    <import spec="${com.ti.SIMPLELINK_CC26X2_SDK:2.10.00.44}/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/debug/ccs/tirtos_builds_CC26X2R1_LAUNCHXL_debug_ccs.projectspec"/>
 
     <project
         title="I2S Echo"
@@ -18,13 +18,13 @@
         connection="TIXDS110_Connection.xml"
         device="Cortex M.CC2642R1F"
         ignoreDefaultDeviceSettings="true"
+        ignoreDefaultCCSSettings="true"
         references="tirtos_builds_CC26X2R1_LAUNCHXL_debug_ccs"
         compilerBuildOptions="
-        -I${PROJECT_ROOT}
         -DDeviceFamily_CC26X2
         -I${CG_TOOL_ROOT}/include
         -I${BLE_EXAMPLES_ROOT}/source/
-        -I${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/devices/cc13x2_cc26x2
+        -I${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/devices/cc13x2_cc26x2_v1
         --silicon_version=7M4
         --code_state=16
         --little_endian
@@ -36,15 +36,16 @@
         --symdebug:dwarf"
         linkerBuildOptions="
         -i${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source
-        -lti/display/lib/display.aem4f
-        -lti/mw/lcd/lib/lcd.aem4f
-        -lti/grlib/lib/grlib.aem4f
-        -lti/drivers/rf/lib/rf_multiMode_cc26x2.aem4f
-        -lti/drivers/lib/drivers_cc26x2.aem4f
-        -lti/drivers/pdm/lib/pdm_cc26x2.aem4f
+        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/display/lib/display.aem4f
+        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/grlib/lib/ccs/m4f/grlib.a
+        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/third_party/spiffs/lib/ccs/m4f/spiffs_cc26xx.a
+        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/drivers/rf/lib/rf_multiMode_cc26x2_v1.aem4f
+        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/drivers/lib/drivers_cc26x2_v1.aem4f
+        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/drivers/pdm/lib/pdm_cc26x2_v1.aem4f
         -i${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/kernel/tirtos/packages
-        -lti/dpl/lib/dpl_cc26x2.aem4f
-        -lti/devices/cc13x2_cc26x2/driverlib/bin/ccs/driverlib.lib
+        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2_v1.aem4f
+        -l${GENERATED_LIBRARIES}
+        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/devices/cc13x2_cc26x2_v1/driverlib/bin/ccs/driverlib.lib
         --warn_sections
         --display_error_number
         --diag_wrap=off

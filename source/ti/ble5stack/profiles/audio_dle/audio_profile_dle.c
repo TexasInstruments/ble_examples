@@ -246,7 +246,7 @@ bStatus_t Audio_AddService(void)
   }
 
   // Initialize Audio Cmd Client Characteristic Configuration attributes
-  GATTServApp_InitCharCfg(CONNHANDLE_INVALID, audioProfileStartConfig);
+  GATTServApp_InitCharCfg(LINKDB_CONNHANDLE_INVALID, audioProfileStartConfig);
 
   // Allocate Audio Stream Client Characteristic Configuration table
   audioProfileAudioConfig = (gattCharCfg_t *)ICall_malloc(sizeof(gattCharCfg_t)*
@@ -257,7 +257,7 @@ bStatus_t Audio_AddService(void)
   }
 
   // Initialize Audio Stream Client Characteristic Configuration attributes
-  GATTServApp_InitCharCfg(CONNHANDLE_INVALID, audioProfileAudioConfig);
+  GATTServApp_InitCharCfg(LINKDB_CONNHANDLE_INVALID, audioProfileAudioConfig);
 
   // Register GATT attribute list and CBs with GATT Server App
   status = GATTServApp_RegisterService(audioProfileAttrTbl,

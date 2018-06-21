@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Texas Instruments Incorporated
+ * Copyright (c) 2016-2018, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <ti/devices/cc13x2_cc26x2/driverlib/ioc.h>
-#include <ti/devices/cc13x2_cc26x2/driverlib/udma.h>
-#include <ti/devices/cc13x2_cc26x2/inc/hw_ints.h>
-#include <ti/devices/cc13x2_cc26x2/inc/hw_memmap.h>
+#include <ti/devices/cc13x2_cc26x2_v1/driverlib/ioc.h>
+#include <ti/devices/cc13x2_cc26x2_v1/driverlib/udma.h>
+#include <ti/devices/cc13x2_cc26x2_v1/inc/hw_ints.h>
+#include <ti/devices/cc13x2_cc26x2_v1/inc/hw_memmap.h>
 
 #include "CC26X2R1_LAUNCHXL.h"
 
@@ -51,9 +51,9 @@
  *  =============================== ADCBuf ===============================
  */
 #include <ti/drivers/ADCBuf.h>
-#include <ti/drivers/adcbuf/ADCBufCC26XX.h>
+#include <ti/drivers/adcbuf/ADCBufCC26X2.h>
 
-ADCBufCC26XX_Object adcBufCC26xxObjects[CC26X2R1_LAUNCHXL_ADCBUFCOUNT];
+ADCBufCC26X2_Object adcBufCC26xxObjects[CC26X2R1_LAUNCHXL_ADCBUFCOUNT];
 
 /*
  *  This table converts a virtual adc channel into a dio and internal analogue
@@ -62,7 +62,7 @@ ADCBufCC26XX_Object adcBufCC26xxObjects[CC26X2R1_LAUNCHXL_ADCBUFCOUNT];
  *  pairs are hardwired. Do not remap them in the table. You may reorder entire
  *  entries. The mapping of dio and internal signals is package dependent.
  */
-const ADCBufCC26XX_AdcChannelLutEntry ADCBufCC26XX_adcChannelLut[CC26X2R1_LAUNCHXL_ADCBUF0CHANNELCOUNT] = {
+const ADCBufCC26X2_AdcChannelLutEntry ADCBufCC26X2_adcChannelLut[CC26X2R1_LAUNCHXL_ADCBUF0CHANNELCOUNT] = {
     {CC26X2R1_LAUNCHXL_DIO23_ANALOG, ADC_COMPB_IN_AUXIO7},
     {CC26X2R1_LAUNCHXL_DIO24_ANALOG, ADC_COMPB_IN_AUXIO6},
     {CC26X2R1_LAUNCHXL_DIO25_ANALOG, ADC_COMPB_IN_AUXIO5},
@@ -76,19 +76,18 @@ const ADCBufCC26XX_AdcChannelLutEntry ADCBufCC26XX_adcChannelLut[CC26X2R1_LAUNCH
     {PIN_UNASSIGNED, ADC_COMPB_IN_VSS},
 };
 
-const ADCBufCC26XX_HWAttrs adcBufCC26xxHWAttrs[CC26X2R1_LAUNCHXL_ADCBUFCOUNT] = {
+const ADCBufCC26X2_HWAttrs adcBufCC26xxHWAttrs[CC26X2R1_LAUNCHXL_ADCBUFCOUNT] = {
     {
         .intPriority       = ~0,
         .swiPriority       = 0,
-        .adcChannelLut     = ADCBufCC26XX_adcChannelLut,
+        .adcChannelLut     = ADCBufCC26X2_adcChannelLut,
         .gpTimerUnit       = CC26X2R1_LAUNCHXL_GPTIMER0A,
-        .gptDMAChannelMask = 1 << UDMA_CHAN_TIMER0_A,
     }
 };
 
 const ADCBuf_Config ADCBuf_config[CC26X2R1_LAUNCHXL_ADCBUFCOUNT] = {
     {
-        &ADCBufCC26XX_fxnTable,
+        &ADCBufCC26X2_fxnTable,
         &adcBufCC26xxObjects[CC26X2R1_LAUNCHXL_ADCBUF0],
         &adcBufCC26xxHWAttrs[CC26X2R1_LAUNCHXL_ADCBUF0]
     },
@@ -222,28 +221,6 @@ const ADC_Config ADC_config[CC26X2R1_LAUNCHXL_ADCCOUNT] = {
 
 const uint_least8_t ADC_count = CC26X2R1_LAUNCHXL_ADCCOUNT;
 
-/*
- *  =============================== Crypto ===============================
- */
-#include <ti/drivers/crypto/CryptoCC26XX.h>
-
-CryptoCC26XX_Object cryptoCC26XXObjects[CC26X2R1_LAUNCHXL_CRYPTOCOUNT];
-
-const CryptoCC26XX_HWAttrs cryptoCC26XXHWAttrs[CC26X2R1_LAUNCHXL_CRYPTOCOUNT] = {
-    {
-        .baseAddr       = CRYPTO_BASE,
-        .powerMngrId    = PowerCC26XX_PERIPH_CRYPTO,
-        .intNum         = INT_CRYPTO_RESULT_AVAIL_IRQ,
-        .intPriority    = ~0,
-    }
-};
-
-const CryptoCC26XX_Config CryptoCC26XX_config[CC26X2R1_LAUNCHXL_CRYPTOCOUNT] = {
-    {
-         .object  = &cryptoCC26XXObjects[CC26X2R1_LAUNCHXL_CRYPTO0],
-         .hwAttrs = &cryptoCC26XXHWAttrs[CC26X2R1_LAUNCHXL_CRYPTO0]
-    },
-};
 
 /*
  *  =============================== ECDH ===============================
@@ -419,12 +396,11 @@ const DisplayUart_HWAttrs displayUartHWAttrs = {
     .strBufLen    = BOARD_DISPLAY_UART_STRBUF_SIZE,
 };
 
-const DisplaySharp_HWAttrs displaySharpHWattrs = {
+const DisplaySharp_HWAttrsV1 displaySharpHWattrs = {
     .spiIndex    = CC26X2R1_LAUNCHXL_SPI0,
-    .csPin       = CC26X2R1_LAUNCHXL_LCD_CS,
-    .extcominPin = CC26X2R1_LAUNCHXL_LCD_EXTCOMIN,
-    .powerPin    = CC26X2R1_LAUNCHXL_LCD_POWER,
-    .enablePin   = CC26X2R1_LAUNCHXL_LCD_ENABLE,
+    .csPin       = CC26X2R1_LAUNCHXL_GPIO_LCD_CS,
+    .powerPin    = CC26X2R1_LAUNCHXL_GPIO_LCD_POWER,
+    .enablePin   = CC26X2R1_LAUNCHXL_GPIO_LCD_ENABLE,
     .pixelWidth  = BOARD_DISPLAY_SHARP_SIZE,
     .pixelHeight = BOARD_DISPLAY_SHARP_SIZE,
     .displayBuf  = sharpDisplayBuf,
@@ -496,6 +472,9 @@ GPIO_PinConfig gpioPinConfigs[] = {
     GPIOCC26XX_DIO_13 | GPIO_DO_NOT_CONFIG,  /* Button 0 */
     GPIOCC26XX_DIO_14 | GPIO_DO_NOT_CONFIG,  /* Button 1 */
 
+    GPIOCC26XX_DIO_15 | GPIO_DO_NOT_CONFIG,  /* CC26X2R1_LAUNCHXL_SPI_MASTER_READY */
+    GPIOCC26XX_DIO_21 | GPIO_DO_NOT_CONFIG,  /* CC26X2R1_LAUNCHXL_SPI_SLAVE_READY */
+
     /* Output pins */
     GPIOCC26XX_DIO_07 | GPIO_DO_NOT_CONFIG,  /* Green LED */
     GPIOCC26XX_DIO_06 | GPIO_DO_NOT_CONFIG,  /* Red LED */
@@ -504,7 +483,13 @@ GPIO_PinConfig gpioPinConfigs[] = {
     GPIOCC26XX_DIO_20 | GPIO_DO_NOT_CONFIG,
 
     /* SD CS */
-    GPIOCC26XX_DIO_21 | GPIO_DO_NOT_CONFIG
+    GPIOCC26XX_DIO_21 | GPIO_DO_NOT_CONFIG,
+
+    /* Sharp Display - GPIO configurations will be done in the Display files */
+    GPIOCC26XX_DIO_24 | GPIO_DO_NOT_CONFIG, /* SPI chip select */
+    GPIOCC26XX_DIO_22 | GPIO_DO_NOT_CONFIG, /* LCD power control */
+    GPIOCC26XX_DIO_23 | GPIO_DO_NOT_CONFIG, /*LCD enable */
+
 };
 
 /*
@@ -517,6 +502,8 @@ GPIO_PinConfig gpioPinConfigs[] = {
 GPIO_CallbackFxn gpioCallbackFunctions[] = {
     NULL,  /* Button 0 */
     NULL,  /* Button 1 */
+    NULL,  /* CC26X2R1_LAUNCHXL_SPI_MASTER_READY */
+    NULL,  /* CC26X2R1_LAUNCHXL_SPI_SLAVE_READY */
 };
 
 const GPIOCC26XX_Config GPIOCC26XX_config = {
@@ -588,7 +575,7 @@ const I2C_Config I2C_config[CC26X2R1_LAUNCHXL_I2CCOUNT] = {
 const uint_least8_t I2C_count = CC26X2R1_LAUNCHXL_I2CCOUNT;
 
 /*
- *============================= I2S =====================================
+ *============================= I2S begin =====================================
  */
 /* Place into subsections to allow the TI linker to remove items properly */
 #if defined(__TI_COMPILER_VERSION__)
@@ -628,9 +615,11 @@ const I2SCC26XX_Config I2SCC26XX_config[] = {
 #include <ti/drivers/nvs/NVSSPI25X.h>
 #include <ti/drivers/nvs/NVSCC26XX.h>
 
-#define NVS_REGIONS_BASE 0x52000
+#define NVS_REGIONS_BASE 0x48000
 #define SECTORSIZE       0x2000
-#define REGIONSIZE       (SECTORSIZE * 2)
+#define REGIONSIZE       (SECTORSIZE * 4)
+#define SPISECTORSIZE    0x1000
+#define SPIREGIONSIZE    (SPISECTORSIZE * 32)
 #define VERIFYBUFSIZE    64
 
 static uint8_t verifyBuf[VERIFYBUFSIZE];
@@ -653,7 +642,7 @@ static char flashBuf[REGIONSIZE];
 /*
  * Place uninitialized array at NVS_REGIONS_BASE
  */
-__no_init static char flashBuf[REGIONSIZE] @ NVS_REGIONS_BASE;
+static __no_init char flashBuf[REGIONSIZE] @ NVS_REGIONS_BASE;
 
 #elif defined(__GNUC__)
 
@@ -688,8 +677,8 @@ const NVSCC26XX_HWAttrs nvsCC26xxHWAttrs[1] = {
 const NVSSPI25X_HWAttrs nvsSPI25XHWAttrs[1] = {
     {
         .regionBaseOffset = 0,
-        .regionSize = REGIONSIZE,
-        .sectorSize = SECTORSIZE,
+        .regionSize = SPIREGIONSIZE,
+        .sectorSize = SPISECTORSIZE,
         .verifyBuf = verifyBuf,
         .verifyBufSize = VERIFYBUFSIZE,
         .spiHandle = NULL,
@@ -795,11 +784,12 @@ const uint_least8_t PWM_count = CC26X2R1_LAUNCHXL_PWMCOUNT;
  */
 #include <ti/drivers/rf/RF.h>
 
-const RFCC26XX_HWAttrs RFCC26XX_hwAttrs = {
-    .hwiCpe0Priority = ~0,
-    .hwiHwPriority   = ~0,
-    .swiCpe0Priority =  0,
-    .swiHwPriority   =  0,
+const RFCC26XX_HWAttrsV2 RFCC26XX_hwAttrs = {
+    .hwiPriority        = ~0,       /* Lowest HWI priority */
+    .swiPriority        = 0,        /* Lowest SWI priority */
+    .xoscHfAlwaysNeeded = true,     /* Keep XOSC dependency while in stanby */
+    .globalCallback     = NULL,     /* No board specific callback */
+    .globalEventMask    = 0         /* No events subscribed to */
 };
 
 /*
@@ -912,7 +902,8 @@ const UARTCC26XX_HWAttrsV2 uartCC26XXHWAttrs[CC26X2R1_LAUNCHXL_UARTCOUNT] = {
         .ringBufPtr     = uartCC26XXRingBuffer[CC26X2R1_LAUNCHXL_UART0],
         .ringBufSize    = sizeof(uartCC26XXRingBuffer[CC26X2R1_LAUNCHXL_UART0]),
         .txIntFifoThr   = UARTCC26XX_FIFO_THRESHOLD_1_8,
-        .rxIntFifoThr   = UARTCC26XX_FIFO_THRESHOLD_4_8
+        .rxIntFifoThr   = UARTCC26XX_FIFO_THRESHOLD_4_8,
+        .errorFxn       = NULL
     },
     {
         .baseAddr       = UART1_BASE,
@@ -927,7 +918,8 @@ const UARTCC26XX_HWAttrsV2 uartCC26XXHWAttrs[CC26X2R1_LAUNCHXL_UARTCOUNT] = {
         .ringBufPtr     = uartCC26XXRingBuffer[CC26X2R1_LAUNCHXL_UART1],
         .ringBufSize    = sizeof(uartCC26XXRingBuffer[CC26X2R1_LAUNCHXL_UART1]),
         .txIntFifoThr   = UARTCC26XX_FIFO_THRESHOLD_1_8,
-        .rxIntFifoThr   = UARTCC26XX_FIFO_THRESHOLD_4_8
+        .rxIntFifoThr   = UARTCC26XX_FIFO_THRESHOLD_4_8,
+        .errorFxn       = NULL
     }
 };
 

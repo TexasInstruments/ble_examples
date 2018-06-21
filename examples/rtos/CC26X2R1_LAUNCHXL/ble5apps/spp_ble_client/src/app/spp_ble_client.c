@@ -272,7 +272,7 @@ static uint8_t numConn = 0;
 static connRec_t connList[MAX_NUM_BLE_CONNS];
 
 // Connection handle of current connection
-static uint16_t sbcConnHandle = CONNHANDLE_INVALID;
+static uint16_t sbcConnHandle = LINKDB_CONNHANDLE_INVALID;
 
 // Accept or reject L2CAP connection parameter update request
 static bool acceptParamUpdateReq = true;
@@ -552,7 +552,7 @@ static void SPPBLEClient_init(void)
   // Initialize internal data
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
-    connList[i].currentConnHandle = CONNHANDLE_INVALID;
+    connList[i].currentConnHandle = LINKDB_CONNHANDLE_INVALID;
   }
 
   GGS_SetParameter(GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN,
@@ -1873,7 +1873,7 @@ static uint8_t SPPBLEClient_addConnInfo(uint16_t currentConnHandle, uint8_t *pAd
 
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
-    if (connList[i].currentConnHandle == CONNHANDLE_INVALID)
+    if (connList[i].currentConnHandle == LINKDB_CONNHANDLE_INVALID)
     {
       // Found available entry to put a new connection info in
       connList[i].currentConnHandle = currentConnHandle;
@@ -1905,7 +1905,7 @@ static uint8_t SPPBLEClient_removeConnInfo(uint16_t currentConnHandle)
     if (connList[i].currentConnHandle == currentConnHandle)
     {
       // Found the entry to mark as deleted
-      connList[i].currentConnHandle = CONNHANDLE_INVALID;
+      connList[i].currentConnHandle = LINKDB_CONNHANDLE_INVALID;
       numConn--;
 
       break;

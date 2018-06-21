@@ -337,7 +337,7 @@ bStatus_t SerialPortService_AddService( uint32 services )
   }
 
   // Initialize Client Characteristic Configuration attributes
-  GATTServApp_InitCharCfg( CONNHANDLE_INVALID, SerialPortServiceDataConfig );
+  GATTServApp_InitCharCfg( LINKDB_CONNHANDLE_INVALID, SerialPortServiceDataConfig );
 
 #if (defined(AUTO_NOTIFICATION)  && (AUTO_NOTIFICATION == TRUE))
   //Hardcode to enable notification in GATT table
@@ -790,7 +790,7 @@ static bStatus_t SerialPortService_ReadAttrCB( uint16 connHandle, gattAttribute_
         numFramingError = 0;
         numParityError = 0;
         break;
-        
+
       case SERIALPORTSERVICE_CONFIG_UUID:
         *pLen = SERIALPORTSERVICE_CONFIG_LEN;
         VOID memcpy( pValue, pAttr->pValue, SERIALPORTSERVICE_CONFIG_LEN );

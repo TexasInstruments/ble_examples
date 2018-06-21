@@ -12,7 +12,7 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC26x2 SDK 1.60.00.43**
+These examples and demos are for **TI SimpleLink CC26x2 SDK 2.10.00.44**
 
 This repository contains *Bluetooth&reg;* 5 sample applications for
 Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
@@ -170,7 +170,7 @@ Maintenace update
 * Bugfixes on i2secho example
 
 ### 1.60.00.00
-Initial offering of SimpleLink CC26x2 SDK 1.60.00.43 examples.
+Initial offering of SimpleLink CC26x2 SDK 2.10.00.44 examples.
 * Bidirectional Audio Demo (Central/Peripheral): now on BLE5-Stack
 * Created i2secho application that demonstrates audio sampling and playback
   with the CC3200AUDBOOST
@@ -194,7 +194,7 @@ location.
 
 By default the SimpleLink CC26x2 SDK will install to:
 
-    C:\ti\simplelink_cc26x2_sdk_1_60_00_43
+    C:\ti\simplelink_cc26x2_sdk_2_10_00_44
 
 If the SimpleLink CC26x2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing

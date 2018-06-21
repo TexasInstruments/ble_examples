@@ -19,7 +19,7 @@
         <!-- Project properties -->
         <property name="type" value="rtsc"/>
         <property name="products" value="com.ti.SIMPLELINK_CC26X2_SDK:1.60.00.43"/>
-        <property name="xdcToolsVersion" value="3.50.04.43"/>
+        <property name="xdcToolsVersion" value="3.50.05.12"/>
         <property name="target" value="ti.targets.arm.elf.M4F"/>
         <property name="platform" value="ti.platforms.simplelink:CC2642R1F"/>
         <property name="buildProfile" value="release"/>
@@ -53,23 +53,22 @@
             -I${SRC_COMMON_DIR}/heapmgr
             -I${SRC_COMMON_DIR}/icall/src/inc
             -I${SRC_COMMON_DIR}/osal/src/inc
-            -I${EXAMPLE_BLE_ROOT}/../../../../../source/ti/ble5stack/profiles/serial_port
+            -I${SRC_BLE_DIR}/profiles/serial_port
+            -I${SRC_BLE_DIR}/sdi/src/inc
             -I${SRC_COMMON_DIR}/services/src/saddr
             -I${SRC_COMMON_DIR}/services/src/sdata
             -I${SRC_BLE_DIR}/npi/src
-            -I${EXAMPLE_BLE_ROOT}/../../../../../source/ti/ble5stack/sdi/src/
-            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2"
+            -I${SRC_COMMON_DIR}/services/src/nv
+            -I${SRC_COMMON_DIR}/services/src/nv/cc26xx
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2_v1"
             linkerBuildOptions="
-            -l${WORKSPACE_LOC}/ble5_spp_ble_client_cc26x2r1lp_stack_library/FlashROM_Library/ble_r2.symbols
-            -l${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2/driverlib/bin/ccs/driverlib.lib
-            -l${SRC_BLE_DIR}/../../../kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2.aem4f
-            -l${SRC_BLE_DIR}/../../../source/ti/drivers/lib/drivers_cc26x2.aem4f
-            -l${SRC_BLE_DIR}/../../../source/ti/drivers/rf/lib/rf_multiMode_cc26x2.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2_v1/driverlib/bin/ccs/driverlib.lib
+            -l${SRC_BLE_DIR}/../../../kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2_v1.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/drivers/lib/drivers_cc26x2_v1.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/drivers/rf/lib/rf_multiMode_cc26x2_v1.aem4f
             -l${SRC_BLE_DIR}/../../../source/ti/display/lib/display.aem4f
-            -l${SRC_BLE_DIR}/../../../source/ti/mw/lcd/lib/lcd.aem4f
-            -l${SRC_BLE_DIR}/../../../source/ti/grlib/lib/grlib.aem4f
-            -l${SRC_BLE_DIR}/../../../source/ti/drivers/pdm/lib/pdm_cc26x2.aem4f
-
+            -l${SRC_BLE_DIR}/../../../source/ti/grlib/lib/ccs/m4f/grlib.a
+            -l${SRC_BLE_DIR}/../../../source/ti/drivers/pdm/lib/pdm_cc26x2_v1.aem4f
             -l${WORKSPACE_LOC}/ble5_spp_ble_client_cc26x2r1lp_stack_library/FlashROM_Library/lib_linker.cmd
             -l${WORKSPACE_LOC}/ble5_spp_ble_client_cc26x2r1lp_stack_library/FlashROM_Library/ble5_spp_ble_client_cc26x2r1lp_stack_library.lib
             -l${SRC_BLE_DIR}/common/cc26xx/ccs/cc13x2_cc26x2_app.cmd
@@ -156,8 +155,15 @@
         <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
 
         <!-- Drivers/TRNG Folder -->
-        <file path="SRC_COMMON_DIR/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
-        <file path="SRC_COMMON_DIR/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_COMMON_DIR/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_Release"/>
+        <file path="SRC_COMMON_DIR/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_Release"/>
+
+        <!-- Drivers/NV Folder -->
+        <file path="SRC_BLE_DIR/services/src/nv/cc26xx/nvoctp.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/services/src/nv/cc26xx/nvoctp.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/services/src/nv/cc26xx/crc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/services/src/nv/cc26xx/crc.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/services/src/nv/nvintf.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
 
         <!-- ICall Folder -->
         <file path="SRC_COMMON_DIR/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
@@ -202,6 +208,6 @@
         <file path="EXAMPLE_BLE_ROOT/tirtos/ccs/defines/ble5_spp_ble_client_cc26x2r1lp_app_FlashROM_Debug.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS/defines" createVirtualFolders="true" applicableConfigurations="FlashROM_Debug"/>
         <file path="EXAMPLE_BLE_ROOT/tirtos/ble_release.cfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Release"/>
         <file path="EXAMPLE_BLE_ROOT/tirtos/ble_debug.cfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Debug"/>
-        <file path="SRC_BLE_DIR/common/cc26xx/ccs/cc13x2_cc26x2_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/ccs/cc13x2_cc26x2_v1_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Release"/>
     </project>
 </projectSpec>

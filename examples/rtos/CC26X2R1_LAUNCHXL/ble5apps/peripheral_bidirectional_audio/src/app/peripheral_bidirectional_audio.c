@@ -366,8 +366,8 @@ static void PeripheralAudio_processAdvEvent(paGapAdvEventData_t *pEventData);
 static void PeripheralAudio_processAppMsg(paEvt_t *pMsg);
 #if defined(BLE_V42_FEATURES) && (BLE_V42_FEATURES & PRIVACY_1_2_CFG)
 static void PeripheralAudio_updateRPA(void);
-#endif // PRIVACY_1_2_CFG
 static void PeripheralAudio_clockHandler(UArg arg);
+#endif // PRIVACY_1_2_CFG
 static void PeripheralAudio_passcodeCb(uint8_t *pDeviceAddr, uint16_t connHandle,
                                         uint8_t uiInputs, uint8_t uiOutputs,
                                         uint32_t numComparison);
@@ -533,7 +533,7 @@ static void PeripheralAudio_init(void)
   Board_initKeys(PeripheralAudio_keyChangeHandler);
 
   // Initialize Connection List
-  PeripheralAudio_clearConnListEntry(CONNHANDLE_ALL);
+  PeripheralAudio_clearConnListEntry(LINKDB_CONNHANDLE_ALL);
 
   //Initialize GAP layer for Peripheral role and register to receive GAP events
   GAP_DeviceInit(GAP_PROFILE_PERIPHERAL, selfEntity, addrMode, NULL);
@@ -693,10 +693,6 @@ static uint8_t PeripheralAudio_processStackMsg(ICall_Hdr *pMsg)
               PeripheralAudio_updatePHYStat(HCI_LE_SET_PHY, (uint8_t *)pMsg);
               break;
             }
-
-            case HCI_EXT_CONN_EVENT_NOTICE:
-            default:
-              break;
           }
           break;
         }
@@ -1187,7 +1183,6 @@ static void PeripheralAudio_updateRPA(void)
   // complete event.
   HCI_LE_ReadLocalResolvableAddressCmd(0, rpa);
 }
-#endif // PRIVACY_1_2_CFG
 
 /*********************************************************************
  * @fn      PeripheralAudio_clockHandler
@@ -1211,6 +1206,7 @@ static void PeripheralAudio_clockHandler(UArg arg)
     PeripheralAudio_enqueueMsg(PA_READ_RPA_EVT, 0, NULL);
   }
 }
+#endif // PRIVACY_1_2_CFG
 
 /*********************************************************************
  * @fn      PeripheralAudio_keyChangeHandler
@@ -1515,7 +1511,7 @@ static uint8_t PeripheralAudio_addConn(uint16_t connHandle)
   // Try to find an available entry
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
-    if (connList[i].connHandle == CONNHANDLE_INVALID)
+    if (connList[i].connHandle == LINKDB_CONNHANDLE_INVALID)
     {
       // Found available entry to put a new connection info in
       connList[i].connHandle = connHandle;
@@ -1559,7 +1555,7 @@ static uint8_t PeripheralAudio_getConnIndex(uint16_t connHandle)
  * @brief   Find index in the connected device list by connHandle
  *
  * @return  SUCCESS if connHandle found valid index or bleInvalidRange
- *          if index wasn't found. CONNHANDLE_ALL will always succeed.
+ *          if index wasn't found. LINKDB_CONNHANDLE_ALL will always succeed.
  */
 static uint8_t PeripheralAudio_clearConnListEntry(uint16_t connHandle)
 {
@@ -1567,7 +1563,7 @@ static uint8_t PeripheralAudio_clearConnListEntry(uint16_t connHandle)
   // Set to invalid connection index initially
   uint8_t connIndex = MAX_NUM_BLE_CONNS;
 
-  if(connHandle != CONNHANDLE_ALL)
+  if(connHandle != LINKDB_CONNHANDLE_ALL)
   {
     // Get connection index from handle
     connIndex = PeripheralAudio_getConnIndex(connHandle);
@@ -1580,9 +1576,9 @@ static uint8_t PeripheralAudio_clearConnListEntry(uint16_t connHandle)
   // Clear specific handle or all handles
   for(i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
-    if((connIndex == i) || (connHandle == CONNHANDLE_ALL))
+    if((connIndex == i) || (connHandle == LINKDB_CONNHANDLE_ALL))
     {
-      connList[i].connHandle = CONNHANDLE_INVALID;
+      connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
       connList[i].currPhy = 0;
       connList[i].phyCngRq = 0;
       connList[i].phyRqFailCnt = 0;

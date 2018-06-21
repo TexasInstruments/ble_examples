@@ -46,8 +46,8 @@ extern "C" {
 #endif
 
 /* Includes */
-#include <ti/drivers/PIN.h>
-#include <ti/devices/cc13x2_cc26x2/driverlib/ioc.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/ioc.h)
 
 /* Defines */
 #ifndef CC26X2R1_LAUNCHXL

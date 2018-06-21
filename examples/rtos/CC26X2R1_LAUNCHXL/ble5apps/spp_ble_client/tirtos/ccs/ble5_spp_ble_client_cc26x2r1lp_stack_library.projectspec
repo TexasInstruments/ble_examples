@@ -22,7 +22,7 @@
     >
 
         <!-- Project properties -->
-        <property name="products" value="com.ti.rtsc.XDCtools:3.50.04.43"/>
+        <property name="products" value="com.ti.rtsc.XDCtools:3.50.05.12"/>
         <property name="target" value="ti.targets.arm.elf.M4F"/>
         <property name="platform" value="ti.platforms.simplelink:CC2642R1F"/>
         <property name="buildProfile" value="release"/>
@@ -59,16 +59,16 @@
             -I${SRC_COMMON_DIR}/services/src/nv/cc26xx
             -I${SRC_COMMON_DIR}/services/src/nv
             -I${SRC_COMMON_DIR}/services/src/saddr
-            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2
-            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2/rf_patches
-            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2/inc
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2_v1
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2_v1/rf_patches
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2_v1/inc
             -I${SRC_BLE_DIR}/../../../source
             -I${SRC_BLE_DIR}/../../../kernel/tirtos/packages
             -I${XDC_CG_ROOT}/packages"
         />
 
         <pathVariable name="EXAMPLE_BLE_ROOT" path="../.." scope="project"/>
-        <pathVariable name="SRC_BLE_DIR" path="C:/ti/simplelink_cc26x2_sdk_1_60_00_43/source/ti/ble5stack" scope="project"/>
+        <pathVariable name="SRC_BLE_DIR" path="C:/ti/simplelink_cc26x2_sdk_2_10_00_44/source/ti/ble5stack" scope="project"/>
         <pathVariable name="SRC_COMMON_DIR" path="${SRC_BLE_DIR}/../../../source/ti/ble5stack" scope="project"/>
         <pathVariable name="TOOLS_BLE_DIR" path="${SRC_BLE_DIR}/../../../tools/ble5stack" scope="project"/>
 
@@ -152,9 +152,9 @@
         <file path="SRC_COMMON_DIR/osal/src/inc/osal_timers.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="OSAL" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
 
         <!-- ROM Folder -->
-        <file path="SRC_BLE_DIR/rom/r2/common_rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ROM" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
-        <file path="SRC_BLE_DIR/rom/r2/rom_flash_jt.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ROM" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
-        <file path="SRC_BLE_DIR/rom/r2/rom_init.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ROM" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
+        <file path="SRC_BLE_DIR/rom/r2/common_rom_init.c" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="ROM" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
+        <file path="SRC_BLE_DIR/rom/r2/rom_flash_jt.h" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="ROM" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
+        <file path="SRC_BLE_DIR/rom/r2/rom_init.c" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="ROM" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>
 
         <!-- Startup Folder -->
         <file path="SRC_BLE_DIR/icall/stack/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_Library"/>

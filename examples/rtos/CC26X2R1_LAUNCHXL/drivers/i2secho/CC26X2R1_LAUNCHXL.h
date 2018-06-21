@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017, Texas Instruments Incorporated
+ * Copyright (c) 2015-2018, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ extern "C" {
 
 /* Includes */
 #include <ti/drivers/PIN.h>
-#include <ti/devices/cc13x2_cc26x2/driverlib/ioc.h>
+#include <ti/devices/cc13x2_cc26x2_v1/driverlib/ioc.h>
 
 /* Externs */
 extern const PIN_Config BoardGpioInitTable[];
@@ -106,14 +106,6 @@ extern const PIN_Config BoardGpioInitTable[];
 #define CC26X2R1_LAUNCHXL_I2S_BCLK              IOID_30
 #define CC26X2R1_LAUNCHXL_I2S_MCLK              (PIN_Id)IOID_UNUSED
 #define CC26X2R1_LAUNCHXL_I2S_WCLK              IOID_29
-
-/* LCD (430BOOST - Sharp96 Rev 1.1) */
-#define CC26X2R1_LAUNCHXL_LCD_CS                IOID_24 /* SPI chip select */
-#define CC26X2R1_LAUNCHXL_LCD_EXTCOMIN          IOID_12 /* External COM inversion */
-#define CC26X2R1_LAUNCHXL_LCD_ENABLE            IOID_22 /* LCD enable */
-#define CC26X2R1_LAUNCHXL_LCD_POWER             IOID_23 /* LCD power control */
-#define CC26X2R1_LAUNCHXL_LCD_CS_ON             1
-#define CC26X2R1_LAUNCHXL_LCD_CS_OFF            0
 
 /* LEDs */
 #define CC26X2R1_LAUNCHXL_PIN_LED_ON            1
@@ -236,16 +228,6 @@ typedef enum CC26X2R1_LAUNCHXL_ADCName {
 } CC26X2R1_LAUNCHXL_ADCName;
 
 /*!
- *  @def    CC26X2R1_LAUNCHXL_CryptoName
- *  @brief  Enum of Crypto names
- */
-typedef enum CC26X2R1_LAUNCHXL_CryptoName {
-    CC26X2R1_LAUNCHXL_CRYPTO0 = 0,
-
-    CC26X2R1_LAUNCHXL_CRYPTOCOUNT
-} CC26X2R1_LAUNCHXL_CryptoName;
-
-/*!
  *  @def    CC26X2R1_LAUNCHXL_ECDHName
  *  @brief  Enum of ECDH names
  */
@@ -312,11 +294,15 @@ typedef enum CC26X2R1_LAUNCHXL_SHA2Name {
 typedef enum CC26X2R1_LAUNCHXL_GPIOName {
     CC26X2R1_LAUNCHXL_GPIO_S1 = 0,
     CC26X2R1_LAUNCHXL_GPIO_S2,
+    CC26X2R1_LAUNCHXL_SPI_MASTER_READY,
+    CC26X2R1_LAUNCHXL_SPI_SLAVE_READY,
     CC26X2R1_LAUNCHXL_GPIO_LED_GREEN,
     CC26X2R1_LAUNCHXL_GPIO_LED_RED,
     CC26X2R1_LAUNCHXL_GPIO_SPI_FLASH_CS,
     CC26X2R1_LAUNCHXL_SDSPI_CS,
-
+    CC26X2R1_LAUNCHXL_GPIO_LCD_CS,
+    CC26X2R1_LAUNCHXL_GPIO_LCD_POWER,
+    CC26X2R1_LAUNCHXL_GPIO_LCD_ENABLE,
     CC26X2R1_LAUNCHXL_GPIOCOUNT
 } CC26X2R1_LAUNCHXL_GPIOName;
 

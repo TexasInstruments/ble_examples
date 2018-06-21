@@ -32,13 +32,13 @@ LFLAGS = "-i$(SIMPLELINK_CC26X2_SDK_INSTALL_DIR)/source" \
     -lti/display/lib/display.aem4f \
     -lti/mw/lcd/lib/lcd.aem4f \
     -lti/grlib/lib/grlib.aem4f \
-    -lti/drivers/rf/lib/rf_multiMode_cc26x2.aem4f \
-    -lti/drivers/lib/drivers_cc26x2.aem4f \
-    -lti/drivers/pdm/lib/pdm_cc26x2.aem4f \
+    -lti/drivers/rf/lib/rf_multiMode_cc26x2_v1.aem4f \
+    -lti/drivers/lib/drivers_cc26x2_v1.aem4f \
+    -lti/drivers/pdm/lib/pdm_cc26x2_v1.aem4f \
     "-i$(SIMPLELINK_CC26X2_SDK_INSTALL_DIR)/kernel/tirtos/packages" \
-    -lti/dpl/lib/dpl_cc26x2.aem4f \
+    -lti/dpl/lib/dpl_cc26x2_v1.aem4f \
     "-l$(KERNEL_BUILD)/ccs/linker.cmd" \
-    -lti/devices/cc13x2_cc26x2/driverlib/bin/ccs/driverlib.lib \
+    -lti/devices/cc13x2_cc26x2_v1/driverlib/bin/ccs/driverlib.lib \
     ../../tirtos/ccs/CC26X2R1_LAUNCHXL_TIRTOS.cmd \
     "-m$(NAME).map" \
     --warn_sections \

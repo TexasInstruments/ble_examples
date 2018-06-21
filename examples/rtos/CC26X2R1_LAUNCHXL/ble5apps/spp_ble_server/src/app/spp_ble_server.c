@@ -335,7 +335,7 @@ spClockEventData_t argRpaRead =
 static spConnRec_t connList[MAX_NUM_BLE_CONNS];
 
 // Current connection handle as chosen by menu
-static uint16_t menuConnHandle = CONNHANDLE_INVALID;
+static uint16_t menuConnHandle = LINKDB_CONNHANDLE_INVALID;
 
 // List to store connection handles for set phy command status's
 static List_List setPhyCommStatList;
@@ -428,7 +428,7 @@ static PIN_Config SPPBLEAppPinTable[] =
     PIN_TERMINATE
 };
 
-static uint16 currentConnHandle = CONNHANDLE_INVALID;
+static uint16 currentConnHandle = LINKDB_CONNHANDLE_INVALID;
 
 const char *strPHY[] = {"1 Mbps", "2 Mbps", "1 & 2 Mbps", "Coded", "1 & 2 Mbps, & Coded", "Auto PHY change"};
 
@@ -714,7 +714,7 @@ static void SPPBLEServer_init(void)
   Board_initKeys(SPPBLEServer_keyChangeHandler);
 
   // Initialize Connection List
-  SPPBLEServer_clearConnListEntry(CONNHANDLE_ALL);
+  SPPBLEServer_clearConnListEntry(LINKDB_CONNHANDLE_ALL);
 
   //Initialize GAP layer for Peripheral role and register to receive GAP events
   GAP_DeviceInit(GAP_PROFILE_PERIPHERAL, selfEntity, addrMode, NULL);
@@ -1896,7 +1896,7 @@ static uint8_t SPPBLEServer_addConn(uint16_t connHandle)
   // Try to find an available entry
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
-    if (connList[i].connHandle == CONNHANDLE_INVALID)
+    if (connList[i].connHandle == LINKDB_CONNHANDLE_INVALID)
     {
       // Found available entry to put a new connection info in
       connList[i].connHandle = connHandle;
@@ -1965,7 +1965,7 @@ static uint8_t SPPBLEServer_getConnIndex(uint16_t connHandle)
  * @brief   Find index in the connected device list by connHandle
  *
  * @return  SUCCESS if connHandle found valid index or bleInvalidRange
- *          if index wasn't found. CONNHANDLE_ALL will always succeed.
+ *          if index wasn't found. LINKDB_CONNHANDLE_ALL will always succeed.
  */
 static uint8_t SPPBLEServer_clearConnListEntry(uint16_t connHandle)
 {
@@ -1973,7 +1973,7 @@ static uint8_t SPPBLEServer_clearConnListEntry(uint16_t connHandle)
   // Set to invalid connection index initially
   uint8_t connIndex = MAX_NUM_BLE_CONNS;
 
-  if(connHandle != CONNHANDLE_ALL)
+  if(connHandle != LINKDB_CONNHANDLE_ALL)
   {
     // Get connection index from handle
     connIndex = SPPBLEServer_getConnIndex(connHandle);
@@ -1986,9 +1986,9 @@ static uint8_t SPPBLEServer_clearConnListEntry(uint16_t connHandle)
   // Clear specific handle or all handles
   for(i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
-    if((connIndex == i) || (connHandle == CONNHANDLE_ALL))
+    if((connIndex == i) || (connHandle == LINKDB_CONNHANDLE_ALL))
     {
-      connList[i].connHandle = CONNHANDLE_INVALID;
+      connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
       connList[i].currPhy = 0;
       connList[i].phyCngRq = 0;
       connList[i].phyRqFailCnt = 0;

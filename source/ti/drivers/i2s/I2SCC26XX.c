@@ -49,14 +49,16 @@
 #include <string.h>
 
 /* driverlib header files */
-#include <inc/hw_memmap.h>
-#include <inc/hw_ints.h>
-#include <inc/hw_types.h>
-#include <driverlib/sys_ctrl.h>
-#include <driverlib/ioc.h>
-#include <driverlib/rom.h>
-#include <driverlib/prcm.h>
-#include <driverlib/i2s.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(inc/hw_memmap.h)
+#include DeviceFamily_constructPath(inc/hw_ints.h)
+#include DeviceFamily_constructPath(inc/hw_types.h)
+
+#include DeviceFamily_constructPath(driverlib/sys_ctrl.h)
+#include DeviceFamily_constructPath(driverlib/ioc.h)
+#include DeviceFamily_constructPath(driverlib/rom.h)
+#include DeviceFamily_constructPath(driverlib/prcm.h)
+#include DeviceFamily_constructPath(driverlib/i2s.h)
 
 /* I2SCC26XX functions */
 void            I2SCC26XX_init(I2SCC26XX_Handle handle);

@@ -309,7 +309,10 @@ static void CentralAudio_pairStateCb(uint16_t connHandle, uint8_t state,
                                     uint8_t status);
 
 static void CentralAudio_keyChangeHandler(uint8 keys);
+
+#if defined(BLE_V42_FEATURES) && (BLE_V42_FEATURES & PRIVACY_1_2_CFG)
 static void CentralAudio_clockHandler(UArg arg);
+#endif // PRIVACY_1_2_CFG
 
 static uint8_t CentralAudio_enqueueMsg(uint8_t event, uint8_t status,
                                       uint8_t *pData);
@@ -409,7 +412,7 @@ static void CentralAudio_init(void)
   // Initialize internal data
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
-    connList[i].connHandle = CONNHANDLE_INVALID;
+    connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
   }
 
   Board_initKeys(CentralAudio_keyChangeHandler);
@@ -868,7 +871,7 @@ static bool CentralAudio_alreadyConnected(uint8_t  *addr)
 {
   for(uint8_t idx = 0; idx < MAX_NUM_BLE_CONNS; idx++)
   {
-    if(connList[idx].connHandle != CONNHANDLE_INVALID &&
+    if(connList[idx].connHandle != LINKDB_CONNHANDLE_INVALID &&
        (!memcmp(addr, connList[idx].addr, B_ADDR_LEN)))
     {
       return true;
@@ -1563,7 +1566,7 @@ static uint8_t CentralAudio_addConnInfo(uint16_t connHandle, uint8_t *pAddr)
 
   for (i = 0; i < MAX_NUM_BLE_CONNS; i++)
   {
-    if (connList[i].connHandle == CONNHANDLE_INVALID)
+    if (connList[i].connHandle == LINKDB_CONNHANDLE_INVALID)
     {
       // Found available entry to put a new connection info in
       connList[i].connHandle = connHandle;
@@ -1595,7 +1598,7 @@ static uint8_t CentralAudio_removeConnInfo(uint16_t connHandle)
     if (connList[i].connHandle == connHandle)
     {
       // Found the entry to mark as deleted
-      connList[i].connHandle = CONNHANDLE_INVALID;
+      connList[i].connHandle = LINKDB_CONNHANDLE_INVALID;
       numConn--;
 
       break;
@@ -1712,6 +1715,7 @@ static void CentralAudio_keyChangeHandler(uint8 keys)
   CentralAudio_enqueueMsg(CA_EVT_KEY_CHANGE, keys, NULL);
 }
 
+#if defined(BLE_V42_FEATURES) && (BLE_V42_FEATURES & PRIVACY_1_2_CFG)
 /*********************************************************************
 * @fn      CentralAudio_clockHandler
 *
@@ -1738,6 +1742,7 @@ void CentralAudio_clockHandler(UArg arg)
       break;
   }
 }
+#endif // PRIVACY_1_2_CFG
 
 /*********************************************************************
 * @fn      CentralAudio_enqueueMsg

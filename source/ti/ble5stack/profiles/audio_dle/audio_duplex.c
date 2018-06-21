@@ -50,8 +50,9 @@
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/family/arm/m3/Hwi.h>
-#include <driverlib/vims.h>
-#include <driverlib/flash.h>
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/flash.h)
+#include DeviceFamily_constructPath(driverlib/vims.h)
 #include <ti/display/Display.h>
 #include <profiles/audio_dle/audio_profile_dle.h>
 #include <ti/audiocodec/audiocodec.h>
