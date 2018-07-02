@@ -110,7 +110,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DEFAULT_INIT_PHY                     SCAN_PRIM_PHY_1M
 
 // Default scan duration in 10 ms
-#define DEFAULT_SCAN_DURATION                10 // 1s
+#define DEFAULT_SCAN_DURATION                100 // 10s
 
 // Default minimum connection interval (units of 1.25ms)
 #define DEFAULT_MIN_CONN_INTERVAL             8
@@ -1940,18 +1940,16 @@ bool CentralAudio_doSetPhy(uint8_t index)
     }
     case 2:
     {
-      preferredInitPhy = INIT_PHY_1M;
+      preferredInitPhy = HCI_PHY_CODED;
       Display_printf(dispHandle, CA_ROW_PHY_STATE, 0,
                       "Set Scan PHY Coded S=2, Init PHY 1M, Stream PHY Coded S=2");
 
-      uint8_t temp8 = DEFAULT_SCAN_PHY;
+      uint8_t temp8 = HCI_PHY_CODED;
       GapScan_setParam(SCAN_PARAM_PRIM_PHYS, &temp8);
-      preferredStreamPhy = HCI_PHY_CODED;
-      waitforPhyChange = true;
 
-      GapInit_setPhyParam(INIT_PHY_1M, INIT_PHYPARAM_CONN_INT_MAX,
+      GapInit_setPhyParam(HCI_PHY_CODED, INIT_PHYPARAM_CONN_INT_MAX,
                             DEFAULT_CODED_MAX_CONN_INTERVAL);
-      GapInit_setPhyParam(INIT_PHY_1M, INIT_PHYPARAM_CONN_INT_MIN,
+      GapInit_setPhyParam(HCI_PHY_CODED, INIT_PHYPARAM_CONN_INT_MIN,
                             DEFAULT_CODED_MIN_CONN_INTERVAL);
       break;
     }
