@@ -12,7 +12,7 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC2640R2 SDK 1.50.00.58**
+These examples and demos are for **TI SimpleLink CC2640R2 SDK 2.20.00.49**
 
 This repository contains *Bluetooth&reg;* 4.2 Low Energy sample applications for
 Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
@@ -32,9 +32,9 @@ please refer to the [FAQ page](docs/faq.md).
 For extra examples for **TI BLE-Stack 2.2.x SDK** (CC26x0R1), see
 [Branch: ble_examples-2.2](https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2).
 
-# A Note about SimpleLink CC2640R2 SDK 1.50
+# A Note about SimpleLink CC2640R2 SDK 2.20.00.49
 
-The CC2640R2 SDK 1.50 is offered in two separate SDK installers, a Bluetooth
+The CC2640R2 SDK 2.20.00.49 is offered in two separate SDK installers, a Bluetooth
 4.2 production certified installer (BLE-Stack), and a Bluetooth 5 (BLE5-Stack)
 SDK installer permitting evaluation of the Bluetooth 5 Long Range (LE Coded PHY)
 connections and Advertising Extension (AE) features. Both of these SDKs can be
@@ -46,11 +46,11 @@ Note: Access to production Bluetooth 5 2Mbps stack (BLE5-Stack 1.0.1) in SDK
 examples on the `simplelink_sdk-1.40` branch..
 
 The Bluetooth 5 (BLE5-Stack 1.1.0) SDK for evaluating BLE5 Long Range features
-is `simplelink_cc2640r2_sdk_1_50_00_71`, this SDK contains sample applications
+is `simplelink_cc2640r2_sdk_2_20_00_49`, this SDK contains sample applications
 for evaluating long range and is not supported by GitHub examples.
 
 The production-certified Bluetooth 4.2 (BLE-Stack 3.1.1) component is included
-in SDK installer version `simplelink_cc2640r2_sdk_1_50_00_58`.
+in SDK installer version `simplelink_cc2640r2_sdk_2_20_00_49`.
 This release is enabled with GitHub examples. Since this installer does not
 support the BLE5-Stack component, the `ble5apps/` has been removed.
 
@@ -81,7 +81,7 @@ New examples added.
 
 
 ### 1.50.00.00
-Initial offering of Simplelink CC2640R2 SDK 1.50.00.58 examples.
+Initial offering of Simplelink CC2640R2 SDK 2.20.00.49 examples.
 * BLE-Stack:  Serial Port Profile (SPP) Server/Client
 * BLE-Stack:  Bidirectional Audio Demo (Central/Peripheral)
 * BLE-Stack:  Apple Notification Center Service (ANCS) Demo (Peripheral)
@@ -107,7 +107,7 @@ location.
 
 By default the SimpleLink CC2640R2 SDK will install to:
 
-    C:\ti\simplelink_cc2640r2_sdk_1_50_00_58
+    C:\ti\simplelink_cc2640r2_sdk_2_20_00_49
 
 If the Simplelink CC2640R2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
@@ -222,7 +222,7 @@ invoke its help menu `voice.py --help`.
 The following reference pages may be helpful during general Bluetooth Low
 Energy development.
 Users developing Bluetooth 4.2 applications are encouraged to read the
-[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
+[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk_2_20_00_49/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
 
 As an additional resource, users are encouraged to complete the
 [SimpleLink Academy](http://software-dl.ti.com/lprf/simplelink_academy/overview.html)

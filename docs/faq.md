@@ -1,12 +1,12 @@
 ## Frequently Asked Questions
 
-* [What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. Not at ``C:\ti\simplelink_cc2640r2_sdk_1_50_00_58``)?](#default)
+* [What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. Not at ``C:\ti\simplelink_cc2640r2_sdk_2_20_00_49``)?](#default)
 * [Why am I getting an error when I am trying to run a Python script from the /tools folder?](#python)
 * [How can I setup my toolchain for use with the ble\_examples repo?](#toolchain)
 * [I am using a LaunchPad device, how can I view display data?](#display)
 ---
 
-### <a name="default"></a>What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. Not at ``C:\ti\simplelink_cc2640r2_sdk_1_50_00_58``)?
+### <a name="default"></a>What if I installed the SimpleLink CC2640R2 SDK at a non default location (e.g. Not at ``C:\ti\simplelink_cc2640r2_sdk_2_20_00_49``)?
 
 All projects reference files from the BLE stack using environment variables, you
 can change this in your IDE's project files.
@@ -16,7 +16,7 @@ can change this in your IDE's project files.
 No changes to the project is necessary. You just need to ensure that Code
 Composer Studio was able to discover the SimpleLink CC2640R2 SDK in the
 available *RTSC Products* tab. See the
-[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html)
+[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk_2_20_00_49/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html)
 for more details.
 
 
@@ -67,11 +67,11 @@ following debug steps:
 **CCS**
 
 For BLE-Stack examples, see the *Developing with CCS* section of the
-[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
+[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk_2_20_00_49/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
 **IAR**
 
 For BLE-Stack examples, see the *Developing with IAR* section of the
-[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
+[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk_2_20_00_49/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
 
 ---
 
