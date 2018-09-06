@@ -9,7 +9,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2013-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -116,9 +116,6 @@
 // How often to perform periodic event (in msec)
 #define SBP_PERIODIC_EVT_PERIOD               5000
 
-// Application specific event ID for HCI Connection Event End Events
-#define SBP_HCI_CONN_EVT_END_EVT              0x0001
-
 #ifdef PLUS_OBSERVER
 // Maximum number of scan responses
 #define DEFAULT_MAX_SCAN_RES                  15
@@ -163,6 +160,11 @@
 #define SBP_CHAR_CHANGE_EVT                   0x0002
 #define SBP_PAIRING_STATE_EVT                 0x0004
 #define SBP_PASSCODE_NEEDED_EVT               0x0008
+#ifdef PLUS_OBSERVER
+#define SBP_KEY_CHANGE_EVT                    0x0010
+#define SBP_OBSERVER_STATE_EVT                0x0020
+#endif
+#define SBP_CONN_EVT                          0x0040
 
 // Internal Events for RTOS application
 #define SBP_ICALL_EVT                         ICALL_MSG_EVENT_ID // Event_Id_31
@@ -174,10 +176,28 @@
                                                SBP_QUEUE_EVT        | \
                                                SBP_PERIODIC_EVT)
 
-#ifdef PLUS_OBSERVER
-#define SBP_KEY_CHANGE_EVT                    0x0010
-#define SBP_OBSERVER_STATE_EVT                0x0020
-#endif
+
+
+// Set the register cause to the registration bit-mask
+#define CONNECTION_EVENT_REGISTER_BIT_SET(RegisterCause) (connectionEventRegisterCauseBitMap |= RegisterCause )
+// Remove the register cause from the registration bit-mask
+#define CONNECTION_EVENT_REGISTER_BIT_REMOVE(RegisterCause) (connectionEventRegisterCauseBitMap &= (~RegisterCause) )
+// Gets whether the current App is registered to the receive connection events
+#define CONNECTION_EVENT_IS_REGISTERED (connectionEventRegisterCauseBitMap > 0)
+// Gets whether the RegisterCause was registered to recieve connection event
+#define CONNECTION_EVENT_REGISTRATION_CAUSE(RegisterCause) (connectionEventRegisterCauseBitMap & RegisterCause )
+
+typedef enum
+{
+   NOT_REGISTER       = 0,
+   FOR_AOA_SCAN       = 1,
+   FOR_ATT_RSP        = 2,
+   FOR_AOA_SEND       = 4,
+   FOR_TOF_SEND       = 8
+}connectionEventRegisterCause_u;
+
+// Handle the registration and un-registration for the connection event, since only one can be registered.
+uint32_t       connectionEventRegisterCauseBitMap = NOT_REGISTER; //see connectionEventRegisterCause_u
 
 /*********************************************************************
  * TYPEDEFS
@@ -332,6 +352,11 @@ static void SimpleBLEPeripheral_stateChangeCB(gaprole_States_t newState);
 static void SimpleBLEPeripheral_charValueChangeCB(uint8_t paramID);
 static uint8_t SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state,
                                               uint8_t *pData);
+
+static void SimpleBLEPeripheral_connEvtCB(Gap_ConnEventRpt_t *pReport);
+static void SimpleBLEPeripheral_processConnEvt(Gap_ConnEventRpt_t *pReport);
+static bStatus_t SimpleBLEPeripheral_RegisterToAllConnectionEvent (connectionEventRegisterCause_u connectionEventRegisterCause);
+static bStatus_t SimpleBLEPeripheral_UnRegisterToAllConnectionEvent (connectionEventRegisterCause_u connectionEventRegisterCause);
 
 /*********************************************************************
  * EXTERN FUNCTIONS
@@ -673,19 +698,7 @@ static void SimpleBLEPeripheral_taskFxn(UArg a0, UArg a1)
           ICall_Stack_Event *pEvt = (ICall_Stack_Event *)pMsg;
 
           // Check for BLE stack events first
-          if (pEvt->signature == 0xffff)
-          {
-            // The GATT server might have returned a blePending as it was trying
-            // to process an ATT Response. Now that we finished with this
-            // connection event, let's try sending any remaining ATT Responses
-            // on the next connection event.
-            if (pEvt->event_flag & SBP_HCI_CONN_EVT_END_EVT)
-            {
-              // Try to retransmit pending ATT Response (if any)
-              SimpleBLEPeripheral_sendAttRsp();
-            }
-          }
-          else
+          if (pEvt->signature != 0xffff)
           {
             // Process inter-task message
             safeToDealloc = SimpleBLEPeripheral_processStackMsg((ICall_Hdr *)pMsg);
@@ -842,8 +855,7 @@ static uint8_t SimpleBLEPeripheral_processGATTMsg(gattMsgEvent_t *pMsg)
   {
     // No HCI buffer was available. Let's try to retransmit the response
     // on the next connection event.
-    if (HCI_EXT_ConnEventNoticeCmd(pMsg->connHandle, selfEntity,
-                                   SBP_HCI_CONN_EVT_END_EVT) == SUCCESS)
+    if (SimpleBLEPeripheral_RegisterToAllConnectionEvent(FOR_ATT_RSP) == SUCCESS)
     {
       // First free any pending response
       SimpleBLEPeripheral_freeAttRsp(FAILURE);
@@ -901,8 +913,8 @@ static void SimpleBLEPeripheral_sendAttRsp(void)
     status = GATT_SendRsp(pAttRsp->connHandle, pAttRsp->method, &(pAttRsp->msg));
     if ((status != blePending) && (status != MSG_BUFFER_NOT_AVAIL))
     {
-      // Disable connection event end notice
-      HCI_EXT_ConnEventNoticeCmd(pAttRsp->connHandle, selfEntity, 0);
+      // Disable connection event end CB
+      SimpleBLEPeripheral_UnRegisterToAllConnectionEvent(FOR_ATT_RSP);
 
       // We're done with the response message
       SimpleBLEPeripheral_freeAttRsp(status);
@@ -993,6 +1005,13 @@ static void SimpleBLEPeripheral_processAppMsg(sbpEvt_t *pMsg)
 
         ICall_free(pMsg->pData);
         break;
+      }
+    case SBP_CONN_EVT:
+      {
+       SimpleBLEPeripheral_processConnEvt((Gap_ConnEventRpt_t *)(pMsg->pData));
+
+       ICall_free(pMsg->pData);
+       break;
       }
 
 #ifdef PLUS_OBSERVER
@@ -1195,8 +1214,8 @@ static void SimpleBLEPeripheral_processStateChangeEvt(gaprole_States_t newState)
 /*********************************************************************
  * @fn      Util_convertBytes2Str
  *
- * @brief   Convert bytes to string. Used to print advertising data. 
- *         
+ * @brief   Convert bytes to string. Used to print advertising data.
+ *
  * @param   pData - data
  * @param   length - data length
  *
@@ -1236,7 +1255,7 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeriObsRoleEvent_t *
     case GAP_DEVICE_INFO_EVENT:
       //Print scan response data otherwise advertising data
       if(pEvent->deviceInfo.eventType == GAP_ADRPT_SCAN_RSP)
-      {         
+      {
         Display_print1(dispHandle, 4, 0, "Scan Response Addr: %s",
                       Util_convertBdAddr2Str(pEvent->deviceInfo.addr));
         Display_print1(dispHandle, 5, 0, "Scan Response Data: %s", Util_convertBytes2Str(pEvent->deviceInfo.pEvtData, pEvent->deviceInfo.dataLen));
@@ -1249,7 +1268,7 @@ static void SimpleBLEPeripheralObserver_processRoleEvent(gapPeriObsRoleEvent_t *
                       AdvTypeStrings[pEvent->deviceInfo.eventType]);
         Display_print1(dispHandle, 7, 0, "Advertising Data: %s", Util_convertBytes2Str(pEvent->deviceInfo.pEvtData, pEvent->deviceInfo.dataLen));
       }
-        
+
       ICall_free(pEvent->deviceInfo.pEvtData);
       ICall_free(pEvent);
       break;
@@ -1401,7 +1420,7 @@ static void SimpleBLEPeripheralObserver_StateChangeCB(gapPeriObsRoleEvent_t *pEv
         else
         {
           ICall_freeMsg(pDevDiscMsg);
-        }      
+        }
       }
       break;
     }
@@ -1650,6 +1669,94 @@ static uint8_t SimpleBLEPeripheral_enqueueMsg(uint8_t event, uint8_t state,
   }
 
   return FALSE;
+}
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_processConnEvt
+ *
+ * @brief   Process connection event.
+ *
+ * @param pReport pointer to connection event report
+ */
+static void SimpleBLEPeripheral_processConnEvt(Gap_ConnEventRpt_t *pReport)
+{
+  if( CONNECTION_EVENT_REGISTRATION_CAUSE(FOR_ATT_RSP))
+  {
+    // The GATT server might have returned a blePending as it was trying
+    // to process an ATT Response. Now that we finished with this
+    // connection event, let's try sending any remaining ATT Responses
+    // on the next connection event.
+    // Try to retransmit pending ATT Response (if any)
+    SimpleBLEPeripheral_sendAttRsp();
+  }
+}
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_connEvtCB
+ *
+ * @brief   Connection event callback.
+ *
+ * @param pReport pointer to connection event report
+ */
+static void SimpleBLEPeripheral_connEvtCB(Gap_ConnEventRpt_t *pReport)
+{
+  // Enqueue the event for processing in the app context.
+  if( SimpleBLEPeripheral_enqueueMsg(SBP_CONN_EVT, 0 ,(uint8_t *) pReport) == FALSE)
+  {
+    ICall_freeMsg(pReport);
+  }
+}
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_RegisterToAllConnectionEvent()
+ *
+ * @brief   register to receive connection events for all the connection
+ *
+ * @param connectionEventRegisterCause represents the reason for registration
+ *
+ * @return @ref SUCCESS
+ *
+ */
+static bStatus_t SimpleBLEPeripheral_RegisterToAllConnectionEvent (connectionEventRegisterCause_u connectionEventRegisterCause)
+{
+  bStatus_t status = SUCCESS;
+
+  // in case  there is no registration for the connection event, make the registration
+  if (!CONNECTION_EVENT_IS_REGISTERED)
+  {
+    status = GAP_RegisterConnEventCb(SimpleBLEPeripheral_connEvtCB, GAP_CB_REGISTER, LINKDB_CONNHANDLE_ALL);
+  }
+  if(status == SUCCESS)
+  {
+    //add the reason bit to the bitamap.
+    CONNECTION_EVENT_REGISTER_BIT_SET(connectionEventRegisterCause);
+  }
+
+  return(status);
+}
+
+/*********************************************************************
+ * @fn      SimpleBLEPeripheral_UnRegisterToAllConnectionEvent()
+ *
+ * @brief   Unregister connection events
+ *
+ * @param connectionEventRegisterCause represents the reason for registration
+ *
+ * @return @ref SUCCESS
+ *
+ */
+static bStatus_t SimpleBLEPeripheral_UnRegisterToAllConnectionEvent (connectionEventRegisterCause_u connectionEventRegisterCause)
+{
+  bStatus_t status = SUCCESS;
+
+  CONNECTION_EVENT_REGISTER_BIT_REMOVE(connectionEventRegisterCause);
+  // in case  there is no more registration for the connection event than unregister
+  if (!CONNECTION_EVENT_IS_REGISTERED)
+  {
+    GAP_RegisterConnEventCb(SimpleBLEPeripheral_connEvtCB, GAP_CB_UNREGISTER, LINKDB_CONNHANDLE_ALL);
+  }
+
+  return(status);
 }
 /*********************************************************************
 *********************************************************************/

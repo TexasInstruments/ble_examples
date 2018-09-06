@@ -32,30 +32,6 @@ please refer to the [FAQ page](docs/faq.md).
 For extra examples for **TI BLE-Stack 2.2.x SDK** (CC26x0R1), see
 [Branch: ble_examples-2.2](https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2).
 
-# A Note about SimpleLink CC2640R2 SDK 2.20.00.49
-
-The CC2640R2 SDK 2.20.00.49 is offered in two separate SDK installers, a Bluetooth
-4.2 production certified installer (BLE-Stack), and a Bluetooth 5 (BLE5-Stack)
-SDK installer permitting evaluation of the Bluetooth 5 Long Range (LE Coded PHY)
-connections and Advertising Extension (AE) features. Both of these SDKs can be
-obtained on the SDK portal page:
-[CC2640R2 SDK download page](http://www.ti.com/tool/SIMPLELINK-CC2640R2-SDK).
-
-Note: Access to production Bluetooth 5 2Mbps stack (BLE5-Stack 1.0.1) in SDK
-1.40 can be found at the above SDK portal page as well with related GitHub
-examples on the `simplelink_sdk-1.40` branch..
-
-The Bluetooth 5 (BLE5-Stack 1.1.0) SDK for evaluating BLE5 Long Range features
-is `simplelink_cc2640r2_sdk_2_20_00_49`, this SDK contains sample applications
-for evaluating long range and is not supported by GitHub examples.
-
-The production-certified Bluetooth 4.2 (BLE-Stack 3.1.1) component is included
-in SDK installer version `simplelink_cc2640r2_sdk_2_20_00_49`.
-This release is enabled with GitHub examples. Since this installer does not
-support the BLE5-Stack component, the `ble5apps/` has been removed.
-
-
-
 # Navigating the Repository
 
 The examples provided on this GitHub page serve as a plugin to a corresponding
@@ -74,6 +50,12 @@ Note: The version numbers below are related to GitHub ble_examples releases.
 The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremented
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
+
+### 2.20.00.00
+New examples added.
+* BLE-Stack:  Simple Serial Socket Server/Client added
+
+**SPP over BLE is now deprecated and replaced by Simple Serial Socket**
 
 ### 1.50.01.01
 New examples added.
@@ -157,25 +139,6 @@ CC2640R2 LaunchPads with CC3200AUDBOOST.
     * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/readme.md)
     * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/peripheral_bidirectional_audio/src)
-
-### Serial Port Profile (SPP) BLE Examples
-
-This is a 2 part example where a spp\_ble\_client and spp\_ble\_server connect
-with one another and exchange data over UART.
-
-The example also supports Bluetooth 4.2 demonstrating the BLE-Stack's Data Length
-Extension with OAD support:
-
-* spp\_ble\_client
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_client/src)
-* spp\_ble\_server
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/spp_ble_server/src)
 
 ### Simple Peripheral Observer BLE Example
 

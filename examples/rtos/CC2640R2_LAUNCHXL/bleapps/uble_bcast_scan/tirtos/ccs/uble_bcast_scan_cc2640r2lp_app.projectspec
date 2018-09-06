@@ -77,8 +77,7 @@
             -l${SRC_BLE_DIR}/../../../source/ti/drivers/lib/drivers_cc26x0r2.aem3
             -l${SRC_BLE_DIR}/../../../source/ti/drivers/rf/lib/rf_multiMode_cc26x0r2.aem3
             -l${SRC_BLE_DIR}/../../../source/ti/display/lib/display.aem3
-            -l${SRC_BLE_DIR}/../../../source/ti/grlib/lib/grlib.aem3
-            -l${SRC_BLE_DIR}/../../../source/ti/mw/lcd/lib/lcd.aem3
+            -l${SRC_BLE_DIR}/../../../source/ti/grlib/lib/ccs/m3/grlib.a
             -l${SRC_BLE_DIR}/common/cc26xx/ccs/cc26xx_app.cmd
             -x
             --define=CC26X0ROM=2

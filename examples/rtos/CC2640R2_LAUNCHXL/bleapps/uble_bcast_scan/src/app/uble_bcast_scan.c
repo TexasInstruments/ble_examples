@@ -61,7 +61,7 @@
 #include "board.h"
 #include "board_key.h"
 #include <ti/display/Display.h>
-#include <ti/mw/lcd/LCDDogm1286.h>
+#include <ti/display/lcd/LCDDogm1286.h>
 
 // DriverLib
 #include <driverlib/aon_batmon.h>

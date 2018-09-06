@@ -85,8 +85,7 @@
             -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x0r2.aem3
             -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/drivers/lib/drivers_cc26x0r2.aem3
             -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/display/lib/display.aem3
-            -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/grlib/lib/grlib.aem3
-            -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/mw/lcd/lib/lcd.aem3
+            -l${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/grlib/lib/ccs/m3/grlib.a
             -l${WORKSPACE_LOC}/ancs_cc2640r2lp_stack_library/FlashROM_Library/ble_r2.symbols
             -l${WORKSPACE_LOC}/ancs_cc2640r2lp_stack_library/FlashROM_Library/lib_linker.cmd
             -l${WORKSPACE_LOC}/ancs_cc2640r2lp_stack_library/FlashROM_Library/ancs_cc2640r2lp_stack_library.lib

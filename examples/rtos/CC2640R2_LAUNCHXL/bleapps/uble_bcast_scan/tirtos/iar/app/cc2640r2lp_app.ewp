@@ -842,8 +842,7 @@
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x0r2.arm3</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x0r2.arm3</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\display\lib\display.arm3</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\grlib.arm3</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\mw\lcd\lib\lcd.arm3</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\iar\m3\grlib.a</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x0r2.arm3</state>
                 </option>
                 <option>
