@@ -175,7 +175,7 @@ New examples added.
 
 
 ### 1.50.00.00
-Initial offering of Simplelink CC2640R2 SDK 2.20.00.49 examples.
+Initial offering of Simplelink CC2640R2 SDK 1.50 examples.
 * BLE-Stack:  Serial Port Profile (SPP) Server/Client
 * BLE-Stack:  Bidirectional Audio Demo (Central/Peripheral)
 * BLE-Stack:  Apple Notification Center Service (ANCS) Demo (Peripheral)
