@@ -16,7 +16,7 @@ can change this in your IDE's project files.
 No changes to the project is necessary. You just need to ensure that Code
 Composer Studio was able to discover the SimpleLink CC2640R2 SDK in the
 available *RTSC Products* tab. See the
-[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk_2_20_00_49/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html)
+[BLE-Stack for Bluetooth 4.2 User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC2640R2%20SDK%2FDocuments%2FBLE-Stack%2FBLE-Stack%20User's%20Guide)
 for more details.
 
 
@@ -67,11 +67,11 @@ following debug steps:
 **CCS**
 
 For BLE-Stack examples, see the *Developing with CCS* section of the
-[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk_2_20_00_49/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
+[BLE-Stack for Bluetooth 4.2 User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC2640R2%20SDK%2FDocuments%2FBLE-Stack%2FBLE-Stack%20User's%20Guide).
 **IAR**
 
 For BLE-Stack examples, see the *Developing with IAR* section of the
-[BLE-Stack for Bluetooth 4.2 User's Guide](http://software-dl.ti.com/simplelink/esd/simplelink_cc2640r2_sdk_2_20_00_49/1.50.00.58/exports/docs/blestack/ble_user_guide/html/ble-stack-3.x-guide/index.html).
+[BLE-Stack for Bluetooth 4.2 User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC2640R2%20SDK%2FDocuments%2FBLE-Stack%2FBLE-Stack%20User's%20Guide).
 
 ---
 
