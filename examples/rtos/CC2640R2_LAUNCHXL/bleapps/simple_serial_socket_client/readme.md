@@ -20,7 +20,7 @@ Before running the demo, the user will need the following components:
 
 #### Firmware Requirements
 
-- [BLE-Stack v3.02.00.49](http://www.ti.com/tool/SIMPLELINK-CC2640R2-SDK)
+- [CC2640R2 SDK](http://www.ti.com/tool/SIMPLELINK-CC2640R2-SDK)
 
 Simple Stream Server service (SSS)
 =========================
