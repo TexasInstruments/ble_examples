@@ -8,7 +8,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2009-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -255,8 +255,8 @@ static gapRolesParamUpdateCB_t *pGapRoles_ParamUpdateCB = NULL;
 static void gapRole_init(void);
 static void gapRole_taskFxn(UArg a0, UArg a1);
 
-static void      gapRole_processStackMsg(ICall_Hdr *pMsg);
-static void      gapRole_processGAPMsg(gapEventHdr_t *pMsg);
+static bool      gapRole_processStackMsg(ICall_Hdr *pMsg);
+static bool      gapRole_processGAPMsg(gapEventHdr_t *pMsg);
 static void      gapRole_SetupGAP(void);
 static void      gapRole_HandleParamUpdateNoSuccess(void);
 static bStatus_t gapRole_startConnUpdate(uint8_t handleFailure,
@@ -884,7 +884,7 @@ static void gapRole_init(void)
 
   // Initialize the Profile Advertising and Connection Parameters
 #ifdef PLUS_OBSERVER
-  gapRole_profileRole = GAP_PROFILE_PERIPHERAL | GAP_PROFILE_OBSERVER; 
+  gapRole_profileRole = GAP_PROFILE_PERIPHERAL | GAP_PROFILE_OBSERVER;
 #else
   gapRole_profileRole = GAP_PROFILE_PERIPHERAL;
 #endif
@@ -922,6 +922,7 @@ static void gapRole_taskFxn(UArg a0, UArg a1)
   for (;;)
   {
     uint32_t events;
+    bool safeToDealloc = true;
 
     // Wait for an event to be posted
     events = Event_pend(syncEvent, Event_Id_NONE, GAPROLE_ALL_EVENTS,
@@ -953,11 +954,11 @@ static void gapRole_taskFxn(UArg a0, UArg a1)
           else
           {
             // Process inter-task message
-            gapRole_processStackMsg((ICall_Hdr *)pMsg);
+            safeToDealloc = gapRole_processStackMsg((ICall_Hdr *)pMsg);
           }
         }
 
-        if (pMsg)
+        if (pMsg && safeToDealloc)
         {
           ICall_freeMsg(pMsg);
         }
@@ -1020,14 +1021,15 @@ static void gapRole_taskFxn(UArg a0, UArg a1)
  *
  * @param   pMsg - message to process
  *
- * @return  none
+ * @return  safeToDealloc - whether or not the message is safe to deallocate
  */
-static void gapRole_processStackMsg(ICall_Hdr *pMsg)
+static bool gapRole_processStackMsg(ICall_Hdr *pMsg)
 {
+  bool safeToDealloc = true;
   switch (pMsg->event)
   {
     case GAP_MSG_EVENT:
-      gapRole_processGAPMsg((gapEventHdr_t *)pMsg);
+      safeToDealloc = gapRole_processGAPMsg((gapEventHdr_t *)pMsg);
       break;
 
     case L2CAP_SIGNAL_EVENT:
@@ -1063,6 +1065,8 @@ static void gapRole_processStackMsg(ICall_Hdr *pMsg)
     default:
       break;
   }
+
+  return (safeToDealloc);
 }
 
 /*********************************************************************
@@ -1072,11 +1076,12 @@ static void gapRole_processStackMsg(ICall_Hdr *pMsg)
  *
  * @param   pMsg - message to process
  *
- * @return  none
+ * @return  safeToDealloc - whether or not the message should be free'd
  */
-static void gapRole_processGAPMsg(gapEventHdr_t *pMsg)
+static bool gapRole_processGAPMsg(gapEventHdr_t *pMsg)
 {
   uint8_t notify = FALSE;   // State changed notify the app? (default no)
+  bool safeToDealloc = true;
 #ifdef PLUS_OBSERVER
   uint8_t notifyObserver = FALSE;   // Observer state changed, notify the app (default no)
 #endif
@@ -1447,14 +1452,14 @@ static void gapRole_processGAPMsg(gapEventHdr_t *pMsg)
         notifyObserver = TRUE;
       }
       break;
-     
+
     case GAP_DEVICE_DISCOVERY_EVENT:
       {
         // Send callback to application
         notifyObserver = TRUE;
       }
       break;
-#endif        
+#endif
 
     default:
       break;
@@ -1463,6 +1468,8 @@ static void gapRole_processGAPMsg(gapEventHdr_t *pMsg)
 #ifdef PLUS_OBSERVER
   if (notifyObserver == TRUE)
   {
+    // Save this message, the app will free it
+    safeToDealloc = false;
     // Notify the application with the event
     if (pGapRoles_AppCGs && pGapRoles_AppCGs->pfnPassThrough)
     {
@@ -1479,6 +1486,8 @@ static void gapRole_processGAPMsg(gapEventHdr_t *pMsg)
       pGapRoles_AppCGs->pfnStateChange(gapRole_state);
     }
   }
+
+  return (safeToDealloc);
 }
 
 /*********************************************************************
@@ -1660,7 +1669,7 @@ bStatus_t GAPRole_StartDiscovery(uint8_t mode, uint8_t activeScan, uint8_t white
 {
   gapDevDiscReq_t params;
 
-  params.taskID = ICall_getLocalMsgEntityId(ICALL_SERVICE_CLASS_BLE_MSG, 
+  params.taskID = ICall_getLocalMsgEntityId(ICALL_SERVICE_CLASS_BLE_MSG,
                                             selfEntity);
   params.mode = mode;
   params.activeScan = activeScan;
