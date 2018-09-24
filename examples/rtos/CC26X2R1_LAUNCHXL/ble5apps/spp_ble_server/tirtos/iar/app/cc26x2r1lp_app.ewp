@@ -718,7 +718,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>ble5_simple_peripheral_$PROJ_FNAME$_$CONFIG_NAME$.out</state>
+                    <state>ble5_spp_ble_server_$PROJ_FNAME$_$CONFIG_NAME$.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -1770,7 +1770,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>ble5_simple_peripheral_$PROJ_FNAME$_$CONFIG_NAME$.out</state>
+                    <state>ble5_spp_ble_server_$PROJ_FNAME$_$CONFIG_NAME$.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
