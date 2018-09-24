@@ -52,10 +52,23 @@
 #define SAMPLE_RATE                     16000   // Warning: Only 16kHz supported
 #define INPUT_OPTION                    AUDIO_CODEC_MIC_LINE_IN
 #define OUTPUT_OPTION                   AUDIO_CODEC_SPEAKER_HP
+
+/*
+ * The I2S driver is setup to sample both right and left channel from the codec
+ * however the DMA is only configured to save the samples from the left channel.
+ * On playback the samples from the left channel will be mirrored to the left
+ * and right channels.
+ *
+ * In summary the sampling is stereo, but the processing and playback is mono.
+ */
 #define NUM_CHAN                        2
 
-/* Configure for a 20ms frame (20ms/16kHz) */
-#define FRAME_SIZE                      320
+/*
+ * Configure for a 10ms frame @ 16kHz sample rate.
+ * Note that the frame size variable is limited to a max size of 255.
+ * It is an 8bit field in hardware (AIFDMACFG).
+ */
+#define FRAME_SIZE                      160
 
 #define I2S_TOTAL_QUEUE_MEM_SZ         (I2S_BLOCK_OVERHEAD_IN_BYTES *           \
                                         I2SCC26XX_QUEUE_SIZE *                  \
@@ -228,7 +241,7 @@ void *mainThread(void *arg0)
 
                     /* Copy the frame directly to the output buffer */
                     memcpy(bufferRequest.bufferOut, bufferRequest.bufferIn,
-                           FRAME_SIZE);
+                           FRAME_SIZE*sizeof(uint16_t));
                 }
 
                 /* Release the buffer back to the I2S driver */
