@@ -160,6 +160,11 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 1.60.01.01
+Maintenace update
+* Add SPP over BLE Agama support!
+* Bugfixes on i2secho example
+
 ### 1.60.00.00
 Initial offering of SimpleLink CC26x2 SDK 1.60.00.43 examples.
 * Bidirectional Audio Demo (Central/Peripheral): now on BLE5-Stack
