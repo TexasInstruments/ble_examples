@@ -24,15 +24,124 @@ To use the examples and tools in this repository, please download and install
 the [SimpleLink CC26x2 SDK](http://www.ti.com/tool/SIMPLELINK-CC26X2-SDK) **first**, and if
 necessary [buy an evaluation kit](http://www.ti.com/tool/LAUNCHXL-CC26X2R1).
 
-For other hardware and software resources,
-[please visit our wiki](http://www.ti.com/ble-wiki). If you have any questions
-please refer to the [FAQ page](docs/faq.md).
+If you have any questions please refer to the [FAQ page](docs/faq.md).
+For examples for other SDK versions and platforms, see table below.
 
-For extra examples for **TI CC2640R2 SDK**, see
-[Branch: simplelink_sdk-1.50](https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.50).
-
-For extra examples for **TI BLE-Stack 2.2.x SDK** (CC26x0R1), see
-[Branch: ble_examples-2.2](https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2).
+<table>
+  <tbody>
+    <tr>
+      <th width = 50%>SDK</th>
+      <th>Examples</th>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.60">TI SimpleLink CC26x2 SDK 1.60.00.43(current)</a>
+      </td>
+      <td>
+        <ul>
+          <li><a href="#full-duplex-bidirectional-audio-demo">Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
+          <li><a href="#i2s-echo">I2S Echo</li>
+          <li><a href="#serial-port-profile-spp">Serial Port Profile</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-2.20">TI SimpleLink CC2640R2 SDK 2.20.00.49</a>
+      </td>
+      <td>
+        <ul>
+          <li>Simple Serial Socket</li>
+          <li>Micro BLE Stack Broadcaster Observer</li>
+          <li>Bidirectional Audio</li>
+          <li>Simple Peripheral Observer</li>
+          <li>Apple Notification Center Service</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.50">TI SimpleLink CC2640R2 SDK 1.50.00.58</a>
+      </td>
+      <td>
+        <ul>
+          <li>Micro BLE Stack Broadcaster + Observer</li>
+          <li>Full Duplex Bidirectional Audio Demo</li>
+          <li>Serial Port Profile</li>
+          <li>Simple Peripheral Observer BLE</li>
+          <li>Apple Notification Center Service</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.40">TI SimpleLink CC2640R2 SDK 1.40.00.42</a>
+      </td>
+      <td>
+        <ul>
+          <li>Full Duplex Bidirectional Audio Demo</li>
+          <li>Bluetooth 5 Throughput Demo</li>
+          <li>Bluetooth 5 Long Range Demo</li>
+          <li>Serial Port Profile</li>
+          <li>Simple Peripheral Observer BLE</li>
+          <li>Apple Notification Center Service</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.35">TI SimpleLink CC2640R2 SDK 1.35.00.33</a>
+      </td>
+      <td>
+        <ul>
+          <li>Bluetooth 5 Throughput Demo</li>
+          <li>Bluetooth 5 Long Range Demo</li>
+          <li>Serial Port Profile</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2">TI BLE-Stack SDK v2.2.x</a>
+      </td>
+      <td>
+        <ul>
+          <li>beacon_rfdriver</li>
+          <li>hid_adv_remote_privacy</li>
+          <li>hid_emu_kbd</li>
+          <li>multi_role</li>
+          <li>security_examples</li>
+          <li>simple_beacon</li>
+          <li>simple_central_lp</li>
+          <li>simple_central_audio_receiver</li>
+          <li>simple_peripheral_audio_transmitter</li>
+          <li>simple_eddystone</li>
+          <li>simple_peripheral_observer</li>
+          <li>simple_proprietary_beacon</li>
+          <li>spp_over_ble</li>
+          <li>throughput_example</li>
+          <li>serial_bootloader</li>
+          <li>central_to_multiperipheral</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.1">TI BLE-Stack SDK v2.1.x</a>
+      </td>
+      <td>
+        <ul>
+          <li>SimpleAP</li>
+          <li>SimpleNP</li>
+          <li>MultiRole</li>
+          <li>SimpleBLEPeripheral: LCD to UART</li>
+          <li>SimpleBLEPeripheral: porting to TI-RTOS 2.15</li>
+          <li>Apple Notification Center Service</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 # Navigating the Repository
 
@@ -129,7 +238,10 @@ Read audio frames in from an external codec and loop them back using I2S.
     * [GCC Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/gcc)
     * [Source](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/)
 
-### Serial Port Profile (SPP) BLE Examples
+### Serial Port Profile (SPP)
+
+**Note: These examples will be deprecated as of the 2.20 SDKs. It will be
+replaced with the Simple Serial Socket**
 
 This is a UART to BLE bridge example where a spp\_ble\_client and spp\_ble\_server connect
 with one another and exchange UART data over the air.
@@ -160,5 +272,4 @@ training.
 
 Other resources can be found below:
 
-* [BLE wiki](http://www.ti.com/ble-wiki)
 * [BLE E2E Page](www.ti.com/ble-forum)

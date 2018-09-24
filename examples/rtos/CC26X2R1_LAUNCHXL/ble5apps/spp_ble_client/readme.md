@@ -8,6 +8,9 @@ proprietary Serial Port Profile (SPP). The project is based on the
 and has been enhanced to include Bluetooth 5.0 features such as LE 2M PHY and
 LE Coded PHY.
 
+**Note: This example will be deprecated as of the 2.20 SDKs. It will
+be replaced with the Simple Serial Socket**
+
 Prerequisites
 =============
 
