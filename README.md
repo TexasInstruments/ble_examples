@@ -15,7 +15,8 @@
 These examples and demos are for **TI SimpleLink CC26x2 SDK 1.60.00.43**
 
 This repository contains *Bluetooth&reg;* 5 sample applications for
-Texas Instruments' SimpleLink CC26x2 SDK.
+Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
+validated as production-ready.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
 [Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
