@@ -17,7 +17,6 @@
       <arg>-I$PROJ_DIR$/../../../../../../../source</arg>
       <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source</arg>
       <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/posix/iar</arg>
-      <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/devices/cc13x2_cc26x2</arg>
       <arg>--debug</arg>
       <arg>--silent</arg>
       <arg>-e</arg>
@@ -43,13 +42,13 @@
     <args>
       <arg>-f$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/release/iar/linker.cmd</arg>
       <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/display/lib/display.arm4f</arg>
-      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/mw/lcd/lib/lcd.arm4f</arg>
-      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/grlib/lib/grlib.arm4f</arg>
-      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/rf/lib/rf_multiMode_cc26x2.arm4f</arg>
-      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/lib/drivers_cc26x2.arm4f</arg>
-      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/pdm/lib/pdm_cc26x2.arm4f</arg>
-      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2.arm4f</arg>
-      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/devices/cc13x2_cc26x2/driverlib/bin/iar/driverlib.lib</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/grlib/lib/iar/m4f/grlib.a</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/third_party/spiffs/lib/iar/m4f/spiffs_cc26xx.a</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/rf/lib/rf_multiMode_cc26x2_v1.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/lib/drivers_cc26x2_v1.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/pdm/lib/pdm_cc26x2_v1.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2_v1.arm4f</arg>
+      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/devices/cc13x2_cc26x2_v1/driverlib/bin/iar/driverlib.lib</arg>
       <arg>--silent</arg>
       <arg>--cpu=Cortex-M4F</arg>
       <arg>--redirect</arg>

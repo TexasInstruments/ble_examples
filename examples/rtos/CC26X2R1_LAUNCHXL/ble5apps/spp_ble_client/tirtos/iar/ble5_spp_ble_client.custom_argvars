@@ -7,7 +7,7 @@
         </variable>
         <variable>
             <name>XDCROOT</name>
-            <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\..\xdctools_3_50_04_43_core</value>
+            <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\..\xdctools_3_50_05_12_core</value>
         </variable>
         <variable>
             <name>EXAMPLE_BLE_ROOT</name>

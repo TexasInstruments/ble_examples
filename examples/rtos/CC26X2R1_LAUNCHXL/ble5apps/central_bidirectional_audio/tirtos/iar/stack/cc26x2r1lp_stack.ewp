@@ -11,7 +11,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>29</version>
+                <version>30</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.4.14241</state>
+                    <state>8.20.2.14834</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -116,7 +116,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -133,7 +133,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -156,7 +156,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -198,6 +198,10 @@
                 </option>
                 <option>
                     <name>DSPExtension</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>TrustZone</name>
                     <state>0</state>
                 </option>
             </data>
@@ -363,9 +367,9 @@
                     <state>$SRC_BLE_DIR$\services\src\nv\cc26xx</state>
                     <state>$SRC_BLE_DIR$\services\src\saddr</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2\rf_patches</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\cc13x2_cc26x2\inc</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1\rf_patches</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\cc13x2_cc26x2_v1\inc</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source</state>
                     <state>$XDCROOT$\packages</state>
                 </option>
@@ -783,11 +787,11 @@
                 </option>
                 <option>
                     <name>IlinkIcfOverride</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>IlinkIcfFile</name>
-                    <state>$SRC_BLE_DIR$\common\cc26xx\iar\cc26xx_stack.icf</state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkIcfFileSlave</name>
@@ -835,7 +839,7 @@
                 </option>
                 <option>
                     <name>IlinkAdditionalLibs</name>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc26x0r2\driverlib\bin\iar\driverlib.lib</state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkOverrideProgramEntryLabel</name>
@@ -1246,12 +1250,21 @@
         <name>ROM</name>
         <file>
             <name>$SRC_BLE_DIR$\rom\r2\common_rom_init.c</name>
+            <excluded>
+                <configuration>FlashROM_Library</configuration>
+            </excluded>
         </file>
         <file>
             <name>$SRC_BLE_DIR$\rom\r2\rom_flash_jt.h</name>
+            <excluded>
+                <configuration>FlashROM_Library</configuration>
+            </excluded>
         </file>
         <file>
             <name>$SRC_BLE_DIR$\rom\r2\rom_init.c</name>
+            <excluded>
+                <configuration>FlashROM_Library</configuration>
+            </excluded>
         </file>
     </group>
     <group>
@@ -1279,9 +1292,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\build_config.opt</name>
-        </file>
-        <file>
-            <name>$SRC_BLE_DIR$\common\cc26xx\iar\cc26xx_stack_agama.icf</name>
         </file>
         <file>
             <name>$SRC_BLE_DIR$\common\cc26xx\onboard.c</name>

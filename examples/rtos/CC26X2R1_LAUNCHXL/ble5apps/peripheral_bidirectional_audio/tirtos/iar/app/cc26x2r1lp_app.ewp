@@ -11,7 +11,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>29</version>
+                <version>30</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.4.14241</state>
+                    <state>8.20.2.14834</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -116,7 +116,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -133,7 +133,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -156,7 +156,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -199,6 +199,10 @@
                 <option>
                     <name>DSPExtension</name>
                     <state>1</state>
+                </option>
+                <option>
+                    <name>TrustZone</name>
+                    <state>0</state>
                 </option>
             </data>
         </settings>
@@ -361,7 +365,9 @@
                     <state>$SRC_BLE_DIR$\osal\src\inc</state>
                     <state>$SRC_BLE_DIR$\services\src\saddr</state>
                     <state>$SRC_BLE_DIR$\services\src\sdata</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2</state>
+                    <state>$SRC_BLE_DIR$\services\src\nv</state>
+                    <state>$SRC_BLE_DIR$\services\src\nv\cc26xx</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source</state>
                 </option>
                 <option>
@@ -751,7 +757,8 @@
                     <name>IlinkConfigDefines</name>
                     <state>CC2642=1</state>
                     <state>PAGE_ALIGN=1</state>
-                    <state>FLASH_ROM_BUILD=1</state>
+                    <state>FLASH_ONLY_BUILD=1</state>
+                    <state>ENCRYPTION_ROM=1</state>
                 </option>
                 <option>
                     <name>IlinkMapFile</name>
@@ -833,14 +840,12 @@
                 </option>
                 <option>
                     <name>IlinkAdditionalLibs</name>
-                    <state>$PROJ_DIR$\..\config\ble_r2.symbols</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2\driverlib\bin\iar\driverlib.lib</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x2.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x2.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1\driverlib\bin\iar\driverlib.lib</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x2_v1.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x2_v1.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2_v1.arm4f</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\display\lib\display.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\mw\lcd\lib\lcd.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\grlib.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\iar\m4f\grlib.a</state>
                     <state>$SRC_LOCAL_DIR$/source/third_party/sbc/bin/iar/cc26xx_mSBC_library.a</state>
                 </option>
                 <option>
@@ -1063,7 +1068,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>29</version>
+                <version>30</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -1118,7 +1123,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.4.14241</state>
+                    <state>8.20.2.14834</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -1168,7 +1173,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1185,7 +1190,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1208,7 +1213,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1251,6 +1256,10 @@
                 <option>
                     <name>DSPExtension</name>
                     <state>1</state>
+                </option>
+                <option>
+                    <name>TrustZone</name>
+                    <state>0</state>
                 </option>
             </data>
         </settings>
@@ -1413,7 +1422,9 @@
                     <state>$SRC_BLE_DIR$\osal\src\inc</state>
                     <state>$SRC_BLE_DIR$\services\src\saddr</state>
                     <state>$SRC_BLE_DIR$\services\src\sdata</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2</state>
+                    <state>$SRC_BLE_DIR$\services\src\nv</state>
+                    <state>$SRC_BLE_DIR$\services\src\nv\cc26xx</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source</state>
                 </option>
                 <option>
@@ -1803,7 +1814,8 @@
                     <name>IlinkConfigDefines</name>
                     <state>CC2642=1</state>
                     <state>PAGE_ALIGN=1</state>
-                    <state>FLASH_ROM_BUILD=1</state>
+                    <state>FLASH_ONLY_BUILD=1</state>
+                    <state>ENCRYPTION_ROM=1</state>
                 </option>
                 <option>
                     <name>IlinkMapFile</name>
@@ -1885,14 +1897,12 @@
                 </option>
                 <option>
                     <name>IlinkAdditionalLibs</name>
-                    <state>$PROJ_DIR$\..\config\ble_r2.symbols</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2\driverlib\bin\iar\driverlib.lib</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x2.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x2.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1\driverlib\bin\iar\driverlib.lib</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x2_v1.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x2_v1.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2_v1.arm4f</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\display\lib\display.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\mw\lcd\lib\lcd.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\grlib.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\iar\m4f\grlib.a</state>
                     <state>$SRC_LOCAL_DIR$/source/third_party/sbc/bin/iar/cc26xx_mSBC_library.a</state>
                 </option>
                 <option>
@@ -2192,21 +2202,27 @@
             </file>
         </group>
         <group>
-            <name>ECC</name>
-            <file>
-                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\common\cc26xx\ecc\ECCROMCC26XX.c</name>
-            </file>
-            <file>
-                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\common\cc26xx\ecc\ECCROMCC26XX.h</name>
-            </file>
-        </group>
-        <group>
             <name>I2S</name>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\drivers\i2s\I2SCC26XX.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\..\..\..\source\ti\drivers\i2s\I2SCC26XX.h</name>
+            </file>
+        </group>
+        <group>
+            <name>NV</name>
+            <file>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\services\src\nv\cc26xx\crc.c</name>
+            </file>
+            <file>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\services\src\nv\cc26xx\crc.h</name>
+            </file>
+            <file>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\services\src\nv\cc26xx\nvoctp.c</name>
+            </file>
+            <file>
+                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\services\src\nv\cc26xx\nvoctp.h</name>
             </file>
         </group>
         <group>

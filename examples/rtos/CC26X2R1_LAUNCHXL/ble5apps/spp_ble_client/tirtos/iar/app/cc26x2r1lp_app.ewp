@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <project>
     <fileVersion>3</fileVersion>
     <configuration>
@@ -11,7 +11,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>29</version>
+                <version>30</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -66,7 +66,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.4.14241</state>
+                    <state>8.20.2.14834</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -116,7 +116,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -133,7 +133,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -156,7 +156,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -190,15 +190,19 @@
                 </option>
                 <option>
                     <name>GenLocaleTags</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>GenLocaleDisplayOnly</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>DSPExtension</name>
                     <state>1</state>
+                </option>
+                <option>
+                    <name>TrustZone</name>
+                    <state>0</state>
                 </option>
             </data>
         </settings>
@@ -255,15 +259,15 @@
                 </option>
                 <option>
                     <name>CCDiagRemark</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CCDiagWarning</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CCDiagError</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CCObjPrefix</name>
@@ -332,7 +336,7 @@
                 </option>
                 <option>
                     <name>PreInclude</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CompilerMisraOverride</name>
@@ -359,7 +363,9 @@
                     <state>$SRC_BLE_DIR$\services\src\sdata</state>
                     <state>$SRC_BLE_DIR$\npi\src</state>
                     <state>$EXAMPLE_BLE_ROOT$\..\..\..\..\..\source\ti\ble5stack\sdi\src</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2</state>
+                    <state>$SRC_BLE_DIR$\services\src\nv</state>
+                    <state>$SRC_BLE_DIR$\services\src\nv\cc26xx</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source</state>
                 </option>
                 <option>
@@ -514,15 +520,15 @@
                 </option>
                 <option>
                     <name>AWarnOne</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AWarnRange1</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AWarnRange2</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>ADebug</name>
@@ -534,7 +540,7 @@
                 </option>
                 <option>
                     <name>ADefines</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AList</name>
@@ -626,7 +632,7 @@
                 </option>
                 <option>
                     <name>AUserIncludes</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AExtraOptionsCheckV2</name>
@@ -634,7 +640,7 @@
                 </option>
                 <option>
                     <name>AExtraOptionsV2</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AsmNoLiteralPool</name>
@@ -676,8 +682,8 @@
             <name>CUSTOM</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <extensions></extensions>
-                <cmdline></cmdline>
+                <extensions/>
+                <cmdline/>
                 <hasPrio>0</hasPrio>
             </data>
         </settings>
@@ -691,7 +697,7 @@
             <archiveVersion>1</archiveVersion>
             <data>
                 <prebuild>"$XDCROOT$\xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$" -o $PROJ_DIR$\..\config\configPkg $EXAMPLE_BLE_ROOT$\tirtos\ble_release.cfg</prebuild>
-                <postbuild></postbuild>
+                <postbuild/>
             </data>
         </settings>
         <settings>
@@ -723,32 +729,33 @@
                 </option>
                 <option>
                     <name>IlinkKeepSymbols</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkRawBinaryFile</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkRawBinarySymbol</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkRawBinarySegment</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkRawBinaryAlign</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkDefines</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkConfigDefines</name>
                     <state>CC2642=1</state>
-                    <state>FLASH_ROM_BUILD=1</state>
+                    <state>FLASH_ONLY_BUILD=1</state>
+                    <state>ENCRYPTION_ROM=1</state>
                     <state>PAGE_ALIGN=1</state>
                 </option>
                 <option>
@@ -785,7 +792,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFileSlave</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkEnableRemarks</name>
@@ -793,19 +800,19 @@
                 </option>
                 <option>
                     <name>IlinkSuppressDiags</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkTreatAsRem</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkTreatAsWarn</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkTreatAsErr</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkWarningsAreErrors</name>
@@ -831,15 +838,13 @@
                 </option>
                 <option>
                     <name>IlinkAdditionalLibs</name>
-                    <state>$PROJ_DIR$\..\config\ble_r2.symbols</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2\driverlib\bin\iar\driverlib.lib</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x2.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x2.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1\driverlib\bin\iar\driverlib.lib</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x2_v1.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x2_v1.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2_v1.arm4f</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\display\lib\display.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\mw\lcd\lib\lcd.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\grlib.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\pdm\lib\pdm_cc26x2.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\iar\m4f\grlib.a</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\pdm\lib\pdm_cc26x2_v1.arm4f</state>
                 </option>
                 <option>
                     <name>IlinkOverrideProgramEntryLabel</name>
@@ -974,11 +979,11 @@
                 </option>
                 <option>
                     <name>IlinkStackControlFile</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkStackCallGraphFile</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CrcAlgorithm</name>
@@ -1000,7 +1005,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFile_AltDefault</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkEncInput</name>
@@ -1033,7 +1038,7 @@
                 <debug>1</debug>
                 <option>
                     <name>IarchiveInputs</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IarchiveOverride</name>
@@ -1061,7 +1066,7 @@
             <name>General</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <version>29</version>
+                <version>30</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -1116,7 +1121,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.11.4.14241</state>
+                    <state>8.20.2.14834</state>
                 </option>
                 <option>
                     <name>GeneralEnableMisra</name>
@@ -1166,7 +1171,7 @@
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1183,7 +1188,7 @@
                 </option>
                 <option>
                     <name>CoreVariant</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1206,7 +1211,7 @@
                 </option>
                 <option>
                     <name>GFPUCoreSlave2</name>
-                    <version>25</version>
+                    <version>26</version>
                     <state>39</state>
                 </option>
                 <option>
@@ -1240,15 +1245,19 @@
                 </option>
                 <option>
                     <name>GenLocaleTags</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>GenLocaleDisplayOnly</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>DSPExtension</name>
                     <state>1</state>
+                </option>
+                <option>
+                    <name>TrustZone</name>
+                    <state>0</state>
                 </option>
             </data>
         </settings>
@@ -1305,15 +1314,15 @@
                 </option>
                 <option>
                     <name>CCDiagRemark</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CCDiagWarning</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CCDiagError</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CCObjPrefix</name>
@@ -1382,7 +1391,7 @@
                 </option>
                 <option>
                     <name>PreInclude</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CompilerMisraOverride</name>
@@ -1396,6 +1405,7 @@
                     <state>$EXAMPLE_BLE_ROOT$\src\app</state>
                     <state>$SRC_BLE_DIR$\icall\inc</state>
                     <state>$SRC_BLE_DIR$\inc</state>
+                    <state>$SRC_BLE_DIR$\profiles\simple_profile</state>
                     <state>$EXAMPLE_BLE_ROOT$\..\..\..\..\..\source\ti\ble5stack\profiles\serial_port</state>
                     <state>$SRC_BLE_DIR$\target</state>
                     <state>$SRC_BLE_DIR$\hal\src\inc</state>
@@ -1409,7 +1419,9 @@
                     <state>$SRC_BLE_DIR$\services\src\sdata</state>
                     <state>$SRC_BLE_DIR$\npi\src</state>
                     <state>$EXAMPLE_BLE_ROOT$\..\..\..\..\..\source\ti\ble5stack\sdi\src</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2</state>
+                    <state>$SRC_BLE_DIR$\services\src\nv</state>
+                    <state>$SRC_BLE_DIR$\services\src\nv\cc26xx</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source</state>
                 </option>
                 <option>
@@ -1564,15 +1576,15 @@
                 </option>
                 <option>
                     <name>AWarnOne</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AWarnRange1</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AWarnRange2</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>ADebug</name>
@@ -1584,7 +1596,7 @@
                 </option>
                 <option>
                     <name>ADefines</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AList</name>
@@ -1676,7 +1688,7 @@
                 </option>
                 <option>
                     <name>AUserIncludes</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AExtraOptionsCheckV2</name>
@@ -1684,7 +1696,7 @@
                 </option>
                 <option>
                     <name>AExtraOptionsV2</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>AsmNoLiteralPool</name>
@@ -1726,8 +1738,8 @@
             <name>CUSTOM</name>
             <archiveVersion>3</archiveVersion>
             <data>
-                <extensions></extensions>
-                <cmdline></cmdline>
+                <extensions/>
+                <cmdline/>
                 <hasPrio>0</hasPrio>
             </data>
         </settings>
@@ -1741,7 +1753,7 @@
             <archiveVersion>1</archiveVersion>
             <data>
                 <prebuild>"$XDCROOT$\xs" --xdcpath="$XDCPATH$" iar.tools.configuro -c "$TOOLKIT_DIR$" --cc "$COMPILER_PATH$" --device "$DEVICE$" --compileOptions $COMPILER_ARGS_ROOT_QUOTED$ --linkOptions $LINKER_ARGS_QUOTED$ --profile release --projFile "$PROJ_PATH$" -o $PROJ_DIR$\..\config\configPkg $EXAMPLE_BLE_ROOT$\tirtos\ble_debug.cfg</prebuild>
-                <postbuild></postbuild>
+                <postbuild/>
             </data>
         </settings>
         <settings>
@@ -1773,32 +1785,33 @@
                 </option>
                 <option>
                     <name>IlinkKeepSymbols</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkRawBinaryFile</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkRawBinarySymbol</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkRawBinarySegment</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkRawBinaryAlign</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkDefines</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkConfigDefines</name>
                     <state>CC2642=1</state>
-                    <state>FLASH_ROM_BUILD=1</state>
+                    <state>FLASH_ONLY_BUILD=1</state>
+                    <state>ENCRYPTION_ROM=1</state>
                     <state>PAGE_ALIGN=1</state>
                 </option>
                 <option>
@@ -1835,7 +1848,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFileSlave</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkEnableRemarks</name>
@@ -1843,19 +1856,19 @@
                 </option>
                 <option>
                     <name>IlinkSuppressDiags</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkTreatAsRem</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkTreatAsWarn</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkTreatAsErr</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkWarningsAreErrors</name>
@@ -1881,15 +1894,13 @@
                 </option>
                 <option>
                     <name>IlinkAdditionalLibs</name>
-                    <state>$PROJ_DIR$\..\config\ble_r2.symbols</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2\driverlib\bin\iar\driverlib.lib</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x2.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x2.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\devices\cc13x2_cc26x2_v1\driverlib\bin\iar\driverlib.lib</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\kernel\tirtos\packages\ti\dpl\lib\dpl_cc26x2_v1.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\lib\drivers_cc26x2_v1.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2_v1.arm4f</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\display\lib\display.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\mw\lcd\lib\lcd.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\grlib.arm4f</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\pdm\lib\pdm_cc26x2.arm4f</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\iar\m4f\grlib.a</state>
+                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\pdm\lib\pdm_cc26x2_v1.arm4f</state>
                 </option>
                 <option>
                     <name>IlinkOverrideProgramEntryLabel</name>
@@ -2024,11 +2035,11 @@
                 </option>
                 <option>
                     <name>IlinkStackControlFile</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkStackCallGraphFile</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>CrcAlgorithm</name>
@@ -2050,7 +2061,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFile_AltDefault</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IlinkEncInput</name>
@@ -2083,7 +2094,7 @@
                 <debug>1</debug>
                 <option>
                     <name>IarchiveInputs</name>
-                    <state></state>
+                    <state/>
                 </option>
                 <option>
                     <name>IarchiveOverride</name>
@@ -2125,12 +2136,18 @@
     <group>
         <name>Drivers</name>
         <group>
-            <name>ECC</name>
+            <name>NV</name>
             <file>
-                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\common\cc26xx\ecc\ECCROMCC26XX.c</name>
+                <name>$SRC_BLE_DIR$\services\src\nv\cc26xx\crc.c</name>
             </file>
             <file>
-                <name>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\ble5stack\common\cc26xx\ecc\ECCROMCC26XX.h</name>
+                <name>$SRC_BLE_DIR$\services\src\nv\cc26xx\crc.h</name>
+            </file>
+            <file>
+                <name>$SRC_BLE_DIR$\services\src\nv\cc26xx\nvoctp.c</name>
+            </file>
+            <file>
+                <name>$SRC_BLE_DIR$\services\src\nv\cc26xx\nvoctp.h</name>
             </file>
         </group>
         <group>

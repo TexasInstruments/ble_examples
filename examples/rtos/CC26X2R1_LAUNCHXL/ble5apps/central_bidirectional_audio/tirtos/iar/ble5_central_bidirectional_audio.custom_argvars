@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
 <iarUserArgVars>
-  <group active="true" name="SIMPLELINK_CC2640R2_SDK">
+    <group name="SIMPLELINK_CC2642R1_SDK" active="true">
     <variable>
       <name>SIMPLELINK_CORE_SDK_INSTALL_DIR</name>
       <value>C:\ti\simplelink_cc26x2_sdk_2_10_00_44</value>
     </variable>
     <variable>
       <name>XDCROOT</name>
-      <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\..\xdctools_3_50_04_43_core</value>
+            <value>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\..\xdctools_3_50_05_12_core</value>
     </variable>
     <variable>
       <name>EXAMPLE_BLE_ROOT</name>
