@@ -356,7 +356,9 @@ static void SPPBLEClient_pairStateCb(uint16_t currentConnHandle, uint8_t state,
 
 void SPPBLEClient_startDiscHandler(UArg a0);
 static void SPPBLEClient_keyChangeHandler(uint8 keys);
+#if defined(BLE_V42_FEATURES) && (BLE_V42_FEATURES & PRIVACY_1_2_CFG)
 static void SPPBLEClient_clockHandler(UArg arg);
+#endif //defined(BLE_V42_FEATURES) && (BLE_V42_FEATURES & PRIVACY_1_2_CFG)
 
 static uint8_t SPPBLEClient_enqueueMsg(uint8_t event, uint8_t status,
                                         uint8_t *pData);
@@ -438,9 +440,9 @@ void SPPBLEClient_blinkLed(uint8_t led, uint8_t nBlinks)
 
   for (i=0; i<nBlinks; i++)
   {
-    PIN_setOutputValue(hGpioPin, led, Board_LED_ON);
+    PIN_setOutputValue(hGpioPin, led, 1);
     delay_ms(BLINK_DURATION);
-    PIN_setOutputValue(hGpioPin, led, Board_LED_OFF);
+    PIN_setOutputValue(hGpioPin, led, 0);
     delay_ms(BLINK_DURATION);
   }
 }
@@ -2063,6 +2065,7 @@ void SPPBLEClient_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
   }
 }
 
+#if defined(BLE_V42_FEATURES) && (BLE_V42_FEATURES & PRIVACY_1_2_CFG)
 /*********************************************************************
  * @fn      SPPBLEClient_clockHandler
  *
@@ -2089,6 +2092,7 @@ void SPPBLEClient_clockHandler(UArg arg)
       break;
   }
 }
+#endif //defined(BLE_V42_FEATURES) && (BLE_V42_FEATURES & PRIVACY_1_2_CFG)
 
 /*********************************************************************
  * @fn      SPPBLEClient_enqueueMsg

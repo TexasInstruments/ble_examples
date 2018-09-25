@@ -22,7 +22,7 @@
     >
 
         <!-- Project properties -->
-        <property name="products" value="com.ti.rtsc.XDCtools:3.50.04.43;com.ti.SIMPLELINK_CC26X2_SDK:2.10.00.44"/>
+        <property name="products" value="com.ti.rtsc.XDCtools:3.50.05.12;com.ti.SIMPLELINK_CC26X2_SDK:2.10.00.44"/>
         <property name="target" value="ti.targets.arm.elf.M4F"/>
         <property name="platform" value="ti.platforms.simplelink:CC2642R1F"/>
         <property name="buildProfile" value="release"/>

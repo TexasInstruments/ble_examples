@@ -142,9 +142,6 @@
  * this upper limit for R1 and R2 devices, respectively.
  */
 
-/* BLE v5.0 Features
- * Note: The Long Range feature is for evaluation only.
- */
 
 /* Include Transport Layer (Full or PTM) */
 -DHCI_TL_NONE

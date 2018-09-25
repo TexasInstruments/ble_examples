@@ -148,6 +148,7 @@
 #define SBS_READ_RPA_EVT                      7
 #define SBS_SEND_PARAM_UPDATE_EVT             8
 #define SBS_UART_QUEUE_EVT                    9
+#define SBS_CONN_EVT                          10
 
 // Internal Events for RTOS application
 #define SBS_ICALL_EVT                         ICALL_MSG_EVENT_ID // Event_Id_31
@@ -177,15 +178,20 @@
 #define SBS_RSSI_TRACK_CHNLS        1            // Max possible channels can be GAP_BONDINGS_MAX
 #define SBS_MAX_RSSI_STORE_DEPTH    5
 #define SBS_INVALID_HANDLE          0xFFFF
-#define RSSI_2M_THRSHLD           -30           // -80 dB rssi
-#define RSSI_1M_THRSHLD           -40           // -90 dB rssi
-#define RSSI_S2_THRSHLD           -50           // -100 dB rssi
-#define RSSI_S8_THRSHLD           -60           // -120 dB rssi
+#define RSSI_2M_THRSHLD             -30           // -80 dB rssi
+#define RSSI_1M_THRSHLD             -40           // -90 dB rssi
+#define RSSI_S2_THRSHLD             -50           // -100 dB rssi
+#define RSSI_S8_THRSHLD             -60           // -120 dB rssi
 #define SBS_PHY_NONE                LL_PHY_NONE  // No PHY set
-#define AUTO_PHY_UPDATE            0xFF
+#define AUTO_PHY_UPDATE             0xFF
 
 // Spin if the expression is not true
 #define SIMPLEPERIPHERAL_ASSERT(expr) if (!(expr)) spp_ble_server_spin();
+
+
+// LED Defines
+#define BOARD_LED_ON                1
+#define BOARD_LED_OFF               0
 
 /*********************************************************************
  * TYPEDEFS
@@ -465,7 +471,7 @@ static void SPPBLEServer_pairStateCb(uint16_t connHandle, uint8_t state,
 static void SPPBLEServer_processPairState(spPairStateData_t *pPairState);
 static void SPPBLEServer_processPasscode(spPasscodeData_t *pPasscodeData);
 static void SPPBLEServer_charValueChangeCB(uint8_t paramId);
-static void SPPBLEServer_enqueueMsg(uint8_t event, void *pData);
+static status_t SPPBLEServer_enqueueMsg(uint8_t event, void *pData);
 void SPPBLEServer_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len);
 
 char* convInt32ToText(int32 value);
@@ -484,6 +490,8 @@ static status_t SPPBLEServer_setPhy(uint16_t connHandle, uint8_t allPhys,
                                         uint8_t txPhy, uint8_t rxPhy,
                                         uint16_t phyOpts);
 static uint8_t SPPBLEServer_clearConnListEntry(uint16_t connHandle);
+static void SPPBLEServer_connEvtCB(Gap_ConnEventRpt_t *pReport);
+static void SPPBLEServer_processConnEvt(Gap_ConnEventRpt_t *pReport);
 bool SPPBLEServer_doSetConnPhy(uint8 index);
 
 /*********************************************************************
@@ -546,9 +554,9 @@ void SPPBLEServer_blinkLed(uint8_t led, uint8_t nBlinks)
 
   for (i=0; i<nBlinks; i++)
   {
-    PIN_setOutputValue(hGpioPin, led, Board_LED_ON);
+    PIN_setOutputValue(hGpioPin, led, BOARD_LED_ON);
     delay_ms(BLINK_DURATION);
-    PIN_setOutputValue(hGpioPin, led, Board_LED_OFF);
+    PIN_setOutputValue(hGpioPin, led, BOARD_LED_OFF);
     delay_ms(BLINK_DURATION);
   }
 }
@@ -642,7 +650,7 @@ static void SPPBLEServer_init(void)
     uint16_t paramUpdateDecision = DEFAULT_PARAM_UPDATE_REQ_DECISION;
 
     // Pass all parameter update requests to the app for it to decide
-    GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, &paramUpdateDecision);
+    GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, paramUpdateDecision);
   }
 
   // Setup the GAP Bond Manager. For more information see the GAP Bond Manager
@@ -944,10 +952,6 @@ static uint8_t SPPBLEServer_processStackMsg(ICall_Hdr *pMsg)
               SPPBLEServer_updatePHYStat(HCI_LE_SET_PHY, (uint8_t *)pMsg);
               break;
             }
-
-            case HCI_EXT_CONN_EVENT_NOTICE:
-            default:
-              break;
           }
           break;
         }
@@ -1078,6 +1082,12 @@ static void SPPBLEServer_processAppMsg(spEvt_t *pMsg)
       uint16_t connHandle = *(uint16_t *)(((spClockEventData_t *)pMsg->pData)->data);
 
       SPPBLEServer_processParamUpdate(connHandle);
+      break;
+    }
+
+    case SBS_CONN_EVT:
+    {
+      SPPBLEServer_processConnEvt((Gap_ConnEventRpt_t *)(pMsg->pData));
       break;
     }
 
@@ -1810,7 +1820,7 @@ static void SPPBLEServer_processPasscode(spPasscodeData_t *pPasscodeData)
 }
 
 /*********************************************************************
- * @fn      SPPBLEServer_enqueueMsg
+ * @fn      SPPBLEServer_enqueueUARTMsg
  *
  * @brief   Creates a message and puts the message in RTOS queue.
  *
@@ -1863,8 +1873,9 @@ void SPPBLEServer_enqueueUARTMsg(uint8_t event, uint8_t *data, uint8_t len)
  * @param   event - message event.
  * @param   state - message state.
  */
-static void SPPBLEServer_enqueueMsg(uint8_t event, void *pData)
+static status_t SPPBLEServer_enqueueMsg(uint8_t event, void *pData)
 {
+  uint8_t status = SUCCESS;
   spEvt_t *pMsg = ICall_malloc(sizeof(spEvt_t));
 
   // Create dynamic pointer to message.
@@ -1874,8 +1885,11 @@ static void SPPBLEServer_enqueueMsg(uint8_t event, void *pData)
     pMsg->pData = pData;
 
     // Enqueue the message.
-    Util_enqueueMsg(appMsgQueueHandle, syncEvent, (uint8_t *)pMsg);
+    status = Util_enqueueMsg(appMsgQueueHandle, syncEvent, (uint8_t *)pMsg);
+    return (status) ? SUCCESS : FAILURE;
   }
+
+  return (bleMemAllocError);
 }
 
 /*********************************************************************
@@ -2254,7 +2268,6 @@ static void SPPBLEServer_initPHYRSSIArray(void)
   }
 }
 /*********************************************************************
-      // Set default PHY to 1M
  * @fn      SPPBLEServer_startAutoPhyChange
  *
  * @brief   Start periodic RSSI reads on a link.
@@ -2275,8 +2288,7 @@ static status_t SPPBLEServer_startAutoPhyChange(uint16_t connHandle)
   SIMPLEPERIPHERAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
 
   // Start Connection Event notice for RSSI calculation
-  status = HCI_EXT_ConnEventNoticeCmd(connHandle, selfEntity,
-                                      CONN_INDEX_TO_EVENT(connIndex));
+  Gap_RegisterConnEventCb(SPPBLEServer_connEvtCB, GAP_CB_REGISTER, connHandle);
 
   // Flag in connection info if successful
   if (status == SUCCESS)
@@ -2304,7 +2316,7 @@ static status_t SPPBLEServer_stopAutoPhyChange(uint16_t connHandle)
   SIMPLEPERIPHERAL_ASSERT(connIndex < MAX_NUM_BLE_CONNS);
 
   // Stop connection event notice
-  HCI_EXT_ConnEventNoticeCmd(connHandle, selfEntity, 0);
+  Gap_RegisterConnEventCb(NULL, GAP_CB_UNREGISTER, connHandle);
 
   // Also update the phychange request status for active RSSI tracking connection
   connList[connIndex].phyCngRq = FALSE;
@@ -2426,6 +2438,42 @@ static void SPPBLEServer_updatePHYStat(uint16_t eventCode, uint8_t *pMsg)
   } // end of switch (eventCode)
 }
 
+/*********************************************************************
+ * @fn      SPPBLEServer_connEvtCB
+ *
+ * @brief   Connection event callback.
+ *
+ * @param pReport pointer to connection event report
+ */
+static void SPPBLEServer_connEvtCB(Gap_ConnEventRpt_t *pReport)
+{
+  // Enqueue the event for processing in the app context.
+  if(SPPBLEServer_enqueueMsg(SBS_CONN_EVT, pReport) != SUCCESS)
+  {
+    ICall_freeMsg(pReport);
+  }
+}
+
+/*********************************************************************
+ * @fn      SPPBLEServer_processConnEvt
+ *
+ * @brief   Process connection event.
+ *
+ * @param pReport pointer to connection event report
+ */
+static void SPPBLEServer_processConnEvt(Gap_ConnEventRpt_t *pReport)
+{
+  // Get index from handle
+  uint8_t connIndex = SPPBLEServer_getConnIndex(pReport->handle);
+
+  // If auto phy change is enabled
+  if (connList[connIndex].isAutoPHYEnable == TRUE)
+  {
+    // Read the RSSI
+    HCI_ReadRssiCmd(pReport->handle);
+  }
+}
+
 /*******************************************************************************
 * @fn          convInt32ToText
 *
@@ -2468,5 +2516,6 @@ char* convInt32ToText(int32 value) {
 
     return pValueToTextBuffer;
 }
+
 /*********************************************************************
 *********************************************************************/

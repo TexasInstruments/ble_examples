@@ -15,7 +15,7 @@
 These examples and demos are for **TI SimpleLink CC26x2 SDK 2.10.00.44**
 
 This repository contains *Bluetooth&reg;* 5 sample applications for
-Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
+Texas Instruments' SimpleLink CC26x2 SDK. These examples have not been
 validated as production-ready.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
@@ -36,7 +36,19 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.60">TI SimpleLink CC26x2 SDK 1.60.00.43(current)</a>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.10">TI SimpleLink CC26x2 SDK 2.10.00.44(current)</a>
+      </td>
+      <td>
+        <ul>
+          <li><a href="#full-duplex-bidirectional-audio-demo">Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
+          <li><a href="#i2s-echo">I2S Echo</li>
+          <li><a href="#serial-port-profile-spp">Serial Port Profile</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.60">TI SimpleLink CC26x2 SDK 1.60.00.43</a>
       </td>
       <td>
         <ul>
@@ -204,11 +216,7 @@ environment variables.
 
 Similar to the SimpleLink CC26x2 SDK, the examples in this repository support
 the CCS and IAR toolchains. Please pay careful attention to versions of these
-tools, the supported version are listed below. Using a non supported version is
-untested and may result in unexpected behavior.
-
-* CCS v7.04.00 with TI ARM Compiler v16.09.06LTS
-* IAR for ARM v8.11.4
+tools, please refer to the release notes for supported versions.
 
 For more information on toolchain setup, please refer to our
 [FAQ page](docs/faq.md).

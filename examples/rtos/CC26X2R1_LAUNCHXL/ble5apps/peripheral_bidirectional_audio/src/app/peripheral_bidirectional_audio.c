@@ -475,7 +475,7 @@ static void PeripheralAudio_init(void)
     uint16_t paramUpdateDecision = DEFAULT_PARAM_UPDATE_REQ_DECISION;
 
     // Pass all parameter update requests to the app for it to decide
-    GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, &paramUpdateDecision);
+    GAP_SetParamValue(GAP_PARAM_LINK_UPDATE_DECISION, paramUpdateDecision);
   }
 
   // Setup the GAP Bond Manager. For more information see the GAP Bond Manager
