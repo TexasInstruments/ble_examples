@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
 <iarUserArgVars>
-  <group active="true" name="SIMPLELINK_CC26X2_SDK_1_60_00_43">
+  <group active="true" name="SIMPLELINK_CC26X2_SDK_2_10_00_44">
     <variable>
       <name>XDCPATH</name>
       <value>c:/ti/simplelink_cc26x2_sdk_2_10_00_44/kernel/tirtos/packages;c:/ti/simplelink_cc26x2_sdk_2_10_00_44/source</value>

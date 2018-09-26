@@ -84,11 +84,11 @@
       <path copyTo="$PROJ_DIR$/ccfg.c">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/ccfg.c</path>
       <path copyTo="$PROJ_DIR$/$PROJ_FNAME$_CC26X2R1_LAUNCHXL_TIRTOS.icf">$BLE_EXAMPLES_DRIVERS_ROOT$/examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/iar/CC26X2R1_LAUNCHXL_TIRTOS.icf</path>
 
-      <path copyTo="$PROJ_DIR$/I2SCC26XX.c">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/drivers/i2s/I2SCC26XX.c</path>
-      <path copyTo="$PROJ_DIR$/I2SCC26XX.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/drivers/i2s/I2SCC26XX.h</path>
-      <path copyTo="$PROJ_DIR$/audiocodec.c">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/audiocodec.c</path>
-      <path copyTo="$PROJ_DIR$/audiocodec.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/audiocodec.h</path>
-      <path copyTo="$PROJ_DIR$/ti3254.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/ti3254.h</path>
+      <path reference="$PROJ_DIR$/I2SCC26XX.c">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/drivers/i2s/I2SCC26XX.c</path>
+      <path reference="$PROJ_DIR$/I2SCC26XX.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/drivers/i2s/I2SCC26XX.h</path>
+      <path reference="$PROJ_DIR$/audiocodec.c">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/audiocodec.c</path>
+      <path reference="$PROJ_DIR$/audiocodec.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/audiocodec.h</path>
+      <path reference="$PROJ_DIR$/ti3254.h">$BLE_EXAMPLES_DRIVERS_ROOT$/source/ti/audiocodec/ti3254.h</path>
     </group>
 
     <group name="Header files">
