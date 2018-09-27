@@ -14,7 +14,7 @@
       <arg>-I$PROJ_DIR$</arg>
       <arg>-f$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/release/iar/compiler.opt.defs</arg>
       <arg>-DDeviceFamily_CC26X2</arg>
-      <arg>-I$BLE_EXAMPLES_DRIVERS_ROOT$/source</arg>
+      <arg>-I$PROJ_DIR$/../../../../../../../source</arg>
       <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source</arg>
       <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/posix/iar</arg>
       <arg>-I$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/devices/cc13x2_cc26x2</arg>
