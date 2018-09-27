@@ -22,13 +22,13 @@ Before running the demo, the user will need the following components:
 
 - [CC2640R2 SDK](http://www.ti.com/tool/SIMPLELINK-CC2640R2-SDK)
 
-Simple Stream Server service (SSS)
-=========================
+Simple Stream Server service
+============================
 
 The simple stream service is made to implement a bi-directional data stream
 connection over the BLE protocol. The service uses a 128 bit UUID:
-F000C0C0-0451-4000-B000-00000000-0000. SSS contains two characteristics, they
-are listed below.
+F000C0C0-0451-4000-B000-00000000-0000. simple stream server service contains
+two characteristics, they are listed below.
 
 | Characteristic    | UUID                                      |
 |:-----------------:|:-----------------------------------------:|
@@ -40,14 +40,14 @@ The `DataIn` characteristic implies data coming from client to server while
 
 For more information on the service, see the Simple Serial Socket Server example readme.
 
-Simple Stream Client profile (SSC)
-=========================
+Simple Stream Client profile
+============================
 
 The simple stream client profile provides an easy to use interface, similar to
-that of the SSS service, for interaction with a connected Simple Stream Server
-peripheral. Following a connection, the service table provided by the profile
-has to be populated with service handles before any data can be sent from the
-client to the server.
+that of the simple stream server service, for interaction with a connected
+Simple Stream Server peripheral. Following a connection, the service table
+provided by the profile has to be populated with service handles before any
+data can be sent from the client to the server.
 
 The service table can be easily populated by utilizing the simple service
 discovery API available in the example. To see how this API is used during the
@@ -115,3 +115,33 @@ up to your PC to send a receive data over UART. Please see the steps below:
    for use, the green LED will also be lit.
  - At this point you can type into either terminal window and watch it being
  echoed to the other terminal via BLE.
+
+Improving UART performance for large data transfers
+===================================================
+
+The default board file configures the size of the internal UART ring buffer to
+32 bytes. If the amount of data sent over UART to the device exceeds
+UART_MAX_READ_SIZE plus the size of the ring buffer, data loss is probable.
+This is due to the internal UART ring buffer wrapping before the application
+has the chance to process the previous UART buffer. To be able to handle
+larger chunks of data, the size of the ring buffer can be increased inside the
+board file.
+
+In order to modify the size of the board file, the `board.c` file found inside
+the `Startup`  folder need to be replaced with copies of the actual board
+files. This can be done by performing the following steps:
+
+- Remove the `board.c` file found inside the `Startup` folder.
+- Copy the following files from `<SDK DIR>/source/ti/blestack/boards/CC2640R2_LAUNCHXL` directory into the projects `Startup` folder:
+    - Board.h
+    - CC2640R2_LAUNCHXL.h
+    - CC2640R2_LAUNCHXL.c
+    - CC2640R2_LAUNCHXL_fxns.c
+
+The ring buffer size can now be changed by resizing the uartCC26XXRingBuffer
+array found inside `CC2640R2_LAUNCHXL.c`.
+
+It is also possible to modify the shared `CC2640R2_LAUNCHXL.c` file that
+`board.c` imports directly instead of coping the board files into the project.
+This is however not recommended as changes will propagate to all BLE examples
+that depend on the shared file.

@@ -22,13 +22,13 @@ Before running the demo, the user will need the following components:
 
 - [CC2640R2 SDK](http://www.ti.com/tool/SIMPLELINK-CC2640R2-SDK)
 
-Simple Stream Server service (SSS)
-=========================
+Simple Stream Server service
+============================
 
 The simple stream service is made to implement a bi-directional data stream
 connection over the BLE protocol. The service uses a 128 bit UUID:
-F000C0C0-0451-4000-B000-00000000-0000. SSS contains two characteristics, they
-are listed below.
+F000C0C0-0451-4000-B000-00000000-0000. The service contains two
+characteristics, they are listed below.
 
 | Characteristic    | UUID                                      |
 |:-----------------:|:-----------------------------------------:|
@@ -43,7 +43,7 @@ The service provide APIs for sending and processing the data stream:
 * SimpleStreamServer_processStream()
 * SimpleStreamServer_disconnectStream()
 
-The Simple Serial Server service keeps an internal FIFO list for data sent to
+The simple stream server service keeps an internal FIFO list for data sent to
 the service using `SimpleStreamServer_sendData()`. When new data is sent to the
 service, the internal queue will be processed and as much data as possible
 will be sent to the server using notifications (this assumes the client has
@@ -99,3 +99,74 @@ up to your PC to send a receive data over UART. Please see the steps below:
    for use, the green LED will also be lit.
  - At this point you can type into either terminal window and watch it being
  echoed to the other terminal via BLE.
+
+Improving UART performance for large data transfers
+===================================================
+
+The default board file configures the size of the internal UART ring buffer to
+32 bytes. If the amount of data sent over UART to the device exceeds
+UART_MAX_READ_SIZE plus the size of the ring buffer, data loss is probable.
+This is due to the internal UART ring buffer wrapping before the application
+has the chance to process the previous UART buffer. To be able to handle
+larger chunks of data, the size of the ring buffer can be increased inside the
+board file.
+
+In order to modify the size of the board file, the `board.c` file found inside
+the `Startup`  folder need to be replaced with copies of the actual board
+files. This can be done by performing the following steps:
+
+- Remove the `board.c` file found inside the `Startup` folder.
+- Copy the following files from `<SDK DIR>/source/ti/blestack/boards/CC2640R2_LAUNCHXL` directory into the projects `Startup` folder:
+    - Board.h
+    - CC2640R2_LAUNCHXL.h
+    - CC2640R2_LAUNCHXL.c
+    - CC2640R2_LAUNCHXL_fxns.c
+
+The ring buffer size can now be changed by resizing the uartCC26XXRingBuffer
+array found inside `CC2640R2_LAUNCHXL.c`.
+
+It is also possible to modify the shared `CC2640R2_LAUNCHXL.c` file that
+`board.c` imports directly instead of coping the board files into the project.
+This is however not recommended as changes will propagate to all BLE examples
+that depend on the shared file.
+
+
+Enable Adafruit Bluefruit LE Connect "UART mode" support
+========================================================
+
+The UUIDs of the simple stream server service can be changed to enable "UART
+mode" support for third-party smartphone applications such as the Adafruit
+Bluefruit LE connect.
+
+To enable this support, the UUIDs found inside the
+`PROFILES/simple_stream_profile_server.c` file has to be changed according to
+the table below:
+
+| Service / Characteristic | UUID                                      |
+|:------------------------:|:-----------------------------------------:|
+|SimpleStreamServer        | 6E400001-B5A3-F393-E0A9-E50E24DC-CA9E     |
+|DataIn                    | 6E400002-B5A3-F393-E0A9-E50E24DC-CA9E     |
+|DataOut                   | 6E400003-B5A3-F393-E0A9-E50E24DC-CA9E     |
+
+When changing the UUID array, the UUID has to be written with little-endian.
+The resulting UUIDs should be as shown below:
+
+```
+// SimpleStreamServer Service UUID
+CONST uint8_t SimpleStreamServerUUID[ATT_UUID_SIZE] =
+{
+ 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0X93, 0xF3, 0xA3, 0xB5, 0x01, 0x00, 0x40, 0x6E
+};
+
+// DataIn UUID
+CONST uint8_t SimpleStreamServer_DataInUUID[ATT_UUID_SIZE] =
+{
+ 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0X93, 0xF3, 0xA3, 0xB5, 0x02, 0x00, 0x40, 0x6E
+};
+
+// DataOut UUID
+CONST uint8_t SimpleStreamServer_DataOutUUID[ATT_UUID_SIZE] =
+{
+ 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0X93, 0xF3, 0xA3, 0xB5, 0x03, 0x00, 0x40, 0x6E
+};
+```
