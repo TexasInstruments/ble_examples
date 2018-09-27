@@ -160,6 +160,10 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 1.60.01.02
+Maintenace update
+* IAR fixes to i2secho example
+
 ### 1.60.01.01
 Maintenace update
 * Add SPP over BLE Agama support!
