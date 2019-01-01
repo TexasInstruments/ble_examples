@@ -9,7 +9,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2018, Texas Instruments Incorporated
  All rights reserved.
 
@@ -164,6 +164,9 @@
 
 // UART read buffer size
 #define UART_MAX_READ_SIZE    (256)
+
+// Minimum heap headroom for BLE application
+#define MIN_HEAP_HEADROOM     (4000)
 
 // Application states
 enum
@@ -515,6 +518,10 @@ static void SimpleSerialSocketClient_init(void)
   // Setup an initial read
   UART_read(uartHandle, uartReadBuffer, UART_MAX_READ_SIZE);
 
+  // Make sure to leave at least MIN_HEAP_HEADROOM of heap
+  // for the BLE stack application to operate.
+  SimpleStreamClient_setHeadroomLimit(MIN_HEAP_HEADROOM);
+
   // Setup the Central GAPRole Profile. For more information see the GAP section
   // in the User's Guide:
   // http://software-dl.ti.com/lprf/sdg-latest/html/
@@ -861,7 +868,7 @@ static void SimpleSerialSocketClient_processGATTMsg(gattMsgEvent_t *pMsg)
     if (pMsg->method == ATT_HANDLE_VALUE_NOTI)
     {
         uartMsg_t *newMsg;
-        newMsg = ICall_malloc(sizeof(uartMsg_t) + pMsg->msg.handleValueNoti.len);
+        newMsg = SimpleStreamClient_allocateWithHeadroom(sizeof(uartMsg_t) + pMsg->msg.handleValueNoti.len);
 
         if (newMsg) {
 

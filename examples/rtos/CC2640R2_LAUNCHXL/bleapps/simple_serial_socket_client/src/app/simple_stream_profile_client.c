@@ -92,6 +92,8 @@ CONST uint8_t SimpleStreamServer_DataOutUUID[ATT_UUID_SIZE] =
 // Data queue to hold the outgoing data
 static List_List streamOutQueue;
 
+static uint16_t heapHeadroom = 0;
+
 /*********************************************************************
 * Service Discovery Table
 */
@@ -302,6 +304,57 @@ void SimpleStreamClient_disconnectStream()
 }
 
 /*********************************************************************
+ * @fn      SimpleStreamClient_setHeadroomLimit
+ *
+ * @brief   Sets the limit on how much heap that needs to be available
+ *          following a memory allocation.
+ *
+ * @param   minHeapHeadRoom - Smallest amount of free heap following
+ *          an memory allocation.
+ *
+ * @return  none
+ */
+void SimpleStreamClient_setHeadroomLimit(uint16_t minHeapHeadroom)
+{
+    // Store the minimal heap headroom limit
+    heapHeadroom = minHeapHeadroom;
+}
+
+/*********************************************************************
+ * @fn      SimpleStreamClient_allocateWithHeadroom
+ *
+ * @brief   Checks if there will be enough free heap left following
+ *          a memory allocation. If there is enough heap, it will allocate
+ *          the memory.
+ *
+ * @param   allocSize - number of bytes to be allocated
+ *
+ * @return  none
+ */
+void* SimpleStreamClient_allocateWithHeadroom(uint16_t allocSize)
+{
+    void *allocatedBuffer = NULL;
+    ICall_heapStats_t  stats;
+    ICall_CSState key;
+
+    // Perform this inside a critical section
+    key = ICall_enterCriticalSection();
+
+    // Get the current free heap
+    ICall_getHeapStats(&stats);
+
+    if (((int16_t) allocSize) < ((int16_t)(stats.totalFreeSize - heapHeadroom)))
+    {
+        allocatedBuffer = ICall_malloc(allocSize);
+    }
+
+    // Leave the critical section
+    ICall_leaveCriticalSection(key);
+
+    return allocatedBuffer;
+}
+
+/*********************************************************************
  * @fn      SimpleStreamClient_sendData
  *
  * @brief   Put the data into the outgoing stream queue and sends as
@@ -317,14 +370,14 @@ void SimpleStreamClient_disconnectStream()
  */
 bStatus_t SimpleStreamClient_sendData(uint16_t connHandle, void *data, uint16_t len)
 {
-    bStatus_t ret = SUCCESS;
+    bStatus_t ret = bleMemAllocError;
     SimpleStreamNode_t* newNode;
 
     // Reject if service is not yet discovered
     if (NULL != streamServiceHandle.chars[0].handle)
     {
         // Store the data into the queue
-        newNode = (SimpleStreamNode_t*) ICall_malloc(sizeof(SimpleStreamNode_t) + len);
+        newNode = (SimpleStreamNode_t*) SimpleStreamClient_allocateWithHeadroom(sizeof(SimpleStreamNode_t) + len);
         if (newNode != NULL)
         {
             newNode->connHandle = connHandle;
@@ -343,10 +396,6 @@ bStatus_t SimpleStreamClient_sendData(uint16_t connHandle, void *data, uint16_t 
             {
                 ICall_free(newNode);
             }
-        }
-        else
-        {
-            ret = bleMemAllocError;
         }
     }
     else

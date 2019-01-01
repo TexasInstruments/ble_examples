@@ -9,7 +9,7 @@
  Target Device: CC2640R2
 
  ******************************************************************************
- 
+
  Copyright (c) 2018, Texas Instruments Incorporated
  All rights reserved.
 
@@ -138,6 +138,9 @@
 
 //  UART read buffer size
 #define UART_MAX_READ_SIZE    (256)
+
+// Minimum heap headroom for BLE application
+#define MIN_HEAP_HEADROOM     (4000)
 
 /*********************************************************************
  * TYPEDEFS
@@ -435,7 +438,7 @@ static void uartWriteCallback(UART_Handle handle, void *txBuf, size_t size)
     // Free the last printed buffer
     if (NULL != uartCurrentMsg)
     {
-        free(uartCurrentMsg);
+        ICall_free(uartCurrentMsg);
         uartCurrentMsg = NULL;
     }
 
@@ -491,7 +494,7 @@ static void SimpleStreamServer_incomingDataCB(uint16_t connHandle,
 {
     // Try to allocate and store the data to our UART write queue
     uartMsg_t *newMsg;
-    newMsg = malloc(sizeof(uartMsg_t) + len);
+    newMsg = SimpleStreamServer_allocateWithHeadroom(sizeof(uartMsg_t) + len);
 
     if (newMsg)
     {
@@ -667,6 +670,9 @@ static void SimpleSerialSocketServer_init(void)
   // Initialize Simple data stream service
   SimpleStreamServer_AddService(GATT_ALL_SERVICES);
   SimpleStreamServer_RegisterAppCBs(&SimpleStreamServer_SimpleStreamServerProfileCBs);
+  // Make sure to leave at least MIN_HEAP_HEADROOM of heap
+  // for the BLE stack application to operate.
+  SimpleStreamServer_setHeadroomLimit(MIN_HEAP_HEADROOM);
 
   // Register to connection events
   SimpleSerialSocketServer_RegisterToAllConnectionEvent(FOR_STREAM);
@@ -1027,13 +1033,13 @@ static void SimpleSerialSocketServer_processAppMsg(ssssEvt_t *pMsg)
       }
 
     // Connection event
-	case SSSS_CONN_EVT:
+    case SSSS_CONN_EVT:
       {
         SimpleSerialSocketServer_processConnEvt((Gap_ConnEventRpt_t *)(pMsg->pData));
 
         ICall_free(pMsg->pData);
         break;
-	  }
+      }
 
     default:
       // Do nothing.
@@ -1201,5 +1207,6 @@ static uint8_t SimpleSerialSocketServer_enqueueMsg(uint8_t event, uint8_t state,
 
   return FALSE;
 }
+
 /*********************************************************************
 *********************************************************************/

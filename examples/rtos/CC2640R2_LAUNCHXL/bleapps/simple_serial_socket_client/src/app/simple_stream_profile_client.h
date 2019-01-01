@@ -118,6 +118,19 @@ extern void      SimpleStreamClient_disconnectStream();
  *                                          and CCCD handle.
  */
 extern bStatus_t SimpleStreamClient_enableNotifications(uint16_t connHandle);
+
+/*
+ * SimpleStreamClient_setHeadroomLimit - Sets the limit on how much heap that needs to be available
+ *                                       following a memory allocation.
+ */
+extern void     SimpleStreamClient_setHeadroomLimit(uint16_t minHeapHeadroom);
+
+/*
+ * SimpleStreamClient_allocateWithHeadroom - Checks if there will be enough free heap left
+ *                                           following a memory allocation. If there is
+ *                                           enough heap, it will allocate the memory.
+ */
+extern void*    SimpleStreamClient_allocateWithHeadroom(uint16_t allocSize);
 /*********************************************************************
 *********************************************************************/
 

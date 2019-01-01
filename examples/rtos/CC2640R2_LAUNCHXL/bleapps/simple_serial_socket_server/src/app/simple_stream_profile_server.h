@@ -117,7 +117,7 @@ typedef struct
  *                                 GATT attributes with the GATT server.
  *
  */
-extern bStatus_t SimpleStreamServer_AddService( uint32_t rspTaskId);
+extern bStatus_t SimpleStreamServer_AddService( uint32_t rspTaskId );
 
 /*
  * SimpleStreamServer_RegisterAppCBs - Registers the application callback function.
@@ -147,6 +147,19 @@ extern bStatus_t SimpleStreamServer_processStream();
  *                                       Clear and free up the existing outgoing stream queue.
  */
 extern void      SimpleStreamServer_disconnectStream();
+
+/*
+ * SimpleStreamServer_setHeadroomLimit - Sets the limit on how much heap that needs to be available
+ *                                       following a memory allocation.
+ */
+extern void     SimpleStreamServer_setHeadroomLimit(uint16_t minHeapHeadroom);
+
+/*
+ * SimpleStreamServer_allocateWithHeadroom - Checks if there will be enough free heap left
+ *                                           following a memory allocation. If there is
+ *                                           enough heap, it will allocate the memory.
+ */
+extern void*    SimpleStreamServer_allocateWithHeadroom(uint16_t allocSize);
 /*********************************************************************
 *********************************************************************/
 
