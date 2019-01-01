@@ -843,8 +843,16 @@ static void SimpleSerialSocketClient_processRoleEvent(gapCentralRoleEvent_t *pEv
         PIN_setOutputValue(ledPinHandle, Board_RLED, 0);
         PIN_setOutputValue(ledPinHandle, Board_GLED, 0);
 
+        // Prepare for going back to discovery
         streamServiceHandle.startHandle = GATT_INVALID_HANDLE;
         streamServiceHandle.endHandle   = GATT_INVALID_HANDLE;
+        scanningStarted = TRUE;
+        discoveryDone = FALSE;
+
+        // Start discovery
+        GAPCentralRole_StartDiscovery(DEFAULT_DISCOVERY_MODE,
+                                      DEFAULT_DISCOVERY_ACTIVE_SCAN,
+                                      DEFAULT_DISCOVERY_WHITE_LIST);
       }
       break;
 

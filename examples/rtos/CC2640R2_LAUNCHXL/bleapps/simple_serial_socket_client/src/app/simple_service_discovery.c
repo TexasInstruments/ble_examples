@@ -155,6 +155,7 @@ uint32_t SimpleServiceDiscovery_discoverService(uint16_t connHandle, ICall_Entit
           }
           else
           {
+            discoveryState = BLE_DISC_STATE_IDLE;
             retVal = SIMPLE_DISCOVERY_UNSUCCESSFUL;
           }
         }
@@ -173,6 +174,7 @@ uint32_t SimpleServiceDiscovery_discoverService(uint16_t connHandle, ICall_Entit
 
             if (pMsg->hdr.status == bleProcedureComplete)
             {
+                discoveryState = BLE_DISC_STATE_IDLE;
                 retVal = SIMPLE_DISCOVERY_SUCCESSFUL;
             }
         }
