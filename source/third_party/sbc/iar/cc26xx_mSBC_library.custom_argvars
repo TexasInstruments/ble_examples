@@ -4,11 +4,11 @@
   <group active="true" name="SIMPLELINK_CC2640R2_SDK">
     <variable>
       <name>SIMPLELINK_CORE_SDK_INSTALL_DIR</name>
-      <value>C:\ti\simplelink_cc26x2_sdk_2_10_00_44</value>
+      <value>C:\ti\simplelink_cc26x2_sdk_2_30_00_34</value>
     </variable>
     <variable>
       <name>XDCROOT</name>
-      <value>c:/ti/xdctools_3_50_02_20_core</value>
+      <value>c:/ti/xdctools_3_50_08_24_core</value>
     </variable>
     <variable>
       <name>EXAMPLE_ROOT</name>

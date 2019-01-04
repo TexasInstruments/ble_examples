@@ -844,7 +844,6 @@
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2_v1.arm4f</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\display\lib\display.arm4f</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\iar\m4f\grlib.a</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\pdm\lib\pdm_cc26x2_v1.arm4f</state>
                 </option>
                 <option>
                     <name>IlinkOverrideProgramEntryLabel</name>
@@ -1900,7 +1899,6 @@
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\rf\lib\rf_multiMode_cc26x2_v1.arm4f</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\display\lib\display.arm4f</state>
                     <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\grlib\lib\iar\m4f\grlib.a</state>
-                    <state>$SIMPLELINK_CORE_SDK_INSTALL_DIR$\source\ti\drivers\pdm\lib\pdm_cc26x2_v1.arm4f</state>
                 </option>
                 <option>
                     <name>IlinkOverrideProgramEntryLabel</name>

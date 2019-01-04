@@ -18,7 +18,7 @@
 
         <!-- Project properties -->
         <property name="type" value="rtsc"/>
-        <property name="products" value="com.ti.SIMPLELINK_CC26X2_SDK:2.10.00.44"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC26X2_SDK:2.30.00.34"/>
         <property name="xdcToolsVersion" value="3.50.05.12"/>
         <property name="target" value="ti.targets.arm.elf.M4F"/>
         <property name="platform" value="ti.platforms.simplelink:CC2642R1F"/>
@@ -69,8 +69,6 @@
             -l${SRC_BLE_DIR}/../../../source/ti/drivers/rf/lib/rf_multiMode_cc26x2_v1.aem4f
             -l${SRC_BLE_DIR}/../../../source/ti/display/lib/display.aem4f
             -l${SRC_BLE_DIR}/../../../source/ti/grlib/lib/ccs/m4f/grlib.a
-            -l${SRC_BLE_DIR}/../../../source/ti/drivers/pdm/lib/pdm_cc26x2_v1.aem4f
-
             -l${WORKSPACE_LOC}/ble5_central_bidirectional_audio_cc26x2r1lp_stack_library/FlashROM_Library/lib_linker.cmd
             -l${WORKSPACE_LOC}/ble5_central_bidirectional_audio_cc26x2r1lp_stack_library/FlashROM_Library/ble5_central_bidirectional_audio_cc26x2r1lp_stack_library.lib
             -l${BLE_GITHUB_ROOT}/source/third_party/sbc/bin/ccs/cc26xx_mSBC_library.lib
@@ -127,8 +125,6 @@
             -l${SRC_BLE_DIR}/../../../source/ti/drivers/rf/lib/rf_multiMode_cc26x2_v1.aem4f
             -l${SRC_BLE_DIR}/../../../source/ti/display/lib/display.aem4f
             -l${SRC_BLE_DIR}/../../../source/ti/grlib/lib/ccs/m4f/grlib.a
-            -l${SRC_BLE_DIR}/../../../source/ti/drivers/pdm/lib/pdm_cc26x2_v1.aem4f
-
             -l${WORKSPACE_LOC}/ble5_central_bidirectional_audio_cc26x2r1lp_stack_library/FlashROM_Library/lib_linker.cmd
             -l${WORKSPACE_LOC}/ble5_central_bidirectional_audio_cc26x2r1lp_stack_library/FlashROM_Library/ble5_central_bidirectional_audio_cc26x2r1lp_stack_library.lib
             -l${BLE_GITHUB_ROOT}/source/third_party/sbc/bin/ccs/cc26xx_mSBC_library.lib
@@ -206,7 +202,7 @@
         <file path="SRC_BLE_DIR/services/src/nv/cc26xx/crc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
         <file path="SRC_BLE_DIR/services/src/nv/cc26xx/crc.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
         <file path="SRC_BLE_DIR/services/src/nv/nvintf.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
-        
+
         <!-- ICall Folder -->
         <file path="SRC_COMMON_DIR/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
         <file path="SRC_COMMON_DIR/icall/src/inc/icall.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>

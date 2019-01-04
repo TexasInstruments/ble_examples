@@ -9,7 +9,7 @@
         </when>
     </applicability>
 
-    <import spec="${com.ti.SIMPLELINK_CC26X2_SDK:2.10.00.44}/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/debug/ccs/tirtos_builds_CC26X2R1_LAUNCHXL_debug_ccs.projectspec"/>
+    <import spec="${com.ti.SIMPLELINK_CC26X2_SDK:2.30.00.34}/kernel/tirtos/builds/CC26X2R1_LAUNCHXL/debug/ccs/tirtos_builds_CC26X2R1_LAUNCHXL_debug_ccs.projectspec"/>
 
     <project
         title="I2S Echo"
@@ -41,7 +41,6 @@
         -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/third_party/spiffs/lib/ccs/m4f/spiffs_cc26xx.a
         -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/drivers/rf/lib/rf_multiMode_cc26x2_v1.aem4f
         -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/drivers/lib/drivers_cc26x2_v1.aem4f
-        -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/drivers/pdm/lib/pdm_cc26x2_v1.aem4f
         -i${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/kernel/tirtos/packages
         -l${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2_v1.aem4f
         -l${GENERATED_LIBRARIES}

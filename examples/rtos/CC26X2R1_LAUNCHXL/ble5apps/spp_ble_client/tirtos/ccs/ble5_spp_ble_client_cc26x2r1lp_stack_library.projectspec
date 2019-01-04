@@ -22,7 +22,7 @@
     >
 
         <!-- Project properties -->
-        <property name="products" value="com.ti.rtsc.XDCtools:3.50.05.12"/>
+        <property name="products" value="com.ti.rtsc.XDCtools:3.50.08.24;com.ti.SIMPLELINK_CC26X2_SDK:2.30.00.34"/>
         <property name="target" value="ti.targets.arm.elf.M4F"/>
         <property name="platform" value="ti.platforms.simplelink:CC2642R1F"/>
         <property name="buildProfile" value="release"/>
@@ -68,7 +68,7 @@
         />
 
         <pathVariable name="EXAMPLE_BLE_ROOT" path="../.." scope="project"/>
-        <pathVariable name="SRC_BLE_DIR" path="C:/ti/simplelink_cc26x2_sdk_2_10_00_44/source/ti/ble5stack" scope="project"/>
+        <pathVariable name="SRC_BLE_DIR" path="${COM_TI_SIMPLELINK_CC26X2_SDK_INSTALL_DIR}/source/ti/ble5stack" scope="project"/>
         <pathVariable name="SRC_COMMON_DIR" path="${SRC_BLE_DIR}/../../../source/ti/ble5stack" scope="project"/>
         <pathVariable name="TOOLS_BLE_DIR" path="${SRC_BLE_DIR}/../../../tools/ble5stack" scope="project"/>
 

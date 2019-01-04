@@ -46,7 +46,6 @@
       <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/third_party/spiffs/lib/iar/m4f/spiffs_cc26xx.a</arg>
       <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/rf/lib/rf_multiMode_cc26x2_v1.arm4f</arg>
       <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/lib/drivers_cc26x2_v1.arm4f</arg>
-      <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/drivers/pdm/lib/pdm_cc26x2_v1.arm4f</arg>
       <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2_v1.arm4f</arg>
       <arg>$SIMPLELINK_CC26X2_SDK_INSTALL_DIR$/source/ti/devices/cc13x2_cc26x2_v1/driverlib/bin/iar/driverlib.lib</arg>
       <arg>--silent</arg>

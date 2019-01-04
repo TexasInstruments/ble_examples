@@ -12,7 +12,7 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC26x2 SDK 2.10.00.44**
+These examples and demos are for **TI SimpleLink CC26x2 SDK 2.30.00.34**
 
 This repository contains *Bluetooth&reg;* 5 sample applications for
 Texas Instruments' SimpleLink CC26x2 SDK. These examples have not been
@@ -36,7 +36,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.10">TI SimpleLink CC26x2 SDK 2.10.00.44(current)</a>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.30">TI SimpleLink CC26x2 SDK 2.30.00.34(current)</a>
       </td>
       <td>
         <ul>
@@ -48,13 +48,25 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.10">TI SimpleLink CC26x2 SDK 2.10.00.44</a>
+      </td>
+      <td>
+        <ul>
+          <li>Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
+          <li>I2S Echo</li>
+          <li>Serial Port Profile</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.60">TI SimpleLink CC26x2 SDK 1.60.00.43</a>
       </td>
       <td>
         <ul>
-          <li><a href="#full-duplex-bidirectional-audio-demo">Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
-          <li><a href="#i2s-echo">I2S Echo</li>
-          <li><a href="#serial-port-profile-spp">Serial Port Profile</li>
+          <li>Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
+          <li>I2S Echo</li>
+          <li>Serial Port Profile</li>
         </ul>
       </td>
     </tr>
@@ -194,7 +206,7 @@ location.
 
 By default the SimpleLink CC26x2 SDK will install to:
 
-    C:\ti\simplelink_cc26x2_sdk_2_10_00_44
+    C:\ti\simplelink_cc26x2_sdk_2_30_00_34
 
 If the SimpleLink CC26x2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
