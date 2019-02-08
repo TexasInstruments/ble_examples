@@ -43,6 +43,7 @@ For examples for other SDK versions and platforms, see table below.
           <li><a href="#full-duplex-bidirectional-audio-demo">Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
           <li><a href="#i2s-echo">I2S Echo</li>
           <li><a href="#serial-port-profile-spp">Serial Port Profile</li>
+          <li><a href="#bluetooth-5-throughput-demo">Bluetooth 5 Throughput Demo</li>
         </ul>
       </td>
     </tr>
@@ -276,6 +277,21 @@ The example also supports Bluetooth 5 demonstrating the BLE-Stack's support for 
     * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/tirtos/iar)
     * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/tirtos/ccs)
     * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/src)
+
+### Bluetooth 5 Throughput Demo
+
+Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo 
+can be run with two CC26x2 Launchpads, or one CC26x2 Launchpad and one smartphone 
+with the Simplelink Starter app.
+
+* throughput\_peripheral
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/src)
+* throughput\_central
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/readme.md)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/src)
 
 ## References
 
