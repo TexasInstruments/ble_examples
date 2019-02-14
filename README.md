@@ -36,7 +36,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.30">TI SimpleLink CC26x2 SDK 2.30.00.34(current)</a>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.30">TI SimpleLink CC26x2 SDK 2.30.00.34 (current)</a>
       </td>
       <td>
         <ul>
@@ -226,9 +226,9 @@ related to the ble_examples repo.
 
 ## Examples / Demo List
 
-**Note: These examples will be deprecated as of the 2.40 SDKs.**
-
 ### Full Duplex Bidirectional Audio Demo
+
+**Note: These examples will be deprecated as of the 2.40 SDKs.**
 
 Encode and transmit a full duplex bidirectional audio stream over BLE using two
 CC26x2 LaunchPads with CC3200AUDBOOST.
