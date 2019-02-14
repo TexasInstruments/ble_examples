@@ -40,9 +40,6 @@ For examples for other SDK versions and platforms, see table below.
       </td>
       <td>
         <ul>
-          <li><a href="#full-duplex-bidirectional-audio-demo">Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
-          <li><a href="#i2s-echo">I2S Echo</li>
-          <li><a href="#serial-port-profile-spp">Serial Port Profile</li>
           <li><a href="#bluetooth-5-throughput-demo">Bluetooth 5 Throughput Demo</li>
         </ul>
       </td>
@@ -185,8 +182,8 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
-### 2.10.00.00
-Initial offering of SimpleLink CC26x2 SDK 2.10.00.44 examples.
+### 2.30.00.00
+Initial offering of SimpleLink CC26x2 SDK 2.30.00.34 examples.
 
 ## Installation
 
@@ -229,6 +226,8 @@ related to the ble_examples repo.
 
 ## Examples / Demo List
 
+**Note: These examples will be deprecated as of the 2.40 SDKs.**
+
 ### Full Duplex Bidirectional Audio Demo
 
 Encode and transmit a full duplex bidirectional audio stream over BLE using two
@@ -248,6 +247,8 @@ CC26x2 LaunchPads with CC3200AUDBOOST.
 
 ### I2S Echo
 
+**Note: These examples will be deprecated as of the 2.40 SDKs.**
+
 Read audio frames in from an external codec and loop them back using I2S.
 
 * i2secho
@@ -257,31 +258,10 @@ Read audio frames in from an external codec and loop them back using I2S.
     * [GCC Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/gcc)
     * [Source](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/)
 
-### Serial Port Profile (SPP)
-
-**Note: These examples will be deprecated as of the 2.20 SDKs. It will be
-replaced with the Simple Serial Socket**
-
-This is a UART to BLE bridge example where a spp\_ble\_client and spp\_ble\_server connect
-with one another and exchange UART data over the air.
-
-The example also supports Bluetooth 5 demonstrating the BLE-Stack's support for different PHYs:
-
-* spp\_ble\_client
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_client/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_client/src)
-* spp\_ble\_server
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/spp_ble_server/src)
-
 ### Bluetooth 5 Throughput Demo
 
-Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo 
-can be run with two CC26x2 Launchpads, or one CC26x2 Launchpad and one smartphone 
+Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo
+can be run with two CC26x2 Launchpads, or one CC26x2 Launchpad and one smartphone
 with the Simplelink Starter app.
 
 * throughput\_peripheral
