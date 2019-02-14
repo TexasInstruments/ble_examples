@@ -40,6 +40,8 @@ For examples for other SDK versions and platforms, see table below.
       </td>
       <td>
         <ul>
+          <li><a href="#full-duplex-bidirectional-audio-demo">Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
+          <li><a href="#i2s-echo">I2S Echo</li>
           <li><a href="#bluetooth-5-throughput-demo">Bluetooth 5 Throughput Demo</li>
         </ul>
       </td>
