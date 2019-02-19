@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<projectSpec>
+    <import spec="simple_serial_socket_client_cc26x2r1lp_stack_library.projectspec"/>
+    <project
+        name="simple_serial_socket_client_cc26x2r1lp_app"
+        device="Cortex M.CC2642R1F"
+        cgtVersion="16.9"
+        connection="common/targetdb/connections/TIXDS110_Connection.xml"
+        toolChain="TI"
+        linkerCommandFile="cc13x2_cc26x2_app.cmd"
+        preBuildStep=""
+        postBuildStep="${CG_TOOL_HEX} -order MS --memwidth=8 --romwidth=8 --intel -o ${ProjName}.hex ${ProjName}.out"
+        description=""
+        launchWizard="false"
+        references="simple_serial_socket_client_cc26x2r1lp_stack_library"
+    >
+
+        <!-- Project properties -->
+        <property name="type" value="rtsc"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC13X2_26X2_SDK:2.40.00.99"/>
+        <property name="xdcToolsVersion" value="3.51.01.18_core"/>
+        <property name="target" value="ti.targets.arm.elf.M4F"/>
+        <property name="platform" value="ti.platforms.simplelink:CC2642R1F"/>
+        <property name="buildProfile" value="release"/>
+        <property name="isHybrid" value="true"/>
+        <property name="configuroOptions" value="--compileOptions ${COMPILER_FLAGS} --xdcpath ${SRC_BLE_DIR}/../../../source;${SRC_BLE_DIR}/../../../kernel/tirtos/packages;${SRC_BLE_DIR}"/>
+
+        <configuration
+            name="FlashROM_Release"
+            compilerBuildOptions="
+            --cmd_file=${PROJECT_LOC}/TOOLS/defines/${ProjName}_${ConfigName}.opt
+            --cmd_file=${SRC_BLE_DIR}/config/build_components.opt
+            --cmd_file=${SRC_BLE_DIR}/config/factory_config.opt
+            --cmd_file=${WORKSPACE_LOC}/simple_serial_socket_client_cc26x2r1lp_stack_library/TOOLS/build_config.opt
+            --silicon_version=7M4 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on --display_error_number --diag_wrap=off
+            -DDeviceFamily_CC26X2
+            -I${PROJECT_LOC}/Application
+            -I${PROJECT_LOC}/Startup
+            -I${PROJECT_LOC}/Include
+            -I${PROJECT_LOC}/PROFILES
+            -I${CG_TOOL_ROOT}/include
+            -I${SRC_BLE_DIR}/controller/cc26xx/inc
+            -I${SRC_BLE_DIR}/inc
+            -I${SRC_BLE_DIR}/rom
+            -I${SRC_BLE_DIR}/common/cc26xx
+            -I${SRC_BLE_DIR}/icall/inc
+            -I${SRC_BLE_DIR}/inc
+            -I${SRC_BLE_DIR}/target
+            -I${SRC_COMMON_DIR}/hal/src/target/_common
+            -I${SRC_COMMON_DIR}/hal/src/target/_common/cc26xx
+            -I${SRC_COMMON_DIR}/hal/src/inc
+            -I${SRC_COMMON_DIR}/heapmgr
+            -I${SRC_COMMON_DIR}/icall/src/inc
+            -I${SRC_COMMON_DIR}/osal/src/inc
+            -I${SRC_COMMON_DIR}/services/src/saddr
+            -I${SRC_COMMON_DIR}/services/src/sdata
+            -I${SRC_COMMON_DIR}/services/src/nv
+            -I${SRC_COMMON_DIR}/services/src/nv/cc26xx
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2"
+            linkerBuildOptions="
+            -l${WORKSPACE_LOC}/simple_serial_socket_client_cc26x2r1lp_stack_library/FlashROM_Library/ble_r2.symbols
+            -l${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2/driverlib/bin/ccs/driverlib.lib
+            -l${SRC_BLE_DIR}/../../../kernel/tirtos/packages/ti/dpl/lib/dpl_cc13x2.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/drivers/lib/drivers_cc13x2.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/drivers/rf/lib/rf_multiMode_cc13x2.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/display/lib/display.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/grlib/lib/ccs/m4f/grlib.a
+            -l${WORKSPACE_LOC}/simple_serial_socket_client_cc26x2r1lp_stack_library/FlashROM_Library/lib_linker.cmd
+            -l${WORKSPACE_LOC}/simple_serial_socket_client_cc26x2r1lp_stack_library/FlashROM_Library/simple_serial_socket_client_cc26x2r1lp_stack_library.lib
+            -l${SRC_BLE_DIR}/common/cc26xx/ccs/cc13x2_cc26x2_app.cmd
+            -x
+            --define=FLASH_ROM_BUILD=2
+            --diag_suppress=16002-D
+            --diag_suppress=10247-D
+            --diag_suppress=10325-D
+            --diag_suppress=10229-D
+            --diag_suppress=16032-D"
+        />
+
+        <configuration
+            name="FlashROM_Debug"
+            compilerBuildOptions="
+            --cmd_file=${PROJECT_LOC}/TOOLS/defines/simple_serial_socket_client_cc26x2r1lp_app_FlashROM_Debug.opt
+            --cmd_file=${SRC_BLE_DIR}/config/build_components.opt
+            --cmd_file=${SRC_BLE_DIR}/config/factory_config.opt
+            --cmd_file=${WORKSPACE_LOC}/simple_serial_socket_client_cc26x2r1lp_stack_library/TOOLS/build_config.opt
+            --silicon_version=7M4 -O4 --opt_for_speed=0 --code_state=16 --abi=eabi -me -g --c99 --gcc --gen_func_subsections=on --display_error_number --diag_wrap=off
+            -DDeviceFamily_CC26X2
+            -I${PROJECT_LOC}/Application
+            -I${PROJECT_LOC}/Startup
+            -I${PROJECT_LOC}/Include
+            -I${CG_TOOL_ROOT}/include
+            -I${SRC_BLE_DIR}/controller/cc26xx/inc
+            -I${SRC_BLE_DIR}/inc
+            -I${SRC_BLE_DIR}/rom
+            -I${SRC_BLE_DIR}/common/cc26xx
+            -I${SRC_BLE_DIR}/icall/inc
+            -I${SRC_BLE_DIR}/inc
+            -I${SRC_BLE_DIR}/target
+            -I${SRC_COMMON_DIR}/hal/src/target/_common
+            -I${SRC_COMMON_DIR}/hal/src/target/_common/cc26xx
+            -I${SRC_COMMON_DIR}/hal/src/inc
+            -I${SRC_COMMON_DIR}/heapmgr
+            -I${SRC_COMMON_DIR}/icall/src/inc
+            -I${SRC_COMMON_DIR}/osal/src/inc
+            -I${SRC_COMMON_DIR}/services/src/saddr
+            -I${SRC_COMMON_DIR}/services/src/sdata
+            -I${SRC_COMMON_DIR}/services/src/nv
+            -I${SRC_COMMON_DIR}/services/src/nv/cc26xx
+            -I${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2"
+            linkerBuildOptions="
+            -l${WORKSPACE_LOC}/simple_serial_socket_client_cc26x2r1lp_stack_library/FlashROM_Library/ble_r2.symbols
+            -l${SRC_BLE_DIR}/../../../source/ti/devices/cc13x2_cc26x2/driverlib/bin/ccs/driverlib.lib
+            -l${SRC_BLE_DIR}/../../../kernel/tirtos/packages/ti/dpl/lib/dpl_cc26x2.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/drivers/lib/drivers_cc26x2.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/drivers/rf/lib/rf_multiMode_cc26x2.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/display/lib/display.aem4f
+            -l${SRC_BLE_DIR}/../../../source/ti/grlib/lib/ccs/m4f/grlib.a
+            -l${WORKSPACE_LOC}/simple_serial_socket_client_cc26x2r1lp_stack_library/FlashROM_Library/lib_linker.cmd
+            -l${WORKSPACE_LOC}/simple_serial_socket_client_cc26x2r1lp_stack_library/FlashROM_Library/simple_serial_socket_client_cc26x2r1lp_stack_library.lib
+            -l${SRC_BLE_DIR}/common/cc26xx/ccs/cc13x2_cc26x2_app.cmd
+            -x
+            --define=FLASH_ROM_BUILD=2
+            --diag_suppress=16002-D
+            --diag_suppress=10247-D
+            --diag_suppress=10325-D
+            --diag_suppress=10229-D
+            --diag_suppress=16032-D"
+        />
+
+        <pathVariable name="EXAMPLE_BLE_ROOT" path="../.." scope="project"/>
+        <pathVariable name="GIT_SRC_BLE_DIR" path="../../../../../../../source/ti/ble5stack" scope="project"/>
+        <pathVariable name="SRC_BLE_DIR" path="${COM_TI_SIMPLELINK_CC13X2_26X2_SDK_INSTALL_DIR}/source/ti/ble5stack" scope="project"/>
+        <pathVariable name="SRC_COMMON_DIR" path="${COM_TI_SIMPLELINK_CC13X2_26X2_SDK_INSTALL_DIR}/source/ti/ble5stack" scope="project"/>
+
+        <!-- Application Folder -->
+        <file path="EXAMPLE_BLE_ROOT/src/app/simple_serial_socket_client.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/simple_serial_socket_client.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/util.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="GIT_SRC_BLE_DIR/util/simple_service_discovery/simple_service_discovery.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="GIT_SRC_BLE_DIR/util/simple_service_discovery/simple_service_discovery.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- Drivers/ECC Folder -->
+        <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- Drivers/TRNG Folder -->
+        <file path="SRC_COMMON_DIR/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_COMMON_DIR/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- Drivers/NV Folder -->
+        <file path="SRC_BLE_DIR/services/src/nv/cc26xx/nvoctp.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/services/src/nv/cc26xx/nvoctp.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/services/src/nv/cc26xx/crc.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/services/src/nv/cc26xx/crc.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/services/src/nv/nvintf.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/nv" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- ICall Folder -->
+        <file path="SRC_COMMON_DIR/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_COMMON_DIR/icall/src/inc/icall.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/icall/inc/icall_addrs.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_COMMON_DIR/icall/src/icall_cc2650.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_COMMON_DIR/icall/src/icall_platform.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_COMMON_DIR/icall/src/icall_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- ICallBLE Folder -->
+        <file path="SRC_BLE_DIR/icall/app/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/icall/inc/ble_user_config.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/icall/app/icall_api_lite.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/icall/inc/icall_ble_apimsg.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- Include Folder -->
+        <file path="SRC_BLE_DIR/inc/gap.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/inc/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/inc/gapgattserver.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/inc/gatt.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/inc/hci.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="SRC_COMMON_DIR/osal/src/inc/osal_snv.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- PROFILES Folder -->
+        <file path="GIT_SRC_BLE_DIR/profiles/simple_serial_stream/simple_stream_profile_client.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="GIT_SRC_BLE_DIR/profiles/simple_serial_stream/simple_stream_profile_client.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- Startup Folder -->
+        <file path="SRC_BLE_DIR/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="EXAMPLE_BLE_ROOT/src/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/main.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+
+        <!-- TOOLS Folder -->
+        <file path="EXAMPLE_BLE_ROOT/tirtos/ccs/defines/simple_serial_socket_client_cc26x2r1lp_app_FlashROM_Release.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS/defines" createVirtualFolders="true" applicableConfigurations="FlashROM_Release"/>
+        <file path="EXAMPLE_BLE_ROOT/tirtos/ccs/defines/simple_serial_socket_client_cc26x2r1lp_app_FlashROM_Debug.opt" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS/defines" createVirtualFolders="true" applicableConfigurations="FlashROM_Debug"/>
+        <file path="EXAMPLE_BLE_ROOT/tirtos/ble_release.cfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Release"/>
+        <file path="EXAMPLE_BLE_ROOT/tirtos/ble_debug.cfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Debug"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/ccs/cc13x2_cc26x2_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_Release, FlashROM_Debug"/>
+    </project>
+</projectSpec>

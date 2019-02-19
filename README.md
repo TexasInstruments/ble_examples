@@ -12,18 +12,18 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC26x2 SDK 2.30.00.34**
+These examples and demos are for **TI SimpleLink CC13x2 / CC26x2 SDK 2.40.00.XX**
 
 This repository contains *Bluetooth&reg;* 5 sample applications for
-Texas Instruments' SimpleLink CC26x2 SDK. These examples have not been
+Texas Instruments' SimpleLink CC13x2 / CC26x2 SDK. These examples have not been
 validated as production-ready.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
 [Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
 
 To use the examples and tools in this repository, please download and install
-the [SimpleLink CC26x2 SDK](http://www.ti.com/tool/SIMPLELINK-CC26X2-SDK) **first**, and if
-necessary [buy an evaluation kit](http://www.ti.com/tool/LAUNCHXL-CC26X2R1).
+the [SimpleLink CC13x2 / CC26x2 SDK](http://www.ti.com/tool/SIMPLELINK-CC13X2-26X2-SDK) **first**, and if
+necessary [buy an CC26X2](http://www.ti.com/tool/LAUNCHXL-CC26X2R1) or [CC1352](http://www.ti.com/tool/LAUNCHXL-CC1352R1) evaluation kit].
 
 If you have any questions please refer to the [FAQ page](docs/faq.md).
 For examples for other SDK versions and platforms, see table below.
@@ -36,13 +36,23 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.30">TI SimpleLink CC26x2 SDK 2.30.00.34 (current)</a>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.40">TI SimpleLink CC13x2 / CC26x2 SDK 2.40.00.81 (current)</a>
       </td>
       <td>
         <ul>
-          <li><a href="#full-duplex-bidirectional-audio-demo">Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
-          <li><a href="#i2s-echo">I2S Echo</li>
-          <li><a href="#bluetooth-5-throughput-demo">Bluetooth 5 Throughput Demo</li>
+          <li><a href="#simple-serial-socket">Simple Serial Socket</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.30">TI SimpleLink CC26x2 SDK 2.30.00.34</a>
+      </td>
+      <td>
+        <ul>
+          <li>Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
+          <li>I2S Echo</li>
+          <li>Serial Port Profile</li>
         </ul>
       </td>
     </tr>
@@ -184,8 +194,8 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
-### 2.30.00.00
-Initial offering of SimpleLink CC26x2 SDK 2.30.00.34 examples.
+### 2.40.00.00
+Initial offering of SimpleLink CC13x2 / CC26x2 SDK 2.40.00.81 examples.
 
 ## Installation
 
@@ -204,17 +214,17 @@ This repository can be cloned/download anywhere on your computer. There is a
 dependency between this repository and the SimpleLink CC26x2 SDK install
 location.
 
-By default the SimpleLink CC26x2 SDK will install to:
+By default the SimpleLink CC13x2 / CC26x2 SDK will install to:
 
-    C:\ti\simplelink_cc26x2_sdk_2_30_00_34
+    C:\ti\simplelink_cc13x2_26x2_sdk_2_40_00_81
 
-If the SimpleLink CC26x2 SDK must be installed to a different location, then
+If the SimpleLink CC13x2 / CC26x2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
 environment variables.
 
 ## Required Tools
 
-Similar to the SimpleLink CC26x2 SDK, the examples in this repository support
+Similar to the SimpleLink CC13x2 / CC26x2 SDK, the examples in this repository support
 the CCS and IAR toolchains. Please pay careful attention to versions of these
 tools, please refer to the release notes for supported versions.
 
@@ -228,62 +238,51 @@ related to the ble_examples repo.
 
 ## Examples / Demo List
 
-### Full Duplex Bidirectional Audio Demo
+### Simple Serial Socket
 
-**Note: These examples will be deprecated as of the 2.40 SDKs.**
+This is a UART over BLE bridge example where a Simple Serial Socket Client
+(SSSC) and Simple Serial Socket Server (SSSS) connect with one another and
+exchange UART data over the air. An generic Simple Stream Service is used
+making it easy to exchange data sink and source to create a custom serial
+socket over BLE implementation.
 
-Encode and transmit a full duplex bidirectional audio stream over BLE using two
-CC26x2 LaunchPads with CC3200AUDBOOST.
+**Note: this example replaces the SPP over BLE example**
 
-* central\_bidirectional\_audio
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/central_bidirectional_audio/readme.md)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/central_bidirectional_audio/tirtos/ccs)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/central_bidirectional_audio/tirtos/iar)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/central_bidirectional_audio/src)
+#### For CC1352
 
-* peripheral\_bidirectional\_audio
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/peripheral_bidirectional_audio/readme.md)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/peripheral_bidirectional_audio/tirtos/ccs)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/peripheral_bidirectional_audio/tirtos/iar)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/peripheral_bidirectional_audio/src)
+* Simple Serial Socket Client
+    * [Documentation](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
+* Simple Serial Socket Server
+    * [Documentation](examples/rtosCC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
 
-### I2S Echo
+#### For CC26x2
 
-**Note: These examples will be deprecated as of the 2.40 SDKs.**
-
-Read audio frames in from an external codec and loop them back using I2S.
-
-* i2secho
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/README.md)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/ccs)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/iar)
-    * [GCC Project Files](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/tirtos/gcc)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/drivers/i2secho/)
-
-### Bluetooth 5 Throughput Demo
-
-Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo
-can be run with two CC26x2 Launchpads, or one CC26x2 Launchpad and one smartphone
-with the Simplelink Starter app.
-
-* throughput\_peripheral
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/src)
-* throughput\_central
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/readme.md)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/src)
+* Simple Serial Socket Client
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
+* Simple Serial Socket Server
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
 
 ## References
 
 The following reference pages may be helpful during general Bluetooth Low
 Energy development. New users of the SimpleLink CC26x2 platform and Bluetooth
 5 development are encouraged to read the
-[BLE5-Stack User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC26X2%20SDK%2FDocuments%2FBLE5-Stack%2FBLE5-Stack%20User's%20Guide).
+[BLE5-Stack User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC13x2%2026x2%20SDK%2FDocuments%2FBLE5-Stack%2FBLE5-Stack%20User's%20Guide).
 
 As an additional resource, users are encouraged to complete the
-[SimpleLink Academy](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC26X2%20SDK%2FSimpleLink%20Academy)
+[SimpleLink Academy](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC13x2%2026x2%20SDK%2FSimpleLink%20Academy)
 training.
 
 Other resources can be found below:
