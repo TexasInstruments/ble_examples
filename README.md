@@ -43,6 +43,7 @@ For examples for other SDK versions and platforms, see table below.
           <li><a href="#full-duplex-bidirectional-audio-demo">Full Duplex Bidirectional Audio Demo (Central/Peripheral)</li>
           <li><a href="#i2s-echo">I2S Echo</li>
           <li><a href="#bluetooth-5-throughput-demo">Bluetooth 5 Throughput Demo</li>
+          <li><a href="#tree-structure-network">Tree Structure Network</li>
         </ul>
       </td>
     </tr>
@@ -274,6 +275,19 @@ with the Simplelink Starter app.
     * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/readme.md)
     * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
     * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/src)
+
+### Tree Structure Network
+
+Set up a tree structure network using tiers of star network. This network format 
+can be used to set up a network with up to 47 devices. The same example is used 
+for the founding node (grandpa node), the middle nodes (father nodes) and the 
+children nodes.
+
+* tree_structure_network
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/tree_structure_network/readme.md)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/tree_structure_network/tirtos/ccs)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/tree_structure_network/tirtos/iar)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/tree_structure_network/src)
 
 ## References
 
