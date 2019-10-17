@@ -3,8 +3,8 @@ Purpose / Scope
 ===============
 
 This purpose of this example is to demonstrate a simple serial socket using
-TI's Simple Stream Server service. The example showcase an simple UART over
-BLE implementation, the project is designed to allow the actual data sink and
+TI's Simple Stream Server profile. The example showcases a simple UART over
+BLE implementation. The project is designed to allow the actual data sink and
 source to be easily exchanged for the purpose of creating a generic simple
 stream application.
 
@@ -70,22 +70,16 @@ Running the demo is as simple and compiling and loading the code, then hooking
 up to your PC to send a receive data over UART. Please see the steps below:
 
 1. Compile and load the code
- - Build LaunchPad #1 with the `simple_serial_socket_client`
- cc26x2r1lp_stack-FlashROM_Library project
- - Build and load LaunchPad #1 with the `simple_serial_socket_client`
- cc26x2r1lp_app-FlashROM_StackLibrary project
- - Build LaunchPad #2 with the `simple_serial_socket_server`
- cc26x2r1lp_stack-FlashROM_Library project
- - Build and load LaunchPad #2 with the `simple_serial_socket_server`
- cc26x2r1lp_app-FlashROM_StackLibrary project
+ - Build and load LaunchPad #1 with the `simple_serial_socket_client` project
+ - Build and load LaunchPad #2 with the `simple_serial_socket_server` project
 
-2. Connect the Boards to the PC terminal
+2. Connect the boards to the PC terminal
  - You can use the terminal to send data from your PC to the LaunchPad, and
  also display the info sent from one device to another.
- - You will need to open two instances of the terminal program to, one to
+ - You will need to open two instances of the terminal program, one to
  communicate with each board.
  - Follow the steps from our [FAQ](faq.md) to connect to the LaunchPad boards
- - **Please note that the Simple Serial Bridge project uses the default baud
+ - **Please note that the Simple Serial Server project uses the default baud
  rate of 115200**
 
 3. Power the boards individually  and verify they are initialized
@@ -100,7 +94,7 @@ up to your PC to send a receive data over UART. Please see the steps below:
  - At this point you can type into either terminal window and watch it being
  echoed to the other terminal via BLE.
 
-Improving UART performance for large data transfers
+Improving UART Performance for Large Data Transfers
 ===================================================
 
 The default board file configures the size of the internal UART ring buffer to
@@ -116,7 +110,7 @@ the `Startup`  folder need to be replaced with copies of the actual board
 files. This can be done by performing the following steps:
 
 - Remove the `board.c` file found inside the `Startup` folder.
-- Copy the following files from `<SDK DIR>/source/ti/blestack/boards/CC26X2R1_LAUNCHXL` directory into the projects `Startup` folder:
+- Copy the following files from `<SDK DIR>/source/ti/ble5stack/boards/CC26X2R1_LAUNCHXL` directory into the projects `Startup` folder:
     - Board.h
     - CC26X2R1_LAUNCHXL.h
     - CC26X2R1_LAUNCHXL.c
@@ -127,7 +121,7 @@ array found inside `CC26X2R1_LAUNCHXL.c`.
 
 It is also possible to modify the shared `CC26X2R1_LAUNCHXL.c` file that
 `board.c` imports directly instead of coping the board files into the project.
-This is however not recommended as changes will propagate to all BLE examples
+This is however not recommended as changes will propagate to all BLE examples in the SDK
 that depend on the shared file.
 
 
@@ -135,7 +129,7 @@ Enable Adafruit Bluefruit LE Connect "UART mode" support
 ========================================================
 
 The UUIDs of the simple stream server service can be changed to enable "UART
-mode" support for third-party smartphone applications such as the Adafruit
+mode" support for third-party smart phone applications such as the Adafruit
 Bluefruit LE connect.
 
 To enable this support, the UUIDs found inside the
