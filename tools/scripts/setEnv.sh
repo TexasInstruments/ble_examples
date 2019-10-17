@@ -3,5 +3,5 @@
 # Set env vars
 TI_ROOT_DIR=C:/ti
 
-SIMPLELINK_SDK_VER=simplelink_cc26x2_sdk_2_30_00_34
-XDCTOOLS_VER=xdctools_3_50_08_24_core
+SIMPLELINK_SDK_VER=simplelink_cc26x2_sdk_3_20_00_68
+XDCTOOLS_VER=xdctools_3_51_03_28_core

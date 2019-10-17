@@ -4,7 +4,7 @@
  * Description:    This file contains the simple stream client profile definitions and
  *                 prototypes.
  *
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2019, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ extern "C"
  * INCLUDES
  */
 #include "icall_ble_api.h"
-#include <simple_service_discovery.h>
+#include "simple_service_discovery.h"
 #include <ti/drivers/utils/List.h>
 
 /*********************************************************************

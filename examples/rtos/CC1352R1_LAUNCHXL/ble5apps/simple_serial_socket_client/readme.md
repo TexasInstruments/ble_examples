@@ -3,8 +3,8 @@ Purpose / Scope
 ===============
 
 This purpose of this example is to demonstrate a simple serial socket using
-TI's Simple Stream Server profile. The example showcase an simple UART over
-BLE implementation, the project is designed to allow the actual data sink and
+TI's Simple Stream Server profile. The example showcases a simple UART over
+BLE implementation. The project is designed to allow the actual data sink and
 source to be easily exchanged for the purpose of creating a generic simple
 stream application.
 
@@ -22,7 +22,7 @@ Before running the demo, the user will need the following components:
 
 - [CC13x2 / CC26x2 SDK](http://www.ti.com/tool/SIMPLELINK-CC13X2-26X2-SDK)
 
-Simple Stream Server service
+Simple Stream Server Service
 ============================
 
 The simple stream service is made to implement a bi-directional data stream
@@ -40,7 +40,7 @@ The `DataIn` characteristic implies data coming from client to server while
 
 For more information on the service, see the Simple Serial Socket Server example readme.
 
-Simple Stream Client profile
+Simple Stream Client Profile
 ============================
 
 The simple stream client profile provides an easy to use interface, similar to
@@ -55,7 +55,7 @@ discovery process, refer to the `SimpleSerialSocketClient_processGATTDiscEvent`
 function found inside `simple_serial_socket_client`.
 
 The profile provided APIs:
-* SimpleStreamClient_sendData(uint16_t* data, uint16_t len)
+* SimpleStreamClient_sendData(uint16_t connHandle, void *data, uint16_t len)
 * SimpleStreamClient_processStream()
 * SimpleStreamClient_disconnectStream()
 * SimpleStreamClient_enableNotifications(uint16_t connHandle)
@@ -63,7 +63,7 @@ The profile provided APIs:
 The Simple Serial Client keeps an internal FIFO list for data sent to the
 profile using `SimpleStreamClient_sendData()`. When new data is sent to the
 profile, the internal queue will be processed and as much data as possible
-will be sent to the server using writes commands (no-respond).
+will be sent to the server using write commands (no-respond).
 
 > Note: The Simple Serial Client profile relies on dynamic memory allocated and
 > will use the application ICall heap to store the queued data.
@@ -86,19 +86,13 @@ Running the demo is as simple and compiling and loading the code, then hooking
 up to your PC to send a receive data over UART. Please see the steps below:
 
 1. Compile and load the code
- - Build LaunchPad #1 with the `simple_serial_socket_client`
- cc13x2r1lp_stack-FlashROM_Library project
- - Build and load LaunchPad #1 with the `simple_serial_socket_client`
- cc13x2r1lp_app-FlashROM_StackLibrary project
- - Build LaunchPad #2 with the `simple_serial_socket_server`
- cc13x2r1lp_stack-FlashROM_Library project
- - Build and load LaunchPad #2 with the `simple_serial_socket_server`
- cc13x2r1lp_app-FlashROM_StackLibrary project
+ - Build and load LaunchPad #1 with the `simple_serial_socket_client` project
+ - Build and load LaunchPad #2 with the `simple_serial_socket_server` project
 
-2. Connect the Boards to the PC terminal
+2. Connect the boards to the PC terminal
  - You can use the terminal to send data from your PC to the LaunchPad, and
  also display the info sent from one device to another.
- - You will need to open two instances of the terminal program to, one to
+ - You will need to open two instances of the terminal program, one to
  communicate with each board.
  - Follow the steps from our [FAQ](faq.md) to connect to the LaunchPad boards
  - **Please note that the Simple Serial Socket project uses the default baud
@@ -143,5 +137,5 @@ array found inside `CC1352R1_LAUNCHXL.c`.
 
 It is also possible to modify the shared `CC1352R1_LAUNCHXL.c` file that
 `board.c` imports directly instead of coping the board files into the project.
-This is however not recommended as changes will propagate to all BLE examples
+This is however not recommended as changes will propagate to all BLE examples in the SDK
 that depend on the shared file.
