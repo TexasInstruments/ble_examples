@@ -12,20 +12,21 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67**
+These examples and demos are for **TI SimpleLink CC2640R2 SDK 3.30.00.20**
 
-This repository contains *Bluetooth&reg;* 5 sample applications for
-Texas Instruments' SimpleLink CC13x2 / CC26x2 SDK. These examples have not been
+This repository contains *Bluetooth&reg;* Low Energy sample applications for
+Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
 validated as production-ready.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
 [Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
 
 To use the examples and tools in this repository, please download and install
-the [SimpleLink CC13x2 / CC26x2 SDK](http://www.ti.com/tool/SIMPLELINK-CC13X2-26X2-SDK) **first**, and if
-necessary [buy an CC26X2](http://www.ti.com/tool/LAUNCHXL-CC26X2R1) or [CC1352](http://www.ti.com/tool/LAUNCHXL-CC1352R1) evaluation kit.
+the [SimpleLink CC2640R2 SDK](http://www.ti.com/ble-stack) **first**, and if
+necessary [buy an evaluation kit](http://www.ti.com/tool/launchxl-cc2640r2).
 
 If you have any questions please refer to the [FAQ page](docs/faq.md).
+
 For examples for other SDK versions and platforms, see table below.
 
 <table>
@@ -36,7 +37,17 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-3.20">TI SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67 (current)</a>
+	<a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.30">TI SimpleLink CC2640R2 SDK 3.30.00.20 (current)</a>
+      </td>
+      <td>
+        <ul>
+          <li><a href="#simple-serial-socket">Simple Serial Socket</a></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-3.20">TI SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67</a>
       </td>
       <td>
         <ul>
@@ -100,11 +111,11 @@ For examples for other SDK versions and platforms, see table below.
       </td>
       <td>
         <ul>
-          <li>Simple Serial Socket</li>
-          <li>Micro BLE Stack Broadcaster Observer</li>
-          <li>Bidirectional Audio</li>
-          <li>Simple Peripheral Observer</li>
-          <li>Apple Notification Center Service</li>
+          <li><a href="#simple-serial-socket">Simple Serial Socket</a></li>
+          <li><a href="#micro-ble-stack-broadcaster-observer">Micro BLE Stack Broadcaster Observer</li>
+          <li><a href="#bidirectional-audio">Bidirectional Audio</li>
+          <li><a href="#simple-peripheral-observer">Simple Peripheral Observer</li>
+          <li><a href="#apple-notification-center-service">Apple Notification Center Service</li>
         </ul>
       </td>
     </tr>
@@ -201,6 +212,9 @@ Older releases can be accessed by checking out/downloading their corresponding
 branch. For more information on supported examples
 please consult the readme.md of the desired branch/release.
 
+For for more information about different SDK components, please consult the
+BLE-stack User's Guide.
+
 ## Change Log
 
 Note: The version numbers below are related to GitHub ble_examples releases.
@@ -208,18 +222,27 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 3.30.00.00
+Initial offering of select SimpleLink CC2640R2 SDK 3.30.00.20 examples.
+
 ### 3.20.00.00
-Initial offering of SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67 examples, 
-supporting the rev. E of the SimpleLinkCC26x2 and CC13x2 MCUs.
+Initial offering of SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67 examples supporting 
+the rev. E of the SimpleLinkCC26x2 and CC13x2 MCUs.
 
 ### 2.40.00.00
 Initial offering of SimpleLink CC13x2 / CC26x2 SDK 2.40.00.81 examples.
 
+### 2.20.00.00
+New examples added.
+* BLE-Stack:  Simple Serial Socket Server/Client added
+
+**SPP over BLE is now deprecated and replaced by Simple Serial Socket**
+
 ## Installation
 
 This repository can be cloned and tracked using Git. For instructions on how to
-clone a repository from GitHub please refer to this guide:
-[Clone from GitHub](https://help.github.com/articles/cloning-a-repository/)
+clone a repository from Github please refer to this guide:
+[Clone from Github](https://help.github.com/articles/cloning-a-repository/)
 
 For users who are unfamiliar with Git, there is the option of downloading the
 contents of the repository as a zip file. See instructions below.
@@ -229,20 +252,23 @@ contents of the repository as a zip file. See instructions below.
 1. Zip folder will appear in your Downloads folder
 
 This repository can be cloned/download anywhere on your computer. There is a
-dependency between this repository and the SimpleLink CC26x2 SDK install
+dependency between this repository and the SimpleLink CC2640R2 SDK install
 location.
 
-By default the SimpleLink CC13x2 / CC26x2 SDK will install to ``C:\ti\``
+By default the SimpleLink CC2640R2 SDK will install to:
 
-If the SimpleLink CC13x2 / CC26x2 SDK must be installed to a different location, 
-then see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
+    C:\ti\simplelink_cc2640r2_sdk_2_20_00_49
+
+If the Simplelink CC2640R2 SDK must be installed to a different location, then
+see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
 environment variables.
 
 ## Required Tools
 
-Similar to the SimpleLink CC13x2 / CC26x2 SDK, the examples in this repository 
-support the CCS and IAR toolchains. Please pay careful attention to versions of 
-these tools, please refer to the release notes for supported versions.
+Similar to the Simplelink CC2640R2 SDK, the examples in this repository support
+the CCS and IAR toolchains. Please refer to the release notes for the supported
+versions of each toolcahin. Using a non supported version is
+untested and may result in unexpected behavior.
 
 For more information on toolchain setup, please refer to our
 [FAQ page](docs/faq.md).
@@ -264,69 +290,26 @@ socket over BLE implementation.
 
 **Note: this example replaces the SPP over BLE example**
 
-#### For CC1352R
-
 * Simple Serial Socket Client
-    * [Documentation](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/readme.md)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/src)
 * Simple Serial Socket Server
-    * [Documentation](examples/rtosCC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
-
-#### For CC26x2R
-
-* Simple Serial Socket Client
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
-* Simple Serial Socket Server
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
-
-### Bluetooth 5 Throughput Demo
-
-Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo
-can be run with two CC26x2 Launchpads, or one CC26x2 Launchpad and one smartphone
-with the Simplelink Starter app.
-
-* throughput\_peripheral
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/src)
-* throughput\_central
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/readme.md)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_central/src)
-
-### Tree Structure Network
-
-Set up a tree structure network using tiers of star network. This network format 
-can be used to set up a network with up to 47 devices. The same application is used 
-for the founding node (grandpa node), the middle nodes (father nodes) and the 
-children nodes.
-
-* tree_structure_network
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/tree_structure_network/readme.md)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/tree_structure_network/tirtos/ccs)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/tree_structure_network/tirtos/iar)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/tree_structure_network/src)
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/readme.md)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/src)
 
 ## References
 
 The following reference pages may be helpful during general Bluetooth Low
-Energy development. New users of the SimpleLink CC26x2 platform and Bluetooth
-5 development are encouraged to read the
-[BLE5-Stack User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC13x2%2026x2%20SDK%2FDocuments%2FBLE5-Stack%2FBLE5-Stack%20User's%20Guide).
+Energy development.
+Users developing Bluetooth applications are encouraged to read the
+[BLE-Stack User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC2640R2%20SDK%2FDocuments%2FBLE-Stack%2FBLE-Stack%20User's%20Guide).
 
 As an additional resource, users are encouraged to complete the
-[SimpleLink Academy](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC13x2%2026x2%20SDK%2FSimpleLink%20Academy)
+[SimpleLink Academy](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC2640R2%20SDK%2FSimpleLink%20Academy)
 training.
 
 Other resources can be found below:

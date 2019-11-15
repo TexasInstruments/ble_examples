@@ -10,7 +10,6 @@
 **/config/src
 **/tirtos/src
 **/tirtos/iar/config/
-**/Tools/src
 *.dep
 *.log
 *.ewt
