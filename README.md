@@ -42,6 +42,7 @@ For examples for other SDK versions and platforms, see table below.
       <td>
         <ul>
           <li><a href="#simple-serial-socket">Simple Serial Socket</a></li>
+          <li>Bluetooth 5 Simple Serial Socket</li>
         </ul>
       </td>
     </tr>
@@ -291,15 +292,25 @@ socket over BLE implementation.
 **Note: this example replaces the SPP over BLE example**
 
 * Simple Serial Socket Client
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/src)
+    * BLE 4.1
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/readme.md)
+      * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/iar)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/src)
+    * BLE 5.0
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
 * Simple Serial Socket Server
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/src)
+    * BLE 4.1
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/readme.md)
+      * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/iar)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/src)
+    * BLE 5.0
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
 
 ## References
 
