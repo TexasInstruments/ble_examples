@@ -2,7 +2,7 @@
 
 <projectSpec>
     <project
-        name="simple_serial_socket_client_cc2640r2lp_stack_library"
+        name="simple_peripheral_observer_cc2640r2lp_stack_library"
         device="CC2640R2F"
         cgtVersion="16.9"
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
@@ -13,7 +13,7 @@
         ${TOOLS_BLE_DIR}/lib_search/lib_search
         ${PROJECT_LOC}/TOOLS/build_config.opt
         ${SRC_BLE_DIR}/blelib
-        ${WORKSPACE_LOC}/simple_serial_socket_client_cc2640r2lp_stack_library/FlashROM_Library/lib_linker.cmd
+        ${WORKSPACE_LOC}/simple_peripheral_observer_cc2640r2lp_stack_library/FlashROM_Library/lib_linker.cmd
         cc2640
         ${TOOLS_BLE_DIR}/lib_search/lib_search.xml
         ${SRC_BLE_DIR}/symbols"
@@ -23,7 +23,7 @@
     >
 
         <!-- Project properties -->
-        <property name="products" value="com.ti.rtsc.XDCtools:3.51.03.28_core"/>
+        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:3.40.00.10;com.ti.rtsc.XDCtools:3.51.03.28_core"/>
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2640R2F"/>
         <property name="buildProfile" value="release"/>
@@ -43,12 +43,14 @@
             -DDeviceFamily_CC26X0R2
             -DEXT_HAL_ASSERT
             -DFLASH_ROM_BUILD
+            -DGATT_NO_CLIENT
             -DICALL_EVENTS
             -DICALL_JT
             -DICALL_LITE
             -DOSAL_CBTIMER_NUM_TASKS=1
             -DOSAL_SNV=1
             -DPOWER_SAVING
+            -DRF_SINGLEMODE
             -DSTACK_LIBRARY
             -DUSE_ICALL
             -I${CG_TOOL_ROOT}/include
@@ -82,8 +84,7 @@
         />
 
         <pathVariable name="EXAMPLE_BLE_ROOT" path="../.." scope="project"/>
-        <pathVariable name="SIMPLELINK_CORE_SDK_INSTALL_DIR" path="C:\ti\simplelink_cc2640r2_sdk_3_40_00_10" scope="project"/>
-        <pathVariable name="SRC_BLE_DIR" path="${SIMPLELINK_CORE_SDK_INSTALL_DIR}/source/ti/blestack" scope="project"/>
+        <pathVariable name="SRC_BLE_DIR" path="${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/blestack" scope="project"/>
         <pathVariable name="TOOLS_BLE_DIR" path="${SRC_BLE_DIR}/../../../tools/blestack" scope="project"/>
 
         <!-- HAL/Common Folder -->

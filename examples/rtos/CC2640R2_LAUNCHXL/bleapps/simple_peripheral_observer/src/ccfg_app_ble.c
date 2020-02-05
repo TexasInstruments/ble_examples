@@ -1,11 +1,11 @@
 /******************************************************************************
 
- @file  ccfg_app_ble.c
+ @file       ccfg_app_ble.c
 
  @brief Customer Configuration CC26xx PG2 device family.
 
- Group: WCS, BTS
- Target Device: cc2640r2
+ Group: CMCU, SCS
+ Target Device: CC2640R2
 
  ******************************************************************************
  

@@ -1,11 +1,11 @@
 /******************************************************************************
 
- @file  osal_icall_ble.c
+ @file       osal_icall_ble.c
 
  @brief This file contains function that allows user setup tasks
 
- Group: WCS, BTS
- Target Device: cc2640r2
+ Group: CMCU, SCS
+ Target Device: CC2640R2
 
  ******************************************************************************
  
@@ -80,8 +80,11 @@
 
 #include "gattservapp.h"
 
+#include "gapbondmgr.h"
+
 #include "ble_user_config.h"
 #include "ble_dispatch.h"
+
 
 #ifdef USE_ICALL
 

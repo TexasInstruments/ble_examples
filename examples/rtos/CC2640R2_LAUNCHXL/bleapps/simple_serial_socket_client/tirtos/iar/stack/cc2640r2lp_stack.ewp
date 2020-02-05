@@ -224,7 +224,6 @@
                     <state>OSAL_CBTIMER_NUM_TASKS=1</state>
                     <state>OSAL_SNV=1</state>
                     <state>POWER_SAVING</state>
-                    <state>RF_SINGLEMODE</state>
                     <state>STACK_LIBRARY</state>
                     <state>USE_ICALL</state>
                 </option>
@@ -1252,13 +1251,13 @@
     <group>
         <name>ROM</name>
         <file>
-            <name>$SRC_BLE_DIR$\rom\r2\common_rom_init.c</name>
+            <name>$ROM_DIR$\r2\common_rom_init.c</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\rom\r2\rom_flash_jt.h</name>
+            <name>$ROM_DIR$\r2\rom_flash_jt.h</name>
         </file>
         <file>
-            <name>$SRC_BLE_DIR$\rom\r2\rom_init.c</name>
+            <name>$ROM_DIR$\r2\rom_init.c</name>
         </file>
     </group>
     <group>

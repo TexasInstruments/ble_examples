@@ -1,11 +1,11 @@
 /******************************************************************************
 
- @file  build_config.opt
+ @file       build_config.opt
 
  @brief This file contains the Bluetooth Low Energy (BLE) build config options.
 
- Group: WCS, BTS
- Target Device: cc2640r2
+ Group: CMCU, SCS
+ Target Device: CC2640R2
 
  ******************************************************************************
  
@@ -111,10 +111,10 @@
 
 /* BLE Host Build Configurations */
 /* -DHOST_CONFIG=PERIPHERAL_CFG */
--DHOST_CONFIG=CENTRAL_CFG
+/* -DHOST_CONFIG=CENTRAL_CFG */
 /* -DHOST_CONFIG=BROADCASTER_CFG */
 /* -DHOST_CONFIG=OBSERVER_CFG */
-/* -DHOST_CONFIG=PERIPHERAL_CFG+OBSERVER_CFG */
+-DHOST_CONFIG=PERIPHERAL_CFG+OBSERVER_CFG
 /* -DHOST_CONFIG=CENTRAL_CFG+BROADCASTER_CFG */
 /* -DHOST_CONFIG=PERIPHERAL_CFG+CENTRAL_CFG */
 

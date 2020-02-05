@@ -58,6 +58,9 @@
 #include <icall.h>
 #include "hal_assert.h"
 #include "simple_serial_socket_server.h"
+#ifdef PTM_MODE
+#include "npi_task.h"
+#endif // PTM_MODE
 
 /* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
