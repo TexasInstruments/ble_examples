@@ -231,7 +231,7 @@
                     <state>ICALL_MAX_NUM_TASKS=4</state>
                     <state>ICALL_STACK0_ADDR</state>
                     <state>MAX_NUM_BLE_CONNS=1</state>
-                    <state>SHOW_BD_ADDR</state>
+                    <state>XSHOW_BD_ADDR</state>
                     <state>POWER_SAVING</state>
                     <state>SDI_USE_UART</state>
                     <state>STACK_LIBRARY</state>

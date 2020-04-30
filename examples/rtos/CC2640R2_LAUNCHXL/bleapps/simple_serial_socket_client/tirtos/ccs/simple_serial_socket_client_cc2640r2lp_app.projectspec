@@ -93,65 +93,65 @@
         />
 
         <pathVariable name="EXAMPLE_BLE_ROOT" path="../.." scope="project"/>
-        <pathVariable name="SIMPLELINK_CORE_SDK_INSTALL_DIR" path="C:\ti\simplelink_cc2640r2_sdk_3_30_00_20" scope="project"/>
+        <pathVariable name="SIMPLELINK_CORE_SDK_INSTALL_DIR" path="C:\ti\simplelink_cc2640r2_sdk_3_40_00_10" scope="project"/>
 	    <pathVariable name="SRC_BLE_DIR" path="${SIMPLELINK_CORE_SDK_INSTALL_DIR}/source/ti/blestack" scope="project"/>
         <pathVariable name="TOOLS_BLE_DIR" path="${SRC_BLE_DIR}/../../../tools/blestack" scope="project"/>
 
         <!-- Application Folder -->
-        <file path="EXAMPLE_BLE_ROOT/src/app/simple_serial_socket_client.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="EXAMPLE_BLE_ROOT/src/app/simple_serial_socket_client.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/common/cc26xx/util.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/simple_serial_socket_client.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/simple_serial_socket_client.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/util.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- Drivers/ECC Folder -->
-        <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/ecc/ECCROMCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/ECC" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- Drivers/RF Folder -->
-        <file path="SRC_BLE_DIR/../../../source/ti/drivers/rf/RF.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/../../../source/ti/drivers/rf/RFCC26XX_singleMode.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/../../../source/ti/drivers/rf/RF.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/../../../source/ti/drivers/rf/RFCC26XX_singleMode.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/RF" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- Drivers/TRNG Folder -->
-        <file path="SRC_BLE_DIR/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/TRNGCC26XX.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/hal/src/target/_common/TRNGCC26XX.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Drivers/TRNG" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- ICall Folder -->
-        <file path="SRC_BLE_DIR/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/icall/src/inc/icall.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/icall/inc/icall_addrs.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/icall/src/icall_cc2650.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/icall/src/icall_platform.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/icall/src/icall_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/src/icall.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/src/inc/icall.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/inc/icall_addrs.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/src/icall_cc2650.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/src/icall_platform.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/src/icall_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICall" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- ICallBLE Folder -->
-        <file path="SRC_BLE_DIR/icall/app/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/icall/inc/ble_user_config.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/icall/app/icall_api_lite.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/icall/inc/icall_ble_apimsg.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/app/ble_user_config.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/inc/ble_user_config.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/app/icall_api_lite.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/icall/inc/icall_ble_apimsg.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="ICallBLE" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- Include Folder -->
-        <file path="SRC_BLE_DIR/inc/gap.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/profiles/roles/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/inc/gapgattserver.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/inc/gatt.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/inc/hci.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/osal/src/inc/osal_snv.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/inc/gap.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/profiles/roles/gapbondmgr.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/inc/gapgattserver.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/inc/gatt.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/inc/hci.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/osal/src/inc/osal_snv.h" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Include" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- PROFILES Folder -->
-        <file path="SRC_BLE_DIR/profiles/roles/cc26xx/central.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/profiles/roles/cc26xx/central.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="EXAMPLE_BLE_ROOT/src/app/simple_stream_profile_client.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="EXAMPLE_BLE_ROOT/src/app/simple_stream_profile_client.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="EXAMPLE_BLE_ROOT/src/app/simple_service_discovery.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="EXAMPLE_BLE_ROOT/src/app/simple_service_discovery.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/profiles/roles/cc26xx/central.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/profiles/roles/cc26xx/central.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/simple_stream_profile_client.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/simple_stream_profile_client.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/simple_service_discovery.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/simple_service_discovery.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="PROFILES" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- Startup Folder -->
-        <file path="SRC_BLE_DIR/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="EXAMPLE_BLE_ROOT/src/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="EXAMPLE_BLE_ROOT/src/app/main.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/target/board.c" openOnCreation="" excludeFromBuild="false" action="link" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/src/ccfg_app_ble.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/src/app/main.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Startup" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
         <!-- TOOLS Folder -->
-        <file path="EXAMPLE_BLE_ROOT/tirtos/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/common/cc26xx/ccs/cc26xx_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM, FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/tirtos/app_ble.cfg" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="SRC_BLE_DIR/common/cc26xx/ccs/cc26xx_app.cmd" openOnCreation="" excludeFromBuild="true" action="link" targetDirectory="TOOLS" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
     </project>
 </projectSpec>

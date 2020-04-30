@@ -8,15 +8,16 @@
 * [Tools](#tools)
 * [References](#references)
 * [FAQ](docs/faq.md)
-* [Versioning BLE-Stack Projects](docs/suggested_workflow.md)
+* [Suggested Work Flow](docs/suggested_workflow.md)
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC2640R2 SDK 3.30.00.20**
+These examples and demos are for **TI SimpleLink CC2640R2 SDK 3.40.00.10**
 
 This repository contains *Bluetooth&reg;* Low Energy sample applications for
 Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
-validated as production-ready.
+validated as production-ready. Services and profiles in this repository have not 
+been validated or certified.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
 [Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
@@ -37,11 +38,25 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-	<a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.30">TI SimpleLink CC2640R2 SDK 3.30.00.20 (current)</a>
+  <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.40">TI SimpleLink CC2640R2 SDK 3.40.00.10 (current)</a>
       </td>
       <td>
         <ul>
           <li><a href="#simple-serial-socket">Simple Serial Socket</a></li>
+          <li><a href="#simple-serial-socket">Bluetooth 5 Simple Serial Socket</li>
+          <li><a href="#simple-peripheral-observer">Simple Peripheral Observer</li>
+          <li><a href="#blood-pressure-monitor">Blood Pressure Monitor</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+	<a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.30">TI SimpleLink CC2640R2 SDK 3.30.00.20</a>
+      </td>
+      <td>
+        <ul>
+          <li>Simple Serial Socket</a></li>
+          <li>Bluetooth 5 Simple Serial Socket</li>
         </ul>
       </td>
     </tr>
@@ -222,6 +237,13 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 3.40.00.00
+Initial offering of select SimpleLink CC2640R2 SDK 3.40.00.10 examples and one 
+new example added:
+* Blood Pressure Monitor: This sample project implements the Blood Pressure 
+  profiles in a Bluetooth Low Energy peripheral device to provide an example 
+  blood pressure monitor (BPM) using simulated measurement data.
+
 ### 3.30.00.00
 Initial offering of select SimpleLink CC2640R2 SDK 3.30.00.20 examples.
 
@@ -257,15 +279,15 @@ location.
 
 By default the SimpleLink CC2640R2 SDK will install to:
 
-    C:\ti\simplelink_cc2640r2_sdk_2_20_00_49
+    C:\ti\simplelink_cc2640r2_sdk_x_xx_xx_xx
 
-If the Simplelink CC2640R2 SDK must be installed to a different location, then
+If the SimpleLink CC2640R2 SDK must be installed to a different location, then
 see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
 environment variables.
 
 ## Required Tools
 
-Similar to the Simplelink CC2640R2 SDK, the examples in this repository support
+Similar to the SimpleLink CC2640R2 SDK, the examples in this repository support
 the CCS and IAR toolchains. Please refer to the release notes for the supported
 versions of each toolcahin. Using a non supported version is
 untested and may result in unexpected behavior.
@@ -291,15 +313,49 @@ socket over BLE implementation.
 **Note: this example replaces the SPP over BLE example**
 
 * Simple Serial Socket Client
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/src)
+    * BLE 4.2
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/readme.md)
+      * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/iar)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/src)
+    * BLE 5.0
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
 * Simple Serial Socket Server
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/src)
+    * BLE 4.2
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/readme.md)
+      * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/iar)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/src)
+    * BLE 5.0
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
+
+### Simple Peripheral Observer
+
+This sample project is used to add observer role to a BLE peripheral device to
+show scanning functionality in a peripheral based project.
+
+* simple\_peripheral\_observer
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/readme.md)
+    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/src)
+
+### Blood Pressure Monitor
+
+This sample project implements the Blood Pressure profiles in a Bluetooth low 
+energy peripheral device to provide an example blood pressure monitor (BPM) 
+using simulated measurement data. The application implements the Sensor role of 
+the blood pressure profile. The project is based on the adopted profile and 
+service specifications for blood pressure.
+
+* blood\_pressure
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/readme.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/src)
 
 ## References
 

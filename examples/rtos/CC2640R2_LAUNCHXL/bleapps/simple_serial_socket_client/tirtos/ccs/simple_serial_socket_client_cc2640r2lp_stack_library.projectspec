@@ -43,7 +43,6 @@
             -DDeviceFamily_CC26X0R2
             -DEXT_HAL_ASSERT
             -DFLASH_ROM_BUILD
-            -DGATT_NO_CLIENT
             -DICALL_EVENTS
             -DICALL_JT
             -DICALL_LITE
@@ -83,7 +82,7 @@
         />
 
         <pathVariable name="EXAMPLE_BLE_ROOT" path="../.." scope="project"/>
-        <pathVariable name="SIMPLELINK_CORE_SDK_INSTALL_DIR" path="C:\ti\simplelink_cc2640r2_sdk_3_30_00_20" scope="project"/>
+        <pathVariable name="SIMPLELINK_CORE_SDK_INSTALL_DIR" path="C:\ti\simplelink_cc2640r2_sdk_3_40_00_10" scope="project"/>
         <pathVariable name="SRC_BLE_DIR" path="${SIMPLELINK_CORE_SDK_INSTALL_DIR}/source/ti/blestack" scope="project"/>
         <pathVariable name="TOOLS_BLE_DIR" path="${SRC_BLE_DIR}/../../../tools/blestack" scope="project"/>
 

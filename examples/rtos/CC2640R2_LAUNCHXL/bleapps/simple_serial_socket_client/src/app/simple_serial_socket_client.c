@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2019, Texas Instruments Incorporated
+ Copyright (c) 2013-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -112,7 +112,7 @@
 #define DEFAULT_DISCOVERY_ACTIVE_SCAN         TRUE
 
 // TRUE to use white list during discovery
-#define DEFAULT_DISCOVERY_WHITE_LIST          FALSE
+#define DEFAULT_DISCOVERY_WHITE_LIST          GAP_DISC_FILTER_POLICY_ALL
 
 // TRUE to use high scan duty cycle when creating link
 #define DEFAULT_LINK_HIGH_DUTY_CYCLE          FALSE
@@ -219,7 +219,8 @@ typedef enum
  */
 
 // Handle the registration and un-registration for the connection event, since only one can be registered.
-static uint32_t connectionEventRegisterCauseBitMap = NOT_REGISTER; //see connectionEventRegisterCause_u
+// see connectionEventRegisterCause_u
+static uint32_t connectionEventRegisterCauseBitMap = NOT_REGISTER; 
 
 // Entity ID globally used to check for source and/or destination of messages
 static ICall_EntityID selfEntity;

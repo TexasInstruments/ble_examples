@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2018, Texas Instruments Incorporated
+ Copyright (c) 2013-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -41,8 +41,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_02_20_00_49
- Release Date: 2018-07-16 13:19:56
+ 
+ 
  *****************************************************************************/
 
 #ifndef SIMPLESERIALSOCKETSERVER_H
