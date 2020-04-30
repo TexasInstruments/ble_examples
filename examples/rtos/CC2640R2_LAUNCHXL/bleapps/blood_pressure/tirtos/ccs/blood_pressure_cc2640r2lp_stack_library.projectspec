@@ -2,7 +2,7 @@
 
 <projectSpec>
     <project
-        name="simple_peripheral_observer_cc2640r2lp_stack_library"
+        name="blood_pressure_cc2640r2lp_stack_library"
         device="CC2640R2F"
         cgtVersion="16.9"
         connection="common/targetdb/connections/TIXDS110_Connection.xml"
@@ -13,7 +13,7 @@
         ${TOOLS_BLE_DIR}/lib_search/lib_search
         ${PROJECT_LOC}/TOOLS/build_config.opt
         ${SRC_BLE_DIR}/blelib
-        ${WORKSPACE_LOC}/simple_peripheral_observer_cc2640r2lp_stack_library/FlashROM_Library/lib_linker.cmd
+        ${WORKSPACE_LOC}/blood_pressure_cc2640r2lp_stack_library/FlashROM_Library/lib_linker.cmd
         cc2640
         ${TOOLS_BLE_DIR}/lib_search/lib_search.xml
         ${SRC_BLE_DIR}/symbols"
@@ -50,7 +50,6 @@
             -DOSAL_CBTIMER_NUM_TASKS=1
             -DOSAL_SNV=1
             -DPOWER_SAVING
-            -DRF_SINGLEMODE
             -DSTACK_LIBRARY
             -DUSE_ICALL
             -I${CG_TOOL_ROOT}/include

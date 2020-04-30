@@ -16,7 +16,8 @@ These examples and demos are for **TI SimpleLink CC2640R2 SDK 3.40.00.10**
 
 This repository contains *Bluetooth&reg;* Low Energy sample applications for
 Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
-validated as production-ready.
+validated as production-ready. Services and profiles in this repository have not 
+been validated or certified.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
 [Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
@@ -44,6 +45,7 @@ For examples for other SDK versions and platforms, see table below.
           <li><a href="#simple-serial-socket">Simple Serial Socket</a></li>
           <li><a href="#simple-serial-socket">Bluetooth 5 Simple Serial Socket</li>
           <li><a href="#simple-peripheral-observer">Simple Peripheral Observer</li>
+          <li><a href="#blood-pressure-monitor">Blood Pressure Monitor</li>
         </ul>
       </td>
     </tr>
@@ -236,7 +238,11 @@ as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
 ### 3.40.00.00
-Initial offering of select SimpleLink CC2640R2 SDK 3.40.00.10 examples.
+Initial offering of select SimpleLink CC2640R2 SDK 3.40.00.10 examples and one 
+new example added:
+* Blood Pressure Monitor: This sample project implements the Blood Pressure 
+  profiles in a Bluetooth Low Energy peripheral device to provide an example 
+  blood pressure monitor (BPM) using simulated measurement data.
 
 ### 3.30.00.00
 Initial offering of select SimpleLink CC2640R2 SDK 3.30.00.20 examples.
@@ -337,6 +343,19 @@ show scanning functionality in a peripheral based project.
     * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/iar)
     * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/ccs)
     * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/src)
+
+### Blood Pressure Monitor
+
+This sample project implements the Blood Pressure profiles in a Bluetooth low 
+energy peripheral device to provide an example blood pressure monitor (BPM) 
+using simulated measurement data. The application implements the Sensor role of 
+the blood pressure profile. The project is based on the adopted profile and 
+service specifications for blood pressure.
+
+* blood\_pressure
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/readme.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/src)
 
 ## References
 

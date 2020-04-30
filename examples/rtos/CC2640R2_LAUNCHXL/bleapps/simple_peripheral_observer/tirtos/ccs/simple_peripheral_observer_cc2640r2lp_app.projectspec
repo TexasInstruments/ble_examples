@@ -18,7 +18,7 @@
 
         <!-- Project properties -->
         <property name="type" value="rtsc"/>
-        <property name="products" value="com.ti.SIMPLELINK_CC2640R2_SDK:3.40.00.10"/>
+        <property name="products" value=""/>
         <property name="xdcToolsVersion" value="3.51.03.28_core"/>
         <property name="target" value="ti.targets.arm.elf.M3"/>
         <property name="platform" value="ti.platforms.simplelink:CC2640R2F"/>
@@ -179,7 +179,8 @@
 
         <pathVariable name="TI_BLE_SDK_BASE" path="${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}" scope="project"/>
         <pathVariable name="EXAMPLE_BLE_ROOT" path="../.." scope="project"/>
-        <pathVariable name="SRC_BLE_DIR" path="${COM_TI_SIMPLELINK_CC2640R2_SDK_INSTALL_DIR}/source/ti/blestack" scope="project"/>
+        <pathVariable name="SIMPLELINK_CORE_SDK_INSTALL_DIR" path="C:\ti\simplelink_cc2640r2_sdk_3_40_00_10" scope="project"/>
+	<pathVariable name="SRC_BLE_DIR" path="${SIMPLELINK_CORE_SDK_INSTALL_DIR}/source/ti/blestack" scope="project"/>
         <pathVariable name="TOOLS_BLE_DIR" path="${SRC_BLE_DIR}/../../../tools/blestack" scope="project"/>
 
         <!-- Application Folder -->
