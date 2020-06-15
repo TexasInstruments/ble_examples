@@ -1,4 +1,3 @@
-
 ## Table of Contents
 
 * [Navigating the Repository](#navigating-the-repository)
@@ -44,7 +43,7 @@ For examples for other SDK versions and platforms, see table below.
       <td>
         <ul>
           <li><a href="#heart-rate">Heart Rate Sensor</a></li>
-          <li><a href="#heart-rate">Glucose Sensor</a></li>
+          <li><a href="#glucose">Glucose Sensor</a></li>
         </ul>
       </td>
     </tr>
