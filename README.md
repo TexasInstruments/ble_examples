@@ -1,3 +1,4 @@
+
 ## Table of Contents
 
 * [Navigating the Repository](#navigating-the-repository)
@@ -12,7 +13,7 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC2640R2 SDK 3.40.00.10**
+These examples and demos are for **TI SimpleLink CC2640R2 SDK 4.10.00.00**
 
 This repository contains *Bluetooth&reg;* Low Energy sample applications for
 Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
@@ -38,7 +39,18 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-  <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.40">TI SimpleLink CC2640R2 SDK 3.40.00.10 (current)</a>
+  <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-4.10">TI SimpleLink CC2640R2 SDK 4.10.00.00 (current)</a>
+      </td>
+      <td>
+        <ul>
+          <li><a href="#heart-rate">Heart Rate Sensor</a></li>
+          <li><a href="#heart-rate">Glucose Sensor</a></li>
+        </ul>
+      </td>
+    </tr>
+     <tr>
+      <td>
+  <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.40">TI SimpleLink CC2640R2 SDK 3.40.00.10</a>
       </td>
       <td>
         <ul>
