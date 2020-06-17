@@ -10,7 +10,7 @@
 
  ******************************************************************************
 
- Copyright (c) 2019, Texas Instruments Incorporated
+ Copyright (c) 2019-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@
 #include <ti/drivers/uart/UARTCC26XX.h>
 #include <ti/drivers/utils/List.h>
 
-#include "board.h"
+//#include "board.h"
 
 #include <icall.h>
 /* This Header file contains all BLE API and icall structure definition */
@@ -64,6 +64,11 @@
 #include "devinfoservice.h"
 #include "ll_common.h"
 #include "util.h"
+
+#include <ti_drivers_config.h>
+#include "ti_ble_config.h"
+#include <ti/display/Display.h>
+#include <ti/drivers/apps/LED.h>
 
 #include "simple_serial_socket_server.h"
 #include "simple_stream_profile_server.h"
@@ -74,10 +79,6 @@
 
 // General discoverable mode: advertise indefinitely
 #define DEFAULT_DISCOVERABLE_MODE             GAP_ADTYPE_FLAGS_GENERAL
-
-// Minimum connection interval (units of 1.25ms, 80=100ms) for automatic
-// parameter update request
-#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     80
 
 // Maximum connection interval (units of 1.25ms, 800=1000ms) for automatic
 // parameter update request
@@ -161,6 +162,9 @@ typedef struct
  * GLOBAL VARIABLES
  */
 
+// Display Interface
+Display_Handle dispHandle = NULL;
+LED_Handle ledHandle[2];
 /*********************************************************************
  * LOCAL VARIABLES
  */
@@ -183,80 +187,11 @@ static Queue_Handle appMsgQueue;
 Task_Struct ssssTask;
 uint8_t ssssTaskStack[SSSS_TASK_STACK_SIZE];
 
-// Scan response data (max size = 31 bytes)
-static uint8_t scanRspData[] =
-{
-  // complete name
-  0x13,   // length of this data
-  GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-  'S',
-  'i',
-  'm',
-  'p',
-  'l',
-  'e',
-  'S',
-  'e',
-  'r',
-  'i',
-  'a',
-  'l',
-  'S',
-  'o',
-  'c',
-  'k',
-  'e',
-  't',
 
-  // connection interval range
-  0x05,   // length of this data
-  GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
-  LO_UINT16(DEFAULT_DESIRED_MIN_CONN_INTERVAL),   // 100ms
-  HI_UINT16(DEFAULT_DESIRED_MIN_CONN_INTERVAL),
-  LO_UINT16(DEFAULT_DESIRED_MAX_CONN_INTERVAL),   // 1s
-  HI_UINT16(DEFAULT_DESIRED_MAX_CONN_INTERVAL),
-
-  // Tx power level
-  0x02,   // length of this data
-  GAP_ADTYPE_POWER_LEVEL,
-  0       // 0dBm
-};
-
-// Advertisement data (max size = 31 bytes, though this is
-// best kept short to conserve power while advertising)
-static uint8_t advertData[] =
-{
-  // Flags: this field sets the device to use general discoverable
-  // mode (advertises indefinitely) instead of general
-  // discoverable mode (advertise for 30 seconds at a time)
-  0x02,   // length of this data
-  GAP_ADTYPE_FLAGS,
-  DEFAULT_DISCOVERABLE_MODE | GAP_ADTYPE_FLAGS_BREDR_NOT_SUPPORTED,
-
-  // service UUID, to notify central devices what services are included
-  // in this peripheral
-  0x11,   // length of this data
-  GAP_ADTYPE_128BIT_MORE,      // some of the UUID's, but not all
-  TI_BASE_UUID_128(SIMPLESTREAMSERVER_SERV_UUID),
-
-  // ID nugget
-  0x06,
-  GAP_ADTYPE_MANUFACTURER_SPECIFIC,
-  // Texas Instruments company ID
-  0x0D,
-  0x00,
-  // Custom data identifier
-  0xC0,
-  0xFF,
-  0xEE
-};
 
 // Advertising handles
 static uint8 advHandleLegacy;
 static uint8 advHandleLongRange;
-
-// GAP GATT Attributes
-static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple Serial Socket";
 
 // Globals used for ATT Response retransmission
 static gattMsgEvent_t *pAttRsp = NULL;
@@ -275,17 +210,6 @@ static uint8_t uartReadBuffer[UART_MAX_READ_SIZE] = {0};
 static List_List  uartWriteList;
 static uartMsg_t* uartCurrentMsg;
 static uint8_t    uartWriteActive = 0;
-
-// Pin driver handle
-static PIN_Handle ledPinHandle;
-static PIN_State ledPinState;
-
-// PIN configuration for LEDs
-static PIN_Config ledPinTable[] = {
-    Board_PIN_RLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    Board_PIN_GLED | PIN_GPIO_OUTPUT_EN | PIN_GPIO_LOW | PIN_PUSHPULL | PIN_DRVSTR_MAX,
-    PIN_TERMINATE
-};
 
 /*********************************************************************
  * LOCAL FUNCTIONS
@@ -471,12 +395,12 @@ static void SimpleStreamServer_cccUpdateCB(uint16_t value)
   // Notifications is active
   if (value == 0x0001) {
     // Indicate that the stream is enabled
-    PIN_setOutputValue(ledPinHandle, Board_PIN_GLED, 1);
+    LED_setOn(ledHandle[CONFIG_LED_1], 100);
   }
   else
   {
     // Indicate that the stream is disabled
-    PIN_setOutputValue(ledPinHandle, Board_PIN_GLED, 0);
+    LED_setOff(ledHandle[CONFIG_LED_1]);
   }
 }
 
@@ -563,12 +487,11 @@ static void SimpleSerialSocketServer_init(void)
   // Create an RTOS queue for message from profile to be sent to app.
   appMsgQueue = Util_constructQueue(&appMsg);
 
-  // Initialize and open PIN driver to use LEDs
-  PIN_init(ledPinTable);
-  ledPinHandle = PIN_open(&ledPinState, ledPinTable);
-
-  PIN_setOutputValue(ledPinHandle, Board_PIN_RLED, 0);
-  PIN_setOutputValue(ledPinHandle, Board_PIN_GLED, 0);
+  LED_Params ledParams;
+  LED_init();
+  LED_Params_init(&ledParams);
+  ledHandle[CONFIG_LED_0] = LED_open(CONFIG_LED_0, &ledParams);
+  ledHandle[CONFIG_LED_1] = LED_open(CONFIG_LED_1, &ledParams);
 
   // Initialize UART
   UART_Params uartParams;
@@ -1060,23 +983,20 @@ static void SimpleSerialSocketServer_processGapMessage(gapEventHdr_t *pMsg)
         // For more information, see the GAP section in the User's Guide:
         // http://software-dl.ti.com/lprf/ble5stack-latest/
 
-        // Temporary memory for advertising parameters for set #1. These will be copied
-        // by the GapAdv module
-        GapAdv_params_t advParamLegacy = GAPADV_PARAMS_LEGACY_SCANN_CONN;
 
         // Create Advertisement set #1 and assign handle
-        status = GapAdv_create(&SimpleSerialSocketServer_advCB, &advParamLegacy,
+        status = GapAdv_create(&SimpleSerialSocketServer_advCB, &advParams1 ,
                                &advHandleLegacy);
         SimpleSerialSocketServer_ASSERT(status == SUCCESS);
 
         // Load advertising data for set #1 that is statically allocated by the app
         status = GapAdv_loadByHandle(advHandleLegacy, GAP_ADV_DATA_TYPE_ADV,
-                                     sizeof(advertData), advertData);
+                                     sizeof(advData1), advData1);
         SimpleSerialSocketServer_ASSERT(status == SUCCESS);
 
         // Load scan response data for set #1 that is statically allocated by the app
         status = GapAdv_loadByHandle(advHandleLegacy, GAP_ADV_DATA_TYPE_SCAN_RSP,
-                                     sizeof(scanRspData), scanRspData);
+                                     sizeof(scanResData1), scanResData1);
         SimpleSerialSocketServer_ASSERT(status == SUCCESS);
 
         // Set event mask for set #1
@@ -1089,22 +1009,14 @@ static void SimpleSerialSocketServer_processGapMessage(gapEventHdr_t *pMsg)
         status = GapAdv_enable(advHandleLegacy, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
         SimpleSerialSocketServer_ASSERT(status == SUCCESS);
 
-        // Use long range params to create long range set #2
-        GapAdv_params_t advParamLongRange = GAPADV_PARAMS_AE_LONG_RANGE_CONN;
-
         // Create Advertisement set #2 and assign handle
-        status = GapAdv_create(&SimpleSerialSocketServer_advCB, &advParamLongRange,
+        status = GapAdv_create(&SimpleSerialSocketServer_advCB, &advParams2,
                                &advHandleLongRange);
         SimpleSerialSocketServer_ASSERT(status == SUCCESS);
 
         // Load advertising data for set #2 that is statically allocated by the app
         status = GapAdv_loadByHandle(advHandleLongRange, GAP_ADV_DATA_TYPE_ADV,
-                                     sizeof(advertData), advertData);
-        SimpleSerialSocketServer_ASSERT(status == SUCCESS);
-
-        // Load scan response data for set #2 that is statically allocated by the app
-        status = GapAdv_loadByHandle(advHandleLongRange, GAP_ADV_DATA_TYPE_SCAN_RSP,
-                                     sizeof(scanRspData), scanRspData);
+                                     sizeof(advData2), advData2);
         SimpleSerialSocketServer_ASSERT(status == SUCCESS);
 
         // Set event mask for set #2
@@ -1135,7 +1047,8 @@ static void SimpleSerialSocketServer_processGapMessage(gapEventHdr_t *pMsg)
       }
 
       // Red LED indicates connection
-      PIN_setOutputValue(ledPinHandle, Board_PIN_RLED, 1);
+      LED_setOn(ledHandle[CONFIG_LED_0], 100);
+
 
       // Stop advertising since there is no room for more connections
       GapAdv_disable(advHandleLongRange);
@@ -1153,9 +1066,8 @@ static void SimpleSerialSocketServer_processGapMessage(gapEventHdr_t *pMsg)
       SimpleStreamServer_disconnectStream();
 
       // Indicate disconnection by turning of the LEDs
-      PIN_setOutputValue(ledPinHandle, Board_PIN_RLED, 0);
-      PIN_setOutputValue(ledPinHandle, Board_PIN_GLED, 0);
-
+      LED_setOff(ledHandle[CONFIG_LED_0]);
+      LED_setOff(ledHandle[CONFIG_LED_1]);
       // Start advertising since there is room for more connections
       GapAdv_enable(advHandleLegacy, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);
       GapAdv_enable(advHandleLongRange, GAP_ADV_ENABLE_OPTIONS_USE_MAX , 0);

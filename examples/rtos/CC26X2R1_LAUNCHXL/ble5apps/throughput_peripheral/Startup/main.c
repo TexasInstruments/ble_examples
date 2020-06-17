@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2019, Texas Instruments Incorporated
+ Copyright (c) 2013-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -56,9 +56,9 @@
 #include <ti/sysbios/BIOS.h>
 
 #include <icall.h>
+#include <throughput_peripheral.h>
 #include "hal_assert.h"
 #include "bcomdef.h"
-#include "throughput_peripheral.h"
 #ifdef PTM_MODE
 #include "npi_task.h"
 #endif // PTM_MODE

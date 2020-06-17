@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2019, Texas Instruments Incorporated
+ Copyright (c) 2013-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
 #include "hal_assert.h"
 #include "bcomdef.h"
 #include "simple_serial_socket_server.h"
+#ifdef PTM_MODE
+#include "npi_task.h"
+#endif // PTM_MODE
 
 /* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
@@ -69,6 +72,8 @@
 // BLE user defined configuration
 icall_userCfg_t user0Cfg = BLE_USER_CFG;
 #endif // USE_DEFAULT_USER_CFG
+
+#include <ti/display/Display.h>
 
 /*******************************************************************************
  * MACROS
@@ -95,6 +100,8 @@ icall_userCfg_t user0Cfg = BLE_USER_CFG;
  */
 
 extern void AssertHandler(uint8 assertCause, uint8 assertSubcause);
+
+extern Display_Handle dispHandle;
 
 /*******************************************************************************
  * @fn          Main
@@ -140,7 +147,11 @@ int main()
   /* Start tasks of external images - Priority 5 */
   ICall_createRemoteTasks();
 
-  /* Kick off application - Priority 1 */
+#ifdef PTM_MODE
+  /* Start task for NPI task */
+  NPITask_createTask(ICALL_SERVICE_CLASS_BLE);
+#endif // PTM_MODE
+
   SimpleSerialSocketServer_createTask();
 
   /* enable interrupts and start SYS/BIOS */
@@ -154,7 +165,7 @@ int main()
  * @fn          AssertHandler
  *
  * @brief       This is the Application's callback handler for asserts raised
- *              in the stack.  When EXT_HAL_ASSERT is defined in the Stack
+ *              in the stack.  When EXT_HAL_ASSERT is defined in the Stack Wrapper
  *              project this function will be called when an assert is raised,
  *              and can be used to observe or trap a violation from expected
  *              behavior.
@@ -188,28 +199,57 @@ int main()
  */
 void AssertHandler(uint8 assertCause, uint8 assertSubcause)
 {
+  // Open the display if the app has not already done so
+  if ( !dispHandle )
+  {
+    dispHandle = Display_open(Display_Type_ANY, NULL);
+  }
+
+  Display_print0(dispHandle, 0, 0, ">>>STACK ASSERT");
+
   // check the assert cause
   switch (assertCause)
   {
     case HAL_ASSERT_CAUSE_OUT_OF_MEMORY:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> OUT OF MEMORY!");
       break;
 
     case HAL_ASSERT_CAUSE_INTERNAL_ERROR:
+      // check the subcause
+      if (assertSubcause == HAL_ASSERT_SUBCAUSE_FW_INERNAL_ERROR)
+      {
+        Display_print0(dispHandle, 0, 0, "***ERROR***");
+        Display_print0(dispHandle, 2, 0, ">> INTERNAL FW ERROR!");
+      }
+      else
+      {
+        Display_print0(dispHandle, 0, 0, "***ERROR***");
+        Display_print0(dispHandle, 2, 0, ">> INTERNAL ERROR!");
+      }
       break;
 
     case HAL_ASSERT_CAUSE_ICALL_ABORT:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> ICALL ABORT!");
       HAL_ASSERT_SPINLOCK;
       break;
 
     case HAL_ASSERT_CAUSE_ICALL_TIMEOUT:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> ICALL TIMEOUT!");
       HAL_ASSERT_SPINLOCK;
       break;
 
     case HAL_ASSERT_CAUSE_WRONG_API_CALL:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> WRONG API CALL!");
       HAL_ASSERT_SPINLOCK;
       break;
 
   default:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> DEFAULT SPINLOCK!");
       HAL_ASSERT_SPINLOCK;
   }
 

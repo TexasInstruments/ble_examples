@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2019, Texas Instruments Incorporated
+ Copyright (c) 2013-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -82,6 +82,7 @@
 
 #include "ble_user_config.h"
 #include "ble_dispatch.h"
+#include "ti_ble_config.h"
 
 #ifdef USE_ICALL
 
@@ -144,6 +145,22 @@ void osalInitTasks( void )
   uint8 taskID = 0;
   uint8 i;
 
+  uint8_t cfg_GATTServApp_att_delayed_req = 0;
+  uint8_t cfg_gapBond_gatt_no_service_changed = 0;
+#if defined ( GAP_BOND_MGR )
+  uint8_t cfg_gapBond_gatt_no_client = 0;
+#endif
+
+#if defined ( ATT_DELAYED_REQ )
+  cfg_GATTServApp_att_delayed_req = 1;
+#endif
+#if defined ( GATT_NO_SERVICE_CHANGED )
+  cfg_gapBond_gatt_no_service_changed = 1;
+#endif
+#if defined ( GATT_NO_CLIENT )
+  cfg_gapBond_gatt_no_client = 1;
+#endif
+
   tasksEvents = (uint16 *)osal_mem_alloc( sizeof( uint16 ) * tasksCnt);
   osal_memset( tasksEvents, 0, (sizeof( uint16 ) * tasksCnt));
 
@@ -172,11 +189,11 @@ void osalInitTasks( void )
   GATT_Init( taskID++ );
 
   /* GATT Server App Task */
-  GATTServApp_Init( taskID++ );
+  GATTServApp_Init( taskID++, cfg_GATTServApp_att_delayed_req, cfg_gapBond_gatt_no_service_changed );
 
 #if defined ( GAP_BOND_MGR )
   /* Bond Manager Task */
-  GAPBondMgr_Init( taskID++ );
+  GAPBondMgr_Init( taskID++, GAP_BONDINGS_MAX, GAP_CHAR_CFG_MAX, cfg_gapBond_gatt_no_client, cfg_gapBond_gatt_no_service_changed);
 #endif
 
 #ifdef ICALL_LITE
@@ -185,6 +202,10 @@ void osalInitTasks( void )
   /* ICall BLE Dispatcher Task */
   bleDispatch_Init( taskID );
 #endif /* ICALL_LITE */
+
+#if defined ( NOTIFY_PARAM_UPDATE_RJCT )
+  HCI_ParamUpdateRjctEvtRegister();
+#endif
 
   // ICall enrollment
   /* Enroll the service that this stack represents */

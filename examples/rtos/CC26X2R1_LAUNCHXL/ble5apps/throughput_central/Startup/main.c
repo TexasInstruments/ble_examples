@@ -9,7 +9,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2013-2018, Texas Instruments Incorporated
+ Copyright (c) 2013-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -57,11 +57,9 @@
 
 #include <icall.h>
 #include "hal_assert.h"
-#include "throughput_central.h"
-
-/* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
 #include <driverlib/vims.h>
+#include <throughput_central.h>
 
 #ifndef USE_DEFAULT_USER_CFG
 

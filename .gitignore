@@ -18,6 +18,11 @@
 *.bak
 *.obj
 *.a
+*.prefs
+*.xdchelp
+*.aem4f
+*.ccxml
+*.libs
 !cc2650_mSBC_library.a
 *.pos
 *.pp

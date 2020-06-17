@@ -10,7 +10,7 @@
 
  ******************************************************************************
  
- Copyright (c) 2014-2019, Texas Instruments Incorporated
+ Copyright (c) 2014-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,7 @@
 #include "osal.h"
 #include "ll_user_config.h"
 #include "ble_user_config.h"
+#include "ti_radio_config.h"
 
 #if defined( HOST_CONFIG ) && ( HOST_CONFIG & ( CENTRAL_CFG | PERIPHERAL_CFG ) )
 
@@ -68,6 +69,27 @@
 #ifdef ICALL_JT
 uint32_t * icallServiceTblPtr = NULL;
 #endif /* ICALL_JT */
+
+// The BLE stack is using "RF_BLE_txPowerTable" that is generated via the SysConfig tool
+// and can be found in "ti_radio_config.c".
+// The RF_TxPowerTable_Entry struct type is incompetiable with the txPwrVal_t struct type,
+// which is the type that the controller expects to get.
+// The txPwrVal_t and txPwrTbl_t structs are const, in order to pass the controller a competiable
+// struct type, the following new non const struct types are defined.
+#if !defined(CC13X2P)
+PACKED_TYPEDEF_STRUCT
+{
+  int8   Pout;
+  uint16 txPwrVal;
+} txPwrVal_non_const_t;
+
+PACKED_TYPEDEF_STRUCT
+{
+  txPwrVal_t *txPwrValsPtr;
+  uint8       numTxPwrVals;
+  int8        defaultTxPwrVal;
+} txPwrTbl_non_const_t;
+#endif //!defined(CC13X2P)
 /*******************************************************************************
  * FUNCTIONS
  */
@@ -122,6 +144,9 @@ void setBleUserConfig( icall_userCfg_t *userCfg )
     // RF Front End Mode and Bias (based on package)
     llUserConfig.rfFeModeBias  = userCfg->boardConfig->rfFeModeBias;
 
+    // Privacy Override Offset
+    llUserConfig.privOverrideOffset  = userCfg->boardConfig->privOverrideOffset;
+
     // RF Override Registers
     llUserConfig.rfRegPtr      = userCfg->boardConfig->rfRegTbl;
     llUserConfig.rfReg1MPtr    = userCfg->boardConfig->rfRegTbl1M;
@@ -133,12 +158,46 @@ void setBleUserConfig( icall_userCfg_t *userCfg )
 #if defined(CC13X2P)
     llUserConfig.rfRegOverrideTxStdPtr   = userCfg->boardConfig->rfRegOverrideTxStdTblptr;  // Default PA
     llUserConfig.rfRegOverrideTx20Ptr    = userCfg->boardConfig->rfRegOverrideTx20TblPtr;   // High power PA
+    llUserConfig.txPwrBackoffTblPtr      = userCfg->boardConfig->txPwrBackoffTbl;           // Tx power Backoff table
 #endif //CC13X2P
 
+    llUserConfig.cteAntProp          = userCfg->boardConfig->cteAntennaPropPtr;     // CTE antenna properties
     llUserConfig.rfRegOverrideCtePtr = userCfg->boardConfig->rfRegOverrideCtePtr;   // CTE overrides
+    llUserConfig.coexUseCaseConfig   = userCfg->boardConfig->coexUseCaseConfigPtr;  // Coex Configuration
 
+// The BLE stack is using "RF_BLE_txPowerTable" that is generated via the SysConfig tool
+// and can be found in "ti_radio_config.c".
+// The RF_TxPowerTable_Entry struct type is incompetiable with the txPwrVal_t struct type, which is the type that the
+// controller expects to get.
+// Therefore, the following code section copies the "RF_BLE_txPowerTable" entries to a competiable
+// struct type.
+#if !defined(CC13X2P)
+    {
+      txPwrVal_non_const_t * pTxPowerTblEntries;
+      txPwrTbl_non_const_t * pTxPwrTable;
+
+      pTxPowerTblEntries = (txPwrVal_non_const_t*)ICall_malloc(sizeof(txPwrVal_non_const_t)*(userCfg->boardConfig->txPwrTbl->numTxPwrVals));
+      pTxPwrTable = (txPwrTbl_non_const_t*)ICall_malloc(sizeof(txPwrTbl_non_const_t));
+
+      if(pTxPowerTblEntries && pTxPwrTable)
+      {
+        for(int i = 0; i < userCfg->boardConfig->txPwrTbl->numTxPwrVals; i++)
+        {
+          pTxPowerTblEntries[i].Pout              = RF_BLE_txPowerTable[i].power;
+          pTxPowerTblEntries[i].txPwrVal          = (uint16_t)(RF_BLE_txPowerTable[i].value.rawValue & 0xFFFF);
+        }
+        pTxPwrTable->txPwrValsPtr = (txPwrVal_t*) pTxPowerTblEntries;
+        pTxPwrTable->numTxPwrVals = userCfg->boardConfig->txPwrTbl->numTxPwrVals;
+        pTxPwrTable->defaultTxPwrVal = userCfg->boardConfig->txPwrTbl->defaultTxPwrVal;
+
+        // Tx Power Table
+        llUserConfig.txPwrTblPtr   = (txPwrTbl_t *)pTxPwrTable;
+      }
+    }
+#else
     // Tx Power Table
     llUserConfig.txPwrTblPtr   = userCfg->boardConfig->txPwrTbl;
+#endif
 
     // RF Driver Table
     llUserConfig.rfDrvTblPtr   = userCfg->drvTblPtr->rfDrvTbl;
@@ -271,6 +330,9 @@ void setBleUserConfig( bleUserCfg_t *userCfg )
     // RF Front End Mode and Bias (based on package)
     llUserConfig.rfFeModeBias = userCfg->rfFeModeBias;
 
+    // Privacy Override Offset
+    llUserConfig.privOverrideOffset  = userCfg->privOverrideOffset;
+
     // RF Override Registers
     llUserConfig.rfRegPtr      = userCfg->rfRegTbl;
     llUserConfig.rfReg1MPtr    = userCfg->rfRegTbl1M;
@@ -282,12 +344,45 @@ void setBleUserConfig( bleUserCfg_t *userCfg )
 #if defined(CC13X2P)
     llUserConfig.rfRegOverrideTx20Ptr    = userCfg->RegOverrideTx20Tbl;   // High power PA
     llUserConfig.rfRegOverrideTxStdPtr   = userCfg->RegOverrideTxStdTbl;  // Default PA
+    llUserConfig.txPwrBackoffTblPtr      = userCfg->txPwrBackoffTbl;      // Tx power backoff table
 #endif //CC13X2P
 
     llUserConfig.rfRegOverrideCtePtr = userCfg->boardConfig->rfRegOverrideCtePtr;   // CTE overrides
+    llUserConfig.coexUseCaseConfig   = userCfg->boardConfig->coexUseCaseConfigPtr;  // Coex Configuration
 
+// The BLE stack is using "RF_BLE_txPowerTable" that is generated via the SysConfig tool
+// and can be found in "ti_radio_config.c".
+// The RF_TxPowerTable_Entry struct type is incompetiable with the txPwrVal_t struct type, which is the type that the
+// controller expects to get.
+// Therefore, the following code section copies the "RF_BLE_txPowerTable" entries to a competiable
+// struct type.
+#if !defined(CC13X2P)
+    {
+      txPwrVal_non_const_t * pTxPowerTblEntries;
+      txPwrTbl_non_const_t * pTxPwrTable;
+
+      pTxPowerTblEntries = (txPwrVal_non_const_t*)ICall_malloc(sizeof(txPwrVal_non_const_t)*(userCfg->txPwrTbl->numTxPwrVals));
+      pTxPwrTable = (txPwrTbl_non_const_t*)ICall_malloc(sizeof(txPwrTbl_non_const_t));
+
+      if(pTxPowerTblEntries && pTxPwrTable)
+      {
+        for(int i = 0; i < userCfg->txPwrTbl->numTxPwrVals; i++)
+        {
+          pTxPowerTblEntries[i].Pout              = RF_BLE_txPowerTable[i].power;
+          pTxPowerTblEntries[i].txPwrVal          = (uint16_t)(RF_BLE_txPowerTable[i].value.rawValue & 0xFFFF);
+        }
+        pTxPwrTable->txPwrValsPtr = (txPwrVal_t*) pTxPowerTblEntries;
+        pTxPwrTable->numTxPwrVals = userCfg->txPwrTbl->numTxPwrVals;
+        pTxPwrTable->defaultTxPwrVal = userCfg->txPwrTbl->defaultTxPwrVal;
+
+        // Tx Power Table
+        llUserConfig.txPwrTblPtr   = (txPwrTbl_t *)pTxPwrTable;
+      }
+    }
+#else
     // Tx Power Table
     llUserConfig.txPwrTblPtr   = userCfg->txPwrTbl;
+#endif
 
     // RF Driver Table
     llUserConfig.rfDrvTblPtr   = userCfg->rfDrvTbl;

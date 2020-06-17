@@ -1,15 +1,15 @@
 /******************************************************************************
 
- @file       main.c
+ @file  main.c
 
  @brief main entry of the BLE stack sample application.
 
- Group: CMCU, LPRF
- Target Device: CC1352, CC26X2
+ Group: WCS, BTS
+ Target Device: cc13x2_26x2
 
  ******************************************************************************
-
- Copyright (c) 2013-2018, Texas Instruments Incorporated
+ 
+ Copyright (c) 2013-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,9 @@
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+ ******************************************************************************
+ 
+ 
  *****************************************************************************/
 
 /*******************************************************************************
@@ -51,13 +54,14 @@
 #include <ti/drivers/power/PowerCC26XX.h>
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Clock.h>
-#include <ti/display/Display.h>
 
 #include <icall.h>
 #include "hal_assert.h"
+#include "simple_serial_socket_client.h"
+
+/* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
 #include <driverlib/vims.h>
-#include "simple_serial_socket_client.h"
 
 #ifndef USE_DEFAULT_USER_CFG
 
@@ -67,6 +71,8 @@
 icall_userCfg_t user0Cfg = BLE_USER_CFG;
 
 #endif // USE_DEFAULT_USER_CFG
+
+#include <ti/display/Display.h>
 
 /*******************************************************************************
  * MACROS
@@ -94,6 +100,8 @@ icall_userCfg_t user0Cfg = BLE_USER_CFG;
 
 extern void AssertHandler(uint8 assertCause, uint8 assertSubcause);
 
+extern Display_Handle dispHandle;
+
 /*******************************************************************************
  * @fn          Main
  *
@@ -114,13 +122,20 @@ int main()
   /* Register Application callback to trap asserts raised in the Stack */
   RegisterAssertCback(AssertHandler);
 
-  PIN_init(BoardGpioInitTable);
+  Board_initGeneral();
 
   // Enable iCache prefetching
   VIMSConfigure(VIMS_BASE, TRUE, TRUE);
 
   // Enable cache
   VIMSModeSet(VIMS_BASE, VIMS_MODE_ENABLED);
+
+#if !defined( POWER_SAVING )
+  /* Set constraints for Standby, powerdown and idle mode */
+  // PowerCC26XX_SB_DISALLOW may be redundant
+  Power_setConstraint(PowerCC26XX_SB_DISALLOW);
+  Power_setConstraint(PowerCC26XX_IDLE_PD_DISALLOW);
+#endif // POWER_SAVING
 
   user0Cfg.appServiceInfo->timerTickPeriod = Clock_tickPeriod;
   user0Cfg.appServiceInfo->timerMaxMillisecond  = ICall_getMaxMSecs();
@@ -145,7 +160,7 @@ int main()
  * @fn          AssertHandler
  *
  * @brief       This is the Application's callback handler for asserts raised
- *              in the stack.  When EXT_HAL_ASSERT is defined in the Stack
+ *              in the stack.  When EXT_HAL_ASSERT is defined in the Stack Wrapper
  *              project this function will be called when an assert is raised,
  *              and can be used to observe or trap a violation from expected
  *              behavior.
@@ -179,21 +194,45 @@ int main()
  */
 void AssertHandler(uint8 assertCause, uint8 assertSubcause)
 {
+  // Open the display if the app has not already done so
+  if ( !dispHandle )
+  {
+    dispHandle = Display_open(Display_Type_ANY, NULL);
+  }
+
+  Display_print0(dispHandle, 0, 0, ">>>STACK ASSERT");
+
   // check the assert cause
   switch (assertCause)
   {
     case HAL_ASSERT_CAUSE_OUT_OF_MEMORY:
-      HAL_ASSERT_SPINLOCK;
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> OUT OF MEMORY!");
       break;
 
     case HAL_ASSERT_CAUSE_INTERNAL_ERROR:
+      // check the subcause
+      if (assertSubcause == HAL_ASSERT_SUBCAUSE_FW_INERNAL_ERROR)
+      {
+        Display_print0(dispHandle, 0, 0, "***ERROR***");
+        Display_print0(dispHandle, 2, 0, ">> INTERNAL FW ERROR!");
+      }
+      else
+      {
+        Display_print0(dispHandle, 0, 0, "***ERROR***");
+        Display_print0(dispHandle, 2, 0, ">> INTERNAL ERROR!");
+      }
       break;
 
     case HAL_ASSERT_CAUSE_ICALL_ABORT:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> ICALL ABORT!");
       HAL_ASSERT_SPINLOCK;
       break;
 
     default:
+      Display_print0(dispHandle, 0, 0, "***ERROR***");
+      Display_print0(dispHandle, 2, 0, ">> DEFAULT SPINLOCK!");
       HAL_ASSERT_SPINLOCK;
   }
 
