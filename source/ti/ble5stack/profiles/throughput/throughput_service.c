@@ -3,7 +3,7 @@
  *
  * Description:    This file contains the implementation of the service.
  *
- * Copyright (c) 2010-2019, Texas Instruments Incorporated
+ * Copyright (c) 2010-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,9 +41,9 @@
  */
 #include <string.h>
 #include <icall.h>
+#include <profiles/throughput_service.h>
 #include "icall_ble_api.h"
 
-#include "Throughput_Service.h"
 
 /*********************************************************************
  * MACROS
@@ -60,7 +60,6 @@
 /*********************************************************************
 * GLOBAL VARIABLES
 */
-
 // Throughput_Service Service UUID
 CONST uint8_t Throughput_ServiceUUID[ATT_UUID_SIZE] =
 {
@@ -82,6 +81,9 @@ CONST uint8_t Throughput_Service_Toggle_ThroughputUUID[ATT_UUID_SIZE] =
 {
   TI_BASE_UUID_128(THROUGHPUT_SERVICE_TOGGLE_THROUGHPUT_UUID)
 };
+
+
+
 
 /*********************************************************************
  * LOCAL VARIABLES

@@ -4,7 +4,7 @@
  * Description:    This file contains the Throughput_Service service definitions and
  *                 prototypes.
  *
- * Copyright (c) 2010-2019, Texas Instruments Incorporated
+ * Copyright (c) 2010-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
  *
  *************************************************************************************************/
 
+#include "bcomdef.h"
 
 #ifndef _THROUGHPUT_SERVICE_H_
 #define _THROUGHPUT_SERVICE_H_

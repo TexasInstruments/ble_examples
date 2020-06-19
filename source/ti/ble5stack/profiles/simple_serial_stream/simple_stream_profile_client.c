@@ -3,7 +3,7 @@
  *
  * Description:    This file contains the implementation of the service.
  *
- * Copyright (c) 2018-2019, Texas Instruments Incorporated
+ * Copyright (c) 2018-2020, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,12 +71,13 @@
 // SimpleStreamClient Service UUID
 CONST uint8_t SimpleStreamServerUUID[ATT_UUID_SIZE] =
 {
-  TI_BASE_UUID_128(SIMPLESTREAMSERVER_SERV_UUID)
+ TI_BASE_UUID_128(SIMPLESTREAMSERVER_SERV_UUID)
 };
 
 // DataIn UUID
 CONST uint8_t SimpleStreamServer_DataInUUID[ATT_UUID_SIZE] =
 {
+
   TI_BASE_UUID_128(SIMPLESTREAMSERVER_DATAIN_UUID)
 };
 // DataOut UUID
