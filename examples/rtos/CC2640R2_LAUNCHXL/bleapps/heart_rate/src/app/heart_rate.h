@@ -1,15 +1,16 @@
 /******************************************************************************
 
- @file  npi_data.h
+ @file       heart_rate.h
 
- SDI Data structures
+ @brief This file contains the Heart Rate sample application definitions and
+        prototypes.
 
- Group: CMCU, LPC, SCS
+ Group: CMCU, SCS
  Target Device: CC2640R2
 
  ******************************************************************************
-
- Copyright (c) 2015-2020, Texas Instruments Incorporated
+ 
+ Copyright (c) 2014-2020, Texas Instruments Incorporated
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -40,71 +41,44 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_1_30_00_25
- Release Date: 2017-03-02 20:08:35
+ Release Name: simplelink_cc2640r2_sdk_ble_example_pack_01_50_00_62
+ Release Date: 2017-11-01 10:38:41
  *****************************************************************************/
-#ifndef SDIDATA_H
-#define SDIDATA_H
+
+#ifndef HEARTRATE_H
+#define HEARTRATE_H
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-// ****************************************************************************
-// includes
-// ****************************************************************************
+/*********************************************************************
+ * INCLUDES
+ */
 
-#include <stdint.h>
+/*********************************************************************
+ * CONSTANTS
+ */
 
-// ****************************************************************************
-// defines
-// ****************************************************************************
+/*********************************************************************
+ * MACROS
+ */
 
-// External Events for RTOS application
-#define UART_DATA_EVT                     0x0010
-#define UART_ERROR_EVT                    0x0020
+/*********************************************************************
+ * FUNCTIONS
+ */
 
-// ****************************************************************************
-// typedefs
-// ****************************************************************************
+/*
+ * Task creation function for the Heart Rate.
+ */
+extern void HeartRate_createTask(void);
 
-//! \brief SDI Command IDs.
-//!
-typedef enum
-{
-    SDIMSG_Type_ASYNC       = 0x00,
-    SDIMSG_Type_SYNCREQ     = 0x01,
-    SDIMSG_Type_SYNCRSP     = 0x02
-} SDIMSG_Type;
-
-
-//! \brief Structure to send an SDI message to the stack thread.
-//!
-typedef struct _npimsg_t
-{
-    // Msg Type
-    uint_least8_t msgType;
-
-    // message buffer size
-    uint16_t pBufSize;
-
-    // message buffer
-    uint8_t *pBuf;
-} SDIMSG_msg_t;
-
-
-//*****************************************************************************
-// globals
-//*****************************************************************************
-
-//*****************************************************************************
-// function prototypes
-//*****************************************************************************
+/*********************************************************************
+*********************************************************************/
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* SDIDATA_H */
-
+#endif /* HEARTRATE_H */
