@@ -49,6 +49,17 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
      <tr>
       <td>
+  <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10">TI SimpleLink CC13x2 / CC26x2 SDK 4.10.00.00</a>
+      </td>
+      <td>
+        <ul>
+          <li>Simple Serial Socket</li>
+          <li>Bluetooth 5 Throughput Demo</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
   <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.40">TI SimpleLink CC2640R2 SDK 3.40.00.10</a>
       </td>
       <td>
@@ -248,6 +259,9 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 4.10.00.00
+Initial offering of select SimpleLink CC2640R2 SDK 4.10.00.00 examples.
+
 ### 3.40.00.00
 Initial offering of select SimpleLink CC2640R2 SDK 3.40.00.10 examples and one 
 new example added:
@@ -313,60 +327,40 @@ related to the ble_examples repo.
 
 ## Examples / Demo List
 
-### Simple Serial Socket
+### Glucose Sensor
 
-This is a UART over BLE bridge example where a Simple Serial Socket Client
-(SSSC) and Simple Serial Socket Server (SSSS) connect with one another and
-exchange UART data over the air. An generic Simple Stream Service is used
-making it easy to exchange data sink and source to create a custom serial
-socket over BLE implementation.
-
-**Note: this example replaces the SPP over BLE example**
-
-* Simple Serial Socket Client
-    * BLE 4.2
-      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/readme.md)
-      * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/iar)
-      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/tirtos/ccs)
-      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_client/src)
-    * BLE 5.0
-      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
-* Simple Serial Socket Server
-    * BLE 4.2
-      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/readme.md)
-      * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/iar)
-      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/tirtos/ccs)
-      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_serial_socket_server/src)
-    * BLE 5.0
-      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
-
-### Simple Peripheral Observer
-
-This sample project is used to add observer role to a BLE peripheral device to
-show scanning functionality in a peripheral based project.
-
-* simple\_peripheral\_observer
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/readme.md)
-    * [IAR Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/simple_peripheral_observer/src)
-
-### Blood Pressure Monitor
-
-This sample project implements the Blood Pressure profiles in a Bluetooth low 
-energy peripheral device to provide an example blood pressure monitor (BPM) 
+This sample project implements the Glucose Sensor profiles in a Bluetooth low 
+energy peripheral device to provide an example of a glucose level monitor
 using simulated measurement data. The application implements the Sensor role of 
-the blood pressure profile. The project is based on the adopted profile and 
-service specifications for blood pressure.
+the glucose sensor profile. The project is based on the adopted profile and 
+service specifications for glucose sensor.
+* glucose\_sensor
+    * BLE 4.2
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/glucose_sensor/README.html)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/glucose_sensor/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/glucose_sensor/src)
+    * BLE 5.0
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/glucose_sensor/README.html)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/glucose_sensor/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/glucose_sensor/src)
 
-* blood\_pressure
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/readme.md)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/src)
+### Heart Rate Sensor
+
+This sample project implements the Heart Rate profiles in a Bluetooth low 
+energy peripheral device to provide an example of a heart rate monitor
+using simulated measurement data. The application implements the Sensor role of 
+the heart rate profile. The project is based on the adopted profile and 
+service specifications for heart rate sensor.
+* heart\_rate
+    * BLE 4.2
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/heart_rate/README.html)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/heart_rate/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/heart_rate/src)
+    * BLE 5.0
+      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/README.html)
+      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/tirtos/ccs)
+      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/src)
+
 
 ## References
 

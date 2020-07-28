@@ -41,8 +41,8 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  ******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_01_50_00_58
- Release Date: 2017-10-17 18:09:51
+
+
  *****************************************************************************/
 
 #ifndef HEARTRATESERVICE_H
