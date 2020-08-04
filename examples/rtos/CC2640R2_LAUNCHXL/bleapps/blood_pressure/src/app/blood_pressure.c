@@ -113,8 +113,7 @@
 // Default passkey
 #define DEFAULT_PASSKEY                       0
 
-#define CUFF_MAX                              40      // ORIGINAL
-//#define CUFF_MAX                              80        // Debug
+#define CUFF_MAX                              40      
 
 // Max measurement storage count
 #define BP_STORE_MAX                          4
