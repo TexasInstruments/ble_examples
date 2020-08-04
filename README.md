@@ -44,6 +44,7 @@ For examples for other SDK versions and platforms, see table below.
         <ul>
           <li><a href="#heart-rate">Heart Rate Sensor</a></li>
           <li><a href="#glucose">Glucose Sensor</a></li>
+          <li><a href="#blood-pressure-monitor">Blood Pressure Monitor</li>
         </ul>
       </td>
     </tr>
@@ -360,6 +361,19 @@ service specifications for heart rate sensor.
       * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/README.html)
       * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/tirtos/ccs)
       * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/src)
+
+### Blood Pressure Monitor
+
+This sample project implements the Blood Pressure profiles in a Bluetooth low 
+energy peripheral device to provide an example blood pressure monitor (BPM) 
+using simulated measurement data. The application implements the Sensor role of 
+the blood pressure profile. The project is based on the adopted profile and 
+service specifications for blood pressure.
+
+* blood\_pressure
+    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/readme.md)
+    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/tirtos/ccs)
+    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/src)
 
 
 ## References
