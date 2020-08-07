@@ -187,8 +187,8 @@
         <file path="SRC_BLE_DIR/common/cc26xx/board_key.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="EXAMPLE_BLE_ROOT/src/app/glucose.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="EXAMPLE_BLE_ROOT/src/app/glucose.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/common/cc26xx/time/utc_clock.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
-        <file path="SRC_BLE_DIR/common/cc26xx/time/utc_clock.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/../../../../../source/ti/blestack/common/cc26xx/time/utc_clock.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
+        <file path="EXAMPLE_BLE_ROOT/../../../../../source/ti/blestack/common/cc26xx/time/utc_clock.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="SRC_BLE_DIR/common/cc26xx/util.c" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
         <file path="SRC_BLE_DIR/common/cc26xx/util.h" openOnCreation="" excludeFromBuild="false" action="copy" targetDirectory="Application" createVirtualFolders="true" applicableConfigurations="FlashROM_StackLibrary"/>
 
