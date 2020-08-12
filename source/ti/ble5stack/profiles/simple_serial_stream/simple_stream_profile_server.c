@@ -212,7 +212,7 @@ extern bStatus_t SimpleStreamServer_AddService( uint32_t rspTaskId )
   }
 
   // Initialize Client Characteristic Configuration attributes
-  GATTServApp_InitCharCfg( LINKDB_CONNHANDLE_INVALID, SimpleStreamServer_DataOutConfig );
+  GATTServApp_InitCharCfg( CONNHANDLE_INVALID, SimpleStreamServer_DataOutConfig );
   // Register GATT attribute list and CBs with GATT Server App
   status = GATTServApp_RegisterService( SimpleStreamServerAttrTbl,
                                         GATT_NUM_ATTRS( SimpleStreamServerAttrTbl ),
@@ -365,7 +365,7 @@ static bStatus_t SimpleStreamServer_queueData( SimpleStreamNode_t *node )
 
         // Only store the data if the connection is valid an notifications is allowed
         if ( ( pItem != NULL) &&
-             ( pItem->connHandle != LINKDB_CONNHANDLE_INVALID ) &&
+             ( pItem->connHandle != CONNHANDLE_INVALID ) &&
              ( pItem->value != GATT_CFG_NO_OPERATION ) &&
              ( pItem->value & GATT_CLIENT_CFG_NOTIFY ))
         {
