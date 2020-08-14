@@ -1,0 +1,139 @@
+/**
+ * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
+ * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
+ * @cliArgs --board "/ti/boards/CC26X2R1_LAUNCHXL" --product "simplelink_cc13x2_26x2_sdk@4.10.00.78"
+ * @versions {"data":"2020021217","timestamp":"2020021217","tool":"1.4.0+1234","templates":"2020021217"}
+ */
+
+/**
+ * Import the modules used in this configuration.
+ */
+const ble         = scripting.addModule("/ti/ble5stack/ble");
+const CCFG        = scripting.addModule("/ti/devices/CCFG");
+const rfdesign    = scripting.addModule("/ti/devices/radioconfig/rfdesign");
+const Display     = scripting.addModule("/ti/display/Display");
+const Display1    = Display.addInstance();
+const AESCCM      = scripting.addModule("/ti/drivers/AESCCM");
+const AESCCM1     = AESCCM.addInstance();
+const AESCTRDRBG  = scripting.addModule("/ti/drivers/AESCTRDRBG");
+const AESCTRDRBG1 = AESCTRDRBG.addInstance();
+const AESECB      = scripting.addModule("/ti/drivers/AESECB");
+const AESECB1     = AESECB.addInstance();
+const ECDH        = scripting.addModule("/ti/drivers/ECDH");
+const ECDH1       = ECDH.addInstance();
+const GPIO        = scripting.addModule("/ti/drivers/GPIO");
+const GPIO1       = GPIO.addInstance();
+const GPIO2       = GPIO.addInstance();
+const NVS         = scripting.addModule("/ti/drivers/NVS");
+const NVS1        = NVS.addInstance();
+const Power       = scripting.addModule("/ti/drivers/Power");
+const RF          = scripting.addModule("/ti/drivers/RF");
+const RTOS        = scripting.addModule("/ti/drivers/RTOS");
+const TRNG        = scripting.addModule("/ti/drivers/TRNG");
+const TRNG1       = TRNG.addInstance();
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+ble.lockProject                                           = true;
+ble.deviceName                                            = "Throughput Periph";
+ble.maxPDUSize                                            = 255;
+ble.addressMode                                           = "ADDRMODE_PUBLIC";
+ble.maxConnNum                                            = 1;
+ble.L2CAPCOC                                              = true;
+ble.bondMITMProtection                                    = false;
+ble.bonding                                               = false;
+ble.radioConfig.codeExportConfig.$name                    = "ti_devices_radioconfig_code_export_param0";
+ble.connUpdateParamsPeripheral.$name                      = "ti_ble5stack_general_ble_conn_update_params0";
+ble.advSet1.$name                                         = "ti_ble5stack_broadcaster_advertisement_set0";
+ble.advSet1.advParam1.$name                               = "ti_ble5stack_broadcaster_advertisement_params0";
+ble.advSet1.advData1.$name                                = "ti_ble5stack_broadcaster_advertisement_data0";
+ble.advSet1.advData1.GAP_ADTYPE_FLAGS                     = true;
+ble.advSet1.advData1.advertisingFlags                     = ["GAP_ADTYPE_FLAGS_BREDR_NOT_SUPPORTED","GAP_ADTYPE_FLAGS_GENERAL"];
+ble.advSet1.advData1.GAP_ADTYPE_LOCAL_NAME_SHORT          = true;
+ble.advSet1.advData1.numOfUUIDs16More                     = 1;
+ble.advSet1.advData1.shortenedLocalName                   = "TC";
+ble.advSet1.advData1.GAP_ADTYPE_128BIT_MORE               = true;
+ble.advSet1.advData1.numOfUUIDs128More                    = 1;
+ble.advSet1.advData1.UUID0128More                         = system.utils.bigInt("1234",16);
+ble.advSet1.advData1.GAP_ADTYPE_16BIT_MORE                = true;
+ble.advSet1.advData1.UUID016More                          = 0x1234;
+ble.advSet1.scanRes1.$name                                = "ti_ble5stack_broadcaster_advertisement_data1";
+ble.advSet1.scanRes1.GAP_ADTYPE_LOCAL_NAME_COMPLETE       = true;
+ble.advSet1.scanRes1.GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE = true;
+ble.advSet1.scanRes1.maxConnInterval                      = 130;
+ble.advSet1.scanRes1.GAP_ADTYPE_POWER_LEVEL               = true;
+ble.advSet1.scanRes1.completeLocalName                    = "Throughput Periph";
+ble.advSet2.$name                                         = "ti_ble5stack_broadcaster_advertisement_set1";
+ble.advSet2.advParam2.$name                               = "ti_ble5stack_broadcaster_advertisement_params1";
+ble.advSet2.advParam2.advType                             = "extended";
+ble.advSet2.advData2.$name                                = "ti_ble5stack_broadcaster_advertisement_data2";
+ble.advSet2.advData2.GAP_ADTYPE_FLAGS                     = true;
+ble.advSet2.advData2.advertisingFlags                     = ["GAP_ADTYPE_FLAGS_BREDR_NOT_SUPPORTED","GAP_ADTYPE_FLAGS_GENERAL"];
+ble.advSet2.advData2.GAP_ADTYPE_LOCAL_NAME_SHORT          = true;
+ble.advSet2.advData2.GAP_ADTYPE_16BIT_MORE                = true;
+ble.advSet2.advData2.numOfUUIDs16More                     = 1;
+ble.advSet2.advData2.shortenedLocalName                   = "TC";
+ble.advSet2.advData2.UUID016More                          = 0x1234;
+ble.advSet2.advData2.GAP_ADTYPE_128BIT_MORE               = true;
+ble.advSet2.advData2.numOfUUIDs128More                    = 1;
+ble.advSet2.advData2.UUID0128More                         = system.utils.bigInt("1234",16);
+ble.advSet2.scanRes2.$name                                = "ti_ble5stack_broadcaster_advertisement_data3";
+ble.advSet2.scanRes2.GAP_ADTYPE_LOCAL_NAME_COMPLETE       = true;
+ble.advSet2.scanRes2.GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE = true;
+ble.advSet2.scanRes2.maxConnInterval                      = 130;
+ble.advSet2.scanRes2.GAP_ADTYPE_POWER_LEVEL               = true;
+ble.advSet2.scanRes2.completeLocalName                    = "Throughput Periph";
+
+CCFG.enableBootloader         = true;
+CCFG.enableBootloaderBackdoor = true;
+CCFG.dioBootloaderBackdoor    = 13;
+CCFG.levelBootloaderBackdoor  = "Active low";
+CCFG.ccfgTemplate.$name       = "ti_devices_CCFGTemplate0";
+
+Display1.$name                          = "CONFIG_Display_0";
+Display1.$hardware                      = system.deviceData.board.components.XDS110UART;
+Display1.enableANSI                     = true;
+Display1.uartBufferSize                 = 128;
+Display1.uart.$name                     = "CONFIG_DISPLAY_UART";
+Display1.uart.txPinInstance.outputState = "High";
+Display1.uart.txPinInstance.$name       = "CONFIG_PIN_UART_TX";
+Display1.uart.rxPinInstance.$name       = "CONFIG_PIN_UART_RX";
+Display1.uart.uart.$name                = "MyUART1";
+
+AESCCM1.$name = "CONFIG_AESCCM0";
+
+AESCTRDRBG1.$name              = "CONFIG_AESCTRDRBG_0";
+AESCTRDRBG1.aesctrObject.$name = "CONFIG_AESCTR_0";
+
+AESECB1.$name = "CONFIG_AESECB0";
+
+ECDH1.$name = "CONFIG_ECDH0";
+
+GPIO1.$hardware         = system.deviceData.board.components["BTN-1"];
+GPIO1.mode              = "Dynamic";
+GPIO1.$name             = "CONFIG_GPIO_BTN1";
+GPIO1.pinInstance.$name = "CONFIG_PIN_BTN1";
+
+GPIO2.$hardware         = system.deviceData.board.components["BTN-2"];
+GPIO2.mode              = "Dynamic";
+GPIO2.$name             = "CONFIG_GPIO_BTN2";
+GPIO2.pinInstance.$name = "CONFIG_PIN_BTN2";
+
+NVS1.$name                    = "CONFIG_NVSINTERNAL";
+NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
+NVS1.internalFlash.regionBase = 0x48000;
+NVS1.internalFlash.regionSize = 0x4000;
+
+TRNG1.$name = "CONFIG_TRNG_0";
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+Display1.uart.uart.$suggestSolution       = "UART1";
+Display1.uart.uart.txPin.$suggestSolution = "8";
+Display1.uart.uart.rxPin.$suggestSolution = "7";
+GPIO1.gpioPin.$suggestSolution            = "19";
+GPIO2.gpioPin.$suggestSolution            = "20";

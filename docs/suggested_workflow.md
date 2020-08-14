@@ -98,7 +98,7 @@ on what files should be modified by the developer, and how to best do so.
 The TI SimpleLink SDK should be treated as a Read Only (RO) dependency that is
 required to build the customer application. At the start of a development cycle,
 the developer should start with a given TI SimpleLink SDK and based on the
-guidance in the protocol stack user guide (i.e. blestack-users-guide) select a
+guidance in the protocol stack user guide (i.e. ble5stack-users-guide) select a
 sample application from the SDK as a base for their development.
 
 At this time the customer should copy the **application software** and **board**
@@ -178,8 +178,8 @@ merge their changes with those from the latest SimpleLink SDK release.
 
 *This is a critical step as there may have been useful bug-fixes or changes in
 the files that improve performance* The customer should evaluate these changes
-and determine whether or not to incorporate them into their code base (manual 
-step).
+and determine whether or not to incorporate them into their code base.
+(manual step)
 
 ### Workspace concepts
 

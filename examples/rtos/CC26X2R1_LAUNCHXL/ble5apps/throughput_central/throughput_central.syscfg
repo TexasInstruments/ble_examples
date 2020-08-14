@@ -1,0 +1,102 @@
+/**
+ * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
+ * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
+ * @cliArgs --board "/ti/boards/CC26X2R1_LAUNCHXL" --product "simplelink_cc13x2_26x2_sdk@4.10.00.78"
+ * @versions {"data":"2020021217","timestamp":"2020021217","tool":"1.4.0+1234","templates":"2020021217"}
+ */
+
+/**
+ * Import the modules used in this configuration.
+ */
+const ble         = scripting.addModule("/ti/ble5stack/ble");
+const CCFG        = scripting.addModule("/ti/devices/CCFG");
+const rfdesign    = scripting.addModule("/ti/devices/radioconfig/rfdesign");
+const Display     = scripting.addModule("/ti/display/Display");
+const Display1    = Display.addInstance();
+const AESCCM      = scripting.addModule("/ti/drivers/AESCCM");
+const AESCCM1     = AESCCM.addInstance();
+const AESCTRDRBG  = scripting.addModule("/ti/drivers/AESCTRDRBG");
+const AESCTRDRBG1 = AESCTRDRBG.addInstance();
+const AESECB      = scripting.addModule("/ti/drivers/AESECB");
+const AESECB1     = AESECB.addInstance();
+const ECDH        = scripting.addModule("/ti/drivers/ECDH");
+const ECDH1       = ECDH.addInstance();
+const GPIO        = scripting.addModule("/ti/drivers/GPIO");
+const GPIO1       = GPIO.addInstance();
+const GPIO2       = GPIO.addInstance();
+const NVS         = scripting.addModule("/ti/drivers/NVS");
+const NVS1        = NVS.addInstance();
+const Power       = scripting.addModule("/ti/drivers/Power");
+const RF          = scripting.addModule("/ti/drivers/RF");
+const RTOS        = scripting.addModule("/ti/drivers/RTOS");
+const TRNG        = scripting.addModule("/ti/drivers/TRNG");
+const TRNG1       = TRNG.addInstance();
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+ble.deviceRole                         = "CENTRAL_CFG";
+ble.lockProject                        = true;
+ble.maxConnNum                         = 1;
+ble.maxPDUSize                         = 255;
+ble.bondPairing                        = "GAPBOND_PAIRING_MODE_NO_PAIRING";
+ble.bondMITMProtection                 = false;
+ble.bonding                            = false;
+ble.addressMode                        = "ADDRMODE_PUBLIC";
+ble.scanType                           = "SCAN_TYPE_PASSIVE";
+ble.disDevBySerUuid                    = true;
+ble.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
+ble.connUpdateParamsCentral.$name      = "ti_ble5stack_general_ble_conn_update_params0";
+
+CCFG.enableBootloader         = true;
+CCFG.enableBootloaderBackdoor = true;
+CCFG.dioBootloaderBackdoor    = 13;
+CCFG.levelBootloaderBackdoor  = "Active low";
+CCFG.ccfgTemplate.$name       = "ti_devices_CCFGTemplate0";
+
+Display1.$name                          = "CONFIG_Display_0";
+Display1.$hardware                      = system.deviceData.board.components.XDS110UART;
+Display1.enableANSI                     = true;
+Display1.uartBufferSize                 = 128;
+Display1.uart.$name                     = "CONFIG_DISPLAY_UART";
+Display1.uart.txPinInstance.outputState = "High";
+Display1.uart.txPinInstance.$name       = "CONFIG_PIN_UART_TX";
+Display1.uart.rxPinInstance.$name       = "CONFIG_PIN_UART_RX";
+Display1.uart.uart.$name                = "MyUART1";
+
+AESCCM1.$name = "Board_AESCCM0";
+
+AESCTRDRBG1.$name              = "CONFIG_AESCTRDRBG_0";
+AESCTRDRBG1.aesctrObject.$name = "CONFIG_AESCTR_0";
+
+AESECB1.$name = "CONFIG_AESECB0";
+
+ECDH1.$name = "CONFIG_ECDH0";
+
+GPIO1.$hardware         = system.deviceData.board.components["BTN-1"];
+GPIO1.mode              = "Dynamic";
+GPIO1.$name             = "CONFIG_GPIO_BTN1";
+GPIO1.pinInstance.$name = "CONFIG_PIN_BTN1";
+
+GPIO2.$hardware         = system.deviceData.board.components["BTN-2"];
+GPIO2.mode              = "Dynamic";
+GPIO2.$name             = "CONFIG_GPIO_BTN2";
+GPIO2.pinInstance.$name = "CONFIG_PIN_BTN2";
+
+NVS1.$name                    = "CONFIG_NVSINTERNAL";
+NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSCC26XX0";
+NVS1.internalFlash.regionBase = 0x48000;
+NVS1.internalFlash.regionSize = 0x4000;
+
+TRNG1.$name = "CONFIG_TRNG_0";
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+Display1.uart.uart.$suggestSolution       = "UART1";
+Display1.uart.uart.txPin.$suggestSolution = "8";
+Display1.uart.uart.rxPin.$suggestSolution = "7";
+GPIO1.gpioPin.$suggestSolution            = "19";
+GPIO2.gpioPin.$suggestSolution            = "20";
