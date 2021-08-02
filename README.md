@@ -8,26 +8,24 @@
 * [Tools](#tools)
 * [References](#references)
 * [FAQ](docs/faq.md)
-* [Suggested Work Flow](docs/suggested_workflow.md)
+* [Versioning BLE-Stack Projects](docs/suggested_workflow.md)
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC2640R2 SDK 4.10.00.00**
+These examples and demos are for **TI SimpleLink CC13x2 / CC26x2 SDK 5.10.00.00**
 
-This repository contains *Bluetooth&reg;* Low Energy sample applications for
-Texas Instruments' SimpleLink CC2640R2 SDK. These examples have not been
-validated as production-ready. Services and profiles in this repository have not 
-been validated or certified.
+This repository contains *Bluetooth&reg;* 5 sample applications for
+Texas Instruments' SimpleLink CC13x2 / CC26x2 SDK. These examples have not been
+validated as production-ready.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
 [Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
 
 To use the examples and tools in this repository, please download and install
-the [SimpleLink CC2640R2 SDK](http://www.ti.com/ble-stack) **first**, and if
-necessary [buy an evaluation kit](http://www.ti.com/tool/launchxl-cc2640r2).
+the [SimpleLink CC13x2 / CC26x2 SDK](http://www.ti.com/tool/SIMPLELINK-CC13X2-26X2-SDK) **first**, and if
+necessary [buy an CC26X2](http://www.ti.com/tool/LAUNCHXL-CC26X2R1) or [CC1352](http://www.ti.com/tool/LAUNCHXL-CC1352R1) evaluation kit.
 
 If you have any questions please refer to the [FAQ page](docs/faq.md).
-
 For examples for other SDK versions and platforms, see table below.
 
 <table>
@@ -38,19 +36,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-  <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-4.10">TI SimpleLink CC2640R2 SDK 4.10.00.00 (current)</a>
-      </td>
-      <td>
-        <ul>
-          <li><a href="#heart-rate">Heart Rate Sensor</a></li>
-          <li><a href="#glucose">Glucose Sensor</a></li>
-          <li><a href="#blood-pressure-monitor">Blood Pressure Monitor</li>
-        </ul>
-      </td>
-    </tr>
-     <tr>
-      <td>
-  <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10">TI SimpleLink CC13x2 / CC26x2 SDK 4.10.00.00</a>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-5.10">TI SimpleLink CC13x2 / CC26x2 SDK 5.10.00.00 (current)</a>
       </td>
       <td>
         <ul>
@@ -61,25 +47,12 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-  <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.40">TI SimpleLink CC2640R2 SDK 3.40.00.10</a>
+        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-4.10">TI SimpleLink CC13x2 / CC26x2 SDK 4.10.00.00</a>
       </td>
       <td>
         <ul>
-          <li><a href="#simple-serial-socket">Simple Serial Socket</a></li>
-          <li><a href="#simple-serial-socket">Bluetooth 5 Simple Serial Socket</li>
-          <li><a href="#simple-peripheral-observer">Simple Peripheral Observer</li>
-          <li><a href="#blood-pressure-monitor">Blood Pressure Monitor</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td>
-	<a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-3.30">TI SimpleLink CC2640R2 SDK 3.30.00.20</a>
-      </td>
-      <td>
-        <ul>
-          <li>Simple Serial Socket</a></li>
-          <li>Bluetooth 5 Simple Serial Socket</li>
+          <li>Simple Serial Socket</li>
+          <li>Bluetooth 5 Throughput Demo</li>
         </ul>
       </td>
     </tr>
@@ -149,11 +122,11 @@ For examples for other SDK versions and platforms, see table below.
       </td>
       <td>
         <ul>
-          <li><a href="#simple-serial-socket">Simple Serial Socket</a></li>
-          <li><a href="#micro-ble-stack-broadcaster-observer">Micro BLE Stack Broadcaster Observer</li>
-          <li><a href="#bidirectional-audio">Bidirectional Audio</li>
-          <li><a href="#simple-peripheral-observer">Simple Peripheral Observer</li>
-          <li><a href="#apple-notification-center-service">Apple Notification Center Service</li>
+          <li>Simple Serial Socket</li>
+          <li>Micro BLE Stack Broadcaster Observer</li>
+          <li>Bidirectional Audio</li>
+          <li>Simple Peripheral Observer</li>
+          <li>Apple Notification Center Service</li>
         </ul>
       </td>
     </tr>
@@ -250,9 +223,6 @@ Older releases can be accessed by checking out/downloading their corresponding
 branch. For more information on supported examples
 please consult the readme.md of the desired branch/release.
 
-For for more information about different SDK components, please consult the
-BLE-stack User's Guide.
-
 ## Change Log
 
 Note: The version numbers below are related to GitHub ble_examples releases.
@@ -260,37 +230,24 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 5.10.00.00
+Initial offering of SimpleLink CC13x2 / CC26x2 SDK 5.10.00.00 examples.
+
 ### 4.10.00.00
-Initial offering of select SimpleLink CC2640R2 SDK 4.10.00.00 examples.
-
-### 3.40.00.00
-Initial offering of select SimpleLink CC2640R2 SDK 3.40.00.10 examples and one 
-new example added:
-* Blood Pressure Monitor: This sample project implements the Blood Pressure 
-  profiles in a Bluetooth Low Energy peripheral device to provide an example 
-  blood pressure monitor (BPM) using simulated measurement data.
-
-### 3.30.00.00
-Initial offering of select SimpleLink CC2640R2 SDK 3.30.00.20 examples.
+Initial offering of SimpleLink CC13x2 / CC26x2 SDK 4.10.00.00 examples.
 
 ### 3.20.00.00
-Initial offering of SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67 examples supporting 
-the rev. E of the SimpleLinkCC26x2 and CC13x2 MCUs.
+Initial offering of SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67 examples, 
+supporting the rev. E of the SimpleLinkCC26x2 and CC13x2 MCUs.
 
 ### 2.40.00.00
 Initial offering of SimpleLink CC13x2 / CC26x2 SDK 2.40.00.81 examples.
 
-### 2.20.00.00
-New examples added.
-* BLE-Stack:  Simple Serial Socket Server/Client added
-
-**SPP over BLE is now deprecated and replaced by Simple Serial Socket**
-
 ## Installation
 
 This repository can be cloned and tracked using Git. For instructions on how to
-clone a repository from Github please refer to this guide:
-[Clone from Github](https://help.github.com/articles/cloning-a-repository/)
+clone a repository from GitHub please refer to this guide:
+[Clone from GitHub](https://help.github.com/articles/cloning-a-repository/)
 
 For users who are unfamiliar with Git, there is the option of downloading the
 contents of the repository as a zip file. See instructions below.
@@ -300,23 +257,20 @@ contents of the repository as a zip file. See instructions below.
 1. Zip folder will appear in your Downloads folder
 
 This repository can be cloned/download anywhere on your computer. There is a
-dependency between this repository and the SimpleLink CC2640R2 SDK install
+dependency between this repository and the SimpleLink CC26x2 SDK install
 location.
 
-By default the SimpleLink CC2640R2 SDK will install to:
+By default the SimpleLink CC13x2 / CC26x2 SDK will install to ``C:\ti\``
 
-    C:\ti\simplelink_cc2640r2_sdk_x_xx_xx_xx
-
-If the SimpleLink CC2640R2 SDK must be installed to a different location, then
-see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
+If the SimpleLink CC13x2 / CC26x2 SDK must be installed to a different location, 
+then see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
 environment variables.
 
 ## Required Tools
 
-Similar to the SimpleLink CC2640R2 SDK, the examples in this repository support
-the CCS and IAR toolchains. Please refer to the release notes for the supported
-versions of each toolcahin. Using a non supported version is
-untested and may result in unexpected behavior.
+Similar to the SimpleLink CC13x2 / CC26x2 SDK, the examples in this repository 
+support the CCS and IAR toolchains. Please pay careful attention to versions of 
+these tools, please refer to the release notes for supported versions.
 
 For more information on toolchain setup, please refer to our
 [FAQ page](docs/faq.md).
@@ -328,63 +282,54 @@ related to the ble_examples repo.
 
 ## Examples / Demo List
 
-### Glucose Sensor
+### Simple Serial Socket
 
-This sample project implements the Glucose Sensor profiles in a Bluetooth low 
-energy peripheral device to provide an example of a glucose level monitor
-using simulated measurement data. The application implements the Sensor role of 
-the glucose sensor profile. The project is based on the adopted profile and 
-service specifications for glucose sensor.
-* glucose\_sensor
-    * BLE 4.2
-      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/glucose_sensor/README.html)
-      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/glucose_sensor/tirtos/ccs)
-      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/glucose_sensor/src)
-    * BLE 5.0
-      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/glucose_sensor/README.html)
-      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/glucose_sensor/tirtos/ccs)
-      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/glucose_sensor/src)
+This is a UART over BLE bridge example where a Simple Serial Socket Client
+(SSSC) and Simple Serial Socket Server (SSSS) connect with one another and
+exchange UART data over the air. An generic Simple Stream Service is used
+making it easy to exchange data sink and source to create a custom serial
+socket over BLE implementation.
 
-### Heart Rate Sensor
+**Note: this example replaces the SPP over BLE example**
 
-This sample project implements the Heart Rate profiles in a Bluetooth low 
-energy peripheral device to provide an example of a heart rate monitor
-using simulated measurement data. The application implements the Sensor role of 
-the heart rate profile. The project is based on the adopted profile and 
-service specifications for heart rate sensor.
-* heart\_rate
-    * BLE 4.2
-      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/heart_rate/README.html)
-      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/heart_rate/tirtos/ccs)
-      * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/heart_rate/src)
-    * BLE 5.0
-      * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/README.html)
-      * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/tirtos/ccs)
-      * [Source](examples/rtos/CC2640R2_LAUNCHXL/ble5apps/heart_rate/src)
+#### For CC26x2R
 
-### Blood Pressure Monitor
+* Simple Serial Socket Client
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
+* Simple Serial Socket Server
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
 
-This sample project implements the Blood Pressure profiles in a Bluetooth low 
-energy peripheral device to provide an example blood pressure monitor (BPM) 
-using simulated measurement data. The application implements the Sensor role of 
-the blood pressure profile. The project is based on the adopted profile and 
-service specifications for blood pressure.
+### Bluetooth 5 Throughput Demo
 
-* blood\_pressure
-    * [Documentation](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/readme.md)
-    * [CCS Project Files](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/tirtos/ccs)
-    * [Source](examples/rtos/CC2640R2_LAUNCHXL/bleapps/blood_pressure/src)
+Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo
+can be run with two CC26x2/CC13X2 Launchpads, or one CC26x2/CC13X2 Launchpad and one smartphone
+with the Simplelink Starter app.
 
+#### For CC26x2R
+* Throughput Central
+    *  [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
+    *  [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
+    *  [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
+* Throughput Peripheral
+    *  [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
+    *  [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
+    *  [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
 
 ## References
 
 The following reference pages may be helpful during general Bluetooth Low
-Energy development.
-Users developing Bluetooth applications are encouraged to read the
-[BLE-Stack User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC2640R2%20SDK%2FDocuments%2FBLE-Stack%2FBLE-Stack%20User's%20Guide).
+Energy development. New users of the SimpleLink CC26x2 platform and Bluetooth
+5 development are encouraged to read the
+[BLE5-Stack User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC13x2%2026x2%20SDK%2FDocuments%2FBLE5-Stack%2FBLE5-Stack%20User's%20Guide).
 
 As an additional resource, users are encouraged to complete the
-[SimpleLink Academy](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC2640R2%20SDK%2FSimpleLink%20Academy)
+[SimpleLink Academy](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC13x2%2026x2%20SDK%2FSimpleLink%20Academy)
 training.
 
 Other resources can be found below:
