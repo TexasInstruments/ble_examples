@@ -1,11 +1,11 @@
 ## Frequently Asked Questions
 
-* [What if I installed the SimpleLink CC13X2 / CC26x2 SDK at a non default location (e.g. Not at ``C:\ti\``)?](#what-if-i-installed-the-simplelink-cc13x2-26x2-sdk-at-a-non-default-location-eg-not-at-cti)
+* [What if I installed the SimpleLink CC13XX / CC26XX SDK at a non default location (e.g. Not at ``C:\ti\``)?](#what-if-i-installed-the-simplelink-cc13x2-26x2-sdk-at-a-non-default-location-eg-not-at-cti)
 * [How can I setup my toolchain for use with the ble\_examples repo?](#how-can-i-setup-my-toolchain-for-use-with-the-ble_examples-repo)
 * [I am using a LaunchPad device, how can I view display data?](#i-am-using-a-launchpad-device-how-can-i-view-display-data)
 ---
 
-### <a name="default"></a>What if I installed the SimpleLink CC13X2 / CC26x2 SDK at a non default location (e.g. Not at ``C:\ti\``)?
+### <a name="default"></a>What if I installed the SimpleLink CC13XX / CC26XX SDK at a non default location (e.g. Not at ``C:\ti\``)?
 
 All projects reference files from the BLE stack using environment variables, you
 can change this in your IDE's project files. 
@@ -14,7 +14,7 @@ Alternatively, you can make a symlink in the default location pointing to your
 custom location. E.g., if you have cloned this repo to ``C:\git\`` you can use 
 the following command:
 
-``mklink /d ble_examples-simplelink_cc13x2_26x2_sdk-3.20 C:\git\ble_examples``
+``mklink /d ble_examples-simplelink_cc13x2_26x2_sdk-6.40 C:\git\ble_examples``
 
 ---
 ### <a name="versioning"></a>How should I keep my application based on a TI BLE-Stack SDK under version control?

@@ -12,18 +12,21 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink CC13x2 / CC26x2 SDK 4.10.00.00**
+These examples and demos are for **TI SimpleLink CC13xx / CC26xx SDK 6.4x.xx.xx**
 
-This repository contains *Bluetooth&reg;* 5 sample applications for
-Texas Instruments' SimpleLink CC13x2 / CC26x2 SDK. These examples have not been
+This repository contains *Bluetooth&reg; Low Energy* sample applications for
+Texas Instruments' SimpleLink CC13xx / CC26xx SDK. These examples have not been
 validated as production-ready.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
 [Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
 
 To use the examples and tools in this repository, please download and install
-the [SimpleLink CC13x2 / CC26x2 SDK](http://www.ti.com/tool/SIMPLELINK-CC13X2-26X2-SDK) **first**, and if
-necessary [buy an CC26X2](http://www.ti.com/tool/LAUNCHXL-CC26X2R1) or [CC1352](http://www.ti.com/tool/LAUNCHXL-CC1352R1) evaluation kit.
+the [SimpleLink CC13xx / CC26xx SDK](https://www.ti.com/tool/download/SIMPLELINK-CC13XX-CC26XX-SDK) **first**, and if
+necessary the required evaluation kit:
+* [LAUNCHXL-CC26X2R1](https://www.ti.com/tool/LAUNCHXL-CC26X2R1)
+* [LAUNCHXL-CC1352R1](https://www.ti.com/tool/LAUNCHXL-CC1352R1)
+* [LP-CC2651R3SIPA](https://www.ti.com/tool/LP-CC2651R3SIPA)
 
 If you have any questions please refer to the [FAQ page](docs/faq.md).
 For examples for other SDK versions and platforms, see table below.
@@ -36,7 +39,17 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-4.10">TI SimpleLink CC13x2 / CC26x2 SDK 4.10.00.00 (current)</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13xx_26xx_sdk-6.40">TI SimpleLink CC13x2 / CC26x2 SDK 6.4x.xx.xx</a>
+      </td>
+      <td>
+        <ul>
+          <li>Simple Serial Socket (for CC2651R3SIPA only)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10">TI SimpleLink CC13x2 / CC26x2 SDK 5.10.00.00</a>
       </td>
       <td>
         <ul>
@@ -47,7 +60,18 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-3.20">TI SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13xx_26xx_sdk-4.10">TI SimpleLink CC13x2 / CC26x2 SDK 4.10.00.00</a>
+      </td>
+      <td>
+        <ul>
+          <li>Simple Serial Socket</li>
+          <li>Bluetooth 5 Throughput Demo</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13xx_26xx_sdk-3.20">TI SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67</a>
       </td>
       <td>
         <ul>
@@ -59,7 +83,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.40">TI SimpleLink CC13x2 / CC26x2 SDK 2.40.00.81</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13xx_26xx_sdk-2.40">TI SimpleLink CC13x2 / CC26x2 SDK 2.40.00.81</a>
       </td>
       <td>
         <ul>
@@ -69,7 +93,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.30">TI SimpleLink CC26x2 SDK 2.30.00.34</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc26x2_sdk-2.30">TI SimpleLink CC26x2 SDK 2.30.00.34</a>
       </td>
       <td>
         <ul>
@@ -83,7 +107,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-2.10">TI SimpleLink CC26x2 SDK 2.10.00.44</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc26x2_sdk-2.10">TI SimpleLink CC26x2 SDK 2.10.00.44</a>
       </td>
       <td>
         <ul>
@@ -95,7 +119,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.60">TI SimpleLink CC26x2 SDK 1.60.00.43</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_sdk-1.60">TI SimpleLink CC26x2 SDK 1.60.00.43</a>
       </td>
       <td>
         <ul>
@@ -107,7 +131,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_cc2640r2_sdk-2.20">TI SimpleLink CC2640R2 SDK 2.20.00.49</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc2640r2_sdk-2.20">TI SimpleLink CC2640R2 SDK 2.20.00.49</a>
       </td>
       <td>
         <ul>
@@ -121,7 +145,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.50">TI SimpleLink CC2640R2 SDK 1.50.00.58</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_sdk-1.50">TI SimpleLink CC2640R2 SDK 1.50.00.58</a>
       </td>
       <td>
         <ul>
@@ -135,7 +159,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.40">TI SimpleLink CC2640R2 SDK 1.40.00.45</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_sdk-1.40">TI SimpleLink CC2640R2 SDK 1.40.00.45</a>
       </td>
       <td>
         <ul>
@@ -150,7 +174,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/simplelink_sdk-1.35">TI SimpleLink CC2640R2 SDK 1.35.00.33</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_sdk-1.35">TI SimpleLink CC2640R2 SDK 1.35.00.33</a>
       </td>
       <td>
         <ul>
@@ -162,7 +186,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.2">TI BLE-Stack SDK v2.2.x</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/ble_examples-2.2">TI BLE-Stack SDK v2.2.x</a>
       </td>
       <td>
         <ul>
@@ -187,7 +211,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/ti-simplelink/ble_examples/tree/ble_examples-2.1">TI BLE-Stack SDK v2.1.x</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/ble_examples-2.1">TI BLE-Stack SDK v2.1.x</a>
       </td>
       <td>
         <ul>
@@ -219,8 +243,16 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### 6.40.00.00
+First release of the examples for CC2651R3SIPA.
+
+### 5.10.00.00
+Update of the examples to CC13x2 / CC26x2 SDK 5.10.00.00.
+Only supports CC26x2R1.
+
 ### 4.10.00.00
-Initial offering of SimpleLink CC13x2 / CC26x2 SDK 4.10.00.00 examples.
+Update of the examples to CC13x2 / CC26x2 SDK 4.10.00.00.
+First release of the examples for CC1352R1.
 
 ### 3.20.00.00
 Initial offering of SimpleLink CC13x2 / CC26x2 SDK 3.20.00.67 examples, 
@@ -254,9 +286,10 @@ environment variables.
 
 ## Required Tools
 
-Similar to the SimpleLink CC13x2 / CC26x2 SDK, the examples in this repository 
-support the CCS and IAR toolchains. Please pay careful attention to versions of 
-these tools, please refer to the release notes for supported versions.
+Similar to the SimpleLink CC13xx / CC26xx SDK, the examples in this repository 
+support the CCS and IAR toolchains (not for all the examples).
+Please pay careful attention to versions of these tools, please refer to the
+release notes for supported versions.
 
 For more information on toolchain setup, please refer to our
 [FAQ page](docs/faq.md).
@@ -281,28 +314,39 @@ socket over BLE implementation.
 #### For CC1352R
 
 * Simple Serial Socket Client
-    * [Documentation](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
+    * [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+    * [IAR Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
+    * [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
 * Simple Serial Socket Server
-    * [Documentation](examples/rtosCC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
+    * [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+    * [IAR Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
+    * [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
 
 #### For CC26x2R
 
 * Simple Serial Socket Client
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
+    * [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+    * [IAR Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
+    * [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
 * Simple Serial Socket Server
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
+    * [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+    * [IAR Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
+    * [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
+
+#### For CC2651R3SIPA
+
+* Simple Serial Socket Client
+    * [Documentation](examples/rtos/LP_CC2651R3SIPA/ble5apps/simple_serial_socket_client/readme.md)
+    * [CCS Project Files](examples/rtos/LP_CC2651R3SIPA/ble5apps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](examples/rtos/LP_CC2651R3SIPA/ble5apps/simple_serial_socket_client)
+* Simple Serial Socket Server
+    * [Documentation](examples/rtos/LP_CC2651R3SIPA/ble5apps/simple_serial_socket_server/readme.md)
+    * [CCS Project Files](examples/rtos/LP_CC2651R3SIPA/ble5apps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](examples/rtos/LP_CC2651R3SIPA/ble5apps/simple_serial_socket_server)
 
 ### Bluetooth 5 Throughput Demo
 
@@ -313,33 +357,34 @@ with the Simplelink Starter app.
 #### For CC1352R
 
 * Thoughput Central
-    *  [Documentation](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central/readme.md)
-    *  [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
-    *  [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central)
+    *  [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central/readme.md)
+    *  [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
+    *  [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central)
 * Throughput Peripheral
-    *  [Documentation](examples/rtosCC1352R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral)
+    *  [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
+    *  [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
+    *  [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral)
   
 #### For CC26x2R
+
 * Throughput Central
-    *  [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
+    *  [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
+    *  [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
+    *  [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
 * Throughput Peripheral
-    *  [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
+    *  [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
+    *  [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
+    *  [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
 
 ## References
 
 The following reference pages may be helpful during general Bluetooth Low
 Energy development. New users of the SimpleLink CC26x2 platform and Bluetooth
 5 development are encouraged to read the
-[BLE5-Stack User's Guide](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC13x2%2026x2%20SDK%2FDocuments%2FBLE5-Stack%2FBLE5-Stack%20User's%20Guide).
+[BLE5-Stack User's Guide](https://software-dl.ti.com/simplelink/esd/simplelink_cc13xx_cc26xx_sdk/6.41.00.17/exports/docs/ble5stack/ble_user_guide/ble5stack-users-guide.html).
 
 As an additional resource, users are encouraged to complete the
-[SimpleLink Academy](http://dev.ti.com/tirex/#/?link=Software%2FSimpleLink%20CC13x2%2026x2%20SDK%2FSimpleLink%20Academy)
+[SimpleLink Academy](https://dev.ti.com/tirex/explore/node?node=A__AFv2RHc05qHpNf27sGG3mg__com.ti.SIMPLELINK_ACADEMY_CC13XX_CC26XX_SDK__AfkT0vQ__LATEST)
 training.
 
 Other resources can be found below:

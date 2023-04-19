@@ -3,7 +3,7 @@
  *
  * Description:    This file contains the implementation of the service.
  *
- * Copyright (c) 2019-2020, Texas Instruments Incorporated
+ * Copyright (c) 2019-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

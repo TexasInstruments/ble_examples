@@ -4,7 +4,7 @@
  * Description:    This file contains the simple service discovery definitions and
  *                 prototypes.
  *
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
