@@ -24,8 +24,7 @@ validated as production-ready.
 To use the examples and tools in this repository, please download and install
 the [SimpleLink CC13xx / CC26xx SDK](https://www.ti.com/tool/download/SIMPLELINK-CC13XX-CC26XX-SDK) **first**, and if
 necessary the required evaluation kit:
-* [LAUNCHXL-CC26X2R1](https://www.ti.com/tool/LAUNCHXL-CC26X2R1)
-* [LAUNCHXL-CC1352R1](https://www.ti.com/tool/LAUNCHXL-CC1352R1)
+
 * [LP-CC2651R3SIPA](https://www.ti.com/tool/LP-CC2651R3SIPA)
 
 If you have any questions please refer to the [FAQ page](docs/faq.md).
@@ -39,7 +38,7 @@ For examples for other SDK versions and platforms, see table below.
     </tr>
     <tr>
       <td>
-        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13xx_26xx_sdk-6.40">TI SimpleLink CC13x2 / CC26x2 SDK 6.4x.xx.xx</a>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13xx_26xx_sdk-6.40">TI SimpleLink CC13xx / CC26xx SDK 6.4x.xx.xx</a>
       </td>
       <td>
         <ul>
@@ -278,9 +277,9 @@ This repository can be cloned/download anywhere on your computer. There is a
 dependency between this repository and the SimpleLink CC26x2 SDK install
 location.
 
-By default the SimpleLink CC13x2 / CC26x2 SDK will install to ``C:\ti\``
+By default the SimpleLink CC13xx / CC26xx SDK will install to ``C:\ti\``
 
-If the SimpleLink CC13x2 / CC26x2 SDK must be installed to a different location, 
+If the SimpleLink CC13xx / CC26xx SDK must be installed to a different location, 
 then see the [FAQ page](docs/faq.md) for IDE specific instructions for changing
 environment variables.
 
@@ -309,33 +308,6 @@ exchange UART data over the air. An generic Simple Stream Service is used
 making it easy to exchange data sink and source to create a custom serial
 socket over BLE implementation.
 
-**Note: this example replaces the SPP over BLE example**
-
-#### For CC1352R
-
-* Simple Serial Socket Client
-    * [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
-* Simple Serial Socket Server
-    * [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
-
-#### For CC26x2R
-
-* Simple Serial Socket Client
-    * [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
-* Simple Serial Socket Server
-    * [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
 
 #### For CC2651R3SIPA
 
@@ -348,33 +320,6 @@ socket over BLE implementation.
     * [CCS Project Files](examples/rtos/LP_CC2651R3SIPA/ble5apps/simple_serial_socket_server/tirtos/ccs)
     * [Source](examples/rtos/LP_CC2651R3SIPA/ble5apps/simple_serial_socket_server)
 
-### Bluetooth 5 Throughput Demo
-
-Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo
-can be run with two CC26x2/CC13X2 Launchpads, or one CC26x2/CC13X2 Launchpad and one smartphone
-with the Simplelink Starter app.
-
-#### For CC1352R
-
-* Thoughput Central
-    *  [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central/readme.md)
-    *  [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
-    *  [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central)
-* Throughput Peripheral
-    *  [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-4.10/examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral)
-  
-#### For CC26x2R
-
-* Throughput Central
-    *  [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
-* Throughput Peripheral
-    *  [Documentation](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13x2_26x2_sdk-5.10/examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
 
 ## References
 
