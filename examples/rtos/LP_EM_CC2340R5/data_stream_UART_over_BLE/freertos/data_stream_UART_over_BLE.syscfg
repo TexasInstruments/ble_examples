@@ -1,0 +1,127 @@
+/**
+ * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
+ * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
+ * @cliArgs --board "/ti/boards/LP_EM_CC2340R5" --rtos "freertos" --product "simplelink_lowpower_f3_sdk@7.20.00.29"
+ * @versions {"tool":"1.17.0+3090"}
+ */
+
+/**
+ * Import the modules used in this configuration.
+ */
+
+const RCL         = scripting.addModule("/ti/drivers/RCL");
+const FreeRTOS    = scripting.addModule("/freertos/FreeRTOS");
+const ble         = scripting.addModule("/ti/ble5stack/ble");
+const CCFG        = scripting.addModule("/ti/devices/CCFG");
+const AESCCM      = scripting.addModule("/ti/drivers/AESCCM");
+const AESCCM1     = AESCCM.addInstance();
+const AESCTRDRBG  = scripting.addModule("/ti/drivers/AESCTRDRBG");
+const AESCTRDRBG1 = AESCTRDRBG.addInstance();
+const AESECB      = scripting.addModule("/ti/drivers/AESECB");
+const AESECB1     = AESECB.addInstance();
+const GPIO        = scripting.addModule("/ti/drivers/GPIO");
+const ECDH        = scripting.addModule("/ti/drivers/ECDH");
+const ECDH1       = ECDH.addInstance();
+const NVS         = scripting.addModule("/ti/drivers/NVS");
+const NVS1        = NVS.addInstance();
+const Power       = scripting.addModule("/ti/drivers/Power");
+const RNG         = scripting.addModule("/ti/drivers/RNG");
+const RNG1        = RNG.addInstance();
+const UART2       = scripting.addModule("/ti/drivers/UART2", {}, false);
+const UART21      = UART2.addInstance();
+const Button      = scripting.addModule("/ti/drivers/apps/Button", {}, false);
+const Button1     = Button.addInstance();
+const Button2     = Button.addInstance();
+const Settings    = scripting.addModule("/ti/posix/freertos/Settings");
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+FreeRTOS.heapSize       = 0x00005000;
+FreeRTOS.timerStackSize = 0x00000180;
+FreeRTOS.idleStackSize  = 0x00000100;
+
+ble.disDevBySerUuid                                            = true;
+ble.numOfAdvSets                                               = 1;
+ble.numOfDefAdvSets                                            = 1;
+ble.deviceName                                                 = "DataStream UART";
+ble.disableDisplayModule                                       = true;
+ble.connUpdateParamsPeripheral.$name                           = "ti_ble5stack_general_ble_conn_update_params0";
+ble.advSet1.$name                                              = "ti_ble5stack_broadcaster_advertisement_set0";
+ble.advSet1.advParam1.$name                                    = "ti_ble5stack_broadcaster_advertisement_params0";
+ble.advSet1.advData1.$name                                     = "ti_ble5stack_broadcaster_advertisement_data0";
+ble.advSet1.advData1.GAP_ADTYPE_FLAGS                          = true;
+ble.advSet1.advData1.advertisingFlags                          = ["GAP_ADTYPE_FLAGS_BREDR_NOT_SUPPORTED","GAP_ADTYPE_FLAGS_GENERAL"];
+ble.advSet1.advData1.numOfUUIDs16More                          = 1;
+ble.advSet1.advData1.UUID016More                               = 0xFFF0;
+ble.advSet1.advData1.GAP_ADTYPE_128BIT_MORE                    = true;
+ble.advSet1.advData1.numOfUUIDs128More                         = 1;
+ble.advSet1.advData1.UUID0128More                              = system.utils.bigInt("B000405104C0C000F0",16);
+ble.advSet1.scanRes1.$name                                     = "ti_ble5stack_broadcaster_advertisement_data1";
+ble.advSet1.scanRes1.GAP_ADTYPE_LOCAL_NAME_COMPLETE            = true;
+ble.advSet1.scanRes1.GAP_ADTYPE_PERIPHERAL_CONN_INTERVAL_RANGE = true;
+ble.advSet1.scanRes1.maxConnInterval                           = 130;
+ble.advSet1.scanRes1.GAP_ADTYPE_POWER_LEVEL                    = true;
+
+CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC23X0Template0";
+
+/* ======== RF Design ======== */
+var rfDesign = scripting.addModule("ti/devices/radioconfig/rfdesign");
+const rfDesignSettings = system.getScript("/ti/common/lprf_rf_design_settings.js").rfDesignSettings;
+for(var setting in rfDesignSettings)
+{
+   rfDesign[setting] = rfDesignSettings[setting];
+}
+const radioSettings = system.getScript("/ti/ble5stack/ble_common.js").getRadioScript(rfDesign.rfDesign,system.deviceData.deviceId);
+const bleRfDesignSettings = radioSettings.rfDesignParams;
+for(var setting in bleRfDesignSettings)
+{
+   rfDesign[setting] = bleRfDesignSettings[setting];
+}
+
+AESCCM1.$name = "CONFIG_AESCCM0";
+
+AESCTRDRBG1.$name = "CONFIG_AESCTRDRBG_0";
+
+AESECB1.$name = "CONFIG_AESECB0";
+
+ECDH1.$name = "CONFIG_ECDH0";
+
+/* ======== LEDS ======== */
+const GPIO1       = GPIO.addInstance();
+GPIO1.$hardware   = system.deviceData.board.components.LED_GREEN;
+GPIO1.$name       = "CONFIG_GPIO_LED_GREEN";
+const GPIO2       = GPIO.addInstance();
+GPIO2.$hardware   = system.deviceData.board.components.LED_RED;
+GPIO2.$name       = "CONFIG_GPIO_LED_RED";
+
+NVS1.$name                    = "CONFIG_NVSINTERNAL";
+NVS1.internalFlash.$name      = "ti_drivers_nvs_NVSLPF30";
+NVS1.internalFlash.regionBase = 0x7C000;
+NVS1.internalFlash.regionSize = 0x4000;
+
+RNG1.$name = "CONFIG_RNG_0";
+
+UART21.$name     = "CONFIG_UART2_0";
+UART21.$hardware = system.deviceData.board.components.XDS110UART;
+
+Button1.$name     = "CONFIG_BUTTON_0";
+Button1.$hardware = system.deviceData.board.components["BTN-1"];
+
+Button2.$name     = "CONFIG_BUTTON_1";
+Button2.$hardware = system.deviceData.board.components["BTN-2"];
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+GPIO1.gpioPin.$suggestSolution            = "boosterpack.40";
+GPIO2.gpioPin.$suggestSolution            = "boosterpack.39";
+UART21.uart.$suggestSolution              = "UART0";
+UART21.uart.dmaTxChannel.$suggestSolution = "DMA_CH1";
+UART21.uart.dmaRxChannel.$suggestSolution = "DMA_CH0";
+UART21.uart.txPin.$suggestSolution        = "boosterpack.4";
+UART21.uart.rxPin.$suggestSolution        = "boosterpack.3";
+Button1.button.$suggestSolution           = "boosterpack.13";
+Button2.button.$suggestSolution           = "boosterpack.12";
