@@ -325,6 +325,39 @@ exchange UART data over the air. An generic Simple Stream Service is used
 making it easy to exchange data sink and source to create a custom serial
 socket over BLE implementation.
 
+**Note: this example replaces the SPP over BLE example**
+
+#### For CC1352R
+
+* Simple Serial Socket Client
+    * [Documentation](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
+* Simple Serial Socket Server
+    * [Documentation](examples/rtosCC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
+
+#### For CC26x2R
+
+* Simple Serial Socket Client
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/src)
+* Simple Serial Socket Server
+    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
+    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
+    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
+    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/src)
+
+### Bluetooth 5 Throughput Demo
+
+Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo
+can be run with two CC26x2/CC13X2 Launchpads, or one CC26x2/CC13X2 Launchpad and one smartphone
+with the Simplelink Starter app.
 
 #### For CC2340R5
 
@@ -340,60 +373,6 @@ socket over BLE implementation.
     * [Documentation](tools/TI_CC2340_Linux_SBL/README.md)
     * [Source](tools/TI_CC2340_Linux_SBL/Source)
 
-**Note: this example replaces the SPP over BLE example**
-
-#### For CC1352R
-
-* Simple Serial Socket Client
-    * [Documentation](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
-* Simple Serial Socket Server
-    * [Documentation](examples/rtosCC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
-
-#### For CC26x2R
-
-* Simple Serial Socket Client
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/readme.md)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_client)
-* Simple Serial Socket Server
-    * [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/readme.md)
-    * [IAR Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/iar)
-    * [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server/tirtos/ccs)
-    * [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/simple_serial_socket_server)
-
-### Bluetooth 5 Throughput Demo
-
-Showcase a high (near theoretical max) data throughput over Bluetooth 5. The demo
-can be run with two CC26x2/CC13X2 Launchpads, or one CC26x2/CC13X2 Launchpad and one smartphone
-with the Simplelink Starter app.
-
-#### For CC1352R
-
-* Thoughput Central
-    *  [Documentation](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central/readme.md)
-    *  [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central/tirtos/ccs)
-    *  [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_central)
-* Throughput Peripheral
-    *  [Documentation](examples/rtosCC1352R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](examples/rtos/CC1352R1_LAUNCHXL/ble5apps/throughput_peripheral)
-  
-#### For CC26x2R
-* Throughput Central
-    *  [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
-* Throughput Peripheral
-    *  [Documentation](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/readme.md)
-    *  [CCS Project Files](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral/tirtos/ccs)
-    *  [Source](examples/rtos/CC26X2R1_LAUNCHXL/ble5apps/throughput_peripheral)
 
 ## References
 
