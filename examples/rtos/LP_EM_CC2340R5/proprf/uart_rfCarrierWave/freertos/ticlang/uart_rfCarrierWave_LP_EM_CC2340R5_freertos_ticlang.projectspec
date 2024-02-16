@@ -10,8 +10,8 @@
     </applicability>
 
     <project
-        title="RF Carrier Wave"
-        name="rfCarrierWave_LP_EM_CC2340R5_freertos_ticlang"
+        title="UART RF Carrier Wave"
+        name="uart_rfCarrierWave_LP_EM_CC2340R5_freertos_ticlang"
         configurations="Debug"
         toolChain="TICLANG"
         cgtVersion="TICLANG_3.2.0.LTS"
@@ -50,11 +50,11 @@
         description="An example that uses the RF driver to generate a carrier wave">
 
         <property name="isHybrid" value="true"/>
-        <file path="../../rfCarrierWave.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../uart_rfCarrierWave.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../freertos/rfCarrierWave.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../freertos/uart_rfCarrierWave.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="../../main_freertos.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
