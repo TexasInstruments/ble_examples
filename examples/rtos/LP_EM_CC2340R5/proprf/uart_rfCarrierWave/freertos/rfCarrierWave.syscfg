@@ -1,0 +1,47 @@
+/**
+ * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
+ * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
+ * @cliArgs --board "/ti/boards/LP_EM_CC2340R5" --rtos "freertos" --product "simplelink_lowpower_f3_sdk@7.40.00.64"
+ * @versions {"tool":"1.18.1+3343"}
+ */
+
+/**
+ * Import the modules used in this configuration.
+ */
+const FreeRTOS  = scripting.addModule("/freertos/FreeRTOS");
+const CCFG      = scripting.addModule("/ti/devices/CCFG");
+const rfdesign  = scripting.addModule("/ti/devices/radioconfig/rfdesign");
+const GPIO      = scripting.addModule("/ti/drivers/GPIO");
+const GPIO1     = GPIO.addInstance();
+const LGPTimer  = scripting.addModule("/ti/drivers/LGPTimer", {}, false);
+const LGPTimer1 = LGPTimer.addInstance();
+const RCL       = scripting.addModule("/ti/drivers/RCL");
+const UART2     = scripting.addModule("/ti/drivers/UART2");
+const UART21    = UART2.addInstance();
+const Settings  = scripting.addModule("/ti/posix/freertos/Settings");
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+CCFG.ccfgTemplate.$name = "ti_devices_CCFG_CCFGCC23X0Template0";
+
+GPIO1.$hardware = system.deviceData.board.components.LED_RED;
+GPIO1.$name     = "CONFIG_GPIO_LED_0";
+
+LGPTimer1.$name = "CONFIG_LGPTIMER_0";
+
+UART21.$name     = "CONFIG_UART2_0";
+UART21.$hardware = system.deviceData.board.components.XDS110UART;
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+GPIO1.gpioPin.$suggestSolution            = "boosterpack.39";
+LGPTimer1.timer.$suggestSolution          = "LGPT0";
+UART21.uart.$suggestSolution              = "UART0";
+UART21.uart.dmaTxChannel.$suggestSolution = "DMA_CH1";
+UART21.uart.dmaRxChannel.$suggestSolution = "DMA_CH0";
+UART21.uart.txPin.$suggestSolution        = "boosterpack.4";
+UART21.uart.rxPin.$suggestSolution        = "boosterpack.3";
