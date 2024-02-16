@@ -12,31 +12,41 @@
 
 # Introduction
 
-These examples and demos are for **TI SimpleLink Low Power F3 SDK 7.20.xx.xx**
-
-This repository contains *Bluetooth&reg; Low Energy* sample applications for
+This repository contains *Bluetooth&reg; Low Energy* & *Proprietary RF* sample applications for
 Texas Instruments' SimpleLink CC13xx / CC26xx SDK, SimpleLink CC2640R2 SDK, and SimpleLink Low Power F3 SDK.
-Please reference the table below to find examples for each of these SDKSs.
+
+These examples  are each hosted on different branches of this repo. Please reference the table below to find examples for each of these SDKs.
 
 These examples have not been validated as production-ready.
 
 **Do not** use GitHub's bug tracking feature for support. For inquiries, see the
-[Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538).
+[Bluetooth&reg; low energy Forum](https://e2e.ti.com/support/wireless_connectivity/bluetooth_low_energy/f/538)
+and the [Other Wireless Technologies Forum](https://e2e.ti.com/support/wireless-connectivity/other-wireless-group/other-wireless/f/other-wireless-technologies-forum).
 
 To use the examples and tools in this repository, please download and install
-the [SimpleLink Low Power F3 SDK](https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F3-SDK) **first**, and if
-necessary the required evaluation kit:
-
-* [LP-EM-CC2340R5](https://www.ti.com/tool/LP-EM-CC2340R5)
+the relevant SDK listed in a given branch **first**, and if necessary obtain the required evaluation kit:
 
 If you have any questions please refer to the [FAQ page](docs/faq.md).
-For examples for other SDK versions and platforms, see table below.
+
 
 <table>
   <tbody>
     <tr>
       <th width = 50%>SDK</th>
       <th>Examples</th>
+    </tr>
+    <tr>
+      <td>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_low_power_f3_sdk-7.40">TI SimpleLink Low Power F3 SDK 7.40.00.00</a>
+      </td>
+      <td>
+        <ul>
+          <li>Data Stream UART over BLE example</li>
+          <li>Basic BLE GATT Client example</li>
+          <li>UART RF Carrier Wave</li>
+          <li>Serial Boot Loader Tool v1.0.0 (SDK version independent)</li>
+        </ul>
+      </td>
     </tr>
     <tr>
       <td>
@@ -256,6 +266,10 @@ The numbering scheme is in the form of M.mm.pp.bb. The fields pp.bb are incremen
 as GitHub examples are released, M.mm will map a GitHub release to a SimpleLink
 SDK release.
 
+### SimpleLink Low Power F3 SDK Examples 7.40.00.00
+Update of the examples for SimpleLinK Low Power F3 SDK (CC23XX) & Serial Boot Loader tool.
+Addition of UART 
+
 ### 7.20.00.00
 First release of the examples for SimpleLinK Low Power F3 SDK (CC23XX) & Serial Boot Loader tool.
 
@@ -314,31 +328,6 @@ For more information on toolchain setup, please refer to our
 
 The [FAQ page](docs/faq.md) will try to address some of the common questions
 related to the ble_examples repo.
-
-## Examples / Demo List
-
-### Simple Serial Socket
-
-This is a UART over BLE bridge example where a Simple Serial Socket Client
-(SSSC) and Simple Serial Socket Server (SSSS) connect with one another and
-exchange UART data over the air. An generic Simple Stream Service is used
-making it easy to exchange data sink and source to create a custom serial
-socket over BLE implementation.
-
-
-#### For CC2340R5
-
-* Data Stream UART Over BLE
-    * [Documentation](examples/rtos/LP_EM_CC2340R5/ble5stack/data_stream_UART_over_BLE/README.md)
-    * [CCS Project Files](examples/rtos/LP_EM_CC2340R5/ble5stack/data_stream_UART_over_BLE/freertos/ticlang)
-    * [Source](examples/rtos/LP_EM_CC2340R5/ble5stack/data_stream_UART_over_BLE)
-* Basic BLE GATT Client
-    * [Documentation](examples/rtos/LP_EM_CC2340R5/ble5stack/basic_ble_GATT_client/README.md)
-    * [CCS Project Files](examples/rtos/LP_EM_CC2340R5/ble5stack/basic_ble_GATT_client/freertos/ticlang)
-    * [Source](examples/rtos/LP_EM_CC2340R5/ble5stack/basic_ble_GATT_client)
-* Serial Boot Loader Tool v1.0.0
-    * [Documentation](tools/TI_CC2340_Linux_SBL/README.md)
-    * [Source](tools/TI_CC2340_Linux_SBL/Source)
 
 
 ## References
