@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configurations XML_version="1.2" id="configurations_0">
+    <configuration XML_version="1.2" id="configuration_0">
+        <instance XML_version="1.2" desc="Texas Instruments XDS110 USB Debug Probe" href="connections/TIXDS110_Connection.xml" id="Texas Instruments XDS110 USB Debug Probe" xml="TIXDS110_Connection.xml" xmlpath="connections"/>
+        <connection XML_version="1.2" id="Texas Instruments XDS110 USB Debug Probe">
+            <instance XML_version="1.2" href="drivers/tixds510cs_dap.xml" id="drivers" xml="tixds510cs_dap.xml" xmlpath="drivers"/>
+            <instance XML_version="1.2" href="drivers/tixds510cortexM0.xml" id="drivers" xml="tixds510cortexM0.xml" xmlpath="drivers"/>
+            <instance XML_version="1.2" href="drivers/tixds510sec_ap.xml" id="drivers" xml="tixds510sec_ap.xml" xmlpath="drivers"/>
+            <property Type="choicelist" Value="1" id="Power Selection">
+                <choice Name="Probe supplied power" value="1">
+                    <property Type="stringfield" Value="3.3" id="Voltage Level"/>
+                </choice>
+            </property>
+            <property Type="choicelist" Value="0" id="JTAG Signal Isolation"/>
+            <property Type="choicelist" Value="2" id="SWD Mode Settings">
+                <choice Name="SWD Mode - Aux COM port is target TDO pin" value="nothing"/>
+            </property>
+            <property Type="hiddenfield" Value="1" id="SWD.SWJ_DP_DEFAULT_MODE"/>
+            <property Type="choicelist" Value="0" id="SWD.APPY_PIN_RESET_DORMANT_WAKEUP"/>
+            <platform XML_version="1.2" id="platform_0">
+                <instance XML_version="1.2" desc="CC2340R5" href="devices/cc2340r5.xml" id="CC2340R5" xml="cc2340r5.xml" xmlpath="devices"/>
+            </platform>
+        </connection>
+    </configuration>
+</configurations>
