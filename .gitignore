@@ -26,3 +26,4 @@
 *.hex
 *.launches
 *.settings
+*.dist
