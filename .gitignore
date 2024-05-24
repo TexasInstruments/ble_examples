@@ -26,3 +26,5 @@
 *.hex
 *.launches
 *.settings
+*.dist
+*.vscode
