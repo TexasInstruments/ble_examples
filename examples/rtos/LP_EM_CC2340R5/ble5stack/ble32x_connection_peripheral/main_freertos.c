@@ -248,8 +248,5 @@ void AssertHandler(uint8_t assertCause, uint8_t assertSubcause)
     return;
 }
 
-
-
-
 /*******************************************************************************
  */

@@ -8,7 +8,7 @@ The purpose of this demo is to demonstrate that the CC2340R5 + CC1354 devices ca
 Prerequisites
 =============
 
-#### Hardware Requirements
+### Hardware Requirements ###
 
 Before running the demo, the user will need the following components:
 
@@ -18,8 +18,7 @@ Before running the demo, the user will need the following components:
 - 1x [LP-EM-CC1354P10 Launchpad] (https://www.ti.com/tool/LP-EM-CC1354P10)
 - Port USB Hub
 
-#### Firmware Requirements
-
+### Firmware Requirements ###
 Bluetooth LE Peripheral: 
 
 - SDK for the CC2340R5: [SimpleLink Low Power F3 SDK (7.40.00.64)](https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F3-SDK)
@@ -28,22 +27,9 @@ Bluetooth LE Peripheral:
 - RTOS: FreeRTOS v 202104.00 
 - Compiler: TI Clang v2.1.3.LTS
 
-Bluetooth LE Central: 
-
-- SDK for the CC1354P10: [SimpleLink Low Power F2 SDK (7.10.00.98)](https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK)
-
-- SysConfig v1.16.2
-- RTOS: FreeRTOS v 202104.00
-- Compiler: TI Clang v2.1.3.LTS
-
 ### Tools Requirements ###
 
-- Code Composer Studio: v12.4 or latest
-
-Running the Demo
-================
-
-[Hardware Photo](<Hardware Test Platform.png>)
+- Code Composer Studio: v12.4 or newer
 
 ### BLE Peripheral Parameters Default Settings ###
 PHY: 1M
@@ -52,6 +38,13 @@ Connection Interval (min/max): 100/130 msec
 Max Number of PDUs: 5
 Max Size of PDU: 255 bytes
 Extended Stack Settings: Guard Time
+
+Running the Demo
+================
+
+### Steps ###
+
+![Hardware Photo](<resources/Hardware Test Platform.png>)
 
 1. Compile and load both peripheral and central code 
 2. Connect the board/s to the PC terminal
@@ -68,15 +61,13 @@ Extended Stack Settings: Guard Time
         - Parity: None
         - Stop bits: 1
         - Encoding: Default (ISO-8859-1)
-5. Run the program 
-
-6. Once established, the Bluetooth LE Central Console Output should look like this: 
-
-[BLE Central Console Window](BLECentralWindow.png)
-
-- When the peripherals are disconnected from the cental: [Peripherals Disconnected](Peripherals_Dis.png)
-
-- When the peripherals are connected to the central: [Peripherals Connected](Peripherals_Con.png)
-    - The LEDs should be toggling every 500ms 
+5. Run the program, by either using the UART console window or by push button commands
 
 The text-based and push button commands are available in the Central Demo Readme.md file. 
+
+- When the peripherals are disconnected from the cental:
+![Peripherals Disconnected](resources/Peripherals_Dis.png)
+
+- When the peripherals are connected to the central:
+![Peripherals Connected](resources/Peripherals_Con.png)
+    - The LEDs should be toggling every 500ms 
