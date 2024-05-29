@@ -3,7 +3,7 @@
  @file  simple_central.c
 
  @brief This file contains the Simple Central sample application for use
-        with the CC2650 Bluetooth Low Energy Protocol Stack.
+        with the CC26xx/CC13xx Bluetooth Low Energy Protocol Stack.
 
  Group: WCS, BTS
  Target Device: cc13xx_cc26xx

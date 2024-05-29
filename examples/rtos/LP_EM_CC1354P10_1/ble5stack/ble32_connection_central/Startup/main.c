@@ -164,11 +164,6 @@ int main()
   user0Cfg.appServiceInfo->timerTickPeriod = Clock_tickPeriod;
   user0Cfg.appServiceInfo->timerMaxMillisecond  = ICall_getMaxMSecs();
 
-
-
-
-
-
 // *******************************************************************************************************
 // Create UART Console Thread
 // *******************************************************************************************************
@@ -204,16 +199,6 @@ if( Status < 0 )
       return 0;
 #endif
 
-
-
-
-
-
-
-
-
-
-
   /* Initialize ICall module */
   ICall_init();
 
@@ -228,7 +213,6 @@ if( Status < 0 )
 
   return 0;
 }
-
 
 /*******************************************************************************
  * @fn          AssertHandler
@@ -313,7 +297,6 @@ void AssertHandler(uint8 assertCause, uint8 assertSubcause)
   return;
 }
 
-
 /*******************************************************************************
  * @fn          smallErrorHook
  *
@@ -333,7 +316,6 @@ void smallErrorHook(Error_Block *eb)
 {
   for (;;);
 }
-
 
 /*******************************************************************************
  */

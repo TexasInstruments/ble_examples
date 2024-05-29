@@ -8,7 +8,7 @@ The purpose of this demo is to demonstrate that the CC2340R5 + CC1354 devices ca
 Prerequisites
 =============
 
-#### Hardware Requirements
+### Hardware Requirements ###
 
 Before running the demo, the user will need the following components:
 
@@ -18,32 +18,18 @@ Before running the demo, the user will need the following components:
 - 1x [LP-EM-CC1354P10 Launchpad] (https://www.ti.com/tool/LP-EM-CC1354P10)
 - Port USB Hub
 
-#### Firmware Requirements
-
-Bluetooth LE Peripheral: 
-
-- SDK for the CC2340R5: [SimpleLink Low Power F3 SDK (7.40.00.64)](https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F3-SDK)
-
-- SysConfig v1.18.1
-- RTOS: FreeRTOS v 202104.00 
-- Compiler: TI Clang v2.1.3.LTS
-
+### Firmware Requirements ###
 Bluetooth LE Central: 
 
 - SDK for the CC1354P10: [SimpleLink Low Power F2 SDK (7.10.00.98)](https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK)
 
 - SysConfig v1.16.2
-- RTOS: FreeRTOS v 202104.00
+- RTOS: TI-RTOS7
 - Compiler: TI Clang v2.1.3.LTS
 
 ### Tools Requirements ###
 
-- Code Composer Studio: v12.4 or latest
-
-Running the Demo
-================
-
-[Hardware Photo](<Hardware Test Platform.png>)
+- Code Composer Studio: v12.4 or newer
 
 ### BLE Central Parameters Default Settings ###
 
@@ -60,17 +46,12 @@ Max Number of PDUs: 255
 Max Size of PDU: 255 bytes
 Extended Stack Settings: Guard Time
 
-### Text-based Console Commands ###
+Running the Demo
+================
 
-c : Clear console output 
-b d 1 : Start discover mode 
-b d 0 : Stop discover mode 
-b m : Set MTU packet size of 255 bytes 
-b n : Enable notifications
-b g 1 : Start GATT transmissions (64 bytes)
-b g 0 : Stop GATT transmissions 
+### Steps ###
 
-Steps to run the Demo: 
+![Hardware Photo](<resources/Hardware Test Platform.png>)
 
 1. Compile and load both peripheral and central code 
 2. Connect the board/s to the PC terminal
@@ -87,17 +68,30 @@ Steps to run the Demo:
         - Parity: None
         - Stop bits: 1
         - Encoding: Default (ISO-8859-1)
-5. Run the program 
+5. Run the program, by either using the UART console window or by the push command buttons
 
-6. Once established the Bluetooth LE Central Console Output should look like this: 
-[BLE Central Console Window](BLECentralWindow.png)
+### Console Window ### 
+Once established the Bluetooth LE Central Console Output should look like this: 
 
-- When the peripherals are disconnected from the cental: [Peripherals Disconnected](Peripherals_Dis.png)
+![BLE Central Console Window](resources/BLECentralWindow.png)
 
-- When the peripherals are connected to the central: [Peripherals Connected](Peripherals_Con.png)
-    - The LEDs should be toggling every 500ms 
+Text-based UART Console Commands
+
+c : Clear console output 
+b d 1 : Start discover mode 
+b d 0 : Stop discover mode 
+b m : Set MTU packet size of 255 bytes 
+b n : Enable notifications
+b g 1 : Start GATT transmissions (64 bytes)
+b g 0 : Stop GATT transmissions 
 
 ### Push Button Commands ### 
-
 Bluetooth Central (XDS110 Debugger + CC1354P10-1 LP)
-[Push Button Command Guide](pushbutton.png)
+![Push Button Command Guide](resources/pushbutton.png)
+
+- When the peripherals are disconnected from the cental: 
+![Peripherals Disconnected](resources/Peripherals_Dis.png)
+
+- When the peripherals are connected to the central:
+![Peripherals Connected](resources/Peripherals_Con.png)
+    - The LEDs should be toggling every 500ms 

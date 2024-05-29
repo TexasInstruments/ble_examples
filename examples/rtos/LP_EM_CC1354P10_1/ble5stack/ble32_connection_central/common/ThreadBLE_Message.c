@@ -1,3 +1,45 @@
+/******************************************************************************
+
+@file  ThreadBLE_Message.c
+
+Group: WCS, BTS
+Target Device: cc13xx cc26xx
+
+******************************************************************************
+
+ Copyright (c) 2022-2024, Texas Instruments Incorporated
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+
+ *  Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+ *  Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+ *  Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+******************************************************************************
+*****************************************************************************/
+
 // *****************************************************************************
 // ThreadBLE_Message.c
 // *****************************************************************************
@@ -268,136 +310,6 @@ void *BLEMessageThread(void *args)
     return NULL;
 }
 
-/*
-void *BLEMessageThread(void *args)
-{
-    bool MailboxFlag;
-    uint32_t Index, Length, InnerLoopCtr, OuterLoopCtr;
-    MsgObj message;
-    char TestBuffer[ 128 ];
-    char DeviceID[ 4 ];
-
-    while( hDisplay == NULL )
-        Task_sleep( 100 );
-
-    MsgMessage[ MsgMessageIndex ].Message = CMD_MSG_ADD_CONNECTION;
-    Mailbox_post( hMailboxMessage, &MsgMessage[ MsgMessageIndex++ ], BIOS_NO_WAIT );      // post msg containing LED state into the MAILBOX
-    if( MsgMessageIndex >= ( sizeof( MsgMessage ) / sizeof( MsgObj ) ) )
-        MsgMessageIndex = 0;
-
-    Display_printf( hDisplay, 0, 0, "Starting BLE Message Thread" );
-    InnerLoopCtr = OuterLoopCtr = 0;
-// ******************************************************************************
-// Main BLE Message Loop
-// ******************************************************************************
-    while( TRUE )
-    {
-        MailboxFlag = Mailbox_pend( hMailboxMessage, &message, 100000 );
-        if( MailboxFlag > 0 )
-        {
-            switch( message.Message )
-            {
-                case CMD_MSG_ADD_CONNECTION:
-                    Display_printf( hDisplay, 0, 0, "Add" );
-                    break;
-                case CMD_MSG_REMOVE_CONNECTION:
-                    Display_printf( hDisplay, 0, 0, "Remove" );
-                    break;
-                case CMD_MSG_PRINT_MESSAGE:
-                    Display_printf( hDisplay, 0, 0, "Data" );
-                    break;
-                default:
-                    break;
-            }
-        }
-//        sprintf( TestBuffer, "Con = %d\r\n", numConn );
-//        Length = strlen( TestBuffer );
-//        UART2_write(uartHandle, TestBuffer, Length, NULL);
-//        UART2_write(uartHandle, "Hey Tim\r\n", 9, NULL);
-        OuterLoopCtr++;
-        Display_printf( hDisplay, 0, 0, "Loop = %d/%d, Devs = %d", OuterLoopCtr, InnerLoopCtr, numConn );
-        if( numConn > 0 )
-        {
-            InnerLoopCtr++;
-            for( Index = 0; Index < numConn; Index++ )
-            {
-////                memcpy( DeviceID, connList[ Index ].deviceIdentifier, 2 );
-//                localUartBuffer[ 0 ] = connList[ Index ].deviceIdentifier[ 0 ]; //DeviceID[ 0 ];
-//                localUartBuffer[ 1 ] = connList[ Index ].deviceIdentifier[ 1 ]; //DeviceID[ 1 ];
-//                localUartBuffer[ 2 ] = ':';
-//                sprintf( &localUartBuffer[ 3 ], "Test = %d\r\n", LoopCtr++ );
-//                Length = strlen( localUartBuffer );
-//                localUartBufferLength = Length;
-//                SimpleSerialSocketClient_enqueueMsg( SSSC_EVT_OUTGOING_DATA, NULL, NULL, localUartBufferLength );
-//                localUartBufferLength = 0;
-                if( connList[ Index ].state == BLE_STATE_CONNECTED )
-                {
-                    TestBuffer[ 0 ] = Index;
-                    sprintf( &TestBuffer[ 1 ], "X%d = %d\r\n", Index, InnerLoopCtr );
-                    Length = strlen( TestBuffer );
-                    SimpleSerialSocketClient_enqueueMsg( SSSC_EVT_SEND_PACKET, Index, TestBuffer, Length );
-                }
-            }
-        }
-//        Task_sleep(100000);
-    }
-    return NULL;
-}
-*/
-
-//void *BLEConnectionThread(void *args)
-//{
-//    uint32_t Index, Length, LoopCtr;
-//    char TestBuffer[ 128 ];
-//    char DeviceID[ 4 ];
-//
-//    while( uartHandle == NULL )
-//        Task_sleep( 100 );
-//
-//    Task_sleep( 500000 );
-//    UART2_write(uartHandle, "Starting BLE Message Thread\n\r", 28, NULL);
-//    LoopCtr = 0;
-//    while( TRUE )
-//    {
-//        sprintf( TestBuffer, "Con = %d\r\n", numConn );
-//        Length = strlen( TestBuffer );
-////        UART2_write(uartHandle, TestBuffer, Length, NULL);
-////        UART2_write(uartHandle, "Hey Tim\r\n", 9, NULL);
-//        if( numConn > 0 )
-//        {
-//            for( Index = 0; Index < numConn; Index++ )
-//            {
-//////                memcpy( DeviceID, connList[ Index ].deviceIdentifier, 2 );
-////                localUartBuffer[ 0 ] = connList[ Index ].deviceIdentifier[ 0 ]; //DeviceID[ 0 ];
-////                localUartBuffer[ 1 ] = connList[ Index ].deviceIdentifier[ 1 ]; //DeviceID[ 1 ];
-////                localUartBuffer[ 2 ] = ':';
-////                sprintf( &localUartBuffer[ 3 ], "Test = %d\r\n", LoopCtr++ );
-////                Length = strlen( localUartBuffer );
-////                localUartBufferLength = Length;
-////                SimpleSerialSocketClient_enqueueMsg( SSSC_EVT_OUTGOING_DATA, NULL, NULL, localUartBufferLength );
-//                sprintf( TestBuffer, "Test = %d\r\n", LoopCtr++ );
-//                Length = strlen( TestBuffer );
-//                SimpleSerialSocketClient_enqueueMsg( SSSC_EVT_SEND_PACKET, Index, TestBuffer, Length );
-////                localUartBufferLength = 0;
-//            }
-//
-///*
-//            localUartBuffer[0] = 'A';
-//            localUartBuffer[1] = 'L';
-//            localUartBuffer[2] = 'L';
-//            localUartBuffer[3] = ':';
-//            sprintf( &localUartBuffer[ 4 ], "Test = %d\r\n", LoopCtr++ );
-//            Length = strlen( localUartBuffer );
-//            localUartBufferLength = Length;
-//            SimpleSerialSocketClient_enqueueMsg( SSSC_EVT_OUTGOING_DATA, NULL, NULL, localUartBufferLength );
-//            localUartBufferLength = 0;
-//*/
-//        }
-//        Task_sleep(100000);
-//    }
-//    return NULL;
-//}
-//
 // *****************************************************************************
 // end of file
 // *****************************************************************************
