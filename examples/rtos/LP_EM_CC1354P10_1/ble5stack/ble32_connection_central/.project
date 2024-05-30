@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>simple_central_LP_EM_CC1354P10_1_tirtos7_ble32x_v1</name>
+	<name>ble32_connection_central</name>
 	<comment></comment>
 	<projects>
 	</projects>
