@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>data_stream_LP_EM_CC2340R5_freertos_ble32x_v1</name>
+	<name>ble32_connection_peripheral</name>
 	<comment></comment>
 	<projects>
 	</projects>

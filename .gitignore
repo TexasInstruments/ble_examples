@@ -23,7 +23,6 @@
 .tags
 .tags_sorted_by_file
 *.bin
-*.hex
 *.launches
 *.settings
 *.dist
