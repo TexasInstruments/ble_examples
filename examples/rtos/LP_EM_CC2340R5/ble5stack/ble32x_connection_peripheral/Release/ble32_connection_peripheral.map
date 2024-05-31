@@ -1,7 +1,7 @@
 ******************************************************************************
             TI ARM Clang Linker PC v2.1.3                      
 ******************************************************************************
->> Linked Thu May 30 10:05:07 2024
+>> Linked Fri May 31 13:39:12 2024
 
 OUTPUT FILE NAME:   <ble32_connection_peripheral.out>
 ENTRY POINT SYMBOL: "resetISR"  address: 000286a9
