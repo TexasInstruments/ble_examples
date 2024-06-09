@@ -11,7 +11,7 @@
 
     <project
         title="ble32_connection_central app"
-        name="ble32_connection_central"
+        name="ble32_connection_central_app_LPCC1354P10_1_tirtos_ticlang"
         configurations="Release, Debug"
         toolChain="TICLANG"
         connection="TIXDS110_Connection.xml"
@@ -190,11 +190,11 @@
         </file>
         <file path="../../Startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>
-        <file path="../../ble32_connection_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../tirtos7/ticlang/ble32_connection_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>
-        <file path="../../cc13x4_cc26x4_app.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../tirtos7/ticlang/cc13x4_cc26x4_app.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
     </project>
 </projectSpec>
