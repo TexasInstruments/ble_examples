@@ -20,8 +20,6 @@
         ignoreDefaultCCSSettings="true"
         products="com.ti.SIMPLELINK_LOWPOWER_F3_SDK;sysconfig"
         compilerBuildOptions="
-            -I${COM_TI_SIMPLELINK_LOWPOWER_F3_SDK_INCLUDE_PATH}
-            -I${SYSCONFIG_TOOL_INCLUDE_PATH}
             -I${PROJECT_ROOT}
             -I${PROJECT_ROOT}/${ConfigName}
             -I${PROJECT_LOC}/app
@@ -79,8 +77,8 @@
         linkerBuildOptions="
             -Wl,--diag_wrap=off 
             -Wl,--display_error_number 
-            -W1, -x
-            -W1, -c
+            -W1,-x
+            -W1,-c
             -L${COM_TI_SIMPLELINK_LOWPOWER_F3_SDK_INSTALL_DIR}/source
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti_utils_build_linker.cmd.genlibs
@@ -114,10 +112,6 @@
         <file path="../../app/Profiles/app_dev_info.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="app/Profiles">
         </file>  
         <file path="${COM_TI_SIMPLELINK_LOWPOWER_F3_SDK_INSTALL_DIR}/source/ti/bleapp/services/dev_info/dev_info_service.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="common/Services/dev_info">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_LOWPOWER_F3_SDK_INSTALL_DIR}/source/ti/bleapp/services/dev_info/dev_info_service.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="common/Services/dev_info">
-        </file>
-        <file path="../../common/Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common/Startup">
         </file>
         <file path="${COM_TI_SIMPLELINK_LOWPOWER_F3_SDK_INSTALL_DIR}/source/ti/bleapp/services/dev_info/dev_info_service.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="common/Services/dev_info">
         </file>
@@ -161,7 +155,7 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_LOWPOWER_F3_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/icall/inc/icall_ble_apimsg.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="common/iCallBLE">
         </file>
-        <file path="../../README.html" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="../../app/app_main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="app">
         </file>
