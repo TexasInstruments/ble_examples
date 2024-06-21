@@ -77,8 +77,8 @@
         linkerBuildOptions="
             -Wl,--diag_wrap=off 
             -Wl,--display_error_number 
-            -W1,-x
-            -W1,-c
+            -Wl,-x
+            -Wl,-c
             -L${COM_TI_SIMPLELINK_LOWPOWER_F3_SDK_INSTALL_DIR}/source
             -L${PROJECT_BUILD_DIR}/syscfg
             -lti_utils_build_linker.cmd.genlibs
@@ -155,7 +155,7 @@
         </file>
         <file path="${COM_TI_SIMPLELINK_LOWPOWER_F3_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/icall/inc/icall_ble_apimsg.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="common/iCallBLE">
         </file>
-        <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../README.html" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="../../app/app_main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="app">
         </file>
