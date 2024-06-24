@@ -11,7 +11,7 @@
 
     <project
         title="ble32_connection_central_app App"
-        name="ble32_connection_central_app_LPCC1354P10_1_tirtos_ticlang"
+        name="ble32_connection_central_app_LP_EM_CC1354P10_1_tirtos_ticlang"
         configurations="Release, Debug"
         toolChain="TICLANG"
         connection="TIXDS110_Connection.xml"
@@ -117,7 +117,25 @@
         </file>
         <file path="../../Application/data_stream_server.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
-        <file path="../../Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
+        <file path="../../common/av_buffers.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/command_ble_utils.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/globals.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/ProcessBLEConsoleCommand.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/ThreadBLE_Message.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/ThreadBLE_Timer.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/ThreadBLE_UARTCommand.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/ThreadBLE_UARTConsole.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/ThreadSlaveSPI.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
+        </file>
+        <file path="../../common/uart2_utils.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
         </file> 
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/common/cc26xx/board_key.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Application">
         </file>
@@ -142,6 +160,16 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/hci.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/osal/src/inc/osal_snv.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/define.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/externs.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/proto.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/structs.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
+        </file>
+        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/tirtos.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv/crc.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Drivers/NV">
         </file>
@@ -181,11 +209,23 @@
         </file>
         <file path="../../Startup/main.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>
+        <file path="../../Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
+        </file>
         <file path="../../tirtos7/ble32_connection_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>
         <file path="../../tirtos7/ticlang/cc13x4_cc26x4_app.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../resources/BLECentralWindow.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../resources/HardwareTestPlatform.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../resources/Peripherals_Con.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../resources/Peripherals_Dis.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+        <file path="../../resources/pushbutton.png" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
     </project>
 </projectSpec>

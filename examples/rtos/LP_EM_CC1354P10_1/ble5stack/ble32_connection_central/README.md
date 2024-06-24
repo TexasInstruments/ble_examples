@@ -51,7 +51,7 @@ Running the Demo
 
 ### Steps ###
 
-![Hardware Photo](<resources/Hardware Test Platform.png>)
+![Hardware Photo](<resources/HardwareTestPlatform.png>)
 
 1. Compile and load both peripheral and central code 
 2. Connect the board/s to the PC terminal
@@ -73,7 +73,7 @@ Running the Demo
 ### Console Window ### 
 Once established the Bluetooth LE Central Console Output should look like this: 
 
-![BLE Central Console Window](resources/BLECentralWindow.png)
+![BLE Central Console Window](<resources/BLECentralWindow.png>)
 
 Text-based UART Console Commands
 
@@ -87,11 +87,11 @@ b g 0 : Stop GATT transmissions
 
 ### Push Button Commands ### 
 Bluetooth Central (XDS110 Debugger + CC1354P10-1 LP)
-![Push Button Command Guide](resources/pushbutton.png)
+![Push Button Command Guide](<resources/pushbutton.png>)
 
 - When the peripherals are disconnected from the cental: 
 ![Peripherals Disconnected](resources/Peripherals_Dis.png)
 
 - When the peripherals are connected to the central:
-![Peripherals Connected](resources/Peripherals_Con.png)
+![Peripherals Connected](<resources/Peripherals_Con.png>)
     - The LEDs should be toggling every 500ms 
