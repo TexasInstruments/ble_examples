@@ -105,7 +105,7 @@
 
         <property name="buildProfile" value="release"/>
         <property name="isHybrid" value="true"/>
-         <file path="../../README.html" openOnCreation="false" excludeFromBuild="false" action="copy">
+         <file path="../../README.md" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="../../Application/simple_central.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Application">
         </file>
