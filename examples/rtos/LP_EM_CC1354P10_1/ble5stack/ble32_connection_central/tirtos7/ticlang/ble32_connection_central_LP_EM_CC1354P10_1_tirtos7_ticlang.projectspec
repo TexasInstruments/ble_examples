@@ -137,6 +137,16 @@
         </file>
         <file path="../../common/uart2_utils.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="common">
         </file> 
+        <file path="../../include/define.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Include">
+        </file> 
+        <file path="../../include/externs.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Include">
+        </file>
+        <file path="../../include/proto.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Include">
+        </file>
+        <file path="../../include/structs.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Include">
+        </file>
+        <file path="../../include/ti_rtos.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Include">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/common/cc26xx/board_key.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Application">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/common/cc26xx/board_key.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Application">
@@ -160,16 +170,6 @@
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/hci.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/osal/src/inc/osal_snv.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/define.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/externs.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/proto.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/structs.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
-        </file>
-        <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/inc/tirtos.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Include">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/common/nv/crc.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Drivers/NV">
         </file>
@@ -211,21 +211,21 @@
         </file>
         <file path="../../Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>
-        <file path="../../tirtos7/ble32_connection_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../tirtos7/ble32_connection_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="tirtos7">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>
         <file path="../../tirtos7/ticlang/cc13x4_cc26x4_app.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
-        <file path="../../resources/BLECentralWindow.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../resources/BLECentralWindow.png" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="resources">
         </file>
-        <file path="../../resources/HardwareTestPlatform.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../resources/HardwareTestPlatform.png" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="resources">
         </file>
-        <file path="../../resources/Peripherals_Con.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../resources/Peripherals_Con.png" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="resources">
         </file>
-        <file path="../../resources/Peripherals_Dis.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../resources/Peripherals_Dis.png" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="resources">
         </file>
-        <file path="../../resources/pushbutton.png" openOnCreation="false" excludeFromBuild="false" action="copy">
+        <file path="../../resources/pushbutton.png" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="resources">
         </file>
     </project>
 </projectSpec>
