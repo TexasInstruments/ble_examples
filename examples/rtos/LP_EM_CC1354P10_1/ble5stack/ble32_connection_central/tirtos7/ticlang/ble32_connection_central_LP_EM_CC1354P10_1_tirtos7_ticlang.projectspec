@@ -147,6 +147,10 @@
         </file>
         <file path="../../Include/ti_rtos.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Include">
         </file>
+        <file path="../../Include/define/define_gps.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Include/define">
+        </file>
+        <file path="../../Include/define/define_sensors.h" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Include/define">
+        </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/common/cc26xx/board_key.c" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Application">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/ble5stack_flash/common/cc26xx/board_key.h" openOnCreation="false" excludeFromBuild="false" action="link" targetDirectory="Application">
