@@ -23,6 +23,8 @@
             -I${PROJECT_ROOT}
             -I${PROJECT_ROOT}/${ConfigName}
             -I${PROJECT_LOC}/Application
+            -I${PROJECT_LOC}/Include
+            -I${PROJECT_LOC}/common
             -mcpu=cortex-m33
             -mthumb
             -mlittle-endian
@@ -72,7 +74,7 @@
             -gdwarf-3
             -mcpu=cortex-m33 
             -mfloat-abi=hard 
-            -mfpu=fpv5-sp-d16 
+            -mfpu=fpv5-sp-d16
         "
         linkerBuildOptions="
             --diag_wrap=off
