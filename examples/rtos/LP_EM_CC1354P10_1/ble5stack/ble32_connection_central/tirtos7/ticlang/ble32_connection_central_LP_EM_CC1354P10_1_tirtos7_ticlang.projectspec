@@ -18,7 +18,7 @@
         device="Cortex M.CC1354P10"
         ignoreDefaultDeviceSettings="true"
         ignoreDefaultCCSSettings="true"
-        products="com.ti.SIMPLELINK_CC13XX_CC26XX_SDK;sysconfig"
+        products="com.ti.SIMPLELINK_CC13XX_CC26XX_SDK:7.10.00.98;sysconfig:1.15.0"
         compilerBuildOptions="
             -I${PROJECT_ROOT}
             -I${PROJECT_ROOT}/${ConfigName}
@@ -222,11 +222,11 @@
         </file>
         <file path="../../Startup/osal_icall_ble.c" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="Startup">
         </file>
-        <file path="../../tirtos7/ble32_connection_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="tirtos7">
+        <file path="../../tirtos7/ble32_connection_central.syscfg" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="${COM_TI_SIMPLELINK_CC13XX_CC26XX_SDK_INSTALL_DIR}/source/ti/boards/LP_EM_CC1354P10_1/Board.html" openOnCreation="false" excludeFromBuild="false" action="link">
         </file>
-        <file path="../../tirtos7/ticlang/cc13x4_cc26x4_app.cmd" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="tirtos7/ticlang">
+        <file path="../../tirtos7/ticlang/cc13x4_cc26x4_app.cmd" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
         <file path="../../resources/BLECentralWindow.png" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="resources">
         </file>
@@ -238,5 +238,8 @@
         </file>
         <file path="../../resources/pushbutton.png" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="resources">
         </file>
+        <file path="../../resources/ble32_connection_peripheral_LP_EM_CC2340R5_freertos_ticlang.out" openOnCreation="false" excludeFromBuild="false" action="copy" targetDirectory="resources">
+        </file>
+        
     </project>
 </projectSpec>

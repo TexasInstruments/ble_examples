@@ -35,6 +35,16 @@ If you have any questions please refer to the [FAQ page](docs/faq.md).
       <th width = 50%>SDK</th>
       <th>Examples</th>
     </tr>
+        <tr>
+      <td>
+        <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13xx_26xx_sdk-7.10">TI SimpleLink CC13xx / CC26xx SDK 7.10.00.98</a>
+      </td>
+      <td>
+        <ul>
+          <li>BLE 32 Connection Central</li>
+        </ul>
+      </td>
+    </tr>
     <tr>
       <td>
         <a href = "https://github.com/TexasInstruments/ble_examples/tree/simplelink_low_power_f3_sdk-7.40">TI SimpleLink Low Power F3 SDK 7.40.00.00</a>
