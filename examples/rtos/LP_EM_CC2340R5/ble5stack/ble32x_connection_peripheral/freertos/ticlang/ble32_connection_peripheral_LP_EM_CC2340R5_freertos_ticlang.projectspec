@@ -18,7 +18,7 @@
         device="Cortex M.CC2340R5"
         ignoreDefaultDeviceSettings="true"
         ignoreDefaultCCSSettings="true"
-        products="com.ti.SIMPLELINK_LOWPOWER_F3_SDK;sysconfig"
+        products="com.ti.SIMPLELINK_LOWPOWER_F3_SDK:7.40.00.64;sysconfig:1.18.1"
         compilerBuildOptions="
             -I${PROJECT_ROOT}
             -I${PROJECT_ROOT}/${ConfigName}

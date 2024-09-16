@@ -15,7 +15,7 @@ Before running the demo, the user will need the following components:
 - Up to 32 [LP-EM-CC2340R5 Launchpad](https://www.ti.com/tool/LP-EM-CC2340R5)
 - Up to 33 [LP-XDS110 Debugger](https://www.ti.com/tool/LP-XDS110ET)
 - Up to 33 USB type C to USB A cable (included with LP-XDS110ET debugger)
-- 1x [LP-EM-CC1354P10 Launchpad] (https://www.ti.com/tool/LP-EM-CC1354P10)
+- 1x [LP-EM-CC1354P10 Launchpad](https://www.ti.com/tool/LP-EM-CC1354P10)
 - Port USB Hub
 
 ### Firmware Requirements ###
@@ -46,11 +46,16 @@ Running the Demo
 
 ![Hardware Photo](<resources/Hardware Test Platform.png>)
 
-1. Compile and load both peripheral and central code 
+1. Obtain the necessary hardware.
 2. Connect the board/s to the PC terminal
 3. Build and load the launchpads: 
     - Peripheral LP CC2340R5 with the `ble32x_connection_peripheral` project
     - Central LP CC1354P10-1 with the `ble32x_connection_central` project
+        *   A pre-compiled binary for the peripheral project has been included with
+            this repo. This binary is called "ble32_connection_central_app_LP_EM_CC1354P10_1_tirtos_ticlang.out"
+            and may be found in the resources folder.
+        *   The source code of the `ble32x_connection_central` project may be
+            found in the [simplelink_cc13xx_26xx_sdk-7.10 branch](https://github.com/TexasInstruments/ble_examples/tree/simplelink_cc13xx_26xx_sdk-7.10) of this repo.
 4. Open Serial Terminal on CCS (or preferred Terminal Application) for the Central Device 
     - Press Ctrl+Alt+Shift+T on CCS and a window should open
     - Make sure the following parameters are configured:

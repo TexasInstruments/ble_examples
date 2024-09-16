@@ -171,7 +171,7 @@ void configPort(void)
     SerialPortSettings.c_cc[VMIN] = 0;
     SerialPortSettings.c_cc[VTIME] = 2;
 
-    /* Flush out if there is any previously pending shit* */
+    /* Flush out if there is any previously pending data* */
     clearRxbuffer();
 
     if((tcsetattr(fd,TCSANOW,&SerialPortSettings)) != 0)
