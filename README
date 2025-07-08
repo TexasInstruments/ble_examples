@@ -1,0 +1,139 @@
+Smart Remote Control (SRC) - SW Reference Design
+================================================
+
+Dependencies
+------------
+
+- TI Device: CC2340R5
+- TI SDK version: simplelink_lowpower_f3_sdk_8_40_00_61
+- TI Code Composer Studio: CCS Eclipse 12.8.1 and CCS Theia 1.5.1
+- TI ARM Clang Compiler: 3.2.2.LTS
+- SysConfig: 1.22.0
+- UniFlash: 8.8.1
+
+Functionalities
+---------------
+
+The following features have been implemented and tested using the ONN Android receiver.
+
+   1. **BLE Connection, Pairing and Bonding:**
+      - Implementation of Advertisement with BLE standard UUIDs that are recognized by the Android receiver to start connection/paring/bonding process.
+      - Implementation of Directed Adv with peer address saved while bonding (re-connection is faster with Directed Advertisement) - all the re-connections after the bonding will be done with Directed Adv.
+   2. **BLE Device Identification Service:**
+      - Implementation of Device ID BLE service: device type, name, VID/PID, as well as SW, FW and HW versions are available as GATT characteristics.
+      - Verified that ID BLE service is recognized by Android TV receiver and the characteristics values shown.
+   3. **BLE Battery Monitoring:**
+      - Implementation of battery monitoring using the Battery Monitor driver.
+      - Implementation of Battery monitoring BLE service.
+      - Verified that Battery Service is detectable by Android TV receiver and percentage value of power consumption updates accordingly.
+   4. **Dual-Image BLE OAD support:**
+      - Implementation of Dual-Image OAD service for over the air firmware update.
+      - Verified that OAD firmware update is successfully done using Simple Link Connect Mobile App.
+   5. **BLE Human Interface Device (HID):**
+      - Implementation of BLE HID service using Android spec for expected characteristic values.
+      - Implementation of database table with Android spec HID key UUID codes.
+      - Verified that HID key codes are send when keys are physically pressed at the RC.
+      - Verified that HID key command are recognized by Android receiver.
+   6. **Audio over BLE:**
+      - Implementation of Audio BLE service using Android spec for expected characteristic values.
+      - Implementation of audio start/stop notification values.
+      - Implementation of DMIC Audio: pdm data fetching (SPI), pdm to pcm, decimation and filtering (16KHz - 16-bit integer), compression (adpcm/msbc support), BLE transmission through notification.
+      - Implementation of AMIC Audio: data fetching (ADC/DMA), filtering (16KHz - 16-bit integer), compression (adpcm/msbc support), BLE transmission through notification.
+      - Verified that audio quality meets specs: SNR > 30 dB and THD < 5% at 1KHz (measured at receiver side - not using Android receiver).
+      - Verified that audio can be transmitted within 10-meter line of sight distance.
+      - Verified that audio is properly understood by speech to text assistant Android engine.
+   7. **Infrared (IR) support:**
+      - Implementation of IR NEC standard driver.
+      - Implementation of ZIPIR standard driver.
+      - Implementation of database table with Android spec IR key codes.
+      - Verified that IR key codes are send when keys are physically pressed at the RC using a logic analyzer.
+   8. **Infrared (IR) External NVS Database:**
+      - Implementation of function to write IR codes into external flash.
+      - Implementation of function to read IR codes from external flash.
+   9. **LED Behavior:**
+      - Implementation of LED color behavior based on spec: Orange for IR (no BLE connection), Red for non-secure BLE connection (no pairing and bonding), Green for secure BLE connection (device is bonded).
+   10. **Power Consumption Optimization:**
+      - Implementation of Shutdown and key interrupt wake-up: after the RC device has connected to the ONN Android receiver, if no keys are pressed for more than 15 minutes, then the RC device will issue a disconnection and go to shut down. Pressing any key will wake up the device which will connect automatically with the ONN Android receiver.
+      - Implementation of Limited Advertising: Once the device has woke up, it will advertise only for 15 minutes before going to shut down. Pressing any key will wake up the device which will start again advertising.
+      - Implementation of Connection Latency: when the peripheral has nothing to send to the central, it will skip 200 events * 11,25 ms of conn interval = 2.2 seconds of standby between connection events.
+
+Known Issues and Limitations
+----------------------------
+
+   1. If OAD is done using Simple Link Connect mobile app and the device bonds first, the operation will fail (OAD stops suddenly during update).
+   2. If *devInfoServGenericAcc* UUID and its characteristics are included in the GATT table, then it is not possible to see all the services using Simple Link Connect mobile app. Therefore, those characteristics are currently commented out from the *devInfoAttrTbl* inside *dev_info_service.c*. This is only important when trying to test OAD using the mobile app.
+   3. The functionality of the key that is pressed to wake up the RC is currently lost (as the action of pressing the key is only used to wake up the RC), therefore the user will have to press two times the same button if it wants the functionality of the key to work.
+   4. Some special HID keys do not generate the desired answer from the ONN receiver, this needs to be checked with the provider as we have verified that different Android compliant RCs do have the same limitation which would suggest a special nonstandard protocol is implemented on the Android receiver. The keys are: YouTube, Netflix, App03, App04, Settings, Profile. If the Vol +, Vol - and Mute buttons do not work as expected, please make sure to take a look at the buttons configuration inside the ONN Bluetooth settings. To check this, go to Bluetooth settings and select "Set up remote buttons" and select "onn. 4K Streaming Box" for Volume Control.
+   5. There is no standardized OAD service defined for the Android Receiver (Android spec only provides recommendation of what should be provided by the vendor). The ODA Dual Image distributor implementation has to be presented to Google so that they can add support for it.
+   6. When the two buttons "MUTE" + "DPAD CENTER" are pressed at the same time, the "factory reset" mode is triggered, the RC goes back to undirected advertising and erases bonds. However the ONN receiver will only go to the "Scanning window" (important: this will only happen if only ONE RC with Onn-Remote is connected and disconnected, if more than one is connected, then the ONN receiver will not consider searching for more RCs).
+   7. Continuous pressing of a key should transmit same IR Code several times in ZIPIR standard. This is however not yet implemented and only one IR trace will be sent per button press.
+
+Quick Demo Guide
+----------------
+
+If you are looking for a quick demo test, please do the following:
+
+1. Download/Clone the repository.
+2. Go to the *Demo* folder.
+3. If you want to test the AMIC implementation, use the *xxx_AMIC_v1.bin* file.
+4. If you want to test the DMIC implementation, use the *xxx_DMIC_v1.bin* file.
+5. For either of the Audio implementations, use the *mcuboot_dual_image_LP_EM_CC2340R5_nortos_ticlang.hex*.
+6. Open *UNIFLASH* and load the *mcuboot_dual_image_LP_EM_CC2340R5_nortos_ticlang.hex* file and load the *smart_remote_control_digital_LP_EM_CC2340R5_v1.bin* selecting the **load address = 0x00006000**.
+7. Connect the cc23xx TI-RC board using a XDS110 probe and flash it.
+8. Power cycle the board (disconnect and connect the XDS cable) - Important not to forget this step.
+9. Power on the ONN Android TV receiver, the RC should connect automatically. If this does not happen, to re-pair press the button for 15 seconds in the back of the ONN receiver until the device starts scanning for RCs.
+10. The ONN receiver will connect, pair, and bond to the RC device with default name: ONN-Remote.
+11. Browse the ONN user interface using the keys. Just make sure the following buttons work: Center, Left, Up, Right, Down, Home, Back, Power, Mute. In addition, the LED should turn green when pressed.
+12. Press and hold the Assistant Key (Audio) while speaking and verify that what you said is prompted in the TV interface.
+
+*Note:* During a connection, if no keys are pressed for more than 15 minutes, then the RC device will issue a disconnection and go to shut down. Pressing any key from the RC will wake up the device which will connect automatically with the ONN Android receiver. Please be aware that the RC device takes around 4 seconds to be responsive again. This is mainly due to the rebooting process which needs to be optimized. During advertising, the device will always advertise only for 90 seconds before going to shut down. Pressing any key will wake up the device which will start again advertising.
+
+Quick Dev Guide
+---------------
+
+If you are looking to build the project from CCS, please do the following:
+
+1. Download/Clone the repository.
+2. Make sure to use the SDK included inside the simplelink_lowpower_f3_sdk_8_20_00_119.zip
+3. In order to enable/disable AMIC or DMIC audio solutions, please use the Compiler pre-define symbols inside the project Properties: ``USE_AMIC`` or ``USE_DMIC``. Please be aware that both should not be enabled at the same time.
+4. In order to enable/disable the AMIC or DMIC Filters, please use the Compiler pre-define symbols inside the project Properties: ``USE_ANALOG_FILTER`` or ``USE_DIGITAL_FILTER_1`` and ``USE_DIGITAL_FILTER_2``. Please be aware that both should not be enabled at the same time.
+5. In order to enable/disable the ADPCM or MSBC codec, please use the Compiler pre-define symbols inside the project Properties: ``USE_ADPCM_CODEC`` or ``USE_MSBC_CODEC``. Please be aware that both should not be enabled at the same time and that Android compliant TV only support ADPCM codec.
+6. In order to enable/disable OAD Dual-image, please enable/disable the pre-define preprocessor macros of the Arm Linker: ``OAD_DUAL_IMAGE=1`` and ``APP_HDR_ADDR=0x6000``. Follow the Section below for further details on how to ``Enable OAD``.
+7. In order to enable ZIPIR IR implementation, use the Compiler pre-define symbol ``USE_ZIPIR``. If ``USE_ZIPIR`` is not enabled, then the NEC implementation will be used.
+8. After development/modifications to the project, please make sure to execute the steps described below in **Workflow**.
+
+Computing Requirements
+----------------------
+
+**DMIC Solution:**
+   - MCUBoot Flash size: 24.83 KB
+   - RC Application Flash size: 180 KB
+   - NVS Bonds Flash size: 16.38 KB
+   - Total Flash size for Dual-Image OAD: 400 KB
+   - Total RAM size: 33 KB
+
+**AMIC Solution:**
+   - MCUBoot Flash size: 24.83 KB
+   - RC Application Flash size: 180 KB
+   - NVS Bonds Flash size: 16.38 KB
+   - Total Flash size for Dual-Image OAD: 400 KB
+   - Total RAM: 31 KB
+
+Enable OAD
+----------
+
+In order to flash and debug the *smart_remote_control_digital_LP_EM_CC2340R5* project with OAD, please go to Project Properties - Build - Arm Linker - Advanced Options - Command File Preprocessing and make sure the symbols ``OAD_DUAL_IMAGE=1`` and ``APP_HDR_ADDR=0x6000`` are enabled. Without OAD, the symbols should be disabled: ``xOAD_DUAL_IMAGE=1`` and ``xAPP_HDR_ADDR=0x6000``.
+
+References
+----------
+
+The following reference pages may be helpful during general Bluetooth Low
+Energy development. New users of the SimpleLink Low Power F3 platform and Bluetooth
+5 development are encouraged to read the
+[BLE5-Stack User's Guide](https://software-dl.ti.com/simplelink/esd/simplelink_lowpower_f3_sdk/9.11.00.18/exports/docs/ble5stack/ble_user_guide/html/ble-stack-5.x-guide/index-cc23xx.html).
+
+As an additional resource, users are encouraged to complete the
+[SimpleLink Academy](https://dev.ti.com/tirex/explore/node?node=A__AEaxXmSXZjp24G7-XUfwSQ__SIMPLELINK-ACADEMY-CC23XX__gsUPh5j__LATEST)
+training.
+
+Other resources can be found in: [BLE E2E Page](www.ti.com/ble-forum)

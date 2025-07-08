@@ -1,0 +1,283 @@
+/******************************************************************************
+
+ @file flash_interface
+
+    @brief An interface that abstracts flash operations for OAD
+           this allows on-chip and off-chip OAD to use the same flash APIs
+
+ Group: WCS, BTS
+ Target Device: cc23xx
+
+ ******************************************************************************
+ 
+ Copyright (c) 2017-2025, Texas Instruments Incorporated
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+
+ *  Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+ *  Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+ *  Neither the name of Texas Instruments Incorporated nor the names of
+    its contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ ******************************************************************************
+
+ Copyright (c) 2022-2025, Texas Instruments Incorporated
+ All rights reserved.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ ******************************************************************************
+ *****************************************************************************/
+
+#ifndef FLASH_INTERFACE
+#define FLASH_INTERFACE
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+/*********************************************************************
+ * INCLUDES
+ */
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#include <ti/devices/DeviceFamily.h>
+#include DeviceFamily_constructPath(driverlib/flash.h)
+
+/*********************************************************************
+ * CONSTANTS
+ */
+
+/*!
+ * Flash operation succeeded
+ */
+#define FLASH_SUCCESS   0x00
+
+/*!
+ * Flash operation failed
+ */
+#define FLASH_FAILURE   0xFF
+
+/*!
+ * Maximum SPI read size, used for off-chip
+ */
+#define SPI_MAX_READ_SZ 1024
+
+/*********************************************************************
+ * MACROS
+ */
+#if defined(CC26XX_R2)
+    #define FLASH_ADDRESS(page, offset)     (((page) << 12) + (offset))
+    #define FLASH_PAGE(addr)                (addr >> 12)
+    #define INTFLASH_PAGE_MASK              0xFFFFF000
+    #define INTFLASH_PAGE_SIZE              0x1000
+    #define MAX_ONCHIP_FLASH_PAGES          32
+    #define MAX_OFFCHIP_METADATA_PAGES      MAX_ONCHIP_FLASH_PAGES
+#elif defined(DeviceFamily_CC26X2) || defined(DeviceFamily_CC13X2) || \
+      defined(DeviceFamily_CC26X2X7) || defined(DeviceFamily_CC13X2X7) || \
+      defined(DeviceFamily_CC26X1) || defined(DeviceFamily_CC13X1)
+    #define FLASH_ADDRESS(page, offset)     (((page) << 13) + (offset))
+    #define FLASH_PAGE(addr)                (addr >> 13)
+    #define INTFLASH_PAGE_MASK              0xFFFFE000
+    #define INTFLASH_PAGE_SIZE              0x2000
+    #if defined(DeviceFamily_CC26X2X7) || defined(DeviceFamily_CC13X2X7)
+        #define MAX_ONCHIP_FLASH_PAGES          88
+    #else
+        #define MAX_ONCHIP_FLASH_PAGES          44
+    #endif
+    #define MAX_OFFCHIP_METADATA_PAGES      MAX_ONCHIP_FLASH_PAGES
+#elif defined(DeviceFamily_CC13X4) || defined(DeviceFamily_CC26X4) ||  \
+      defined(DeviceFamily_CC26X3) || defined(DeviceFamily_CC23X0R5) || \
+      defined(DeviceFamily_CC23X0R53) || defined(DeviceFamily_CC23X0R2) || \
+      defined(DeviceFamily_CC23X0R22) || defined(DeviceFamily_ID_CC27XX)
+    #define FLASH_ADDRESS(page, offset)     (((page) << 11) + (offset))
+    #define FLASH_PAGE(addr)                (addr >> 11)
+    #define INTFLASH_PAGE_MASK              0xFFFFF800
+    #define INTFLASH_PAGE_SIZE              0x800
+    #if defined(DeviceFamily_CC23X0R5) || defined(DeviceFamily_CC23X0R53)
+        #define MAX_ONCHIP_FLASH_PAGES          256
+    #elif defined(DeviceFamily_CC23X0R2) || defined(DeviceFamily_CC23X0R22)
+        #define MAX_ONCHIP_FLASH_PAGES          128
+    #else
+        #define MAX_ONCHIP_FLASH_PAGES          512
+    #endif
+    #define MAX_OFFCHIP_METADATA_PAGES      MAX_ONCHIP_FLASH_PAGES
+#else
+    #error
+#endif
+
+/**
+ * @defgroup EXT_FLASH_MACROS Macros and constants for external flash
+ * @{
+ */
+
+/*!
+ * MMacro to return an address based on an external flash page and offset into
+ * the page
+ */
+#define EXT_FLASH_ADDRESS(page, offset)     (((page) << 12) + (offset))
+
+/*!
+ * Macro to return a page based on an external flash page and offset into
+ * the page
+ */
+#define EXT_FLASH_PAGE(addr)                (addr >> 12)
+
+/*!
+ * Define for masking on external flash page size
+ */
+#define EXTFLASH_PAGE_MASK                  0xFFFFF000
+
+/*!
+ * Page size of external flash
+ */
+#define EFL_PAGE_SIZE                       0x1000
+
+/*!
+ * Total size of external flash
+ */
+#define EFL_FLASH_SIZE                      0x100000
+
+/** @} End EXT_FLASH_MACROS */
+
+/*!
+ * Initialize flash interface
+ */
+extern void flash_init(void);
+
+/*!
+ * Open access to flash through flash_interface
+ *
+ * @return  true if interface successfully opened, false otherwise
+ */
+extern bool flash_open(void);
+
+/*!
+ * Close/cleanup access to flash
+ */
+extern void flash_close(void);
+
+/*!
+ * Check if the interface is built for external flash
+ *
+ * @return  true if the target has external flash, false otherwise
+ */
+extern bool hasExternalFlash(void);
+
+/*!
+ * Read data from flash using address
+ *
+ * @param   addr   - address to read from
+ * @param   pBuf   - pointer to buffer into which data is read.
+ * @param   len    - length of data to read in bytes.
+ *
+ * @return  @ref FLASH_SUCCESS if read succeeded
+ *          @ref FLASH_FAILURE if the flash returned an error
+ */
+extern uint8_t readFlash(uint_least32_t addr, uint8_t *pBuf, size_t len);
+
+/*!
+ * Read data from flash using page and offset
+ *
+ * @param   page   - page to read from in flash
+ * @param   offset - offset into flash page to begin reading
+ * @param   pBuf   - pointer to buffer into which data is read.
+ * @param   len    - length of data to read in bytes.
+ *
+ * @return  status - @ref FLASH_SUCCESS if programmed successfully or
+ *                   @ref FLASH_FAILURE if programming failed
+ */
+extern uint8_t readFlashPg(uint8_t page, uint32_t offset, uint8_t *pBuf,
+                            uint16_t len);
+
+/*!
+ * Write data to flash using address
+ *
+ * @param   addr   - address to write to in flash
+ * @param   pBuf   - pointer to buffer of data to write
+ * @param   len    - length of data to write in bytes
+ *
+ * @return  status - @ref FLASH_SUCCESS if programmed successfully or
+ *                   @ref FLASH_FAILURE if programming failed
+ */
+extern uint8_t writeFlash(uint_least32_t addr, uint8_t *pBuf, size_t len);
+
+/*!
+ * Write data to flash using page and offset
+ *
+ * @param   page   - page to write to in flash
+ * @param   offset - offset into flash page to begin writing
+ * @param   pBuf   - pointer to buffer of data to write
+ * @param   len    - length of data to write in bytes
+ *
+ * @return  status - @ref FLASH_SUCCESS if programmed successfully or
+ *                   @ref FLASH_FAILURE if programming failed
+ */
+extern uint8_t writeFlashPg(uint8_t page, uint32_t offset, uint8_t *pBuf,
+                            uint16_t len);
+
+/*!
+ * Erase selected flash page.
+ *
+ * @param   page - the page to erase.
+ *
+ * @return  status - @ref FLASH_SUCCESS if page erased successfully or
+ *                   @ref FLASH_FAILURE if erase failed
+ */
+extern uint8_t eraseFlashPg(uint8_t page);
+
+/*!
+ * Erase flash page.
+ *
+ * @param   page - the page to erase.
+ *
+ * @return  status - @ref FLASH_SUCCESS if page erased successfully or
+ *                   @ref FLASH_FAILURE if erase failed
+ */
+extern uint8_t eraseFlash(uint8_t page);
+
+/*********************************************************************
+*********************************************************************/
+
+/** @} End FLASH_INTERFACE */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* FLASH_INTERFACE */
